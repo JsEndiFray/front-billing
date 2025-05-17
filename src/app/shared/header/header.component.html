@@ -1,0 +1,16 @@
+<header class="header">
+  <div class="logo" [ngClass]="{'animate-logo': animateLogo}">
+    Mi Facturación
+  </div>
+
+  <div class="user-status" [ngClass]="{'not-logged': !isLoggedIn}">
+    <div class="status-indicator"></div>
+    <div class="login-button">
+      <button
+        (click)="loginOrLogout()"
+        [attr.data-icon]="isLoggedIn ? '🔓' : '🔒'">
+        {{isLoggedIn ? 'Cerrar sesión' : 'Iniciar sesión'}}
+      </button>
+    </div>
+  </div>
+</header>

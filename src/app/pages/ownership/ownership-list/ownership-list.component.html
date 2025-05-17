@@ -1,0 +1,27 @@
+<div class="list-wrapper">
+  <h2>Listado de Porcentajes de Propiedades</h2>
+
+  <table>
+    <thead>
+    <tr>
+      <th>Propiedad</th>
+      <th>Propietario</th>
+      <th>Porcentaje (%)</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (ownership of ownerships; track ownership.id) {
+        <tr>
+          <td>{{ ownership.estate_id }}</td>
+          <td>{{ ownership.owners_id }}</td>
+          <td>{{ ownership.ownership_precent }}</td>
+          <td>
+            <button (click)="editOwnership(ownership.id)">Editar</button>
+            <button (click)="deleteOwnership(ownership.id)">Eliminar</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

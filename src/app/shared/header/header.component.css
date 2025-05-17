@@ -1,0 +1,167 @@
+.header {
+  background: linear-gradient(135deg, #2b32b2, #1488cc, #2193b0);
+  color: white;
+  padding: 1.25rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 0.25rem 1.5rem rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+
+/* Efecto de superposición de gradiente sutil */
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+  animation: shimmer 4s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.logo {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  position: relative;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+/* Icono del logo */
+.logo::before {
+  content: '📊';
+  margin-right: 0.5rem;
+  font-size: 1.5rem;
+  opacity: 0.9;
+}
+
+.logo:hover {
+  transform: translateY(-2px);
+  text-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+}
+
+/* Animación del logo */
+.animate-logo {
+  animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Indicador de estado del usuario */
+.user-status {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.status-indicator {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: #4CAF50;
+  box-shadow: 0 0 0.5rem rgba(76, 175, 80, 0.5);
+  animation: pulse 2s infinite;
+}
+
+.not-logged .status-indicator {
+  background-color: #FF5252;
+  box-shadow: 0 0 0.5rem rgba(255, 82, 82, 0.5);
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 0.6; transform: scale(1); }
+}
+
+.login-button button {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.75rem 1.5rem;
+  border-radius: 2rem;
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  backdrop-filter: blur(5px);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.login-button button::before {
+  content: attr(data-icon);
+  font-size: 1.2rem;
+}
+
+.login-button button:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-3px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.login-button button:active {
+  transform: translateY(-1px);
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
+}
+
+/* Media query para tablets */
+@media (max-width: 768px) {
+  .header {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+  }
+}
+
+/* Media query para dispositivos móviles */
+@media (max-width: 600px) {
+  .header {
+    flex-direction: row;
+    padding: 1rem;
+    border-radius: 0 0 0.75rem 0.75rem;
+  }
+
+  .logo {
+    font-size: 1.25rem;
+    margin-bottom: 0;
+  }
+
+  .login-button button {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Soporte para modo oscuro - se activará si el usuario tiene preferencia de modo oscuro */
+@media (prefers-color-scheme: dark) {
+  .header {
+    background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+  }
+
+  .login-button button {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .login-button button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+}

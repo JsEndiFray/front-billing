@@ -1,0 +1,43 @@
+<div class="form-wrapper">
+  <h2>Crear Factura</h2>
+
+  <form>
+    <label for="bills">Número de Factura (automático)</label>
+    <input type="text"  disabled id="bills"/>
+
+    <label for="estate">Selecciona una propiedad</label>
+    <select required [(ngModel)]="bill.estate_id" name="estate_id" id="estate">
+      @for (estate of estates; track estate.id) {
+        <option [value]="estate.id">{{ estate.name }}</option>
+      }
+    </select>
+    <label for="clients">Selecciona un cliente</label>
+    <select required [(ngModel)]="bill.clients_id" name="client_id" id="clients">
+      @for (client of clients; track client.id) {
+        <option [value]="client.id">{{ client.name }}</option>
+      }
+    </select>
+
+    <label for="owners">Selecciona un propietario</label>
+    <select required [(ngModel)]="bill.owners_id" name="owner_id" id="owners">
+      @for (owner of owners; track owner.id) {
+        <option [value]="owner.id">{{ owner.name }}</option>
+      }
+    </select>
+
+    <label for="fecha">Fecha</label>
+    <input type="date" [(ngModel)]="bill.date" name="date" id="fecha"/>
+    <label for="tax_base">Base Imponible (€)</label>
+    <input type="number" [(ngModel)]="bill.tax_base" name="base" id="tax_base"/>
+    <label for="iva">IVA (%)</label>
+    <input type="number" [(ngModel)]="bill.iva" name="iva" id="iva"/>
+    <label for="irpf">IRPF (%)</label>
+    <input type="number" [(ngModel)]="bill.irpf" name="irpf" id="irpf"/>
+    <label for="total">Total (€)</label>
+    <input type="number" [(ngModel)]="bill.total" name="total" id="total"/>
+    <button type="submit">Crear Factura</button>
+
+  </form>
+
+
+</div>

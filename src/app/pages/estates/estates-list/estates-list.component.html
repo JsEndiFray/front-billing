@@ -1,0 +1,50 @@
+<div class="list-wrapper">
+  <h2>Listado de Propiedades</h2>
+
+  <table>
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Referencia Catastral</th>
+      <th>Precio</th>
+      <th>Dirección</th>
+      <th>C.P</th>
+      <th>Localidad</th>
+      <th>Provincia</th>
+      <th>País</th>
+      <th>Superficie</th>
+      <th>Fecha creación</th>
+      <th>Fecha actualización</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+
+    <tbody>
+      @if (estates.length > 0) {
+        @for (estate of estates; track estate.id) {
+          <tr>
+            <td>{{ estate.id }}</td>
+            <td>{{ estate.cadastral_reference }}</td>
+            <td>{{ estate.price }} €</td>
+            <td>{{ estate.address }}</td>
+            <td>{{ estate.postal_code }}</td>
+            <td>{{ estate.location }}</td>
+            <td>{{ estate.province }}</td>
+            <td>{{ estate.country }}</td>
+            <td>{{ estate.surface }}</td>
+            <td>{{ estate.date_create }}</td>
+            <td>{{ estate.date_update }}</td>
+            <td>
+              <button (click)="editEstate(estate.id)">Editar</button>
+              <button (click)="deleteEstate(estate.id)">Eliminar</button>
+            </td>
+          </tr>
+        }
+      } @else {
+        <tr>
+          <td colspan="12" style="text-align: center;">No hay propiedades disponibles.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

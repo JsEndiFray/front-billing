@@ -1,0 +1,115 @@
+/* Contenedor principal para la página de login */
+.login-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 1rem;
+}
+
+/* Contenedor del formulario de login */
+.login-container {
+  background: linear-gradient(135deg, #08224e, #0853a8, #298ad8);
+  color: white;
+  padding: 2.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.4);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+/* Título del formulario */
+.login-container h1 {
+  margin-bottom: 2rem;
+  font-size: 2.2rem;
+}
+
+/* Etiquetas de los campos del formulario */
+.login-container label {
+  display: block;
+  margin: 0.75rem 0 0.25rem;
+  text-align: left;
+  font-size: 1rem;
+}
+
+/* Campos de entrada y botones */
+.login-container input,
+.login-container button {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  border: none;
+}
+
+/* Campos de entrada de texto */
+.login-container input {
+  background-color: #eeeeee;
+  color: #333;
+}
+
+/* Botón principal de login */
+.login-container button {
+  background-color: white;
+  color: #182e51;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Efecto hover del botón principal */
+.login-container button:hover {
+  background-color: #dddddd;
+  transform: translateY(-2px);
+}
+
+/* Botones secundarios (como "Registrarse" o "Recuperar contraseña") */
+.login-container button.small-button {
+  width: auto;
+  padding: 0.5rem 1rem;
+  background-color: transparent;
+  color: white;
+  border: 1px solid white;
+  font-size: 0.9rem;
+}
+
+/* Efecto hover de botones secundarios */
+.login-container button.small-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 📱 Responsive → Mejorado */
+@media (max-width: 600px) {
+  /* Ajuste del wrapper para pantallas pequeñas */
+  .login-wrapper {
+    padding: 1rem;
+  }
+
+  /* Ajuste del contenedor para pantallas pequeñas */
+  .login-container {
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+  }
+
+  /* Reducción del tamaño del título en móviles */
+  .login-container h1 {
+    font-size: 1.6rem;
+  }
+
+  /* Ajustes de campos y botones para pantallas pequeñas */
+  .login-container input,
+  .login-container button {
+    font-size: 0.9rem;
+    padding: 0.65rem;
+  }
+
+  /* Ajustes de botones secundarios para pantallas pequeñas */
+  .login-container button.small-button {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.75rem;
+  }
+}

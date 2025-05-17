@@ -1,0 +1,68 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #131651, #245570, #156377);
+  width: 100%;
+  overflow-x: hidden;
+  padding-right: 0; /* Eliminado el padding derecho */
+  box-sizing: border-box;
+}
+
+/* Para los elementos de menú que muestras en la imagen */
+.menu-item {
+  background-color: #1976d2;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  margin: 0.625rem auto; /* Centrado con márgenes automáticos */
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: calc(100% - 1.25rem); /* Ajustado para dejar menos espacio lateral */
+  max-width: 100%;
+}
+
+.menu-item:hover {
+  background-color: #1565c0;
+}
+
+/* Media query para tablets */
+@media (max-width: 48rem) {
+  .menu-item {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    width: calc(100% - 1rem); /* Reducido para pantallas medianas */
+  }
+}
+
+/* Media query para móviles medianos */
+@media (max-width: 36rem) {
+  .menu-item {
+    padding: 0.625rem;
+    font-size: 0.85rem;
+    width: calc(100% - 0.75rem); /* Reducido para móviles */
+    margin: 0.5rem auto;
+  }
+}
+
+/* Media query para móviles pequeños */
+@media (max-width: 23.4375rem) { /* 375px */
+  .menu-item {
+    padding: 0.5625rem;
+    font-size: 0.8rem;
+    border-radius: 0.375rem;
+    width: calc(100% - 0.5rem); /* Menos margen para móviles pequeños */
+    margin: 0.375rem auto;
+  }
+}
+
+/* Media query para móviles muy pequeños */
+@media (max-width: 20rem) { /* 320px */
+  .menu-item {
+    padding: 0.5rem;
+    font-size: 0.75rem;
+    width: calc(100% - 0.25rem); /* Mínimo margen en pantallas muy pequeñas */
+    margin: 0.25rem auto;
+  }
+}

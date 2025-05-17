@@ -1,0 +1,41 @@
+<div class="list-wrapper">
+  <h2>Listado de Clientes</h2>
+
+  <table>
+    <thead>
+    <tr>
+      <th>Tipo de Cliente</th>
+      <th>Nombre</th>
+      <th>Apellidos</th>
+      <th>Nombre Empresa</th>
+      <th>Identificación</th>
+      <th>Dirección</th>
+      <th>C.P</th>
+      <th>Localidad</th>
+      <th>Provincia</th>
+      <th>Pais</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (client of clients; track client.id) {
+        <tr>
+          <td>{{ client.type_client }}</td>
+          <td>{{ client.name }}</td>
+          <td>{{ client.lastname }}</td>
+          <td>{{ client.company_name }}</td>
+          <td>{{ client.identification }}</td>
+          <td>{{ client.address }}</td>
+          <td>{{ client.postal_code }}</td>
+          <td>{{ client.location }}</td>
+          <td>{{ client.province }}</td>
+          <td>{{ client.country }}</td>
+          <td>
+            <button (click)="editClient(client.id)">Editar</button>
+            <button (click)="deleteClient(client.id)">Eliminar</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

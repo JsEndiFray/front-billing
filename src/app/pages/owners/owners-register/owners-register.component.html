@@ -1,0 +1,35 @@
+<div class="form-wrapper">
+  <h2>Registrar Propietario</h2>
+  <form>
+
+    <label for="name">Nombre</label>
+    <input type="text" [(ngModel)]="owner.name" name="nombre" id="name"/>
+
+    <label for="lastname">Apellidos</label>
+    <input type="text" [(ngModel)]="owner.lastname" name="apellidos" id="lastname"/>
+
+    <label for="email">Email</label>
+    <input type="email" [(ngModel)]="owner.email" name="email" id="email"/>
+
+    <label for="nif">NIF</label>
+    <input type="text" [(ngModel)]="owner.nif" name="nif" id="nif"/>
+
+    <label for="address">Dirección</label>
+    <input type="text" [(ngModel)]="owner.address" name="direccion" id="address"/>
+
+    <label for="posta_code">Código Postal</label>
+    <input type="text" [(ngModel)]="owner.postal_code" name="codigoPostal" id="posta_code"/>
+
+    <label for="location">Localidad</label>
+    <input type="text" [(ngModel)]="owner.location" name="localidad" id="location"/>
+
+    <label for="province">Provincia</label>
+    <input type="text" [(ngModel)]="owner.province" name="provincia" id="province"/>
+
+    <label for="country">País</label>
+    <input type="text" [(ngModel)]="owner.country" name="pais" id="country"/>
+
+    <button type="submit">Registrar Propietario</button>
+
+  </form>
+</div>

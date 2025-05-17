@@ -1,0 +1,91 @@
+/* Contenedor principal que centra el formulario de registro en la pantalla */
+.register-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 1rem;
+}
+
+/* Contenedor del formulario de registro con gradiente azul y efecto de sombra */
+.register-container {
+  background: linear-gradient(135deg, #0d47a1, #1565c0, #4e9bd8);
+  color: white;
+  padding: 2.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.4);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+/* Estilo para el título del formulario de registro */
+.register-container h1 {
+  margin-bottom: 2rem;
+  font-size: 2rem;
+}
+
+/* Estilo para las etiquetas de los campos del formulario */
+.register-container label {
+  display: block;
+  margin: 0.75rem 0 0.25rem;
+  text-align: left;
+  font-size: 1rem;
+}
+
+/* Estilos comunes para los campos de entrada, selects y botones */
+.register-container input,
+.register-container select,
+.register-container button {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  border: none;
+}
+
+/* Estilos específicos para los campos de entrada y selects */
+.register-container input,
+.register-container select {
+  background-color: #eeeeee;
+  color: #333;
+}
+
+/* Estilo para el botón de registro */
+.register-container button {
+  background-color: white;
+  color: #0d47a1; /* Color azul oscuro que combina con el gradiente */
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Efecto hover para el botón de registro */
+.register-container button:hover {
+  background-color: #dddddd;
+  transform: translateY(-2px); /* Pequeña elevación al pasar el cursor */
+}
+
+/* Ajustes responsivos para pantallas pequeñas (móviles) */
+@media (max-width: 600px) {
+  /* Reduce el padding en pantallas pequeñas */
+  .register-container {
+    padding: 1.5rem;
+  }
+
+  /* Reduce el tamaño del título en pantallas pequeñas */
+  .register-container h1 {
+    font-size: 1.6rem;
+  }
+
+  /* Ajusta el tamaño de los elementos interactivos en pantallas pequeñas */
+  .register-container input,
+  .register-container select,
+  .register-container button {
+    font-size: 0.9rem;
+    padding: 0.65rem;
+  }
+}

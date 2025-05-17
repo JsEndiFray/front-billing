@@ -1,0 +1,43 @@
+<div class="form-wrapper">
+  <h2>Registrar Cliente</h2>
+  <form>
+
+    <label for="tipo">Tipo de Cliente</label>
+    <select [(ngModel)]="clients.type_client" name="tipo" id="tipo" required>
+      <option value="">Selecciona un tipo</option>
+      <option value="particular">Particular</option>
+      <option value="autonomo">Autónomo</option>
+      <option value="empresa">Empresa</option>
+    </select>
+
+    <label for="name">Nombre</label>
+    <input type="text" [(ngModel)]="clients.name" name="nombre" id="name"/>
+
+    <label for="lastname">Apellidos</label>
+    <input type="text" [(ngModel)]="clients.lastname" name="apellidos" id="lastname"/>
+
+    <label for="company_name">Nombre de Compañía</label>
+    <input type="text" [(ngModel)]="clients.company_name" name="compania" id="company_name"/>
+
+    <label for="identification">Identificación (DNI/CIF)</label>
+    <input type="text" [(ngModel)]="clients.identification" name="identificacion" id="identification"/>
+
+    <label for="address">Dirección</label>
+    <input type="text" [(ngModel)]="clients.address" name="direccion" id="address"/>
+
+    <label for="postal_code">Código Postal</label>
+    <input type="text" [(ngModel)]="clients.postal_code" name="codigoPostal" id="postal_code"/>
+
+    <label for="location">Localidad</label>
+    <input type="text" [(ngModel)]="clients.location" name="localidad" id="location"/>
+
+    <label for="province">Provincia</label>
+    <input type="text" [(ngModel)]="clients.province" name="provincia" id="province"/>
+
+    <label for="country">País</label>
+    <input type="text" [(ngModel)]="clients.country" name="pais" id="country"/>
+
+    <button type="submit">Registrar Cliente</button>
+
+  </form>
+</div>

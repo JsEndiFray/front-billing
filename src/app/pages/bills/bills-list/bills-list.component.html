@@ -1,0 +1,43 @@
+<div class="list-wrapper">
+  <h2>Listado de Facturas</h2>
+
+  <table>
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Número Factura</th>
+      <th>Propiedad</th>
+      <th>Cliente</th>
+      <th>Propietario</th>
+      <th>%</th>
+      <th>Fecha</th>
+      <th>Base Imponible</th>
+      <th>Iva</th>
+      <th>Irpf</th>
+      <th>Total</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (bill of bills; track bill.id) {
+        <tr>
+          <td>{{ bill.id }}</td>
+          <td>{{ bill.bill_number }}</td>
+          <td>{{ bill.property }}</td>
+          <td>{{ bill.clients }}</td>
+          <td>{{ bill.owners }}</td>
+          <td>{{ bill.ownership_percent }}</td>
+          <td>{{ bill.date }}</td>
+          <td>{{ bill.tax_base }}</td>
+          <td>{{ bill.iva }}</td>
+          <td>{{ bill.irpf }}</td>
+          <td>{{ bill.total }} €</td>
+          <td>
+            <button (click)="editBill(bill.id)">Editar</button>
+            <button (click)="deleteBill(bill.id)">Eliminar</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

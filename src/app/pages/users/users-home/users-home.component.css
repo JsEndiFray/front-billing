@@ -1,0 +1,70 @@
+/* Contenedor principal de la página de inicio */
+.home-wrapper {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 2rem auto;
+  text-align: center;
+}
+
+/* Título de la sección de inicio */
+.home-wrapper h2 {
+  color: #1976d2; /* Color azul que coincide con la identidad visual */
+  margin-bottom: 1.5rem;
+}
+
+/* Contenedor para los botones de acción */
+.home-actions {
+  display: flex;
+  flex-direction: column; /* Organiza los botones en columna */
+  gap: 1rem; /* Espacio uniforme entre botones */
+}
+
+/* Estilo para los enlaces de acción (botones) */
+.home-actions a {
+  display: inline-block;
+  padding: 0.75rem 1rem;
+  background-color: #1976d2;
+  color: white;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+/* Efecto hover para los botones */
+.home-actions a:hover {
+  background-color: #0d47a1; /* Azul más oscuro al pasar el cursor */
+}
+
+/* Animación de entrada para el contenedor principal */
+.home-wrapper {
+  animation: fadeIn 0.4s ease;
+}
+
+/* Definición de la animación fadeIn */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px); /* Comienza ligeramente abajo */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0); /* Termina en su posición normal */
+  }
+}
+
+/* Ajustes responsivos para pantallas pequeñas */
+@media (max-width: 600px) {
+  /* Reduce el padding en pantallas pequeñas */
+  .home-wrapper {
+    padding: 1rem;
+  }
+
+  /* Reduce el tamaño de texto en los botones */
+  .home-actions a {
+    font-size: 0.9rem;
+  }
+}

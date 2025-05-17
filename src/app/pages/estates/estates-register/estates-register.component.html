@@ -1,0 +1,32 @@
+<div class="form-wrapper">
+  <h2>Registrar Propiedad</h2>
+
+
+  <form (ngSubmit)="createEstate() ">
+    <label for="referencia">Referencia Catastral</label>
+    <input type="text" [(ngModel)]="estate.cadastral_reference" name="referencia" id="referencia"/>
+
+    <label for="price">Precio (€)</label>
+    <input type="number" [(ngModel)]="estate.price" name="precio" id="price"/>
+
+    <label for="address">Dirección</label>
+    <input type="text" [(ngModel)]="estate.address" name="direccion" id="address"/>
+
+    <label for="postal_code">Código Postal</label>
+    <input type="text" [(ngModel)]="estate.postal_code" name="codigoPostal" id="postal_code"/>
+
+    <label for="location">Localidad</label>
+    <input type="text" [(ngModel)]="estate.location" name="localidad" id="location"/>
+
+    <label for="province">Provincia</label>
+    <input type="text" [(ngModel)]="estate.province" name="provincia" id="province"/>
+
+    <label for="country">País</label>
+    <input type="text" [(ngModel)]="estate.country" name="pais" id="country"/>
+
+    <label for="superface">Superficie (m²)</label>
+    <input type="number" [(ngModel)]="estate.surface" name="superficie" id="superface"/>
+
+    <button type="submit">Registrar Propiedad</button>
+  </form>
+</div>

@@ -1,0 +1,70 @@
+/* Contenedor principal de la página de inicio con fondo blanco y sombra suave */
+.home-wrapper {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 2rem auto; /* Centrado horizontal con margen automático */
+  text-align: center;
+}
+
+/* Estilo para el encabezado principal de la página de inicio */
+.home-wrapper h2 {
+  color: #1976d2; /* Azul corporativo consistente con otros elementos */
+  margin-bottom: 1.5rem;
+}
+
+/* Contenedor flexible para los botones de acción */
+.home-actions {
+  display: flex;
+  flex-direction: column; /* Apila los botones verticalmente */
+  gap: 1rem; /* Espaciado moderno usando la propiedad gap */
+}
+
+/* Estilo base para los botones (enlaces) de acción */
+.home-actions a {
+  display: inline-block;
+  padding: 0.75rem 1rem;
+  background-color: #1976d2;
+  color: white;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s; /* Transición suave al hacer hover */
+}
+
+/* Estado hover para los botones de acción */
+.home-actions a:hover {
+  background-color: #0d47a1; /* Azul más oscuro para mejor contraste */
+}
+
+/* Animación de entrada para el contenedor principal */
+.home-wrapper {
+  animation: fadeIn 0.4s ease; /* Animación corta y suave */
+}
+
+/* Definición de la animación de aparición gradual con movimiento */
+@keyframes fadeIn {
+  from {
+    opacity: 0; /* Comienza invisible */
+    transform: translateY(10px); /* Comienza ligeramente desplazado hacia abajo */
+  }
+  to {
+    opacity: 1; /* Termina completamente visible */
+    transform: translateY(0); /* Termina en su posición original */
+  }
+}
+
+/* Adaptaciones para pantallas móviles */
+@media (max-width: 600px) {
+  /* Reduce el espacio interior en pantallas pequeñas */
+  .home-wrapper {
+    padding: 1rem;
+  }
+
+  /* Texto más pequeño en los botones para pantallas pequeñas */
+  .home-actions a {
+    font-size: 0.9rem;
+  }
+}
