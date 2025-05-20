@@ -20,7 +20,7 @@
     </thead>
 
     <tbody>
-      @if (estates.length > 0) {
+      @if (estates && estates.length > 0) {
         @for (estate of estates; track estate.id) {
           <tr>
             <td>{{ estate.id }}</td>
@@ -35,8 +35,8 @@
             <td>{{ estate.date_create }}</td>
             <td>{{ estate.date_update }}</td>
             <td>
-              <button (click)="editEstate(estate.id)">Editar</button>
-              <button (click)="deleteEstate(estate.id)">Eliminar</button>
+              <button (click)="editEstate(estate.id!)">Editar</button>
+              <button (click)="deleteEstate(estate.id!)">Eliminar</button>
             </td>
           </tr>
         }

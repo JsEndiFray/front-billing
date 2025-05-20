@@ -47,14 +47,14 @@ export class LoginComponent {
     this.authService.login(user).subscribe({
       next: (response) => {
         //guardamos el token
-        localStorage.setItem('token', response.accessToken);
-        localStorage.setItem('refreshToken', response.refreshToken);
+        localStorage.setItem('token', response.data.accessToken);
+        localStorage.setItem('refreshToken', response.data.refreshToken);
 
         //datos del usuario que inicia sesion
         localStorage.setItem('userData', JSON.stringify({
-          id: response.user.id,
-          username: response.user.username,
-          role: response.user.role
+          id: response.data.user.id,
+          username: response.data.user.username,
+          role: response.data.user.role
         }));
 
         //activacion del cierre de sesion

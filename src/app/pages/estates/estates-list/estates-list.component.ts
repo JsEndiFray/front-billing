@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {EstateResponse, Estates} from '../../../interface/estates.interface';
+import {EstateArray, Estates} from '../../../interface/estates.interface';
 import {EstateService} from '../../../core/services/estate-services/estate.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {FormsModule} from '@angular/forms';
@@ -27,13 +27,14 @@ export class EstatesListComponent implements OnInit {
     this.getListEstate();
   }
 
-
+  //ruta para editar
   editEstate(id: number | null) {
     if (id !== null) {
-      this.router.navigate(['/estates/edit', id]);
+      this.router.navigate(['/dashboard/estates/edit', id]);
     }
   }
 
+  //ruta para eliminar
   deleteEstate(id: number | null) {
   }
 
@@ -42,12 +43,10 @@ export class EstatesListComponent implements OnInit {
   //Listado de los inmuebles
   getListEstate() {
     this.estateService.getAllEstate().subscribe({
-      next: (data: EstateResponse) => {
-        this.estates = data.estate;
+      next: (response: EstateArray) => {
+        this.estates = response.data;
       }, error: (e: HttpErrorResponse) => {
       }
     });
   }
-
-
 }

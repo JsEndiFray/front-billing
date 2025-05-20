@@ -1,6 +1,6 @@
-//para el formulario
+//listado y registro de inmuebles
 export interface Estates {
-  id: number | null;
+  id?: number | null;
   cadastral_reference: string;
   price: number | null;
   address: string;
@@ -13,19 +13,14 @@ export interface Estates {
   date_update?: Date;
 }
 
-//para el envío al backend
-export interface EstateDTO {
-  cadastral_reference: string;
-  price: number | null;
-  address: string;
-  postal_code: string;
-  location: string;
-  province: string;
-  country: string;
-  surface: number | null;
-}
+//Listado del Backend
+export interface EstateArray {
+  msg: string
+  data:  Estates[];
 
-//este para sacar los datos del backend
-export interface EstateResponse {
-  estate: Estates[];
+}
+//editar el inmueble
+export interface EstateEdit {
+  msg: string;
+  data: Estates;
 }

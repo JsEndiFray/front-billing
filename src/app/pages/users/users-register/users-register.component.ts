@@ -81,7 +81,6 @@ export class UsersRegisterComponent {
 
     //creamos el objeto para el registro al backend.
     const newUser: usersRegisterDTO = {
-
       username: this.user.username,
       password: this.user.password,
       email: this.user.email,

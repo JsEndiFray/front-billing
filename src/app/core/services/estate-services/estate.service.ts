@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from '../api-service/api.service';
 import {Observable} from 'rxjs';
-import {EstateDTO, Estates} from '../../../interface/estates.interface';
+import {EstateArray, EstateEdit, Estates} from '../../../interface/estates.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -14,14 +14,15 @@ export class EstateService {
 
 
   //métodos de obtener
+
   //Listado de todos los estates
-  getAllEstate(): Observable<{ estate: Estates[] }> {
-    return this.api.get<{ estate: Estates[] }>('estates');
+  getAllEstate(): Observable<EstateArray> {
+    return this.api.get<EstateArray>('estates');
   }
 
   //búsqueda por ID
-  getById(id: number): Observable<Estates> {
-    return this.api.get<Estates>(`estates/${id}`);
+  getById(id: number): Observable<EstateEdit> {
+    return this.api.get<EstateEdit>(`estates/${id}`);
   }
 
   //búsqueda por catastro
@@ -32,13 +33,17 @@ export class EstateService {
   //métodos CREATE UPDATE DELETE
 
   //create
-  createEstate(data: EstateDTO): Observable<EstateDTO> {
-    return this.api.post<EstateDTO>(`estates`, data)
+  createEstate(data: Estates): Observable<Estates> {
+    return this.api.post<Estates>(`estates`, data)
   }
 
   //update
-
+  updateEstate(id: number, data: Estates): Observable<Estates> {
+    return this.api.put<Estates>(`estates/${id}`, data);
+  }
 
   //delete
-
+  deleteEstate(id: number): Observable<Estates> {
+    return this.api.delete<Estates>('estates/' + id);
+  }
 }

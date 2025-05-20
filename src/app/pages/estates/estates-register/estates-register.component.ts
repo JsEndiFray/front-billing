@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {EstateDTO, Estates} from '../../../interface/estates.interface';
+import {Estates} from '../../../interface/estates.interface';
 import Swal from 'sweetalert2';
 import {EstateService} from '../../../core/services/estate-services/estate.service';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -73,7 +73,7 @@ export class EstatesRegisterComponent {
       return;
     }
     //objeto para el backend
-    const newEstate: EstateDTO = {
+    const newEstate: Estates = {
       cadastral_reference: this.estate.cadastral_reference,
       price: this.estate.price,
       address: this.estate.address,
@@ -85,7 +85,7 @@ export class EstatesRegisterComponent {
     }
     //CONEXION AL BACKEND
     this.estateService.createEstate(newEstate).subscribe({
-      next: (data: EstateDTO) => {
+      next: (data: Estates) => {
         Swal.fire({
           title: "Se ha registrado correctamente.",
           icon: "success",

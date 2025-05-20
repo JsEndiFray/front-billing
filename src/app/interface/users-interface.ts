@@ -1,4 +1,4 @@
-//para el formulario de registro
+//registro de usuarios
 export interface usersRegister {
   id: number | null;
   username: string;
@@ -10,9 +10,8 @@ export interface usersRegister {
 
 }
 
-//enviar al Backend
+////objeto para el backend
 export interface usersRegisterDTO {
-
   username: string;
   password: string;
   email: string;
@@ -21,7 +20,17 @@ export interface usersRegisterDTO {
 
 }
 
-//para el login
+//lista de usuarios
+export interface userListDTO {
+  id: number;
+  username: string;
+  password: string;
+  email: string;
+  phone: string;
+  role: string;
+}
+
+//login
 export interface Users {
   username: string;
   password: string;
@@ -30,11 +39,13 @@ export interface Users {
 //token
 export interface token {
   msg: string;
-  user: {
-    id: number;
-    role: string;
-    username: string;
+  data: {
+    user: {
+      id: number;
+      role: string;
+      username: string;
+    };
+    accessToken: string;
+    refreshToken: string;
   };
-  accessToken: string;
-  refreshToken: string;
 }
