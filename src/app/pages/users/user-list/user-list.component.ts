@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {userListDTO} from '../../../interface/users-interface';
+import {usersRegister} from '../../../interface/users-interface';
 
 @Component({
   selector: 'app-user-list',
@@ -9,16 +9,15 @@ import {userListDTO} from '../../../interface/users-interface';
 })
 export class UserListComponent {
 
-   users: userListDTO[]=[]
+   users: usersRegister[]=[]
 
-  editUser(id: number | null) {
-    if (id === null) return;
-    // lógica
+  editUser(id: number) {
+
+
   }
 
-  deleteUser(id: number | null) {
-    if (id === null) return;
-    // lógica
+  deleteUser(id: number) {
+
   }
 
 

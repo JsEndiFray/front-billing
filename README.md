@@ -1,59 +1,61 @@
-# Facturas
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.10.
+# Proyecto Facturas
 
-## Development server
+Este es un sistema de facturación desarrollado con **Angular 19+** para el frontend. El backend está en desarrollado y haciendo modificaciones, y la arquitectura está preparada para consumir una API RESTful.
 
-To start a local development server, run:
+## Características principales
+
+- Gestión de usuarios, clientes, propietarios, inmuebles y facturas.
+- Seguridad con interceptor de tokens.
+- Manejo de errores centralizado con interceptor.
+- Interfaces claras para cada entidad.
+- Navegación protegida con guardas (guards).
+
+## Estructura del proyecto
+
+```
+src/
+│
+├── app/
+│   ├── core/                  # Interceptores y guards
+│   ├── interface/             # Definiciones de tipos e interfaces (clients, owners, users, etc.)
+│   ├── pages/                 # Componentes de vistas (por entidad)
+│   ├──shared/                 # Componentes header y footer
+│   ├── services/              # Comunicación con la API
+│   ├── app.routes.ts          # Rutas protegidas por authGuard
+│   ├── app.component.ts       # Componente principal
+│   └── app.config.ts          # Configuración global
+│
+├── assets/                    # Recursos estáticos
+├── environments/              # Configuraciones por entorno
+└── main.ts                    # Punto de entrada de la app
+```
+
+## Instalación
+
+```bash
+npm install
+```
+
+## Servidor de desarrollo
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Navega a `http://localhost:4200/`. La aplicación se recargará automáticamente si modificas los archivos fuente.
 
-## Code scaffolding
+## Scripts útiles
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- **Construir app**: `ng build`
+- **Tests unitarios**: `ng test`
+- **Generar componentes**: `ng generate component nombre`
 
-```bash
-ng generate component component-name
-```
+## Pendientes
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+- Completar lógica y componentes para:
+  - `owners`
+  - `clients`
+  - `users`
+  - `estates-owners`
 
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

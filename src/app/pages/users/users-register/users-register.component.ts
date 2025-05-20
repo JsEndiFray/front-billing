@@ -36,6 +36,12 @@ export class UsersRegisterComponent {
 
   //Registros de los usuarios
   registerUser() {
+
+    //para que vaya todo en minusculas.
+    this.user.username = this.user.username.toLowerCase();
+    this.user.email = this.user.email.toLowerCase();
+
+
     // Validación del registro
     if (!this.user.username ||
       !this.user.password ||

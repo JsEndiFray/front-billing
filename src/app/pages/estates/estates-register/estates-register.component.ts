@@ -31,8 +31,8 @@ export class EstatesRegisterComponent {
     province: '',
     country: '',
     surface: null,
-    date_create: new Date(),
-    date_update: new Date(),
+    date_create: '',
+    date_update: '',
   }
 
   //Validador de formato para referencia catastral
@@ -41,8 +41,12 @@ export class EstatesRegisterComponent {
   }
 
   createEstate() {
-    // Convertir la referencia catastral a mayúsculas
+    // Convertir a mayúsculas
     this.estate.cadastral_reference = this.estate.cadastral_reference.toUpperCase();
+    this.estate.address = this.estate.address.toUpperCase();
+    this.estate.location = this.estate.location.toUpperCase();
+    this.estate.province = this.estate.province.toUpperCase();
+    this.estate.country = this.estate.country.toUpperCase();
 
     //Validación de campos requeridos
     if (!this.estate.cadastral_reference ||
@@ -72,6 +76,7 @@ export class EstatesRegisterComponent {
       });
       return;
     }
+
     //objeto para el backend
     const newEstate: Estates = {
       cadastral_reference: this.estate.cadastral_reference,
@@ -81,8 +86,9 @@ export class EstatesRegisterComponent {
       location: this.estate.location,
       province: this.estate.province,
       country: this.estate.country,
-      surface: this.estate.surface
+      surface: this.estate.surface,
     }
+
     //CONEXION AL BACKEND
     this.estateService.createEstate(newEstate).subscribe({
       next: (data: Estates) => {
@@ -95,23 +101,6 @@ export class EstatesRegisterComponent {
       }, error: (e: HttpErrorResponse) => {
       }
     })
-    //this.resetEstate();
   }
 
-//para resetear el formulado si no se direcciona.
-  /*resetEstate() {
-    this.estate = {
-      id: null,
-      cadastral_reference: '',
-      price: null,
-      address: '',
-      postal_code: '',
-      location: '',
-      province: '',
-      country: '',
-      surface: null,
-      date_create: new Date(),
-      date_update: new Date(),
-    };
-  }*/
 }

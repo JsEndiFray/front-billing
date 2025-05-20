@@ -45,24 +45,15 @@ export class EstatesEditComponent implements OnInit {
         // Cargo los campos del inmueble
         this.estateService.getById(id).subscribe({
           next: (response: EstateEdit) => {
-            console.log('Datos recibidos del backend:', response);
-
             // Verificar la estructura y extraer los datos
-            if (response && response.data && response.data) {
+            if (response && response.data) {
               // Si viene dentro de data.result
               this.estate = response.data;
-            } else if (response && response.data) {
-              // Si viene directamente en data
-              this.estate = response.data;
-            } else {
-              console.error('Estructura de datos inesperada:', response);
             }
-
             // Guardar la referencia catastral
             this.originalCadastralReference = this.estate.cadastral_reference;
           },
           error: (e: HttpErrorResponse) => {
-            console.error('Error al obtener inmueble:', e);
           }
         });
       }

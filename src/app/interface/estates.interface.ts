@@ -9,8 +9,8 @@ export interface Estates {
   province: string;
   country: string;
   surface: number | null;
-  date_create?: Date;
-  date_update?: Date;
+  date_create?: string;
+  date_update?: string;
 }
 
 //Listado del Backend

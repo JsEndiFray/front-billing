@@ -10,25 +10,38 @@
       <th>Email</th>
       <th>Teléfono</th>
       <th>Rol</th>
+      <th>Creado</th>
+      <th>Actualizado</th>
       <th>Acciones</th>
     </tr>
     </thead>
-    <tbody>
-      @for (user of users; track user.id) {
-        <tr>
-          <td>{{ user.id }}</td>
-          <td>{{ user.username }}</td>
-          <td>{{ user.password }} €</td>
-          <td>{{ user.email }}</td>
-          <td>{{ user.phone }}</td>
-          <td>{{ user.role }}</td>
 
-          <td>
-            <button (click)="editUser(user.id)">Editar</button>
-            <button (click)="deleteUser(user.id)">Eliminar</button>
-          </td>
-        </tr>
-      }
-    </tbody>
+      <tbody>
+        @if (users && users.length > 0) {
+        @for (user of users; track user.id) {
+          <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.password }} €</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.phone }}</td>
+            <td>{{ user.role }}</td>
+            <td>{{ user.date_create }}</td>
+            <td>{{ user.date_update }}</td>
+
+            <td>
+              <button (click)="editUser(user.id!)">Editar</button>
+              <button (click)="deleteUser(user.id!)">Eliminar</button>
+            </td>
+          </tr>
+        }
+        } @else {
+          <tr>
+            <td colspan="12" style="text-align: center;">No hay usuarios disponibles.</td>
+          </tr>
+        }
+      </tbody>
+
+
   </table>
 </div>

@@ -1,12 +1,14 @@
-//registro de usuarios
+//listado y registro de usuarios
 export interface usersRegister {
-  id: number | null;
+  id?: number | null;
   username: string;
   password: string;
   confirm_password: string
   email: string;
   phone: string;
   role: string;
+  date_create?: string;
+  date_update?: string;
 
 }
 
@@ -20,7 +22,7 @@ export interface usersRegisterDTO {
 
 }
 
-//lista de usuarios
+/*//lista de usuarios
 export interface userListDTO {
   id: number;
   username: string;
@@ -28,7 +30,7 @@ export interface userListDTO {
   email: string;
   phone: string;
   role: string;
-}
+}*/
 
 //login
 export interface Users {
@@ -36,15 +38,18 @@ export interface Users {
   password: string;
 }
 
-//token
-export interface token {
+//token y permisos
+export interface User {
+  id: number;
+  role: 'admin' | 'employee';
+  username: string;
+}
+
+
+export interface LoginResponse {
   msg: string;
   data: {
-    user: {
-      id: number;
-      role: string;
-      username: string;
-    };
+    user: User;
     accessToken: string;
     refreshToken: string;
   };
