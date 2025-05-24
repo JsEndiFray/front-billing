@@ -31,6 +31,53 @@ src/
 └── main.ts                    # Punto de entrada de la app
 ```
 
+---
+
+## 🚀 Despliegue con Docker (Global - Fullstack)
+
+Este frontend Angular forma parte de un sistema **dockerizado completo** que incluye:
+
+- 🎨 Frontend: Angular (v19+)
+- 🚀 Backend: Node.js + Express
+- 📂 Base de datos: MySQL
+- 📄 phpMyAdmin
+
+### ✅ Para lanzar todo con un solo comando:
+```bash
+docker-compose -f docker-compose.fullstack.yml up -d
+```
+
+Esto levantará:
+
+- Frontend en: `http://localhost:4200`
+- Backend en: `http://localhost:3600`
+- phpMyAdmin en: `http://localhost:8080`
+- Base de datos MySQL en: `localhost:3306`
+
+---
+
+## 🧩 Integración con el Backend
+
+El frontend se comunica con el backend a través del archivo de entorno Angular.
+
+### 🔧 `src/environments/environment.ts`
+```ts
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:3600/api'
+};
+```
+
+### 🔧 `src/environments/environment.prod.ts`
+```ts
+export const environment = {
+  production: true,
+  apiUrl: 'https://api.tu-dominio.com/api'
+};
+```
+
+Asegúrate de usar `environment.apiUrl` en tus servicios Angular para hacer peticiones a la API.
+
 ## Instalación
 
 ```bash

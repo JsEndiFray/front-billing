@@ -1,11 +1,11 @@
 import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {usersRegister, usersRegisterDTO} from '../../../interface/users-interface';
 
 import Swal from 'sweetalert2';
 import {Router} from '@angular/router';
 import {AuthService} from '../../../core/services/auth-service/auth.service';
 import {HttpErrorResponse} from '@angular/common/http';
+import {User} from '../../../interface/users-interface';
 
 
 @Component({
@@ -18,7 +18,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 })
 export class UsersRegisterComponent {
   // se inicializa para el formulario
-  user: usersRegister = {
+  user: User = {
     id: null,
     username: '',
     password: '',
@@ -86,7 +86,7 @@ export class UsersRegisterComponent {
     }
 
     //creamos el objeto para el registro al backend.
-    const newUser: usersRegisterDTO = {
+    const newUser:User = {
       username: this.user.username,
       password: this.user.password,
       email: this.user.email,

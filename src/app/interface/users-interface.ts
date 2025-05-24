@@ -1,9 +1,9 @@
 //listado y registro de usuarios
-export interface usersRegister {
+export interface User {
   id?: number | null;
   username: string;
   password: string;
-  confirm_password: string
+  confirm_password?: string
   email: string;
   phone: string;
   role: string;
@@ -11,40 +11,27 @@ export interface usersRegister {
   date_update?: string;
 
 }
-
-////objeto para el backend
-export interface usersRegisterDTO {
-  username: string;
-  password: string;
-  email: string;
-  phone: string;
-  role: string;
-
+//listado de array de objeto
+export interface UsersArray {
+  data: User[];
 }
-
-/*//lista de usuarios
-export interface userListDTO {
-  id: number;
-  username: string;
-  password: string;
-  email: string;
-  phone: string;
-  role: string;
-}*/
-
+//editor de los usuarios
+export interface UserEdit {
+  data: User;
+}
 //login
-export interface Users {
+export interface UsersLogin {
   username: string;
   password: string;
 }
+
 
 //token y permisos
-export interface User {
+export interface token {
   id: number;
   role: 'admin' | 'employee';
   username: string;
 }
-
 
 export interface LoginResponse {
   msg: string;

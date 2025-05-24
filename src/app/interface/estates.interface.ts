@@ -15,12 +15,10 @@ export interface Estates {
 
 //Listado del Backend
 export interface EstateArray {
-  msg: string
   data:  Estates[];
 
 }
 //editar el inmueble
 export interface EstateEdit {
-  msg: string;
   data: Estates;
 }

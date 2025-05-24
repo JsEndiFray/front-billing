@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {EstateEdit, Estates} from '../../../interface/estates.interface';
-import {EstateService} from '../../../core/services/estate-services/estate.service';
+import {EstatesService} from '../../../core/services/estates-services/estates.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import Swal from 'sweetalert2';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -31,7 +31,7 @@ export class EstatesEditComponent implements OnInit {
   originalCadastralReference: string = '';
 
   constructor(
-    private estateService: EstateService,
+    private estateService: EstatesService,
     private router: Router,
     private route: ActivatedRoute
   ) {

@@ -32,8 +32,8 @@
             <td>{{ estate.province }}</td>
             <td>{{ estate.country }}</td>
             <td>{{ estate.surface }}</td>
-            <td>{{ formatDate(estate.date_create) }}</td>
-            <td>{{ formatDate(estate.date_update) }}</td>
+            <td>{{ estate.date_create | dataFormat }}</td>
+            <td>{{ estate.date_update | dataFormat }}</td>
             <td>
               <button (click)="editEstate(estate.id!)">Editar</button>
               <button (click)="deleteEstate(estate.id!)">Eliminar</button>

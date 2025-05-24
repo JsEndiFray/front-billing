@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {Estates} from '../../../interface/estates.interface';
 import Swal from 'sweetalert2';
-import {EstateService} from '../../../core/services/estate-services/estate.service';
+import {EstatesService} from '../../../core/services/estates-services/estates.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Router} from '@angular/router';
 
@@ -17,7 +17,7 @@ import {Router} from '@angular/router';
 export class EstatesRegisterComponent {
 
   constructor(
-    private estateService: EstateService,
+    private estateService: EstatesService,
     private router: Router,) {
   }
 

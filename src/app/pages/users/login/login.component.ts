@@ -1,10 +1,10 @@
 import {Component} from '@angular/core';
 import {Router, RouterLink} from '@angular/router';
 import {AuthService} from '../../../core/services/auth-service/auth.service';
-import {Users} from '../../../interface/users-interface';
 import Swal from 'sweetalert2';
 import {HttpErrorResponse} from '@angular/common/http';
 import {FormsModule} from '@angular/forms';
+import {UsersLogin} from '../../../interface/users-interface';
 
 
 @Component({
@@ -17,7 +17,7 @@ import {FormsModule} from '@angular/forms';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  user: Users = {
+  user: UsersLogin = {
     username: '',
     password: '',
   }
@@ -39,7 +39,7 @@ export class LoginComponent {
     }
 
     //objeto para el backend del login
-    const user: Users = {
+    const user: UsersLogin = {
       username: this.user.username,
       password: this.user.password,
     }

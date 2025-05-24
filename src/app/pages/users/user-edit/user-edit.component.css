@@ -1,0 +1,78 @@
+/* Contenedor del formulario: fondo blanco, padding interno, bordes redondeados, sombra y centrado con ancho máximo */
+.form-wrapper {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  max-width: 600px;
+  margin: 2rem auto;
+}
+
+/* Título del formulario: color azul, centrado y con espacio inferior */
+.form-wrapper h2 {
+  color: #1976d2;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Formulario: elementos dispuestos en columna y con espacio entre ellos */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Etiquetas de campos: seminegrita, color gris oscuro y alineadas a la izquierda */
+label {
+  font-weight: 500;
+  color: #555;
+  text-align: left;
+}
+
+/* Inputs y selects: diseño limpio con padding, bordes redondeados, transición y ancho completo */
+input, select {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  background-color: #fff;
+  color: #333;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Estilo al enfocar los campos: cambia el borde y aplica una sombra suave */
+input:focus, select:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+  outline: none;
+}
+
+/* Botón: fondo azul, texto blanco, sin bordes, bordes redondeados, cursor tipo botón y transición de color */
+button {
+  padding: 0.75rem;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* Botón al pasar el ratón por encima: color azul más oscuro */
+button:hover {
+  background-color: #0d47a1;
+}
+
+/* Media query para móviles: ajusta padding del contenedor y reduce tamaño de letra de las etiquetas */
+@media (max-width: 600px) {
+  .form-wrapper {
+    padding: 1rem;
+  }
+
+  label {
+    font-size: 0.9rem;
+  }
+}

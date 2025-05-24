@@ -1,16 +1,17 @@
 import {Component, OnInit} from '@angular/core';
 import {EstateArray, Estates} from '../../../interface/estates.interface';
-import {EstateService} from '../../../core/services/estate-services/estate.service';
+import {EstatesService} from '../../../core/services/estates-services/estates.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {FormsModule} from '@angular/forms';
 import {Router} from '@angular/router';
 import Swal from 'sweetalert2';
+import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
 
 
 @Component({
   selector: 'app-estates-list',
   standalone: true,
-  imports: [FormsModule
+  imports: [FormsModule, DataFormatPipe
   ],
   templateUrl: './estates-list.component.html',
   styleUrl: './estates-list.component.css'
@@ -20,7 +21,7 @@ export class EstatesListComponent implements OnInit {
   estates: Estates[] = [];
 
   constructor(
-    private estateService: EstateService,
+    private estateService: EstatesService,
     private router: Router,) {
   }
 
@@ -38,13 +39,13 @@ export class EstatesListComponent implements OnInit {
     })
   }
 
-  //ruta para editar
+  //ruta para editar (boton)
   editEstate(id: number) {
     this.router.navigate(['/dashboard/estates/edit', id]);
 
   }
 
-  //ruta para eliminar
+  //ruta para eliminar (boton)
   deleteEstate(id: number) {
     Swal.fire({
       title: '¿Estás seguro?',
@@ -85,19 +86,4 @@ export class EstatesListComponent implements OnInit {
       }
     });
   }
-
-  //formatea la fecha local
-  formatDate(dateString: string | undefined): string {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleString('es-ES', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    });
-  }
-
 }

@@ -1,6 +1,5 @@
 import { HttpInterceptorFn} from '@angular/common/http';
-import {inject} from '@angular/core';
-import {Router} from '@angular/router';
+
 
 export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   // Obtener el token del localStorage

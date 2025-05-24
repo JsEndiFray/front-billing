@@ -6,7 +6,7 @@ import {EstateArray, EstateEdit, Estates} from '../../../interface/estates.inter
 @Injectable({
   providedIn: 'root'
 })
-export class EstateService {
+export class EstatesService {
 
 
   constructor(private api: ApiService) {

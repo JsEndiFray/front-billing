@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable, tap} from 'rxjs';
-import {LoginResponse, Users, usersRegisterDTO} from '../../../interface/users-interface';
+import {LoginResponse, User, UsersLogin} from '../../../interface/users-interface';
 import {ApiService} from '../api-service/api.service';
 import {Router} from '@angular/router';
 
@@ -29,13 +29,13 @@ export class AuthService {
   }
 
 //registro de usuarios
-  registerUser(user: usersRegisterDTO): Observable<string> {
+  registerUser(user: User): Observable<string> {
     return this.api.post('users', user);
   }
 
 //login de usuarios
-  login(user: Users): Observable<LoginResponse> {
-    return this.api.post<Users, LoginResponse>('auth/login', user).pipe(
+  login(user: UsersLogin): Observable<LoginResponse> {
+    return this.api.post<UsersLogin, LoginResponse>('auth/login', user).pipe(
       tap((response: LoginResponse) => {
         localStorage.setItem('token', response.data.accessToken);
         localStorage.setItem('refreshToken', response.data.refreshToken);
