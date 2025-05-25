@@ -83,7 +83,6 @@ export class UserListComponent implements OnInit {
     this.userService.getAlltUser().subscribe({
       next: (result) => {
         this.users = result.data;
-        console.log(this.users);
       }, error: (e: HttpErrorResponse) => {
       }
     })

@@ -1,3 +1,5 @@
+/* CONTENEDOR PRINCIPAL */
+/* Estilo del wrapper que contiene toda la lista de clientes */
 .list-wrapper {
   background: #ffffff;
   padding: 2rem;
@@ -8,22 +10,30 @@
   margin: 2rem auto;
 }
 
+/* TÍTULO DE LA SECCIÓN */
+/* Estilo para el encabezado h2 dentro del wrapper */
 .list-wrapper h2 {
   color: #1976d2;
   margin-bottom: 1.5rem;
 }
 
+/* ESTRUCTURA DE LA TABLA */
+/* Configuración básica de la tabla */
 table {
   width: 100%;
   border-collapse: collapse;
   min-width: 1000px;
 }
 
+/* ENCABEZADO DE LA TABLA */
+/* Estilo para la fila de encabezados */
 thead {
   background-color: #1976d2;
   color: white;
 }
 
+/* CELDAS DE LA TABLA */
+/* Estilo común para encabezados y contenido */
 th, td {
   padding: 0.75rem 0.5rem;
   text-align: left;
@@ -31,10 +41,14 @@ th, td {
   font-size: 0.95rem;
 }
 
+/* CONTENIDO DE LAS CELDAS */
+/* Color específico para el texto del contenido */
 td {
   color: #555;
 }
 
+/* BOTONES DE ACCIÓN */
+/* Estilo para los botones Editar y Eliminar */
 button {
   padding: 0.4rem 0.75rem;
   background-color: #1976d2;
@@ -46,10 +60,39 @@ button {
   font-size: 0.85rem;
 }
 
+/* HOVER DE BOTONES */
+/* Efecto al pasar el mouse sobre los botones */
 button:hover {
   background-color: #0d47a1;
 }
 
+/* MENU DEL ELSE ESTILO CARD CON SOMBRA */
+.no-clients-card {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #495057;
+  font-size: 1.1rem;
+  background: white;
+  border-radius: 16px;
+  margin: 2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+}
+
+.no-clients-card h3 {
+  color: #1976d2;
+  margin-bottom: 0.5rem;
+  font-size: 1.3rem;
+}
+
+.no-clients-card p {
+  margin: 0;
+  opacity: 0.8;
+}
+
+
+/* RESPONSIVE - TABLETS */
+/* Adaptación para pantallas medianas (768px o menos) */
 @media (max-width: 768px) {
   th, td {
     padding: 0.5rem;
@@ -62,6 +105,8 @@ button:hover {
   }
 }
 
+/* RESPONSIVE - MÓVILES */
+/* Adaptación para pantallas pequeñas (500px o menos) */
 @media (max-width: 500px) {
   table {
     min-width: 600px;

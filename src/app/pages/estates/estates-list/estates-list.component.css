@@ -1,3 +1,5 @@
+/* CONTENEDOR PRINCIPAL DE LA LISTA */
+/* Wrapper principal con diseño adaptado para móviles */
 .list-wrapper {
   background: #ffffff;
   padding: 1.5rem;  /* Padding reducido en móviles */
@@ -8,23 +10,31 @@
   margin: 1.5rem auto;  /* Margen reducido en móviles */
 }
 
+/* TÍTULO PRINCIPAL */
+/* Encabezado con tamaño adaptativo */
 .list-wrapper h2 {
   color: #1976d2;
   margin-bottom: 1.25rem;
   font-size: 1.4rem;  /* Tamaño de fuente reducido para móviles */
 }
 
+/* ESTRUCTURA BASE DE LA TABLA */
+/* Configuración básica con ancho mínimo para móviles */
 table {
   width: 100%;
   border-collapse: collapse;
   min-width: 290px;  /* Ancho mínimo ajustado para móviles */
 }
 
+/* ENCABEZADO DE LA TABLA */
+/* Estilo del header con colores corporativos */
 thead {
   background-color: #1976d2;
   color: white;
 }
 
+/* CELDAS GENERALES */
+/* Estilo común para todas las celdas */
 th, td {
   padding: 0.75rem 0.5rem;
   text-align: left;
@@ -32,10 +42,14 @@ th, td {
   font-size: 0.95rem;
 }
 
+/* CONTENIDO DE LAS CELDAS */
+/* Color específico para el texto de datos */
 td {
   color: #555;
 }
 
+/* BOTONES DE ACCIÓN */
+/* Botones optimizados para dispositivos táctiles */
 button {
   padding: 0.4rem 0.75rem;
   background-color: #1976d2;
@@ -48,11 +62,43 @@ button {
   font-size: 0.85rem;
 }
 
+/* HOVER DE BOTONES */
+/* Efecto al pasar el mouse sobre los botones */
 button:hover {
   background-color: #0d47a1;
 }
 
-/* Media query para tablets */
+/* MENSAJE SIN CLIENTES - ESTILO CARD */
+/* Diseño de tarjeta para cuando no hay datos */
+.no-clients-card {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #495057;
+  font-size: 1.1rem;
+  background: white;
+  border-radius: 16px;
+  margin: 2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+}
+
+/* TÍTULO DEL MENSAJE SIN CLIENTES */
+/* Estilo del encabezado del mensaje */
+.no-clients-card h3 {
+  color: #1976d2;
+  margin-bottom: 0.5rem;
+  font-size: 1.3rem;
+}
+
+/* PÁRRAFO DEL MENSAJE SIN CLIENTES */
+/* Texto descriptivo del mensaje */
+.no-clients-card p {
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* RESPONSIVE - TABLETS (768px y menos) */
+/* Adaptaciones para pantallas medianas */
 @media (max-width: 768px) {
   .list-wrapper {
     padding: 1.25rem;
@@ -70,7 +116,8 @@ button:hover {
   }
 }
 
-/* Media query para móviles */
+/* RESPONSIVE - MÓVILES (576px y menos) */
+/* Adaptaciones específicas para móviles */
 @media (max-width: 576px) {
   .list-wrapper {
     padding: 1rem;
@@ -100,7 +147,8 @@ button:hover {
   }
 }
 
-/* Ajuste específico para pantallas muy pequeñas */
+/* RESPONSIVE - PANTALLAS MUY PEQUEÑAS (320px y menos) */
+/* Optimización para dispositivos muy pequeños */
 @media (max-width: 320px) {
   .list-wrapper {
     padding: 0.75rem;

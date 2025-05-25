@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import {EstatesService} from '../../../core/services/estates-services/estates.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Router} from '@angular/router';
+import {EstatesValidatorService} from '../../../core/services/estates-services/estates-validator.service';
 
 @Component({
   selector: 'app-estates',
@@ -15,11 +16,6 @@ import {Router} from '@angular/router';
   styleUrl: './estates-register.component.css'
 })
 export class EstatesRegisterComponent {
-
-  constructor(
-    private estateService: EstatesService,
-    private router: Router,) {
-  }
 
   estate: Estates = {
     id: null,
@@ -35,48 +31,28 @@ export class EstatesRegisterComponent {
     date_update: '',
   }
 
-  //Validador de formato para referencia catastral
-  isValidRefCatFormat(refCat: string): boolean {
-    return /^[0-9A-Z]{20}$/i.test(refCat);
+
+  constructor(
+    private estateService: EstatesService,
+    private router: Router,
+    private estateValidatorServices: EstatesValidatorService,) {
   }
 
+
   createEstate() {
-    // Convertir a mayúsculas
-    this.estate.cadastral_reference = this.estate.cadastral_reference.toUpperCase();
-    this.estate.address = this.estate.address.toUpperCase();
-    this.estate.location = this.estate.location.toUpperCase();
-    this.estate.province = this.estate.province.toUpperCase();
-    this.estate.country = this.estate.country.toUpperCase();
-
-    //Validación de campos requeridos
-    if (!this.estate.cadastral_reference ||
-      !this.estate.price ||
-      !this.estate.address ||
-      !this.estate.postal_code ||
-      !this.estate.location ||
-      !this.estate.province ||
-      !this.estate.country ||
-      !this.estate.surface
-    ) {
+    //Limpiar y transformar datos
+    const cleanEstate = this.estateValidatorServices.cleanEstatesData(this.estate)
+    // Validar campos requeridos
+    const validation = this.estateValidatorServices.validateEstate(cleanEstate)
+    if (!validation.isValid) {
       Swal.fire({
         title: 'Error!',
-        text: 'Todos los campos son obligatorios.',
+        text: validation.message,
         icon: 'error',
         confirmButtonText: 'Ok'
       });
       return;
     }
-    // Validación específica para la referencia catastral
-    if (this.estate.cadastral_reference.length !== 20 || !this.isValidRefCatFormat(this.estate.cadastral_reference)) {
-      Swal.fire({
-        title: 'Error!',
-        text: 'La referencia catastral debe tener exactamente 20 caracteres y solo puede contener números y letras.',
-        icon: 'error',
-        confirmButtonText: 'Ok'
-      });
-      return;
-    }
-
     //objeto para el backend
     const newEstate: Estates = {
       cadastral_reference: this.estate.cadastral_reference,

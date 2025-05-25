@@ -5,6 +5,8 @@ import {EstatesService} from '../../../core/services/estates-services/estates.se
 import {ActivatedRoute, Router} from '@angular/router';
 import Swal from 'sweetalert2';
 import {HttpErrorResponse} from '@angular/common/http';
+import {EstatesValidatorService} from '../../../core/services/estates-services/estates-validator.service';
+
 
 @Component({
   selector: 'app-estates-edit',
@@ -33,7 +35,8 @@ export class EstatesEditComponent implements OnInit {
   constructor(
     private estateService: EstatesService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private estateValidatorServices: EstatesValidatorService,
   ) {
   }
 
@@ -71,16 +74,22 @@ export class EstatesEditComponent implements OnInit {
       });
       return;
     }
-    //validacion de duplicado referencia catastral
-    if (this.estate.cadastral_reference !== this.originalCadastralReference) {
+
+    //Limpiar y transformar datos
+    const cleanEstate = this.estateValidatorServices.cleanEstatesData(this.estate)
+    // Validar campos requeridos
+    const validation = this.estateValidatorServices.validateEstate(cleanEstate)
+    if (!validation.isValid) {
       Swal.fire({
-        title: 'Error',
-        text: 'Ya ha sido registrada esa referencia catastral.',
+        title: 'Error!',
+        text: validation.message,
         icon: 'error',
         confirmButtonText: 'Ok'
       });
+      return;
     }
-    this.estateService.updateEstate(this.estate.id, this.estate).subscribe({
+
+    this.estateService.updateEstate(this.estate.id, cleanEstate).subscribe({
       next: (data: Estates) => {
         this.estate = data;
         Swal.fire({

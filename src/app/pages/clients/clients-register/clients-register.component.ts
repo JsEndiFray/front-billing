@@ -19,6 +19,8 @@ export class ClientsRegisterComponent {
     lastname: '',
     company_name: '',
     identification: '',
+    phone: '',
+    email: '',
     address: '',
     postal_code: '',
     location: '',
