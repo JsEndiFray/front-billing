@@ -9,6 +9,7 @@
       <th>Nombre</th>
       <th>Apellidos</th>
       <th>Nombre Empresa</th>
+      <th>Relación empresa</th>
       <th>Identificación</th>
       <th>Teléfono</th>
       <th>email</th>
@@ -31,6 +32,17 @@
             <td>{{ client.name }}</td>
             <td>{{ client.lastname }}</td>
             <td>{{ client.company_name }}</td>
+            <td>
+              @if (client.relationship_type && client.parent_company_name) {
+                <span class="relationship-badge">
+                  {{ client.relationship_type }} de {{ client.parent_company_name }}
+                </span>
+              } @else if (client.type_client === 'autonomo') {
+                <span class="no-relationship">Sin relación</span>
+              } @else {
+                <span class="not-applicable">N/A</span>
+              }
+            </td>
             <td>{{ client.identification }}</td>
             <td>{{ client.phone }}</td>
             <td>{{ client.email }}</td>
@@ -41,7 +53,6 @@
             <td>{{ client.country }}</td>
             <td>{{ client.date_create | dataFormat }}</td>
             <td>{{ client.date_update | dataFormat }}</td>
-
             <td>
               <button (click)="editClient(client.id!)">Editar</button>
               <button (click)="deleteClient(client.id!)">Eliminar</button>
@@ -51,7 +62,7 @@
       </tbody>
     } @else {
       <tr>
-        <td colspan="16" class="no-clients-cell">
+        <td colspan="17" class="no-clients-cell">
           <div class="no-clients-card">
             <h3>Sin Clientes</h3>
             <p>No hay clientes disponibles en este momento.</p>
@@ -60,4 +71,5 @@
       </tr>
     }
   </table>
+
 </div>

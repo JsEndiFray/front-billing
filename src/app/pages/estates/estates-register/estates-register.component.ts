@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import {EstatesService} from '../../../core/services/estates-services/estates.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Router} from '@angular/router';
-import {EstatesValidatorService} from '../../../core/services/estates-services/estates-validator.service';
+import {EstatesValidatorService} from '../../../core/services/validator-services/estates-validator.service';
 
 @Component({
   selector: 'app-estates',

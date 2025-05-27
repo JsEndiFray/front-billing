@@ -73,7 +73,6 @@ export class EstatesValidatorService {
     if (!refValidation.isValid) {
       return refValidation;
     }
-
     return {isValid: true};
   }
 }

@@ -1,9 +1,9 @@
 <div class="form-wrapper">
   <h2>Registrar Cliente</h2>
-  <form>
 
+  <form (ngSubmit)="createClient()">
     <label for="tipo">Tipo de Cliente</label>
-    <select [(ngModel)]="clients.type_client" name="tipo" id="tipo" required>
+    <select [(ngModel)]="client.type_client" name="tipo" id="tipo" required>
       <option value="">Selecciona un tipo</option>
       <option value="particular">Particular</option>
       <option value="autonomo">Autónomo</option>
@@ -11,31 +11,72 @@
     </select>
 
     <label for="name">Nombre</label>
-    <input type="text" [(ngModel)]="clients.name" name="nombre" id="name"/>
+    <input type="text" [(ngModel)]="client.name" name="name" id="name" required/>
 
     <label for="lastname">Apellidos</label>
-    <input type="text" [(ngModel)]="clients.lastname" name="apellidos" id="lastname"/>
+    <input type="text" [(ngModel)]="client.lastname" name="lastname" id="lastname" required/>
 
     <label for="company_name">Nombre de Compañía</label>
-    <input type="text" [(ngModel)]="clients.company_name" name="compania" id="company_name"/>
+    <input type="text" [(ngModel)]="client.company_name" name="company_name" id="company_name" required/>
 
+
+    @if (client.type_client === 'autonomo') {
+      <div class="company-relationship-section">
+        <h3>Relación con Empresa</h3>
+
+        <label for="parent_company">¿Es administrador de alguna empresa?</label>
+        <select [(ngModel)]="client.parent_company_id" name="parent_company" id="parent_company">
+          <option value="">No representa ninguna empresa</option>
+          @if (companies && companies.length > 0) {
+            @for (company of companies; track $index) {
+              <option [value]="company.id">
+                {{ company.company_name }}
+              </option>
+            }
+          } @else {
+            <option value="">Cargando empresas...</option>
+          }
+        </select>
+
+        <!-- Solo mostrar si selecciona una empresa -->
+        @if (client.parent_company_id) {
+          <div>
+            <label for="relationship_type">Tipo de relación</label>
+            <select [(ngModel)]="client.relationship_type" name="relationship_type" id="relationship_type">
+              <option value="administrator">Administrador</option>
+            </select>
+
+            <!-- Mensaje informativo -->
+            <small class="relationship-info">
+              Este autónomo será registrado como administrador de la empresa seleccionada.
+            </small>
+          </div>
+        }
+      </div>
+    }
     <label for="identification">Identificación (DNI/CIF)</label>
-    <input type="text" [(ngModel)]="clients.identification" name="identificacion" id="identification"/>
+    <input type="text" [(ngModel)]="client.identification" name="identification" id="identification" required/>
+
+    <label for="phone">Número de Teléfono</label>
+    <input type="tel" [(ngModel)]="client.phone" name="phone" id="phone" required/>
+
+    <label for="email">Correo Electrónico</label>
+    <input type="email" [(ngModel)]="client.email" name="email" id="email" required/>
 
     <label for="address">Dirección</label>
-    <input type="text" [(ngModel)]="clients.address" name="direccion" id="address"/>
+    <input type="text" [(ngModel)]="client.address" name="address" id="address" required/>
 
     <label for="postal_code">Código Postal</label>
-    <input type="text" [(ngModel)]="clients.postal_code" name="codigoPostal" id="postal_code"/>
+    <input type="text" [(ngModel)]="client.postal_code" name="postal_code" id="postal_code" required/>
 
     <label for="location">Localidad</label>
-    <input type="text" [(ngModel)]="clients.location" name="localidad" id="location"/>
+    <input type="text" [(ngModel)]="client.location" name="location" id="location" required/>
 
     <label for="province">Provincia</label>
-    <input type="text" [(ngModel)]="clients.province" name="provincia" id="province"/>
+    <input type="text" [(ngModel)]="client.province" name="province" id="province" required/>
 
     <label for="country">País</label>
-    <input type="text" [(ngModel)]="clients.country" name="pais" id="country"/>
+    <input type="text" [(ngModel)]="client.country" name="country" id="country" required/>
 
     <button type="submit">Registrar Cliente</button>
 

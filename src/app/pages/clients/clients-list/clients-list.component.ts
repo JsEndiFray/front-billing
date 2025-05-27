@@ -4,17 +4,21 @@ import {ClientsService} from '../../../core/services/clients-services/clients.se
 import {HttpErrorResponse} from '@angular/common/http';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
 
+
 @Component({
   selector: 'app-clients-list',
   imports: [
-    DataFormatPipe
+    DataFormatPipe,
   ],
   templateUrl: './clients-list.component.html',
   styleUrl: './clients-list.component.css'
 })
 export class ClientsListComponent implements OnInit {
 
-  clients: Clients[] = []
+
+  // Datos que se muestran en la tabla (solo la página actual)
+  clients: Clients[] = [];
+
 
 
   constructor(private clientsService: ClientsService) {
@@ -23,6 +27,7 @@ export class ClientsListComponent implements OnInit {
   ngOnInit(): void {
     this.getListClients();
   }
+
 
 //UPDATE
   editClient(id: number) {
@@ -38,10 +43,11 @@ export class ClientsListComponent implements OnInit {
     this.clientsService.getClients().subscribe({
       next: (response) => {
         this.clients = response.data;
-        console.log(response)
-      }, error: (e: HttpErrorResponse) => {
+
+    }, error: (e: HttpErrorResponse) => {
       }
     })
   }
+
 
 }

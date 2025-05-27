@@ -90,6 +90,25 @@ button:hover {
   opacity: 0.8;
 }
 
+/* ESTILOS PARA EL PAGINADOR */
+mat-paginator {
+  margin-top: 1.5rem;
+  background: transparent;
+}
+
+/* Personalizar colores del paginador */
+::ng-deep .mat-mdc-paginator {
+  background: transparent;
+}
+
+::ng-deep .mat-mdc-icon-button {
+  color: #1976d2;
+}
+
+::ng-deep .mat-mdc-paginator-page-size-select {
+  color: #1976d2;
+}
+
 
 /* RESPONSIVE - TABLETS */
 /* Adaptación para pantallas medianas (768px o menos) */

@@ -4,7 +4,7 @@ export interface Clients {
   type_client: string;
   name: string;
   lastname: string;
-  company_name: string;
+  company_name?: string;
   identification: string;
   phone: string;
   email: string;
@@ -15,9 +15,19 @@ export interface Clients {
   country: string;
   date_create?: string;
   date_update?: string;
+  parent_company_id?: number;
+  relationship_type?: 'administrador';
+  parent_company_name?: string;
+
 }
 
 //listado Backend
 export interface ClientResponse {
   data : Clients[];
+}
+
+//INTERFACE PARA EMPRESAS EN DROPDOWN
+export interface CompanyOption {
+  id: number;
+  company_name: string;
 }

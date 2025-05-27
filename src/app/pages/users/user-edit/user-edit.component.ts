@@ -5,6 +5,7 @@ import {UserService} from '../../../core/services/user-services/user.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
+import {UserValidatorService} from '../../../core/services/validator-services/user-validator.service';
 
 @Component({
   selector: 'app-user-edit',
@@ -30,6 +31,7 @@ export class UserEditComponent implements OnInit {
     private userService: UserService,
     private route: ActivatedRoute,
     private router: Router,
+    private userValidatorService: UserValidatorService,
   ) {
   }
 
@@ -57,6 +59,7 @@ export class UserEditComponent implements OnInit {
 
   //actualizar usuarios
   updateUser() {
+    //verifica id
     if (this.user.id == null) {
       Swal.fire({
         title: 'Error',
@@ -66,7 +69,21 @@ export class UserEditComponent implements OnInit {
       });
       return;
     }
+    //Limpiar y transformar datos
+    const cleanUser = this.userValidatorService.cleanUserData(this.user)
 
+    // Validar campos requeridos y confirmacion de contraseñas
+    const validation = this.userValidatorService.validateUser(cleanUser)
+    if (!validation.isValid) {
+      Swal.fire({
+        title: 'Error!',
+        text: validation.message,
+        icon: 'error',
+        confirmButtonText: 'Ok'
+      });
+      return;
+    }
+    //acceso al backemd
     this.userService.updateUser(this.user.id, this.user).subscribe({
       next: (data) => {
         this.user = data;

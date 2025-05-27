@@ -5,6 +5,7 @@ import {routes} from './app.routes';
 import {provideHttpClient, withInterceptors} from '@angular/common/http';
 import {httpErrorInterceptor} from './core/interceptors/http-error/http-error.interceptor';
 import {tokenInterceptor} from './core/interceptors/token/token.interceptor';
+import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -13,6 +14,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withInterceptors([
         tokenInterceptor,
-        httpErrorInterceptor]))
+        httpErrorInterceptor])),
   ]
 };

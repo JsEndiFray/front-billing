@@ -5,7 +5,7 @@ import {EstatesService} from '../../../core/services/estates-services/estates.se
 import {ActivatedRoute, Router} from '@angular/router';
 import Swal from 'sweetalert2';
 import {HttpErrorResponse} from '@angular/common/http';
-import {EstatesValidatorService} from '../../../core/services/estates-services/estates-validator.service';
+import {EstatesValidatorService} from '../../../core/services/validator-services/estates-validator.service';
 
 
 @Component({
@@ -65,6 +65,7 @@ export class EstatesEditComponent implements OnInit {
   }
 
   updateEstate() {
+    //verifica id
     if (this.estate.id === null || this.estate.id === undefined) {
       Swal.fire({
         title: 'Error!',
@@ -88,7 +89,7 @@ export class EstatesEditComponent implements OnInit {
       });
       return;
     }
-
+    //acceso al backemd
     this.estateService.updateEstate(this.estate.id, cleanEstate).subscribe({
       next: (data: Estates) => {
         this.estate = data;

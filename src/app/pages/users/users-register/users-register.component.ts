@@ -6,6 +6,7 @@ import {Router} from '@angular/router';
 import {AuthService} from '../../../core/services/auth-service/auth.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {User} from '../../../interface/users-interface';
+import {UserValidatorService} from '../../../core/services/validator-services/user-validator.service';
 
 
 @Component({
@@ -31,66 +32,34 @@ export class UsersRegisterComponent {
   constructor(
     private router: Router,
     private authService: AuthService,
+    private userValidatorService: UserValidatorService,
   ) {
   }
 
   //Registros de los usuarios
   registerUser() {
-
-    //para que vaya todo en minusculas.
-    this.user.username = this.user.username.toLowerCase();
-    this.user.email = this.user.email.toLowerCase();
-
-
-    // Validación del registro
-    if (!this.user.username ||
-      !this.user.password ||
-      !this.user.email ||
-      !this.user.phone) {
+    //Limpiar y transformar datos
+    const cleanUser = this.userValidatorService.cleanUserData(this.user)
+    // Validar campos requeridos y confirmacion de contraseñas
+    const validation = this.userValidatorService.validateUser(cleanUser)
+    if (!validation.isValid) {
       Swal.fire({
         title: 'Error!',
-        text: 'Todo los campos son obligatorios.',
-        icon: 'error',
-        confirmButtonText: 'Ok'
-      })
-      return;
-    }
-    //validacion password
-    if (this.user.password !== this.user.confirm_password) {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Las contraseñas son distintas.',
-        icon: 'error',
-        confirmButtonText: 'Ok'
-      })
-      return;
-    }
-    // Comprobar si se ha seleccionado un rol
-    if (!this.user.role || this.user.role === '') {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Debe seleccionar un rol.',
+        text: validation.message,
         icon: 'error',
         confirmButtonText: 'Ok'
       });
       return;
     }
     //cambiar el nombre de español a ingles al backend
-    let backendRoles = '';
-    if (this.user.role === 'empleado') {
-      backendRoles = 'employee';
-    } else if (this.user.role === 'administrador') {
-      backendRoles = 'admin';
-    } else {
-      backendRoles = this.user.role;
-    }
+    const backendRoles = this.userValidatorService.transformRoleToBackend(cleanUser.role);
 
     //creamos el objeto para el registro al backend.
-    const newUser:User = {
-      username: this.user.username,
-      password: this.user.password,
-      email: this.user.email,
-      phone: this.user.phone,
+    const newUser: User = {
+      username: cleanUser.username,
+      password: cleanUser.password,
+      email: cleanUser.email,
+      phone: cleanUser.phone,
       role: backendRoles
     }
     //conexion al backend.
