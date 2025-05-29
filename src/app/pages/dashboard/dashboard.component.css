@@ -1,71 +1,285 @@
 .dashboard-wrapper {
-  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(1.25rem);
+  border: 0.125rem solid rgba(255, 255, 255, 0.15);
+  border-radius: 1.5rem;
   padding: 2rem;
-  min-height: 100vh;
+  margin: 2rem 0.5rem; /* Márgenes laterales mínimos */
+  max-width: none; /* Sin límite de ancho */
+  width: calc(100% - 1rem); /* Casi todo el ancho */
+
+  /* Sombras sutiles */
+  box-shadow:
+    0 1rem 2rem rgba(0, 0, 0, 0.1),
+    0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
+
+  /* Transición suave */
+  transition: all 0.3s ease;
+  animation: fadeIn 0.6s ease-out;
 }
 
-.dashboard-wrapper h1 {
-  color: white;
-  margin-bottom: 2rem;
+.dashboard-wrapper:hover {
+  transform: translateY(-0.25rem);
+  box-shadow:
+    0 1.5rem 3rem rgba(0, 0, 0, 0.15),
+    0 0.5rem 1rem rgba(0, 0, 0, 0.1);
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===========================================
+   ✨ TÍTULO PRINCIPAL
+   =========================================== */
+h1 {
+  color: #ffffff;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  letter-spacing: -0.02em;
+
+  /* Gradiente sutil */
+  background: linear-gradient(135deg, #ffffff, #e2e8f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+
+  /* Sombra elegante */
+  text-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+/* Línea decorativa debajo del título */
+h1::after {
+  content: '';
+  position: absolute;
+  bottom: -0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4rem;
+  height: 0.25rem;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  border-radius: 0.125rem;
+}
+
+/* ===========================================
+   🧭 NAVEGACIÓN PRINCIPAL
+   =========================================== */
 .dashboard-menu {
   display: flex;
-  justify-content: center;
   gap: 1rem;
   flex-wrap: wrap;
-  margin-bottom: 2rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
 }
 
+.dashboard-menu:last-of-type {
+  margin-bottom: 3rem;
+}
+
+/* Enlaces de navegación */
 .dashboard-menu a {
   padding: 0.75rem 1.5rem;
-  background-color: #1976d2;
-  color: white;
+  background: rgba(255, 255, 255, 0.08);
+  border: 0.125rem solid rgba(255, 255, 255, 0.12);
+  border-radius: 2rem;
+  color: rgba(255, 255, 255, 0.9);
   text-decoration: none;
-  border-radius: 0.5rem;
-  transition: background-color 0.3s ease;
+  font-weight: 500;
+  font-size: 0.9rem;
+
+  /* Transiciones suaves */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(0.625rem);
+  position: relative;
+  overflow: hidden;
 }
 
-.dashboard-menu a:hover,
+/* Efecto hover */
+.dashboard-menu a:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #ffffff;
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.5rem 1rem rgba(59, 130, 246, 0.15);
+}
+
+/* Estado activo */
 .dashboard-menu a.active {
-  background-color: #0d47a1;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border-color: rgba(59, 130, 246, 0.5);
+  color: #ffffff;
+  box-shadow:
+    0 0.5rem 1rem rgba(59, 130, 246, 0.3),
+    0 0 1.5rem rgba(59, 130, 246, 0.2);
 }
 
+.dashboard-menu a.active:hover {
+  transform: translateY(-0.25rem);
+  box-shadow:
+    0 0.75rem 1.5rem rgba(59, 130, 246, 0.4),
+    0 0 2rem rgba(59, 130, 246, 0.3);
+}
+
+/* ===========================================
+   📝 SECCIÓN DE INTRODUCCIÓN
+   =========================================== */
 .dashboard-intro {
-  background-color: #ffffff;
-  padding: 2rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  margin-bottom: 2rem;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
   text-align: center;
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+  border: 0.0625rem solid rgba(255, 255, 255, 0.1);
 }
 
 .dashboard-intro h2 {
-  color: #1976d2;
+  color: #ffffff;
+  font-size: 1.75rem;
+  font-weight: 600;
   margin-bottom: 1rem;
+  opacity: 0.95;
 }
 
 .dashboard-intro p {
-  color: #333;
-  margin: 0.5rem 0;
+  color: rgba(255, 255, 255, 0.8);
   font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+  max-width: 40rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
+.dashboard-intro p:last-child {
+  margin-bottom: 0;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ===========================================
+   📊 ÁREA DE CONTENIDO
+   =========================================== */
 .dashboard-content {
-  padding: 1rem;
-  color: white;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 1rem;
+  min-height: 20rem;
+  padding: 2rem;
+  border: 0.0625rem solid rgba(255, 255, 255, 0.08);
+
+  /* Animación de aparición */
+  animation: contentSlideIn 0.8s ease-out 0.2s both;
 }
 
-/* Responsive para móvil */
-@media (max-width: 600px) {
+@keyframes contentSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===========================================
+   📱 DISEÑO RESPONSIVE CON REM
+   =========================================== */
+@media (max-width: 48rem) { /* 768px */
+  .dashboard-wrapper {
+    padding: 2rem;
+    margin: 1rem auto;
+    width: 95%;
+    border-radius: 1.25rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  h1::after {
+    width: 3rem;
+    height: 0.1875rem;
+  }
+
   .dashboard-menu {
     flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
   }
 
   .dashboard-menu a {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.85rem;
     width: 100%;
+    max-width: 20rem;
+    text-align: center;
+  }
+
+  .dashboard-intro {
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .dashboard-intro h2 {
+    font-size: 1.5rem;
+  }
+
+  .dashboard-intro p {
+    font-size: 0.9rem;
+  }
+
+  .dashboard-content {
+    padding: 1.5rem;
+    min-height: 15rem;
+  }
+}
+
+@media (max-width: 30rem) { /* 480px */
+  .dashboard-wrapper {
+    padding: 1.5rem;
+    margin: 0.5rem auto;
+    border-radius: 1rem;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .dashboard-menu a {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    border-radius: 1.5rem;
+  }
+
+  .dashboard-intro {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .dashboard-intro h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .dashboard-intro p {
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .dashboard-content {
+    padding: 1rem;
+    min-height: 12rem;
   }
 }

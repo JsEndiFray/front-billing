@@ -1,186 +1,521 @@
-/*
- Contenedor principal del formulario:
- Fondo blanco, espaciado interno generoso, bordes redondeados, sombra para profundidad,
- ancho máximo y centrado horizontalmente con margen vertical.
-*/
 .form-wrapper {
-  background: #ffffff;
-  padding: 2rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  max-width: 600px;
-  margin: 2rem auto;
+  background: rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(25px);
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  border-radius: 24px;
+  padding: 2rem; /* Más compacto */
+  margin: 2rem auto 3rem auto; /* Menos margen */
+  max-width: 900px; /* Más estrecho */
+  width: 95%;
+  box-shadow:
+    0 25px 50px rgba(0, 0, 0, 0.25),
+    0 0 60px rgba(59, 130, 246, 0.08),
+    inset 0 2px 0 rgba(255, 255, 255, 0.15);
+  transition: all 0.5s ease;
+  animation: fadeIn 0.6s ease-out;
+  position: relative;
+  z-index: 10;
 }
 
-/*
- Título del formulario:
- Color azul corporativo, alineado al centro y con margen inferior.
-*/
-.form-wrapper h2 {
-  color: #1976d2;
-  margin-bottom: 1.5rem;
+.form-wrapper:hover {
+  transform: translateY(-5px);
+  box-shadow:
+    0 30px 60px rgba(0, 0, 0, 0.3),
+    0 0 80px rgba(59, 130, 246, 0.12),
+    inset 0 2px 0 rgba(255, 255, 255, 0.2);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===========================================
+   ✨ TÍTULO PRINCIPAL COMPACTO
+   =========================================== */
+h2 {
+  color: #ffffff;
+  font-size: 2rem; /* Más pequeño */
+  font-weight: 900;
   text-align: center;
+  margin-bottom: 2rem; /* Menos espacio */
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #ffffff 0%, #22c55e 30%, #3b82f6 60%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 300% 300%;
+  animation: titleColorShift 4s ease-in-out infinite;
+  position: relative;
 }
 
-/*
- Estilo general del formulario:
- Estructura de columna con separación entre los elementos.
-*/
-form {
+/* Línea decorativa más pequeña */
+h2::after {
+  content: '';
+  position: absolute;
+  bottom: -0.5rem; /* Más cerca */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3rem; /* Más pequeña */
+  height: 0.2rem;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  border-radius: 0.1rem;
+}
+
+@keyframes titleColorShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ===========================================
+   📊 INDICADOR DE PROGRESO COMPACTO
+   =========================================== */
+.progress-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem; /* Menos espacio */
+  margin-bottom: 2rem; /* Menos margen */
+  flex-wrap: wrap;
+}
+
+.step-indicator {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-}
-
-/*
- Etiquetas de los campos:
- Color gris oscuro, alineadas a la izquierda y con peso medio.
-*/
-label {
-  font-weight: 500;
-  color: #555;
-  text-align: left;
-}
-
-/*
- Campos de entrada y selección:
- Diseño claro y moderno con espaciado interno, bordes redondeados,
- transiciones suaves y ancho completo.
-*/
-input, select {
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  background-color: #fff;
-  color: #333;
-  transition: border-color 0.3s, box-shadow 0.3s;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/*
- Efecto al enfocar campos (focus):
- Borde azul con sombra para indicar interactividad.
-*/
-input:focus, select:focus {
-  border-color: #1976d2;
-  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
-  outline: none;
-}
-
-/*
- Estilo de los botones:
- Fondo azul, texto blanco, bordes redondeados y transición suave al pasar el ratón.
-*/
-button {
-  padding: 0.75rem;
-  background-color: #1976d2;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-/*
- Botón al pasar el ratón por encima (hover):
- Cambia a un azul más oscuro.
-*/
-button:hover {
-  background-color: #0d47a1;
-}
-
-/*
- Estilos para los badges de relación empresa
-*/
-
-.relationship-badge {
-  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-  color: #1565c0;
-  padding: 0.25rem 0.75rem;
+  align-items: center;
+  gap: 0.4rem; /* Más compacto */
+  padding: 0.8rem; /* Menos padding */
   border-radius: 1rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  border: 1px solid #90caf9;
-  display: inline-block;
-  white-space: nowrap;
+  transition: all 0.3s ease;
+  min-width: 7rem; /* Más estrecho */
 }
 
-.no-relationship {
-  background: #f5f5f5;
-  color: #757575;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  font-size: 0.8rem;
-  font-style: italic;
+.step-indicator.active {
+  background: rgba(59, 130, 246, 0.2);
+  border: 2px solid rgba(59, 130, 246, 0.4);
 }
 
-.not-applicable {
-  color: #bdbdbd;
-  font-size: 0.8rem;
-  text-align: center;
-}
-/*
- Estilos para pantallas pequeñas (responsive):
- Reduce el padding del contenedor y el tamaño del texto de las etiquetas.
-*/
-@media (max-width: 600px) {
-  .form-wrapper {
-    padding: 1rem;
-  }
-
-  label {
-    font-size: 0.9rem;
-  }
+.step-indicator.completed {
+  background: rgba(16, 185, 129, 0.2);
+  border: 2px solid rgba(16, 185, 129, 0.4);
 }
 
-/*
- ✅ ESTILOS ADICIONALES - Solo para la sección de empresa
- Mantiene tu CSS actual y solo mejora la sección empresa
-*/
+.step-indicator.inactive {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  opacity: 0.6;
+}
 
-/* Contenedor de la sección empresa - Más espaciado */
-.company-relationship-section {
-  background: #f8f9ff;
-  border: 1px solid #e3f2fd;
-  border-radius: 0.75rem;
-  padding: 2rem;
-  margin: 2rem 0;
-  gap: 1.5rem;
+.step-number {
+  width: 2rem; /* Más pequeño */
+  height: 2rem;
+  border-radius: 50%;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem; /* Más pequeño */
+  transition: all 0.3s ease;
 }
 
-/* Título de la sección - Más grande y color diferente */
-.company-relationship-section h3 {
-  color: #e91e63;
-  font-size: 1.4rem;
-  font-weight: 600;
-  margin: 0 0 1.5rem 0;
+.step-indicator.active .step-number {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+}
+
+.step-indicator.completed .step-number {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.step-indicator.inactive .step-number {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.step-indicator span:last-child {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  font-size: 0.8rem; /* Más pequeño */
   text-align: center;
 }
 
-/* Contenedor interno cuando se selecciona empresa - Más espaciado */
-.company-relationship-section div {
-  padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 0.5rem;
-  gap: 1rem;
-  display: flex;
-  flex-direction: column;
+/* ===========================================
+   📦 CONTAINER DE PASOS COMPACTO
+   =========================================== */
+.step-container {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+  padding: 1.8rem; /* Menos padding */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 1.5rem; /* Menos margen */
+  min-height: 20rem; /* Más pequeño */
 }
 
-/* Mensaje informativo - Bonito y con más espacio */
-.relationship-info {
-  background: #e8f5e8;
-  color: #2e7d32;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  border-left: 4px solid #4caf50;
-  font-size: 0.9rem;
-  margin-top: 1rem;
+.step {
+  animation: stepSlideIn 0.5s ease-out;
+}
+
+@keyframes stepSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(2rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ===========================================
+   🏷️ TÍTULOS DE PASO COMPACTOS
+   =========================================== */
+.step-title, h3 {
+  color: #ffffff;
+  font-size: 1.3rem; /* Más pequeño */
+  font-weight: 600;
+  margin-bottom: 1.5rem; /* Menos espacio */
+  text-align: center;
+}
+
+/* ===========================================
+   🎯 SELECCIÓN DE TIPO DE CLIENTE COMPACTA
+   =========================================== */
+.client-type-selection {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); /* Más pequeñas */
+  gap: 1.2rem; /* Menos espacio */
+  margin-top: 1.5rem;
+}
+
+.client-type-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 1rem;
+  padding: 1.5rem; /* Menos padding */
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.client-type-card:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(59, 130, 246, 0.3);
+  transform: translateY(-3px); /* Menos movimiento */
+}
+
+.client-type-card.selected {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+}
+
+.client-type-card h3 {
+  font-size: 1.1rem; /* Más pequeño */
+  margin-bottom: 0.6rem;
+}
+
+.client-type-card p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8rem; /* Más pequeño */
+  margin: 0;
+}
+
+/* ===========================================
+   📋 SECCIONES DE FORMULARIO COMPACTAS
+   =========================================== */
+.company-section, .company-relationship-section {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+  padding: 1.5rem; /* Menos padding */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+/* ===========================================
+   📐 GRID DE CAMPOS MÁS COMPACTO
+   =========================================== */
+form > div > div:not(.client-type-selection):not(.company-section):not(.company-relationship-section) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); /* Más estrecho */
+  gap: 1.2rem; /* Menos espacio */
+}
+
+.company-section, .admin-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); /* Más estrecho */
+  gap: 1.2rem;
+}
+
+/* ===========================================
+   🏷️ LABELS COMPACTOS
+   =========================================== */
+label {
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 600;
+  font-size: 0.8rem; /* Más pequeño */
+  margin-bottom: 0.4rem; /* Menos espacio */
   display: block;
-  box-shadow: 0 1px 3px rgba(76, 175, 80, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ===========================================
+   ⌨️ INPUTS Y SELECT COMPACTOS
+   =========================================== */
+input, select {
+  padding: 0.8rem; /* Menos padding */
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px; /* Más pequeño */
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 0.9rem; /* Más pequeño */
+  font-weight: 500;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Estados focus más sutiles */
+input:focus, select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 0 0 4px rgba(59, 130, 246, 0.08),
+    0 8px 25px rgba(59, 130, 246, 0.15);
+  transform: translateY(-2px) scale(1.01);
+}
+
+/* Select específico */
+select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem;
+}
+
+/* ===========================================
+   👥 ADMINISTRADORES COMPACTOS
+   =========================================== */
+.admin-form-container {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.75rem;
+  padding: 1.3rem; /* Menos padding */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 1.2rem; /* Menos margen */
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.2rem; /* Menos espacio */
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-header h4 {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem; /* Más pequeño */
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ===========================================
+   💬 MENSAJES COMPACTOS
+   =========================================== */
+.info-message {
+  background: rgba(16, 185, 129, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 0.8rem; /* Menos padding */
+  border-radius: 0.5rem;
+  border-left: 4px solid #10b981;
+  margin-bottom: 1.2rem; /* Menos margen */
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.relationship-details {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.5rem;
+  padding: 1.2rem; /* Menos padding */
+  margin-top: 0.8rem;
+}
+
+.relationship-info {
+  background: rgba(59, 130, 246, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 0.6rem; /* Menos padding */
+  border-radius: 0.375rem;
+  font-size: 0.8rem; /* Más pequeño */
+  margin-top: 0.8rem;
+}
+
+/* ===========================================
+   🚀 NAVEGACIÓN Y BOTONES COMPACTOS
+   =========================================== */
+.step-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem; /* Menos margen */
+}
+
+/* Botones compactos */
+button {
+  padding: 0.8rem 1.3rem; /* Menos padding */
+  border-radius: 14px; /* Más pequeño */
+  font-size: 0.9rem; /* Más pequeño */
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+button:not(.btn-secondary):not(.btn-success):not(.btn-remove) {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+}
+
+button:not(.btn-secondary):not(.btn-success):not(.btn-remove):hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+}
+
+.btn-success:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(16, 185, 129, 0.4);
+}
+
+.btn-remove {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  padding: 0.5rem 0.9rem; /* Más compacto */
+  font-size: 0.8rem;
+}
+
+.btn-remove:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+}
+
+/* ===========================================
+   📱 RESPONSIVE ULTRA COMPACTO
+   =========================================== */
+@media (max-width: 1024px) {
+  .form-wrapper {
+    max-width: 800px; /* Más estrecho */
+    padding: 1.8rem;
+    margin: 1.5rem auto 2.5rem auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .form-wrapper {
+    padding: 1.5rem;
+    margin: 1rem auto 2rem auto;
+    max-width: 600px;
+  }
+
+  .progress-indicator {
+    gap: 1rem;
+  }
+
+  .step-indicator {
+    min-width: 6rem;
+    padding: 0.6rem;
+  }
+
+  .client-type-selection {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .step-container {
+    padding: 1.5rem;
+    min-height: 18rem;
+  }
+
+  form > div > div:not(.client-type-selection):not(.company-section):not(.company-relationship-section),
+  .company-section,
+  .admin-form {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-wrapper {
+    padding: 1.2rem;
+    margin: 0.8rem auto 1.5rem auto;
+    width: 98%;
+    max-width: 400px; /* Muy compacto */
+  }
+
+  h2 {
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .progress-indicator {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .step-container {
+    padding: 1.2rem;
+    min-height: 15rem;
+  }
+
+  .step-navigation {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .step-navigation > div[style] {
+    display: none !important;
+  }
+
+  input, select {
+    padding: 0.7rem;
+    font-size: 0.85rem;
+  }
+
+  button {
+    padding: 0.7rem 1.1rem;
+    font-size: 0.85rem;
+  }
 }

@@ -1,0 +1,259 @@
+/* Contenedor principal */
+.form-wrapper {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(1.25rem);
+  border: 0.125rem solid rgba(255, 255, 255, 0.15);
+  border-radius: 1.5rem;
+  padding: 3rem;
+  margin: 3rem auto 5rem auto;
+  max-width: 45rem;
+  width: 90%;
+  box-shadow:
+    0 1rem 2rem rgba(0, 0, 0, 0.1),
+    0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.form-wrapper:hover {
+  transform: translateY(-0.25rem);
+  box-shadow:
+    0 1.5rem 3rem rgba(0, 0, 0, 0.15),
+    0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mensaje temporal "edit works!" */
+p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.25rem;
+  text-align: center;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+  border: 0.0625rem solid rgba(255, 255, 255, 0.1);
+}
+
+/* Título principal */
+h2 {
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 3rem;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #ffffff, #e2e8f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+/* Línea decorativa */
+h2::after {
+  content: '';
+  position: absolute;
+  bottom: -0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3rem;
+  height: 0.25rem;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  border-radius: 0.125rem;
+}
+
+/* Formulario */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Labels */
+label {
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+/* Inputs y select */
+input, select {
+  padding: 1rem;
+  border: 0.125rem solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(0.625rem);
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Estados focus */
+input:focus, select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 0 0 0.1875rem rgba(59, 130, 246, 0.1),
+    0 0.5rem 1rem rgba(59, 130, 246, 0.15);
+  transform: translateY(-0.125rem);
+}
+
+/* Estados hover */
+input:hover:not(:focus), select:hover:not(:focus) {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Select específico */
+select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 1rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem;
+}
+
+/* Secciones del formulario */
+.form-section {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+  padding: 2rem;
+  border: 0.0625rem solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.form-section h3 {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  border-bottom: 0.0625rem solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.75rem;
+}
+
+/* Grid para formularios complejos */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1.5rem;
+}
+
+/* Botones */
+button[type="submit"], .btn-primary {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  box-shadow: 0 0.25rem 0.75rem rgba(59, 130, 246, 0.3);
+}
+
+button[type="submit"]:hover, .btn-primary:hover {
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.5rem 1.25rem rgba(59, 130, 246, 0.4);
+}
+
+button[type="submit"]:active, .btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+  border: 0.125rem solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 48rem) {
+  .form-wrapper {
+    padding: 2rem;
+    margin: 2rem auto 3rem auto;
+    width: 95%;
+    max-width: none;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .form-section {
+    padding: 1.5rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  input, select {
+    padding: 0.875rem;
+  }
+
+  button[type="submit"], .btn-primary {
+    padding: 0.875rem 1.5rem;
+  }
+}
+
+@media (max-width: 30rem) {
+  .form-wrapper {
+    padding: 1.5rem;
+    margin: 1rem auto 2rem auto;
+    border-radius: 1rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-section {
+    padding: 1rem;
+  }
+
+  input, select {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  button[type="submit"], .btn-primary {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+  }
+}

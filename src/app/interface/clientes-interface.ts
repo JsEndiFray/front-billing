@@ -16,9 +16,8 @@ export interface Clients {
   date_create?: string;
   date_update?: string;
   parent_company_id?: number;
-  relationship_type?: 'administrador';
+  relationship_type?: 'administrator';
   parent_company_name?: string;
-
 }
 
 //listado Backend
@@ -26,8 +25,51 @@ export interface ClientResponse {
   data : Clients[];
 }
 
+// INTERFACE PARA LA RESPUESTA DE CREAR CLIENTE
+export interface CreateClientResponse {
+  msg: string;
+  data: Clients; // Ahora devuelve el objeto completo del cliente
+}
+
 //INTERFACE PARA EMPRESAS EN DROPDOWN
 export interface CompanyOption {
   id: number;
   company_name: string;
+}
+
+// Interfaces para validaciones
+export interface StepValidationResult {
+  isValid: boolean;
+  message?: string;
+}
+
+export interface StepData {
+  company?: Clients;
+  client?: Clients;
+  administrators?: Clients[];
+  clientType?: string;
+}
+
+// Interfaces para lógica de negocio
+export interface CompanyCreationResult {
+  companyId: number;
+  administratorsCreated: number;
+}
+
+export interface ClientRegistrationFlow {
+  currentStep: number;
+  clientType: string;
+  maxSteps: number;
+  isCompleted: boolean;
+  companyId?: number;
+  isCompanyCreated: boolean;
+}
+
+// Interface para el estado completo del registro
+export interface RegistrationState {
+  flow: ClientRegistrationFlow;
+  company: Clients;
+  client: Clients;
+  administrators: Clients[];
+  companies: CompanyOption[];
 }

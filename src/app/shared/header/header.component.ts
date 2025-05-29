@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {AuthService} from '../../core/services/auth-service/auth.service';
 import {NgClass} from '@angular/common';
@@ -14,6 +14,7 @@ import {NgClass} from '@angular/common';
 export class HeaderComponent implements OnInit {
   isLoggedIn: boolean = false;
   animateLogo: boolean = false;
+  isScrolled: boolean = false;
 
   constructor(private router: Router, private authService: AuthService) {
   }
@@ -29,6 +30,12 @@ export class HeaderComponent implements OnInit {
       this.animateLogo = true;
     }, 300);
   }
+  // ← Detector de scroll
+  @HostListener('window:scroll', ['$event'])
+  onWindowScroll() {
+    this.isScrolled = window.pageYOffset > 50;
+  }
+
 
   loginOrLogout() {
     if (this.isLoggedIn) {

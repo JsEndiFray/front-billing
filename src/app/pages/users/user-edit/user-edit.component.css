@@ -1,78 +1,197 @@
-/* Contenedor del formulario: fondo blanco, padding interno, bordes redondeados, sombra y centrado con ancho máximo */
+/* Contenedor principal */
 .form-wrapper {
-  background: #ffffff;
-  padding: 2rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  max-width: 600px;
-  margin: 2rem auto;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(1.25rem);
+  border: 0.125rem solid rgba(255, 255, 255, 0.15);
+  border-radius: 1.5rem;
+  padding: 3rem;
+  margin: 3rem auto 5rem auto;
+  max-width: 35rem;
+  width: 90%;
+  box-shadow:
+    0 1rem 2rem rgba(0, 0, 0, 0.1),
+    0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  animation: fadeIn 0.6s ease-out;
 }
 
-/* Título del formulario: color azul, centrado y con espacio inferior */
-.form-wrapper h2 {
-  color: #1976d2;
-  margin-bottom: 1.5rem;
+.form-wrapper:hover {
+  transform: translateY(-0.25rem);
+  box-shadow:
+    0 1.5rem 3rem rgba(0, 0, 0, 0.15),
+    0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Título principal */
+h2 {
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 700;
   text-align: center;
+  margin-bottom: 3rem;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #ffffff, #e2e8f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
+  position: relative;
 }
 
-/* Formulario: elementos dispuestos en columna y con espacio entre ellos */
+/* Línea decorativa */
+h2::after {
+  content: '';
+  position: absolute;
+  bottom: -0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3rem;
+  height: 0.25rem;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  border-radius: 0.125rem;
+}
+
+/* Formulario */
 form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
-/* Etiquetas de campos: seminegrita, color gris oscuro y alineadas a la izquierda */
+/* Labels */
 label {
-  font-weight: 500;
-  color: #555;
-  text-align: left;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  display: block;
 }
 
-/* Inputs y selects: diseño limpio con padding, bordes redondeados, transición y ancho completo */
+/* Inputs y select */
 input, select {
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
+  padding: 1rem;
+  border: 0.125rem solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(0.625rem);
+  color: rgba(255, 255, 255, 0.95);
   font-size: 1rem;
-  background-color: #fff;
-  color: #333;
-  transition: border-color 0.3s, box-shadow 0.3s;
-  width: 100%;
-  box-sizing: border-box;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
-/* Estilo al enfocar los campos: cambia el borde y aplica una sombra suave */
+input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Estados focus */
 input:focus, select:focus {
-  border-color: #1976d2;
-  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
   outline: none;
+  border-color: #3b82f6;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 0 0 0.1875rem rgba(59, 130, 246, 0.1),
+    0 0.5rem 1rem rgba(59, 130, 246, 0.15);
+  transform: translateY(-0.125rem);
 }
 
-/* Botón: fondo azul, texto blanco, sin bordes, bordes redondeados, cursor tipo botón y transición de color */
-button {
-  padding: 0.75rem;
-  background-color: #1976d2;
+/* Estados hover */
+input:hover:not(:focus), select:hover:not(:focus) {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Select específico */
+select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 1rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem;
+}
+
+/* Botón principal */
+button[type="submit"] {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
   color: white;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
+  padding: 1rem 2rem;
   font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  box-shadow: 0 0.25rem 0.75rem rgba(59, 130, 246, 0.3);
 }
 
-/* Botón al pasar el ratón por encima: color azul más oscuro */
-button:hover {
-  background-color: #0d47a1;
+button[type="submit"]:hover {
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.5rem 1.25rem rgba(59, 130, 246, 0.4);
 }
 
-/* Media query para móviles: ajusta padding del contenedor y reduce tamaño de letra de las etiquetas */
-@media (max-width: 600px) {
+button[type="submit"]:active {
+  transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 48rem) {
   .form-wrapper {
-    padding: 1rem;
+    padding: 2rem;
+    margin: 2rem auto 3rem auto;
+    width: 95%;
+    max-width: none;
   }
 
-  label {
+  h2 {
+    font-size: 1.75rem;
+    margin-bottom: 2rem;
+  }
+
+  form {
+    gap: 1.25rem;
+  }
+
+  input, select {
+    padding: 0.875rem;
+  }
+
+  button[type="submit"] {
+    padding: 0.875rem 1.5rem;
+  }
+}
+
+@media (max-width: 30rem) {
+  .form-wrapper {
+    padding: 1.5rem;
+    margin: 1rem auto 2rem auto;
+    border-radius: 1rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  input, select {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  button[type="submit"] {
+    padding: 0.75rem 1.25rem;
     font-size: 0.9rem;
   }
 }

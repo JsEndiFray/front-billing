@@ -1,1 +1,125 @@
-<p>edit works!</p>
+<!--
+<div class="form-wrapper">
+  <h2>Editar Cliente</h2>
+
+  <form (ngSubmit)="updateClient()">
+
+    &lt;!&ndash; Información básica &ndash;&gt;
+    <div class="form-section">
+      <h3>📋 Información Básica</h3>
+      <div class="form-grid">
+        <div>
+          <label for="type_client">Tipo de Cliente</label>
+          <select [(ngModel)]="client.type_client" name="type_client" id="type_client">
+            <option value="particular">Particular</option>
+            <option value="autonomo">Autónomo</option>
+            <option value="empresa">Empresa</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="name">Nombre *</label>
+          <input type="text" [(ngModel)]="client.name" name="name" id="name" required>
+        </div>
+
+        <div>
+          <label for="lastname">Apellidos</label>
+          <input type="text" [(ngModel)]="client.lastname" name="lastname" id="lastname">
+        </div>
+
+        <div>
+          <label for="identification">Identificación *</label>
+          <input type="text" [(ngModel)]="client.identification" name="identification"
+                 id="identification" placeholder="DNI/NIE/CIF" required>
+        </div>
+      </div>
+    </div>
+
+    &lt;!&ndash; Información de contacto &ndash;&gt;
+    <div class="form-section">
+      <h3>📞 Información de Contacto</h3>
+      <div class="form-grid">
+        <div>
+          <label for="email">Email *</label>
+          <input type="email" [(ngModel)]="client.email" name="email" id="email" required>
+        </div>
+
+        <div>
+          <label for="phone">Teléfono *</label>
+          <input type="tel" [(ngModel)]="client.phone" name="phone" id="phone" required>
+        </div>
+      </div>
+    </div>
+
+    &lt;!&ndash; Dirección &ndash;&gt;
+    <div class="form-section">
+      <h3>🏠 Dirección</h3>
+      <div class="form-grid">
+        <div>
+          <label for="address">Dirección</label>
+          <input type="text" [(ngModel)]="client.address" name="address" id="address">
+        </div>
+
+        <div>
+          <label for="postal_code">Código Postal</label>
+          <input type="text" [(ngModel)]="client.postal_code" name="postal_code" id="postal_code">
+        </div>
+
+        <div>
+          <label for="location">Localidad</label>
+          <input type="text" [(ngModel)]="client.location" name="location" id="location">
+        </div>
+
+        <div>
+          <label for="province">Provincia</label>
+          <input type="text" [(ngModel)]="client.province" name="province" id="province">
+        </div>
+
+        <div>
+          <label for="country">País</label>
+          <input type="text" [(ngModel)]="client.country" name="country" id="country" value="España">
+        </div>
+      </div>
+    </div>
+
+    &lt;!&ndash; Información empresarial (si aplica) &ndash;&gt;
+    @if (client.type_client === 'empresa' || client.type_client === 'autonomo') {
+      <div class="form-section">
+        <h3>🏢 Información Empresarial</h3>
+        <div class="form-grid">
+          <div>
+            <label for="company_name">Nombre de Empresa</label>
+            <input type="text" [(ngModel)]="client.company_name" name="company_name" id="company_name">
+          </div>
+
+          @if (client.type_client === 'autonomo') {
+            <div>
+              <label for="parent_company_name">Empresa Relacionada</label>
+              <input type="text" [(ngModel)]="client.parent_company_name"
+                     name="parent_company_name" id="parent_company_name" readonly>
+            </div>
+
+            <div>
+              <label for="relationship_type">Tipo de Relación</label>
+              <select [(ngModel)]="client.relationship_type" name="relationship_type" id="relationship_type">
+                <option value="">Sin relación</option>
+                <option value="administrator">Administrador</option>
+              </select>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    &lt;!&ndash; Botones de acción &ndash;&gt;
+    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+      <button type="button" class="btn-secondary" (click)="goBack()">
+        ← Cancelar
+      </button>
+      <button type="submit" class="btn-primary">
+        ✓ Actualizar Cliente
+      </button>
+    </div>
+
+  </form>
+</div>-->

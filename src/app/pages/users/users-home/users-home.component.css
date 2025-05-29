@@ -1,70 +1,141 @@
-/* Contenedor principal de la página de inicio */
+/* Contenedor principal */
 .home-wrapper {
-  background: #ffffff;
-  padding: 2rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(1.25rem);
+  border: 0.125rem solid rgba(255, 255, 255, 0.15);
+  border-radius: 1.5rem;
+  padding: 3rem;
   margin: 2rem auto;
+  max-width: 50rem;
+  width: 90%;
+  box-shadow:
+    0 1rem 2rem rgba(0, 0, 0, 0.1),
+    0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  animation: fadeIn 0.6s ease-out;
   text-align: center;
 }
 
-/* Título de la sección de inicio */
-.home-wrapper h2 {
-  color: #1976d2; /* Color azul que coincide con la identidad visual */
-  margin-bottom: 1.5rem;
+.home-wrapper:hover {
+  transform: translateY(-0.25rem);
+  box-shadow:
+    0 1.5rem 3rem rgba(0, 0, 0, 0.15),
+    0 0.5rem 1rem rgba(0, 0, 0, 0.1);
 }
 
-/* Contenedor para los botones de acción */
-.home-actions {
-  display: flex;
-  flex-direction: column; /* Organiza los botones en columna */
-  gap: 1rem; /* Espacio uniforme entre botones */
-}
-
-/* Estilo para los enlaces de acción (botones) */
-.home-actions a {
-  display: inline-block;
-  padding: 0.75rem 1rem;
-  background-color: #1976d2;
-  color: white;
-  border-radius: 0.5rem;
-  text-decoration: none;
-  font-weight: bold;
-  transition: background-color 0.3s;
-}
-
-/* Efecto hover para los botones */
-.home-actions a:hover {
-  background-color: #0d47a1; /* Azul más oscuro al pasar el cursor */
-}
-
-/* Animación de entrada para el contenedor principal */
-.home-wrapper {
-  animation: fadeIn 0.4s ease;
-}
-
-/* Definición de la animación fadeIn */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px); /* Comienza ligeramente abajo */
+    transform: translateY(1.25rem);
   }
   to {
     opacity: 1;
-    transform: translateY(0); /* Termina en su posición normal */
+    transform: translateY(0);
   }
 }
 
-/* Ajustes responsivos para pantallas pequeñas */
-@media (max-width: 600px) {
-  /* Reduce el padding en pantallas pequeñas */
+/* Título principal */
+h2 {
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 3rem;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #ffffff, #e2e8f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+/* Línea decorativa */
+h2::after {
+  content: '';
+  position: absolute;
+  bottom: -0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3rem;
+  height: 0.25rem;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  border-radius: 0.125rem;
+}
+
+/* Contenedor de acciones */
+.home-actions {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Enlaces de acción */
+.home-actions a {
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  border-radius: 1rem;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0.5rem 1rem rgba(59, 130, 246, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efecto hover en enlaces */
+.home-actions a:hover {
+  transform: translateY(-0.25rem) scale(1.02);
+  box-shadow:
+    0 0.75rem 1.5rem rgba(59, 130, 246, 0.4),
+    0 0 2rem rgba(59, 130, 246, 0.2);
+}
+
+.home-actions a:active {
+  transform: translateY(-0.125rem) scale(0.98);
+}
+
+/* Responsive */
+@media (max-width: 48rem) {
   .home-wrapper {
-    padding: 1rem;
+    padding: 2rem;
+    margin: 1rem auto;
+    width: 95%;
+    max-width: none;
   }
 
-  /* Reduce el tamaño de texto en los botones */
+  h2 {
+    font-size: 1.75rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .home-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
   .home-actions a {
+    width: 100%;
+    max-width: 20rem;
+    text-align: center;
+  }
+}
+
+@media (max-width: 30rem) {
+  .home-wrapper {
+    padding: 1.5rem;
+    margin: 0.5rem auto;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .home-actions a {
+    padding: 0.875rem 1.5rem;
     font-size: 0.9rem;
   }
 }

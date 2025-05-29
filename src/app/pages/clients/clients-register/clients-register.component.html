@@ -1,84 +1,551 @@
 <div class="form-wrapper">
   <h2>Registrar Cliente</h2>
 
-  <form (ngSubmit)="createClient()">
-    <label for="tipo">Tipo de Cliente</label>
-    <select [(ngModel)]="client.type_client" name="tipo" id="tipo" required>
-      <option value="">Selecciona un tipo</option>
-      <option value="particular">Particular</option>
-      <option value="autonomo">Autónomo</option>
-      <option value="empresa">Empresa</option>
-    </select>
+  <!-- Indicador de progreso -->
+  <div class="progress-indicator">
+    <div class="step-indicator"
+         [class.active]="isStepActive(0)"
+         [class.completed]="isStepCompleted(0)"
+         [class.inactive]="!isStepActive(0) && !isStepCompleted(0)">
+      <span class="step-number">1</span>
+      <span>Tipo de Cliente</span>
+    </div>
 
-    <label for="name">Nombre</label>
-    <input type="text" [(ngModel)]="client.name" name="name" id="name" required/>
+    <div class="step-indicator"
+         [class.active]="isStepActive(1)"
+         [class.completed]="isStepCompleted(1)"
+         [class.inactive]="!isStepActive(1) && !isStepCompleted(1)">
+      <span class="step-number">2</span>
+      <span>{{ flow.clientType === 'empresa' ? 'Datos Empresa' : 'Datos Personales' }}</span>
+    </div>
 
-    <label for="lastname">Apellidos</label>
-    <input type="text" [(ngModel)]="client.lastname" name="lastname" id="lastname" required/>
-
-    <label for="company_name">Nombre de Compañía</label>
-    <input type="text" [(ngModel)]="client.company_name" name="company_name" id="company_name" required/>
-
-
-    @if (client.type_client === 'autonomo') {
-      <div class="company-relationship-section">
-        <h3>Relación con Empresa</h3>
-
-        <label for="parent_company">¿Es administrador de alguna empresa?</label>
-        <select [(ngModel)]="client.parent_company_id" name="parent_company" id="parent_company">
-          <option value="">No representa ninguna empresa</option>
-          @if (companies && companies.length > 0) {
-            @for (company of companies; track $index) {
-              <option [value]="company.id">
-                {{ company.company_name }}
-              </option>
-            }
-          } @else {
-            <option value="">Cargando empresas...</option>
-          }
-        </select>
-
-        <!-- Solo mostrar si selecciona una empresa -->
-        @if (client.parent_company_id) {
-          <div>
-            <label for="relationship_type">Tipo de relación</label>
-            <select [(ngModel)]="client.relationship_type" name="relationship_type" id="relationship_type">
-              <option value="administrator">Administrador</option>
-            </select>
-
-            <!-- Mensaje informativo -->
-            <small class="relationship-info">
-              Este autónomo será registrado como administrador de la empresa seleccionada.
-            </small>
-          </div>
-        }
+    @if (isStepVisible(2)) {
+      <div class="step-indicator"
+           [class.active]="isStepActive(2)"
+           [class.completed]="isStepCompleted(2)"
+           [class.inactive]="!isStepActive(2) && !isStepCompleted(2)">
+        <span class="step-number">3</span>
+        <span>Administradores</span>
       </div>
     }
-    <label for="identification">Identificación (DNI/CIF)</label>
-    <input type="text" [(ngModel)]="client.identification" name="identification" id="identification" required/>
+  </div>
 
-    <label for="phone">Número de Teléfono</label>
-    <input type="tel" [(ngModel)]="client.phone" name="phone" id="phone" required/>
+  <form (ngSubmit)="createClient()">
+    <div class="step-container">
 
-    <label for="email">Correo Electrónico</label>
-    <input type="email" [(ngModel)]="client.email" name="email" id="email" required/>
+      <!-- ======= PASO 0: Selección de tipo de cliente ======= -->
+      @if (flow.currentStep === 0) {
+        <div class="step active">
+          <h3 class="step-title">¿Qué tipo de cliente desea registrar?</h3>
 
-    <label for="address">Dirección</label>
-    <input type="text" [(ngModel)]="client.address" name="address" id="address" required/>
+          <div class="client-type-selection">
+            <div class="client-type-card"
+                 [class.selected]="flow.clientType === 'particular'"
+                 (click)="selectClientType('particular')">
+              <h3>👤 Particular</h3>
+              <p>Persona física sin actividad comercial</p>
+            </div>
 
-    <label for="postal_code">Código Postal</label>
-    <input type="text" [(ngModel)]="client.postal_code" name="postal_code" id="postal_code" required/>
+            <div class="client-type-card"
+                 [class.selected]="flow.clientType === 'autonomo'"
+                 (click)="selectClientType('autonomo')">
+              <h3>💼 Autónomo</h3>
+              <p>Persona física con actividad empresarial</p>
+            </div>
 
-    <label for="location">Localidad</label>
-    <input type="text" [(ngModel)]="client.location" name="location" id="location" required/>
+            <div class="client-type-card"
+                 [class.selected]="flow.clientType === 'empresa'"
+                 (click)="selectClientType('empresa')">
+              <h3>🏢 Empresa</h3>
+              <p>Sociedad mercantil con administradores</p>
+            </div>
+          </div>
+        </div>
+      }
 
-    <label for="province">Provincia</label>
-    <input type="text" [(ngModel)]="client.province" name="province" id="province" required/>
+      <!-- ======= PASO 1: Datos según el tipo seleccionado ======= -->
+      @if (flow.currentStep === 1) {
+        <div class="step active">
 
-    <label for="country">País</label>
-    <input type="text" [(ngModel)]="client.country" name="country" id="country" required/>
+          <!-- DATOS DE LA EMPRESA (solo si es empresa) -->
+          @if (flow.clientType === 'empresa') {
+            <div class="company-section">
+              <h3>📋 Datos de la Empresa</h3>
 
-    <button type="submit">Registrar Cliente</button>
+              <!-- FILA 1: Razón Social y CIF -->
+              <div>
+                <label for="company_name">Razón Social *</label>
+                <input type="text"
+                       [(ngModel)]="company.company_name"
+                       (ngModelChange)="updateCompanyData('company_name', $event)"
+                       name="company_name"
+                       id="company_name"
+                       placeholder="Empresa S.L."
+                       required>
+              </div>
 
+              <div>
+                <label for="company_cif">CIF *</label>
+                <input type="text"
+                       [(ngModel)]="company.identification"
+                       (ngModelChange)="updateCompanyData('identification', $event)"
+                       name="company_cif"
+                       id="company_cif"
+                       placeholder="A12345678"
+                       required>
+              </div>
+
+              <!-- FILA 2: Email y Teléfono -->
+              <div>
+                <label for="company_email">Email Corporativo *</label>
+                <input type="email"
+                       [(ngModel)]="company.email"
+                       (ngModelChange)="updateCompanyData('email', $event)"
+                       name="company_email"
+                       id="company_email"
+                       placeholder="info@empresa.com"
+                       required>
+              </div>
+
+              <div>
+                <label for="company_phone">Teléfono *</label>
+                <input type="tel"
+                       [(ngModel)]="company.phone"
+                       (ngModelChange)="updateCompanyData('phone', $event)"
+                       name="company_phone"
+                       id="company_phone"
+                       placeholder="912345678"
+                       required>
+              </div>
+
+              <!-- FILA 3: Dirección y Código Postal -->
+              <div>
+                <label for="company_address">Dirección *</label>
+                <input type="text"
+                       [(ngModel)]="company.address"
+                       (ngModelChange)="updateCompanyData('address', $event)"
+                       name="company_address"
+                       id="company_address"
+                       placeholder="Calle Principal 123"
+                       required>
+              </div>
+
+              <div>
+                <label for="company_postal_code">Código Postal *</label>
+                <input type="text"
+                       [(ngModel)]="company.postal_code"
+                       (ngModelChange)="updateCompanyData('postal_code', $event)"
+                       name="company_postal_code"
+                       id="company_postal_code"
+                       placeholder="28001"
+                       required>
+              </div>
+
+              <!-- FILA 4: Localidad y Provincia -->
+              <div>
+                <label for="company_location">Localidad *</label>
+                <input type="text"
+                       [(ngModel)]="company.location"
+                       (ngModelChange)="updateCompanyData('location', $event)"
+                       name="company_location"
+                       id="company_location"
+                       placeholder="Madrid"
+                       required>
+              </div>
+
+              <div>
+                <label for="company_province">Provincia *</label>
+                <input type="text"
+                       [(ngModel)]="company.province"
+                       (ngModelChange)="updateCompanyData('province', $event)"
+                       name="company_province"
+                       id="company_province"
+                       placeholder="Madrid"
+                       required>
+              </div>
+
+              <!-- FILA 5: País (centrado) -->
+              <div style="grid-column: 1 / -1;">
+                <label for="company_country">País *</label>
+                <select [(ngModel)]="company.country"
+                        (ngModelChange)="updateCompanyData('country', $event)"
+                        name="company_country"
+                        id="company_country"
+                        required>
+                  <option value="">Seleccionar país</option>
+                  <option value="España">España</option>
+                  <option value="Francia">Francia</option>
+                  <option value="Portugal">Portugal</option>
+                  <option value="Italia">Italia</option>
+                  <option value="Alemania">Alemania</option>
+                  <option value="Reino Unido">Reino Unido</option>
+                  <option value="Otros">Otros</option>
+                </select>
+              </div>
+            </div>
+          }
+
+          <!-- DATOS PERSONALES (para particular/autónomo) -->
+          @if (flow.clientType !== 'empresa') {
+            <div>
+              <h3>👤 Datos Personales</h3>
+
+              <!-- FILA 1: Nombre y Apellidos -->
+              <div>
+                <label for="name">Nombre *</label>
+                <input type="text"
+                       [(ngModel)]="client.name"
+                       (ngModelChange)="updateClientData('name', $event)"
+                       name="name"
+                       id="name"
+                       placeholder="Juan"
+                       required>
+              </div>
+
+              <div>
+                <label for="lastname">Apellidos *</label>
+                <input type="text"
+                       [(ngModel)]="client.lastname"
+                       (ngModelChange)="updateClientData('lastname', $event)"
+                       name="lastname"
+                       id="lastname"
+                       placeholder="García López"
+                       required>
+              </div>
+
+              <!-- FILA 2: DNI/NIE y Email -->
+              <div>
+                <label for="identification">DNI/NIE *</label>
+                <input type="text"
+                       [(ngModel)]="client.identification"
+                       (ngModelChange)="updateClientData('identification', $event)"
+                       name="identification"
+                       id="identification"
+                       placeholder="12345678A"
+                       required>
+              </div>
+
+              <div>
+                <label for="email">Email *</label>
+                <input type="email"
+                       [(ngModel)]="client.email"
+                       (ngModelChange)="updateClientData('email', $event)"
+                       name="email"
+                       id="email"
+                       placeholder="juan@email.com"
+                       required>
+              </div>
+
+              <!-- FILA 3: Teléfono y Dirección -->
+              <div>
+                <label for="phone">Teléfono *</label>
+                <input type="tel"
+                       [(ngModel)]="client.phone"
+                       (ngModelChange)="updateClientData('phone', $event)"
+                       name="phone"
+                       id="phone"
+                       placeholder="612345678"
+                       required>
+              </div>
+
+              <div>
+                <label for="address">Dirección *</label>
+                <input type="text"
+                       [(ngModel)]="client.address"
+                       (ngModelChange)="updateClientData('address', $event)"
+                       name="address"
+                       id="address"
+                       placeholder="Calle Mayor 45"
+                       required>
+              </div>
+
+              <!-- FILA 4: Código Postal y Localidad -->
+              <div>
+                <label for="postal_code">Código Postal *</label>
+                <input type="text"
+                       [(ngModel)]="client.postal_code"
+                       (ngModelChange)="updateClientData('postal_code', $event)"
+                       name="postal_code"
+                       id="postal_code"
+                       placeholder="28001"
+                       required>
+              </div>
+
+              <div>
+                <label for="location">Localidad *</label>
+                <input type="text"
+                       [(ngModel)]="client.location"
+                       (ngModelChange)="updateClientData('location', $event)"
+                       name="location"
+                       id="location"
+                       placeholder="Madrid"
+                       required>
+              </div>
+
+              <!-- FILA 5: Provincia y País -->
+              <div>
+                <label for="province">Provincia *</label>
+                <input type="text"
+                       [(ngModel)]="client.province"
+                       (ngModelChange)="updateClientData('province', $event)"
+                       name="province"
+                       id="province"
+                       placeholder="Madrid"
+                       required>
+              </div>
+
+              <div>
+                <label for="country">País *</label>
+                <select [(ngModel)]="client.country"
+                        (ngModelChange)="updateClientData('country', $event)"
+                        name="country"
+                        id="country"
+                        required>
+                  <option value="">Seleccionar país</option>
+                  <option value="España">España</option>
+                  <option value="Francia">Francia</option>
+                  <option value="Portugal">Portugal</option>
+                  <option value="Italia">Italia</option>
+                  <option value="Alemania">Alemania</option>
+                  <option value="Reino Unido">Reino Unido</option>
+                  <option value="Otros">Otros</option>
+                </select>
+              </div>
+
+              <!-- Sección especial para autónomos -->
+              @if (flow.clientType === 'autonomo') {
+                <div class="company-relationship-section" style="grid-column: 1 / -1;">
+                  <h3>🏢 Relación con Empresa</h3>
+
+                  <div>
+                    <label for="parent_company">¿Es administrador de alguna empresa?</label>
+                    <select [(ngModel)]="client.parent_company_id"
+                            name="parent_company"
+                            id="parent_company"
+                            (ngModelChange)="onParentCompanyChange()">
+                      <option [ngValue]="null">No representa ninguna empresa</option>
+                      @if (companies && companies.length > 0) {
+                        @for (company of companies; track company.id) {
+                          <option [ngValue]="company.id">
+                            {{ company.company_name }}
+                          </option>
+                        }
+                      } @else {
+                        <option [ngValue]="null">Cargando empresas...</option>
+                      }
+                    </select>
+                  </div>
+
+                  @if (client.parent_company_id) {
+                    <div class="relationship-details">
+                      <div>
+                        <label for="relationship_type">Tipo de relación</label>
+                        <select [(ngModel)]="client.relationship_type"
+                                name="relationship_type"
+                                id="relationship_type">
+                          <option value="administrator">Administrador</option>
+                        </select>
+                      </div>
+
+                      <div class="relationship-info">
+                        Este autónomo será registrado como administrador de la empresa seleccionada.
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ======= PASO 2: Administradores (solo para empresas) ======= -->
+      @if (flow.currentStep === 2 && flow.clientType === 'empresa') {
+        <div class="step active">
+          <h3>👥 Administradores de la Empresa</h3>
+
+          @if (flow.isCompanyCreated) {
+            <div class="info-message">
+              ✅ Empresa registrada correctamente. Ahora debe registrar al menos un administrador.
+            </div>
+          }
+
+          <!-- Lista de administradores -->
+          @for (admin of administrators; track $index) {
+            <div class="admin-form-container">
+              <div class="admin-header">
+                <h4>Administrador #{{ $index + 1 }}</h4>
+                @if (administrators.length > 1) {
+                  <button type="button"
+                          class="btn-remove"
+                          (click)="removeAdministrator($index)">
+                    🗑️ Eliminar
+                  </button>
+                }
+              </div>
+
+              <div class="admin-form">
+                <!-- FILA 1: Nombre y Apellidos -->
+                <div>
+                  <label [for]="'admin_name_' + $index">Nombre *</label>
+                  <input type="text"
+                         [(ngModel)]="admin.name"
+                         (ngModelChange)="updateAdministrator($index, 'name', $event)"
+                         [name]="'admin_name_' + $index"
+                         [id]="'admin_name_' + $index"
+                         placeholder="María"
+                         required>
+                </div>
+
+                <div>
+                  <label [for]="'admin_lastname_' + $index">Apellidos *</label>
+                  <input type="text"
+                         [(ngModel)]="admin.lastname"
+                         (ngModelChange)="updateAdministrator($index, 'lastname', $event)"
+                         [name]="'admin_lastname_' + $index"
+                         [id]="'admin_lastname_' + $index"
+                         placeholder="Pérez Sánchez"
+                         required>
+                </div>
+
+                <!-- FILA 2: DNI/NIE y Email -->
+                <div>
+                  <label [for]="'admin_identification_' + $index">DNI/NIE *</label>
+                  <input type="text"
+                         [(ngModel)]="admin.identification"
+                         (ngModelChange)="updateAdministrator($index, 'identification', $event)"
+                         [name]="'admin_identification_' + $index"
+                         [id]="'admin_identification_' + $index"
+                         placeholder="87654321B"
+                         required>
+                </div>
+
+                <div>
+                  <label [for]="'admin_email_' + $index">Email *</label>
+                  <input type="email"
+                         [(ngModel)]="admin.email"
+                         (ngModelChange)="updateAdministrator($index, 'email', $event)"
+                         [name]="'admin_email_' + $index"
+                         [id]="'admin_email_' + $index"
+                         placeholder="maria@empresa.com"
+                         required>
+                </div>
+
+                <!-- FILA 3: Teléfono y Dirección -->
+                <div>
+                  <label [for]="'admin_phone_' + $index">Teléfono *</label>
+                  <input type="tel"
+                         [(ngModel)]="admin.phone"
+                         (ngModelChange)="updateAdministrator($index, 'phone', $event)"
+                         [name]="'admin_phone_' + $index"
+                         [id]="'admin_phone_' + $index"
+                         placeholder="654321987"
+                         required>
+                </div>
+
+                <div>
+                  <label [for]="'admin_address_' + $index">Dirección *</label>
+                  <input type="text"
+                         [(ngModel)]="admin.address"
+                         (ngModelChange)="updateAdministrator($index, 'address', $event)"
+                         [name]="'admin_address_' + $index"
+                         [id]="'admin_address_' + $index"
+                         placeholder="Avenida Libertad 67"
+                         required>
+                </div>
+
+                <!-- FILA 4: Código Postal y Localidad -->
+                <div>
+                  <label [for]="'admin_postal_code_' + $index">Código Postal *</label>
+                  <input type="text"
+                         [(ngModel)]="admin.postal_code"
+                         (ngModelChange)="updateAdministrator($index, 'postal_code', $event)"
+                         [name]="'admin_postal_code_' + $index"
+                         [id]="'admin_postal_code_' + $index"
+                         placeholder="28002"
+                         required>
+                </div>
+
+                <div>
+                  <label [for]="'admin_location_' + $index">Localidad *</label>
+                  <input type="text"
+                         [(ngModel)]="admin.location"
+                         (ngModelChange)="updateAdministrator($index, 'location', $event)"
+                         [name]="'admin_location_' + $index"
+                         [id]="'admin_location_' + $index"
+                         placeholder="Madrid"
+                         required>
+                </div>
+
+                <!-- FILA 5: Provincia y País -->
+                <div>
+                  <label [for]="'admin_province_' + $index">Provincia *</label>
+                  <input type="text"
+                         [(ngModel)]="admin.province"
+                         (ngModelChange)="updateAdministrator($index, 'province', $event)"
+                         [name]="'admin_province_' + $index"
+                         [id]="'admin_province_' + $index"
+                         placeholder="Madrid"
+                         required>
+                </div>
+
+                <div>
+                  <label [for]="'admin_country_' + $index">País *</label>
+                  <select [(ngModel)]="admin.country"
+                          (ngModelChange)="updateAdministrator($index, 'country', $event)"
+                          [name]="'admin_country_' + $index"
+                          [id]="'admin_country_' + $index"
+                          required>
+                    <option value="">Seleccionar país</option>
+                    <option value="España">España</option>
+                    <option value="Francia">Francia</option>
+                    <option value="Portugal">Portugal</option>
+                    <option value="Italia">Italia</option>
+                    <option value="Alemania">Alemania</option>
+                    <option value="Reino Unido">Reino Unido</option>
+                    <option value="Otros">Otros</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          }
+
+          <button type="button"
+                  class="btn-secondary"
+                  (click)="addAdministrator()">
+            ➕ Agregar otro administrador
+          </button>
+        </div>
+      }
+    </div>
+
+    <!-- ======= NAVEGACIÓN ENTRE PASOS ======= -->
+    <div class="step-navigation">
+      @if (showPrevButton()) {
+        <button type="button"
+                class="btn-secondary"
+                (click)="changeStep(-1)">
+          ← Anterior
+        </button>
+      } @else {
+        <div></div>
+      }
+
+      <div style="flex: 1;"></div>
+
+      @if (showNextButton()) {
+        <button type="button"
+                (click)="changeStep(1)">
+          Continuar →
+        </button>
+      }
+
+      @if (showSubmitButton()) {
+        <button type="submit"
+                class="btn-success">
+          ✓ Registrar {{ flow.clientType === 'empresa' ? 'Administradores' : 'Cliente' }}
+        </button>
+      }
+    </div>
   </form>
 </div>

@@ -40,7 +40,7 @@ import { BillsListComponent } from './pages/bills/bills-list/bills-list.componen
 import { BillsEditComponent } from './pages/bills/bills-edit/bills-edit.component';
 import {UserListComponent} from './pages/users/user-list/user-list.component';
 import {UserEditComponent} from './pages/users/user-edit/user-edit.component';
-import {UserDeleteComponent} from './pages/users/user-delete/user-delete.component';
+
 
 
 export const routes: Routes = [
@@ -66,7 +66,6 @@ export const routes: Routes = [
           {path: '',component: UsersHomeComponent, title: 'Usuarios'},
           {path: 'list', component: UserListComponent, title: 'Listado'},
           {path: 'edit/:id', component: UserEditComponent, title: 'Editar'},
-          {path: 'delete/id', component: UserDeleteComponent, title: 'Eliminar'},
 
 
         ]

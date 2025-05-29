@@ -1,103 +1,273 @@
-import {Component, OnInit} from '@angular/core';
-import {FormsModule} from '@angular/forms';
-import {Clients, CompanyOption} from '../../../interface/clientes-interface';
-import {ClientsService} from '../../../core/services/clients-services/clients.service';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import Swal from 'sweetalert2';
-import {ClientsValidatorService} from '../../../core/services/validator-services/clients-validator.service';
-import {HttpErrorResponse} from '@angular/common/http';
-import {Router} from '@angular/router';
+
+import {
+  Clients,
+  CompanyOption,
+  CreateClientResponse,
+  ClientRegistrationFlow,
+  RegistrationState,
+  CompanyCreationResult,
+} from '../../../interface/clientes-interface';
+import { ClientsValidatorService } from '../../../core/services/validator-services/clients-validator.service';
 
 @Component({
   selector: 'app-clients',
+  standalone: true,
   imports: [
+    CommonModule,
     FormsModule
+  ],
+  providers: [
+    ClientsValidatorService
   ],
   templateUrl: './clients-register.component.html',
   styleUrl: './clients-register.component.css'
 })
 export class ClientsRegisterComponent implements OnInit {
 
-  client: Clients = {
-    id: 0,
-    type_client: '',
-    name: '',
-    lastname: '',
-    company_name: '',
-    identification: '',
-    phone: '',
-    email: '',
-    address: '',
-    postal_code: '',
-    location: '',
-    province: '',
-    country: '',
-    parent_company_id: undefined,
-    relationship_type: undefined
-  }
-
-  // Lista de empresas
-  companies: CompanyOption[] = [];
+  // ======= ESTADO DEL COMPONENTE =======
+  registrationState: RegistrationState = {} as RegistrationState;
+  flow: ClientRegistrationFlow = {} as ClientRegistrationFlow;
 
   constructor(
-    private clientsService: ClientsService,
-    private clientesValidatorServices: ClientsValidatorService,
-    private router: Router,
-  ) {
-  }
+    private clientsValidatorService: ClientsValidatorService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.loadCompanies();
+    this.initializeComponent();
   }
 
-  //Método para cargar empresas
-  private loadCompanies() {
-    this.clientsService.getCompanies().subscribe({
-      next: (response) => {
-        this.companies = response;
+  // ======= MÉTODOS DE INICIALIZACIÓN =======
+  private initializeComponent(): void {
+    this.clientsValidatorService.initializeRegistration().subscribe({
+      next: (companies: CompanyOption[]) => {
+        this.updateComponentState();
       },
       error: (e: HttpErrorResponse) => {
+        console.error('Error loading companies:', e);
       }
     });
   }
 
-  // Limpiar campos de relación cuando cambia el tipo
-  onTypeClientChange() {
-    if (this.client.type_client !== 'autonomo') {
-      this.client.parent_company_id = undefined;
-      this.client.relationship_type = undefined;
-    }
+  private updateComponentState(): void {
+    this.registrationState = this.clientsValidatorService.getRegistrationState();
+    this.flow = this.clientsValidatorService.getFlow();
   }
 
+  // ======= MÉTODOS DE NAVEGACIÓN =======
+  selectClientType(type: string): void {
+    this.clientsValidatorService.selectClientType(type);
+    this.updateComponentState();
+  }
 
-  createClient() {
-    // 1. validacion
-    const validation = this.clientesValidatorServices.validateClient(this.client);
+  changeStep(direction: number): void {
+    if (direction === 1) {
+      // Avanzar paso
+      if (this.flow.clientType === 'empresa' && this.flow.currentStep === 1 && !this.flow.isCompanyCreated) {
+        this.createCompanyFirst();
+        return;
+      }
+
+      const result = this.clientsValidatorService.nextStep();
+      if (!result.isValid) {
+        this.showError(result.message || 'Error al avanzar');
+        return;
+      }
+    } else {
+      // Retroceder paso
+      const result = this.clientsValidatorService.previousStep();
+      if (!result.isValid) {
+        this.showError(result.message || 'Error al retroceder');
+        return;
+      }
+    }
+
+    this.updateComponentState();
+  }
+
+  // ======= MÉTODOS DE CREACIÓN =======
+  private createCompanyFirst(): void {
+    this.clientsValidatorService.createCompany().subscribe({
+      next: (response: CreateClientResponse) => {
+        this.updateComponentState();
+
+        // Avanzar al siguiente paso
+        const nextStepResult = this.clientsValidatorService.nextStep();
+        if (nextStepResult.isValid) {
+          this.updateComponentState();
+
+          Swal.fire({
+            title: "Empresa registrada",
+            text: "Ahora proceda a registrar los administradores",
+            icon: "success",
+            timer: 2000,
+            showConfirmButton: false
+          });
+        }
+      },
+      error: (e: HttpErrorResponse) => {
+        const errorMessage = e.error?.msg || e.message || 'Error desconocido al crear la empresa';
+        Swal.fire({
+          title: 'Error al crear empresa',
+          text: errorMessage,
+          icon: 'error',
+          confirmButtonText: 'Entendido'
+        });
+      }
+    });
+  }
+
+  createClient(): void {
+    const validation = this.clientsValidatorService.validateCurrentStep();
     if (!validation.isValid) {
-      Swal.fire({
-        title: 'Error!',
-        text: validation.message,
-        icon: 'error',
-        confirmButtonText: 'Ok'
-      })
+      this.showError(validation.message || 'Error de validación');
       return;
     }
-    // 2. LIMPIAR datos para enviar al backend
-    const cleanClient = this.clientesValidatorServices.cleanClientData(this.client);
 
-    //conexcion al backend
-    this.clientsService.createClientes(cleanClient).subscribe({
-      next: (data) => {
-        Swal.fire({
-          title: "Se ha registrado correctamente.",
-          icon: "success",
-          draggable: true
-        });
-        this.router.navigate(['dashboard/clients/list']);
-
-      }, error: (e: HttpErrorResponse) => {
+    this.clientsValidatorService.processCompleteRegistration().subscribe({
+      next: (response: CreateClientResponse | CompanyCreationResult) => {
+        if (this.flow.clientType === 'empresa') {
+          this.showSuccessAndRedirect('Empresa y administradores registrados correctamente');
+        } else {
+          this.showSuccessAndRedirect('Cliente registrado correctamente');
+        }
+      },
+      error: (e: HttpErrorResponse) => {
+        console.error('Error creating client:', e);
       }
-    })
+    });
   }
 
+  // ======= MÉTODOS DE ADMINISTRADORES =======
+  addAdministrator(): void {
+    this.clientsValidatorService.addAdministrator();
+    this.updateComponentState();
+  }
 
+  removeAdministrator(index: number): void {
+    const success = this.clientsValidatorService.removeAdministrator(index);
+    if (success) {
+      this.updateComponentState();
+    }
+  }
+
+  updateAdministrator(index: number, field: keyof Clients, value: any): void {
+    const update: Partial<Clients> = { [field]: value };
+    this.clientsValidatorService.updateAdministrator(index, update);
+    this.updateComponentState();
+  }
+
+  // ======= MÉTODOS PARA AUTÓNOMOS =======
+  onParentCompanyChange(): void {
+    const companyId = this.registrationState.client.parent_company_id;
+
+    if (companyId && typeof companyId === 'string') {
+      const numericId = parseInt(companyId, 10);
+      this.clientsValidatorService.setParentCompany(numericId);
+    } else if (companyId && typeof companyId === 'number') {
+      this.clientsValidatorService.setParentCompany(companyId);
+    } else {
+      this.clientsValidatorService.setParentCompany(0);
+    }
+
+    this.updateComponentState();
+  }
+
+  // ======= MÉTODOS DE ACTUALIZACIÓN DE DATOS =======
+  updateCompanyData(field: keyof Clients, value: any): void {
+    const update: Partial<Clients> = { [field]: value };
+    this.clientsValidatorService.updateCompany(update);
+    this.updateComponentState();
+  }
+
+  updateClientData(field: keyof Clients, value: any): void {
+    const update: Partial<Clients> = { [field]: value };
+    this.clientsValidatorService.updateClient(update);
+    this.updateComponentState();
+  }
+
+  // ======= MÉTODOS DE UTILIDAD DE LA UI =======
+  getStepTitle(): string {
+    return this.clientsValidatorService.getStepTitle();
+  }
+
+  isStepCompleted(step: number): boolean {
+    return this.clientsValidatorService.isStepCompleted(step);
+  }
+
+  isStepActive(step: number): boolean {
+    return this.clientsValidatorService.isStepActive(step);
+  }
+
+  isStepVisible(step: number): boolean {
+    return this.clientsValidatorService.isStepVisible(step);
+  }
+
+  showNextButton(): boolean {
+    return this.clientsValidatorService.showNextButton();
+  }
+
+  showPrevButton(): boolean {
+    return this.clientsValidatorService.showPrevButton();
+  }
+
+  showSubmitButton(): boolean {
+    return this.clientsValidatorService.showSubmitButton();
+  }
+
+  // ======= GETTERS PARA ACCESO A DATOS EN EL TEMPLATE =======
+  get company(): Clients {
+    return this.registrationState.company || {} as Clients;
+  }
+
+  get client(): Clients {
+    return this.registrationState.client || {} as Clients;
+  }
+
+  get administrators(): Clients[] {
+    return this.registrationState.administrators || [];
+  }
+
+  get companies(): CompanyOption[] {
+    return this.registrationState.companies || [];
+  }
+
+  get clientType(): string {
+    return this.flow.clientType || '';
+  }
+
+  get currentStep(): number {
+    return this.flow.currentStep || 0;
+  }
+
+  get maxSteps(): number {
+    return this.flow.maxSteps || 2;
+  }
+
+  // ======= MÉTODOS DE UTILIDAD =======
+  private showError(message: string): void {
+    Swal.fire({
+      title: 'Error de validación',
+      text: message,
+      icon: 'error',
+      confirmButtonText: 'Ok'
+    });
+  }
+
+  private showSuccessAndRedirect(message: string): void {
+    Swal.fire({
+      title: "¡Éxito!",
+      text: message,
+      icon: "success",
+      draggable: true
+    }).then(() => {
+      this.router.navigate(['dashboard/clients/list']);
+    });
+  }
 }

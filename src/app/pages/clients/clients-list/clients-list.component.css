@@ -1,133 +1,283 @@
-/* CONTENEDOR PRINCIPAL */
-/* Estilo del wrapper que contiene toda la lista de clientes */
+/* Contenedor principal */
 .list-wrapper {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(1.25rem);
+  border: 0.125rem solid rgba(255, 255, 255, 0.15);
+  border-radius: 1.5rem;
   padding: 2rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-width: 100%;
+  margin: 3rem 0.5rem 5rem 0.5rem;
+  max-width: none;
+  width: calc(100% - 1rem);
+  box-shadow:
+    0 1rem 2rem rgba(0, 0, 0, 0.1),
+    0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  animation: fadeIn 0.6s ease-out;
   overflow-x: auto;
-  margin: 2rem auto;
 }
 
-/* TÍTULO DE LA SECCIÓN */
-/* Estilo para el encabezado h2 dentro del wrapper */
-.list-wrapper h2 {
-  color: #1976d2;
-  margin-bottom: 1.5rem;
+.list-wrapper:hover {
+  transform: translateY(-0.25rem);
+  box-shadow:
+    0 1.5rem 3rem rgba(0, 0, 0, 0.15),
+    0 0.5rem 1rem rgba(0, 0, 0, 0.1);
 }
 
-/* ESTRUCTURA DE LA TABLA */
-/* Configuración básica de la tabla */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Título principal */
+h2 {
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 3rem;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #ffffff, #e2e8f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+/* Línea decorativa */
+h2::after {
+  content: '';
+  position: absolute;
+  bottom: -0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3rem;
+  height: 0.25rem;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  border-radius: 0.125rem;
+}
+
+/* Tabla principal */
 table {
   width: 100%;
-  border-collapse: collapse;
-  min-width: 1000px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
 }
 
-/* ENCABEZADO DE LA TABLA */
-/* Estilo para la fila de encabezados */
+/* Cabecera de tabla */
 thead {
-  background-color: #1976d2;
-  color: white;
+  background: linear-gradient(135deg, #2d3748, #4a5568);
 }
 
-/* CELDAS DE LA TABLA */
-/* Estilo común para encabezados y contenido */
-th, td {
-  padding: 0.75rem 0.5rem;
+th {
+  padding: 1rem 0.5rem;
+  color: white;
+  font-weight: 600;
   text-align: left;
-  border-bottom: 1px solid #ccc;
-  font-size: 0.95rem;
-}
-
-/* CONTENIDO DE LAS CELDAS */
-/* Color específico para el texto del contenido */
-td {
-  color: #555;
-}
-
-/* BOTONES DE ACCIÓN */
-/* Estilo para los botones Editar y Eliminar */
-button {
-  padding: 0.4rem 0.75rem;
-  background-color: #1976d2;
-  color: white;
-  border: none;
-  border-radius: 0.3rem;
-  cursor: pointer;
-  margin-right: 0.3rem;
   font-size: 0.85rem;
+  border-bottom: 0.125rem solid rgba(255, 255, 255, 0.2);
+  white-space: nowrap;
 }
 
-/* HOVER DE BOTONES */
-/* Efecto al pasar el mouse sobre los botones */
-button:hover {
-  background-color: #0d47a1;
+/* Distribución de columnas para muchas columnas */
+th:nth-child(1) { width: 3%; }   /* ID */
+th:nth-child(2) { width: 8%; }   /* Tipo Cliente */
+th:nth-child(3) { width: 8%; }   /* Nombre */
+th:nth-child(4) { width: 8%; }   /* Apellidos */
+th:nth-child(5) { width: 10%; }  /* Empresa */
+th:nth-child(6) { width: 12%; }  /* Relación */
+th:nth-child(7) { width: 8%; }   /* Identificación */
+th:nth-child(8) { width: 7%; }   /* Teléfono */
+th:nth-child(9) { width: 10%; }  /* Email */
+th:nth-child(10) { width: 8%; }  /* Dirección */
+th:nth-child(11) { width: 4%; }  /* CP */
+th:nth-child(12) { width: 6%; }  /* Localidad */
+th:nth-child(13) { width: 6%; }  /* Provincia */
+th:nth-child(14) { width: 4%; }  /* País */
+th:nth-child(15) { width: 6%; }  /* Creado */
+th:nth-child(16) { width: 6%; }  /* Actualizado */
+th:nth-child(17) { width: 7%; }  /* Acciones */
+
+/* Filas de datos */
+td {
+  padding: 0.75rem 0.5rem;
+  border-bottom: 0.0625rem solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  transition: all 0.3s ease;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  font-size: 0.8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* MENU DEL ELSE ESTILO CARD CON SOMBRA */
-.no-clients-card {
+tbody tr:hover td {
+  background: rgba(59, 130, 246, 0.1);
+  color: #ffffff;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Badges de relación */
+.relationship-badge {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.no-relationship {
+  background: rgba(156, 163, 175, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.not-applicable {
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+  font-size: 0.75rem;
+}
+
+/* Botones de acción */
+td button {
+  padding: 0.375rem 0.75rem;
+  margin: 0 0.125rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Botón editar */
+td button:first-child {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+}
+
+td button:first-child:hover {
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.25rem 0.75rem rgba(59, 130, 246, 0.4);
+}
+
+/* Botón eliminar */
+td button:last-child {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+td button:last-child:hover {
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.25rem 0.75rem rgba(239, 68, 68, 0.4);
+}
+
+/* Estado sin datos */
+.no-clients-cell {
   text-align: center;
-  padding: 3rem 2rem;
-  color: #495057;
-  font-size: 1.1rem;
-  background: white;
-  border-radius: 16px;
-  margin: 2rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e9ecef;
+  padding: 3rem;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.no-clients-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(0.625rem);
+  border: 0.0625rem solid rgba(255, 255, 255, 0.15);
+  border-radius: 1rem;
+  padding: 2rem;
+  max-width: 25rem;
+  margin: 0 auto;
 }
 
 .no-clients-card h3 {
-  color: #1976d2;
-  margin-bottom: 0.5rem;
-  font-size: 1.3rem;
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
 }
 
 .no-clients-card p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  line-height: 1.5;
   margin: 0;
-  opacity: 0.8;
 }
 
-/* ESTILOS PARA EL PAGINADOR */
-mat-paginator {
-  margin-top: 1.5rem;
-  background: transparent;
-}
-
-/* Personalizar colores del paginador */
-::ng-deep .mat-mdc-paginator {
-  background: transparent;
-}
-
-::ng-deep .mat-mdc-icon-button {
-  color: #1976d2;
-}
-
-::ng-deep .mat-mdc-paginator-page-size-select {
-  color: #1976d2;
-}
-
-
-/* RESPONSIVE - TABLETS */
-/* Adaptación para pantallas medianas (768px o menos) */
-@media (max-width: 768px) {
-  th, td {
-    padding: 0.5rem;
-    font-size: 0.85rem;
+/* Responsive */
+@media (max-width: 80rem) {
+  .list-wrapper {
+    padding: 1.5rem;
+    margin: 2rem 0.25rem 3rem 0.25rem;
   }
 
-  button {
-    padding: 0.3rem 0.5rem;
+  table {
     font-size: 0.75rem;
   }
+
+  th, td {
+    padding: 0.5rem 0.25rem;
+  }
 }
 
-/* RESPONSIVE - MÓVILES */
-/* Adaptación para pantallas pequeñas (500px o menos) */
-@media (max-width: 500px) {
+@media (max-width: 48rem) {
+  .list-wrapper {
+    padding: 1rem;
+    margin: 1rem 0.125rem 2rem 0.125rem;
+    border-radius: 1rem;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    margin-bottom: 2rem;
+  }
+
   table {
-    min-width: 600px;
+    font-size: 0.7rem;
+  }
+
+  th, td {
+    padding: 0.375rem 0.125rem;
+  }
+
+  td button {
+    display: block;
+    width: 100%;
+    margin: 0.125rem 0;
+    padding: 0.25rem;
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 30rem) {
+  .list-wrapper {
+    padding: 0.75rem;
+    margin: 0.5rem 0.0625rem 1rem 0.0625rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .no-clients-card {
+    padding: 1.5rem;
   }
 }
