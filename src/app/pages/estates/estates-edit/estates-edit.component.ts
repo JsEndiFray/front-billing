@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {EstateEdit, Estates} from '../../../interface/estates.interface';
+import {Estates} from '../../../interface/estates.interface';
 import {EstatesService} from '../../../core/services/estates-services/estates.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import Swal from 'sweetalert2';
@@ -47,12 +47,8 @@ export class EstatesEditComponent implements OnInit {
       if (id) {
         // Cargo los campos del inmueble
         this.estateService.getById(id).subscribe({
-          next: (response: EstateEdit) => {
-            // Verificar la estructura y extraer los datos
-            if (response && response.data) {
-              // Si viene dentro de data.result
-              this.estate = response.data;
-            }
+          next: (estates) => {
+            this.estate = estates;
             // Guardar la referencia catastral
             this.originalCadastralReference = this.estate.cadastral_reference;
           },
@@ -61,7 +57,6 @@ export class EstatesEditComponent implements OnInit {
         });
       }
     });
-
   }
 
   updateEstate() {
@@ -78,6 +73,7 @@ export class EstatesEditComponent implements OnInit {
 
     //Limpiar y transformar datos
     const cleanEstate = this.estateValidatorServices.cleanEstatesData(this.estate)
+
     // Validar campos requeridos
     const validation = this.estateValidatorServices.validateEstate(cleanEstate)
     if (!validation.isValid) {
@@ -89,7 +85,7 @@ export class EstatesEditComponent implements OnInit {
       });
       return;
     }
-    //acceso al backemd
+    //acceso al backend
     this.estateService.updateEstate(this.estate.id, cleanEstate).subscribe({
       next: (data: Estates) => {
         this.estate = data;
@@ -103,6 +99,9 @@ export class EstatesEditComponent implements OnInit {
       }, error: (e: HttpErrorResponse) => {
       }
     })
+  }
+  goBack(){
+    this.router.navigate(['/dashboard/estates/list']);
   }
 
 

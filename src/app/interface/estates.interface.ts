@@ -12,13 +12,3 @@ export interface Estates {
   date_create?: string;
   date_update?: string;
 }
-
-//Listado del Backend
-export interface EstateArray {
-  data:  Estates[];
-
-}
-//editar el inmueble
-export interface EstateEdit {
-  data: Estates;
-}

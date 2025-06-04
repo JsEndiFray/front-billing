@@ -5,8 +5,8 @@
 
   /* Fondo oscuro azulado + sombra gris desde el medio */
   background:
-    linear-gradient(to top, rgb(18, 17, 17) 40%, transparent 70%),
-    #020617;
+    linear-gradient(to top, rgb(4, 8, 53) 40%, transparent 70%),
+    #0b2163;
 }
 
 .header-spacer {

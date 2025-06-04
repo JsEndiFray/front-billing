@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from '../api-service/api.service';
 import {map, Observable} from 'rxjs';
-import {ClientResponse, Clients, CompanyOption, CreateClientResponse} from '../../../interface/clientes-interface';
+import {Clients, CompanyOption} from '../../../interface/clientes-interface';
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +12,8 @@ export class ClientsService {
   }
 
   //obtener listados
-  getClients(): Observable<ClientResponse> {
-    return this.api.get<ClientResponse>('clients')
+  getClients(): Observable<Clients[]> {
+    return this.api.get<Clients[]>('clients');
   }
 
   getByIdentification(identification: string): Observable<Clients> {
@@ -21,21 +21,31 @@ export class ClientsService {
   }
 
   getCompanies(): Observable<CompanyOption[]> {
-    return this.api.get<{ data: CompanyOption[] }>('clients/companies')
-      .pipe(
-        map(response => response.data || [])
-      )
+    return this.api.get<CompanyOption[]>('clients/companies');
   }
 
-  //CREATE - MÉTODO CORREGIDO CON AMBOS TIPOS
-  createClientes(client: Clients): Observable<CreateClientResponse> {
-    return this.api.post<Clients, CreateClientResponse>('clients', client);
+  getClientById(id: number): Observable<Clients> {
+    return this.api.get<Clients>(`clients/${id}`);
   }
 
-  //UPDATE
+  //CREATE
+  createClientes(client: Clients): Observable<Clients> {
+    return this.api.post<Clients, Clients>('clients', client);
+  }
+
+  //UPDATE - Método para obtener cliente por ID
+
+
+  //UPDATE - Método para actualizar cliente
+  updateClient(id: number, data: Clients): Observable<Clients> {
+    return this.api.put<Clients>(`clients/${id}`, data);
+  }
 
   //DELETE:
-  deleleteUser(id: number): Observable<Clients> {
-    return this.api.delete<Clients>(`clients/` + id);
+  deleleteUser(id: number): Observable<boolean> {
+    return this.api.delete<void>(`clients/${id}`)
+      .pipe(
+        map(() => true) // El backend devuelve 204 No Content, lo convertimos a boolean
+      );
   }
 }

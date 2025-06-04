@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from '../api-service/api.service';
-import {Observable} from 'rxjs';
-import {EstateArray, EstateEdit, Estates} from '../../../interface/estates.interface';
+import {map, Observable} from 'rxjs';
+import {Estates} from '../../../interface/estates.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -11,18 +11,16 @@ export class EstatesService {
 
   constructor(private api: ApiService) {
   }
-
-
   //métodos de obtener
 
   //Listado de todos los estates
-  getAllEstate(): Observable<EstateArray> {
-    return this.api.get<EstateArray>('estates');
+  getAllEstate(): Observable<Estates[]> {
+    return this.api.get<Estates[]>('estates');
   }
 
   //búsqueda por ID
-  getById(id: number): Observable<EstateEdit> {
-    return this.api.get<EstateEdit>(`estates/${id}`);
+  getById(id: number): Observable<Estates> {
+    return this.api.get<Estates>(`estates/${id}`);
   }
 
   //búsqueda por catastro
@@ -43,7 +41,10 @@ export class EstatesService {
   }
 
   //delete
-  deleteEstate(id: number): Observable<Estates> {
-    return this.api.delete<Estates>('estates/' + id);
+  deleteEstate(id: number): Observable<boolean> {
+    return this.api.delete<boolean>('estates/' + id)
+      .pipe(
+        map(() => true)
+      )
   }
 }

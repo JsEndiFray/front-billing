@@ -45,16 +45,16 @@ export class LoginComponent {
     }
     //conexion al bakcen
     this.authService.login(user).subscribe({
-      next: (response) => {
+      next: (login) => {
         //guardamos el token
-        localStorage.setItem('token', response.data.accessToken);
-        localStorage.setItem('refreshToken', response.data.refreshToken);
+        localStorage.setItem('token', login.accessToken);
+        localStorage.setItem('refreshToken', login.refreshToken);
 
         //datos del usuario que inicia sesion
         localStorage.setItem('userData', JSON.stringify({
-          id: response.data.user.id,
-          username: response.data.user.username,
-          role: response.data.user.role
+          id: login.user.id,
+          username: login.user.username,
+          role: login.user.role
         }));
 
         //activacion del cierre de sesion

@@ -8,7 +8,6 @@ import Swal from 'sweetalert2';
 import {
   Clients,
   CompanyOption,
-  CreateClientResponse,
   ClientRegistrationFlow,
   RegistrationState,
   CompanyCreationResult,
@@ -50,7 +49,7 @@ export class ClientsRegisterComponent implements OnInit {
         this.updateComponentState();
       },
       error: (e: HttpErrorResponse) => {
-        console.error('Error loading companies:', e);
+        // El interceptor maneja el error automáticamente
       }
     });
   }
@@ -76,14 +75,26 @@ export class ClientsRegisterComponent implements OnInit {
 
       const result = this.clientsValidatorService.nextStep();
       if (!result.isValid) {
-        this.showError(result.message || 'Error al avanzar');
+        // Solo errores de validación local (no HTTP)
+        Swal.fire({
+          title: 'Error de validación',
+          text: result.message || 'Error al avanzar',
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        });
         return;
       }
     } else {
       // Retroceder paso
       const result = this.clientsValidatorService.previousStep();
       if (!result.isValid) {
-        this.showError(result.message || 'Error al retroceder');
+        // Solo errores de validación local (no HTTP)
+        Swal.fire({
+          title: 'Error de validación',
+          text: result.message || 'Error al retroceder',
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        });
         return;
       }
     }
@@ -91,10 +102,10 @@ export class ClientsRegisterComponent implements OnInit {
     this.updateComponentState();
   }
 
-  // ======= MÉTODOS DE CREACIÓN =======
+  // ======= MÉTODOS DE CREACIÓN - ACTUALIZADOS =======
   private createCompanyFirst(): void {
     this.clientsValidatorService.createCompany().subscribe({
-      next: (response: CreateClientResponse) => {
+      next: (client: Clients) => {  // ✅ CORREGIDO: Ahora recibe Clients directamente
         this.updateComponentState();
 
         // Avanzar al siguiente paso
@@ -112,13 +123,7 @@ export class ClientsRegisterComponent implements OnInit {
         }
       },
       error: (e: HttpErrorResponse) => {
-        const errorMessage = e.error?.msg || e.message || 'Error desconocido al crear la empresa';
-        Swal.fire({
-          title: 'Error al crear empresa',
-          text: errorMessage,
-          icon: 'error',
-          confirmButtonText: 'Entendido'
-        });
+        // El interceptor maneja el error automáticamente
       }
     });
   }
@@ -126,12 +131,18 @@ export class ClientsRegisterComponent implements OnInit {
   createClient(): void {
     const validation = this.clientsValidatorService.validateCurrentStep();
     if (!validation.isValid) {
-      this.showError(validation.message || 'Error de validación');
+      // Solo errores de validación local (no HTTP)
+      Swal.fire({
+        title: 'Error de validación',
+        text: validation.message || 'Error de validación',
+        icon: 'error',
+        confirmButtonText: 'Ok'
+      });
       return;
     }
 
     this.clientsValidatorService.processCompleteRegistration().subscribe({
-      next: (response: CreateClientResponse | CompanyCreationResult) => {
+      next: (response: Clients | CompanyCreationResult) => {  // ✅ CORREGIDO: Tipos actualizados
         if (this.flow.clientType === 'empresa') {
           this.showSuccessAndRedirect('Empresa y administradores registrados correctamente');
         } else {
@@ -139,7 +150,7 @@ export class ClientsRegisterComponent implements OnInit {
         }
       },
       error: (e: HttpErrorResponse) => {
-        console.error('Error creating client:', e);
+        // El interceptor maneja el error automáticamente
       }
     });
   }
@@ -167,13 +178,19 @@ export class ClientsRegisterComponent implements OnInit {
   onParentCompanyChange(): void {
     const companyId = this.registrationState.client.parent_company_id;
 
-    if (companyId && typeof companyId === 'string') {
-      const numericId = parseInt(companyId, 10);
-      this.clientsValidatorService.setParentCompany(numericId);
-    } else if (companyId && typeof companyId === 'number') {
-      this.clientsValidatorService.setParentCompany(companyId);
-    } else {
+    if (!companyId) {
       this.clientsValidatorService.setParentCompany(0);
+      this.updateComponentState();
+      return;
+    }
+
+    const numericId = typeof companyId === 'string' ? parseInt(companyId, 10) : companyId;
+
+    if (isNaN(numericId)) {
+      console.warn('Invalid company ID provided:', companyId);
+      this.clientsValidatorService.setParentCompany(0);
+    } else {
+      this.clientsValidatorService.setParentCompany(numericId);
     }
 
     this.updateComponentState();
@@ -251,15 +268,6 @@ export class ClientsRegisterComponent implements OnInit {
   }
 
   // ======= MÉTODOS DE UTILIDAD =======
-  private showError(message: string): void {
-    Swal.fire({
-      title: 'Error de validación',
-      text: message,
-      icon: 'error',
-      confirmButtonText: 'Ok'
-    });
-  }
-
   private showSuccessAndRedirect(message: string): void {
     Swal.fire({
       title: "¡Éxito!",

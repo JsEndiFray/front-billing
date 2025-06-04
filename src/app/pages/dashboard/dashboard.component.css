@@ -1,79 +1,23 @@
+/* CONTENEDOR PRINCIPAL */
 .dashboard-wrapper {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(1.25rem);
-  border: 0.125rem solid rgba(255, 255, 255, 0.15);
-  border-radius: 1.5rem;
+  background: linear-gradient(135deg, #091257 0%, #0d3f8f 50%, #2b104e 100%);
+  border-radius: 1rem;
   padding: 2rem;
-  margin: 2rem 0.5rem; /* Márgenes laterales mínimos */
-  max-width: none; /* Sin límite de ancho */
-  width: calc(100% - 1rem); /* Casi todo el ancho */
-
-  /* Sombras sutiles */
-  box-shadow:
-    0 1rem 2rem rgba(0, 0, 0, 0.1),
-    0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
-
-  /* Transición suave */
-  transition: all 0.3s ease;
-  animation: fadeIn 0.6s ease-out;
+  margin: 2rem auto;
+  max-width: 100rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
 }
 
-.dashboard-wrapper:hover {
-  transform: translateY(-0.25rem);
-  box-shadow:
-    0 1.5rem 3rem rgba(0, 0, 0, 0.15),
-    0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(1.25rem);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ===========================================
-   ✨ TÍTULO PRINCIPAL
-   =========================================== */
+/* TÍTULO PRINCIPAL */
 h1 {
   color: #ffffff;
   font-size: 2.5rem;
   font-weight: 700;
   text-align: center;
-  margin-bottom: 2.5rem;
-  letter-spacing: -0.02em;
-
-  /* Gradiente sutil */
-  background: linear-gradient(135deg, #ffffff, #e2e8f0);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-
-  /* Sombra elegante */
-  text-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
-  position: relative;
+  margin-bottom: 2rem;
 }
 
-/* Línea decorativa debajo del título */
-h1::after {
-  content: '';
-  position: absolute;
-  bottom: -0.75rem;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 4rem;
-  height: 0.25rem;
-  background: linear-gradient(90deg, #3b82f6, #60a5fa);
-  border-radius: 0.125rem;
-}
-
-/* ===========================================
-   🧭 NAVEGACIÓN PRINCIPAL
-   =========================================== */
+/* NAVEGACIÓN PRINCIPAL */
 .dashboard-menu {
   display: flex;
   gap: 1rem;
@@ -83,75 +27,60 @@ h1::after {
 }
 
 .dashboard-menu:last-of-type {
-  margin-bottom: 3rem;
+  margin-bottom: 2.5rem;
 }
 
-/* Enlaces de navegación */
+/* ENLACES DE NAVEGACIÓN */
 .dashboard-menu a {
   padding: 0.75rem 1.5rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 0.125rem solid rgba(255, 255, 255, 0.12);
-  border-radius: 2rem;
-  color: rgba(255, 255, 255, 0.9);
+  background: #f3f4f6;
+  border: 0.125rem solid #e5e7eb;
+  border-radius: 0.5rem;
+  color: #374151;
   text-decoration: none;
   font-weight: 500;
-  font-size: 0.9rem;
-
-  /* Transiciones suaves */
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(0.625rem);
-  position: relative;
-  overflow: hidden;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
 }
 
-/* Efecto hover */
+/* HOVER EN ENLACES */
 .dashboard-menu a:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(59, 130, 246, 0.3);
-  color: #ffffff;
+  background: #e5e7eb;
+  border-color: #3b82f6;
+  color: #1f2937;
   transform: translateY(-0.125rem);
-  box-shadow: 0 0.5rem 1rem rgba(59, 130, 246, 0.15);
 }
 
-/* Estado activo */
+/* ESTADO ACTIVO */
 .dashboard-menu a.active {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  border-color: rgba(59, 130, 246, 0.5);
+  background: #3b82f6;
+  border-color: #2563eb;
   color: #ffffff;
-  box-shadow:
-    0 0.5rem 1rem rgba(59, 130, 246, 0.3),
-    0 0 1.5rem rgba(59, 130, 246, 0.2);
 }
 
 .dashboard-menu a.active:hover {
-  transform: translateY(-0.25rem);
-  box-shadow:
-    0 0.75rem 1.5rem rgba(59, 130, 246, 0.4),
-    0 0 2rem rgba(59, 130, 246, 0.3);
+  background: #2563eb;
 }
 
-/* ===========================================
-   📝 SECCIÓN DE INTRODUCCIÓN
-   =========================================== */
+/* SECCIÓN DE INTRODUCCIÓN */
 .dashboard-intro {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
   padding: 2rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 1rem;
-  border: 0.0625rem solid rgba(255, 255, 255, 0.1);
+  background: #f9fafb;
+  border-radius: 0.75rem;
+  border: 0.0625rem solid #e5e7eb;
 }
 
 .dashboard-intro h2 {
-  color: #ffffff;
+  color: #1f2937;
   font-size: 1.75rem;
   font-weight: 600;
   margin-bottom: 1rem;
-  opacity: 0.95;
 }
 
 .dashboard-intro p {
-  color: rgba(255, 255, 255, 0.8);
+  color: #6b7280;
   font-size: 1rem;
   line-height: 1.6;
   margin-bottom: 0.75rem;
@@ -163,53 +92,28 @@ h1::after {
 .dashboard-intro p:last-child {
   margin-bottom: 0;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
+  color: #374151;
 }
 
-/* ===========================================
-   📊 ÁREA DE CONTENIDO
-   =========================================== */
+/* ÁREA DE CONTENIDO */
 .dashboard-content {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 1rem;
+  background: #ffffff;
+  border-radius: 0.75rem;
   min-height: 20rem;
   padding: 2rem;
-  border: 0.0625rem solid rgba(255, 255, 255, 0.08);
-
-  /* Animación de aparición */
-  animation: contentSlideIn 0.8s ease-out 0.2s both;
+  border: 0.0625rem solid #e5e7eb;
 }
 
-@keyframes contentSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(1rem);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ===========================================
-   📱 DISEÑO RESPONSIVE CON REM
-   =========================================== */
-@media (max-width: 48rem) { /* 768px */
+/* RESPONSIVE TABLET */
+@media (max-width: 48rem) {
   .dashboard-wrapper {
-    padding: 2rem;
-    margin: 1rem auto;
-    width: 95%;
-    border-radius: 1.25rem;
+    padding: 1.5rem;
+    margin: 1rem;
   }
 
   h1 {
     font-size: 2rem;
-    margin-bottom: 2rem;
-  }
-
-  h1::after {
-    width: 3rem;
-    height: 0.1875rem;
+    margin-bottom: 1.5rem;
   }
 
   .dashboard-menu {
@@ -220,7 +124,7 @@ h1::after {
 
   .dashboard-menu a {
     padding: 0.625rem 1.25rem;
-    font-size: 0.85rem;
+    font-size: 0.8125rem;
     width: 100%;
     max-width: 20rem;
     text-align: center;
@@ -228,7 +132,7 @@ h1::after {
 
   .dashboard-intro {
     padding: 1.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
   }
 
   .dashboard-intro h2 {
@@ -236,7 +140,7 @@ h1::after {
   }
 
   .dashboard-intro p {
-    font-size: 0.9rem;
+    font-size: 0.875rem;
   }
 
   .dashboard-content {
@@ -245,27 +149,26 @@ h1::after {
   }
 }
 
-@media (max-width: 30rem) { /* 480px */
+/* RESPONSIVE MÓVIL */
+@media (max-width: 30rem) {
   .dashboard-wrapper {
-    padding: 1.5rem;
-    margin: 0.5rem auto;
-    border-radius: 1rem;
+    padding: 1rem;
+    margin: 0.5rem;
   }
 
   h1 {
     font-size: 1.75rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
   }
 
   .dashboard-menu a {
     padding: 0.5rem 1rem;
-    font-size: 0.8rem;
-    border-radius: 1.5rem;
+    font-size: 0.75rem;
   }
 
   .dashboard-intro {
     padding: 1rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
   }
 
   .dashboard-intro h2 {
@@ -274,7 +177,7 @@ h1::after {
   }
 
   .dashboard-intro p {
-    font-size: 0.85rem;
+    font-size: 0.8125rem;
     margin-bottom: 0.5rem;
   }
 

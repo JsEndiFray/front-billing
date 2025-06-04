@@ -2,27 +2,82 @@
   <h2>Editar Usuario</h2>
 
   <form (ngSubmit)="updateUser()">
-    <label for="username">Nombre de usuario</label>
-    <input type="text" [(ngModel)]="user.username" name="username" id="username"/>
+    <div>
+      <label for="username">Nombre de usuario</label>
+      <input
+        type="text"
+        [(ngModel)]="user.username"
+        name="username"
+        id="username"
+        placeholder="Ingresa el nombre de usuario"
+        required>
+    </div>
 
-    <label for="password">Contraseña</label>
-    <input type="password" [(ngModel)]="user.password" name="password" id="password"/>
+    <div>
+      <label for="password">Contraseña</label>
+      <input
+        type="password"
+        [(ngModel)]="user.password"
+        name="password"
+        id="password"
+        placeholder="Nueva contraseña"
+        required>
+    </div>
 
-    <label for="confirm-password">Confirme la Contraseña</label>
-    <input type="password" [(ngModel)]="user.confirm_password" name="confirm-password" id="confirm-password"/>
+    <div>
+      <label for="confirm-password">Confirme la Contraseña</label>
+      <input
+        type="password"
+        [(ngModel)]="user.confirm_password"
+        name="confirm-password"
+        id="confirm-password"
+        placeholder="Repite la nueva contraseña"
+        required>
+    </div>
 
-    <label for="email">Correo electrónico</label>
-    <input type="email" [(ngModel)]="user.email" name="email" id="email"/>
+    <div>
+      <label for="email">Correo electrónico</label>
+      <input
+        type="email"
+        [(ngModel)]="user.email"
+        name="email"
+        id="email"
+        placeholder="ejemplo@correo.com"
+        required>
+    </div>
 
-    <label for="phone">Teléfono</label>
-    <input type="text" [(ngModel)]="user.phone" name="phone" id="phone"/>
+    <div>
+      <label for="phone">Teléfono</label>
+      <input
+        type="tel"
+        [(ngModel)]="user.phone"
+        name="phone"
+        id="phone"
+        placeholder="+34 123 456 789"
+        required>
+    </div>
 
-    <label for="role">Rol</label>
-    <select [(ngModel)]="user.role" name="role" id="role">
-      <option value="admin">Administrador</option>
-      <option value="employee">Empleado</option>
-    </select>
+    <div>
+      <label for="role">Rol</label>
+      <select [(ngModel)]="user.role" name="role" id="role" required>
+        <option value="">Selecciona un rol</option>
+        <option value="admin">Administrador</option>
+        <option value="employee">Empleado</option>
+      </select>
+    </div>
 
-    <button type="submit">Actualizar Usuario</button>
+    <!-- Botones de acción -->
+    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+      <button type="button" class="btn-secondary" (click)="goBack()">
+        ← Cancelar
+      </button>
+      <button type="submit" class="btn-primary">
+        ✓ Actualizar Usuario
+      </button>
+    </div>
+
+
+
+
   </form>
 </div>

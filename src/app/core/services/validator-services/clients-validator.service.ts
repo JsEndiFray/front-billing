@@ -4,11 +4,9 @@ import { switchMap, catchError } from 'rxjs/operators';
 import {
   Clients,
   StepValidationResult,
-  StepData,
   CompanyCreationResult,
   ClientRegistrationFlow,
   RegistrationState,
-  CreateClientResponse,
   CompanyOption
 } from '../../../interface/clientes-interface';
 import { ClientsService } from '../clients-services/clients.service';
@@ -18,7 +16,7 @@ import { ClientsService } from '../clients-services/clients.service';
 })
 export class ClientsValidatorService {
 
-  // Estado del proceso de registro
+  // Estado del proceso de registro - Almacena todo el estado del wizard en memoria
   private registrationState: RegistrationState = {
     flow: {
       currentStep: 0,
@@ -36,8 +34,9 @@ export class ClientsValidatorService {
 
   constructor(private clientsService: ClientsService) {}
 
-  // ======= MÉTODOS DE INICIALIZACIÓN =======
+  // MÉTODOS DE INICIALIZACIÓN
 
+  // Resetea el wizard y carga empresas existentes del backend para dropdowns
   initializeRegistration(): Observable<CompanyOption[]> {
     this.resetRegistrationState();
     return this.clientsService.getCompanies().pipe(
@@ -49,6 +48,7 @@ export class ClientsValidatorService {
     );
   }
 
+  // Borra todos los datos y vuelve al paso 0 del wizard
   private resetRegistrationState(): void {
     this.registrationState = {
       flow: {
@@ -66,6 +66,7 @@ export class ClientsValidatorService {
     };
   }
 
+  // Genera un objeto empresa vacío con valores por defecto para formularios
   private createEmptyCompany(): Clients {
     return {
       id: 0,
@@ -84,6 +85,7 @@ export class ClientsValidatorService {
     };
   }
 
+  // Genera un objeto cliente vacío con valores por defecto para formularios
   private createEmptyClient(): Clients {
     return {
       id: 0,
@@ -104,6 +106,7 @@ export class ClientsValidatorService {
     };
   }
 
+  // Genera un objeto administrador vacío con valores por defecto para formularios
   private createEmptyAdministrator(): Clients {
     return {
       id: 0,
@@ -124,42 +127,51 @@ export class ClientsValidatorService {
     };
   }
 
-  // ======= MÉTODOS DE ACCESO AL ESTADO =======
+  //MÉTODOS DE ACCESO AL ESTADO (GETTERS)
 
+  // Devuelve una copia completa del estado actual del wizard
   getRegistrationState(): RegistrationState {
     return { ...this.registrationState };
   }
 
+  // Devuelve información del flujo (paso actual, tipo cliente, etc.)
   getFlow(): ClientRegistrationFlow {
     return { ...this.registrationState.flow };
   }
 
+  // Devuelve los datos de la empresa que se está registrando
   getCompany(): Clients {
     return { ...this.registrationState.company };
   }
 
+  // Devuelve los datos del cliente que se está registrando
   getClient(): Clients {
     return { ...this.registrationState.client };
   }
 
+  // Devuelve la lista de administradores que se van a crear
   getAdministrators(): Clients[] {
     return [...this.registrationState.administrators];
   }
 
+  // Devuelve la lista de empresas existentes para seleccionar en dropdowns
   getCompanies(): CompanyOption[] {
     return [...this.registrationState.companies];
   }
 
-  // ======= MÉTODOS DE ACTUALIZACIÓN DE ESTADO =======
+  //MÉTODOS DE ACTUALIZACIÓN DE ESTADO (SETTERS)
 
+  // Actualiza parcialmente los datos de la empresa (ej: solo el nombre)
   updateCompany(company: Partial<Clients>): void {
     this.registrationState.company = { ...this.registrationState.company, ...company };
   }
 
+  // Actualiza parcialmente los datos del cliente (ej: solo el email)
   updateClient(client: Partial<Clients>): void {
     this.registrationState.client = { ...this.registrationState.client, ...client };
   }
 
+  // Actualiza un administrador específico de la lista por su posición
   updateAdministrator(index: number, admin: Partial<Clients>): void {
     if (index >= 0 && index < this.registrationState.administrators.length) {
       this.registrationState.administrators[index] = {
@@ -169,6 +181,7 @@ export class ClientsValidatorService {
     }
   }
 
+  // Añade un nuevo administrador vacío a la lista
   addAdministrator(): void {
     const newAdmin = this.createEmptyAdministrator();
     if (this.registrationState.flow.companyId) {
@@ -177,6 +190,7 @@ export class ClientsValidatorService {
     this.registrationState.administrators.push(newAdmin);
   }
 
+  // Elimina un administrador de la lista (mínimo debe quedar 1)
   removeAdministrator(index: number): boolean {
     if (this.registrationState.administrators.length > 1 && index >= 0 && index < this.registrationState.administrators.length) {
       this.registrationState.administrators.splice(index, 1);
@@ -185,8 +199,9 @@ export class ClientsValidatorService {
     return false;
   }
 
-  // ======= MÉTODOS DE NAVEGACIÓN =======
+  //MÉTODOS DE NAVEGACIÓN DEL WIZARD
 
+  // Establece si es particular/autonomo/empresa y configura cuántos pasos tendrá
   selectClientType(type: string): void {
     this.registrationState.flow.clientType = type;
     this.registrationState.client.type_client = type;
@@ -198,6 +213,7 @@ export class ClientsValidatorService {
     }
   }
 
+  // Verifica si es posible ir a un paso específico validando los anteriores
   canNavigateToStep(step: number): StepValidationResult {
     if (step < 0 || step >= this.registrationState.flow.maxSteps) {
       return { isValid: false, message: 'Paso no válido' };
@@ -214,6 +230,7 @@ export class ClientsValidatorService {
     return { isValid: true };
   }
 
+  // Cambia al paso especificado si es válido hacerlo
   navigateToStep(step: number): StepValidationResult {
     const canNavigate = this.canNavigateToStep(step);
     if (canNavigate.isValid) {
@@ -222,6 +239,7 @@ export class ClientsValidatorService {
     return canNavigate;
   }
 
+  // Avanza al siguiente paso validando que el actual esté correcto
   nextStep(): StepValidationResult {
     const currentStep = this.registrationState.flow.currentStep;
 
@@ -245,6 +263,7 @@ export class ClientsValidatorService {
     return { isValid: true };
   }
 
+  // Retrocede al paso anterior sin validaciones
   previousStep(): StepValidationResult {
     const currentStep = this.registrationState.flow.currentStep;
 
@@ -256,8 +275,9 @@ export class ClientsValidatorService {
     return { isValid: true };
   }
 
-  // ======= MÉTODOS DE VALIDACIÓN POR PASOS =======
+  //MÉTODOS DE VALIDACIÓN POR PASOS
 
+  // Llama a la validación específica según el número de paso (0, 1 o 2)
   validateStep(step: number): StepValidationResult {
     switch (step) {
       case 0:
@@ -271,10 +291,12 @@ export class ClientsValidatorService {
     }
   }
 
+  // Valida el paso en el que está actualmente el usuario
   validateCurrentStep(): StepValidationResult {
     return this.validateStep(this.registrationState.flow.currentStep);
   }
 
+  // Verifica que se haya seleccionado particular/autonomo/empresa
   private validateClientTypeStep(): StepValidationResult {
     if (!this.registrationState.flow.clientType) {
       return { isValid: false, message: 'Por favor, seleccione un tipo de cliente' };
@@ -282,6 +304,7 @@ export class ClientsValidatorService {
     return { isValid: true };
   }
 
+  // Valida los datos según el tipo (empresa vs personal)
   private validateDataStep(): StepValidationResult {
     if (this.registrationState.flow.clientType === 'empresa') {
       return this.validateClient(this.registrationState.company);
@@ -290,6 +313,7 @@ export class ClientsValidatorService {
     }
   }
 
+  // Valida que todos los administradores tengan datos correctos
   private validateAdministratorsStep(): StepValidationResult {
     for (let i = 0; i < this.registrationState.administrators.length; i++) {
       const admin = this.registrationState.administrators[i];
@@ -301,9 +325,10 @@ export class ClientsValidatorService {
     return { isValid: true };
   }
 
-  // ======= MÉTODOS DE CREACIÓN =======
+  //MÉTODOS DE CREACIÓN EN BACKEND (LOS IMPORTANTES)
 
-  createCompany(): Observable<CreateClientResponse> {
+  // Envía la empresa al backend, recibe el objeto completo y actualiza el estado
+  createCompany(): Observable<Clients> {
     const validation = this.validateClient(this.registrationState.company);
     if (!validation.isValid) {
       return throwError(() => new Error(validation.message || 'Error en los datos de la empresa'));
@@ -312,14 +337,21 @@ export class ClientsValidatorService {
     const cleanCompany = this.cleanClientData(this.registrationState.company);
 
     return this.clientsService.createClientes(cleanCompany).pipe(
-      switchMap((response: CreateClientResponse) => {
-        // Actualizar estado
-        this.registrationState.flow.companyId = response.data.id;
+      switchMap((response: Clients) => {
+        // Acceder directamente al ID del objeto devuelto por el backend
+        const companyId = response.id;
+
+        if (!companyId) {
+          throw new Error('No se pudo obtener el ID de la empresa creada');
+        }
+
+        // Actualizar estado con la empresa creada
+        this.registrationState.flow.companyId = companyId;
         this.registrationState.flow.isCompanyCreated = true;
 
         // Configurar administradores con la empresa creada
         this.registrationState.administrators.forEach(admin => {
-          admin.parent_company_id = response.data.id;
+          admin.parent_company_id = companyId;
         });
 
         return of(response);
@@ -328,7 +360,8 @@ export class ClientsValidatorService {
     );
   }
 
-  createSingleClient(): Observable<CreateClientResponse> {
+  // Envía un cliente individual al backend y devuelve el objeto completo
+  createSingleClient(): Observable<Clients> {
     const validation = this.validateClient(this.registrationState.client);
     if (!validation.isValid) {
       return throwError(() => new Error(validation.message || 'Error en los datos del cliente'));
@@ -338,6 +371,7 @@ export class ClientsValidatorService {
     return this.clientsService.createClientes(cleanClient);
   }
 
+  // Crea todos los administradores uno por uno de forma secuencial
   createAdministrators(): Observable<CompanyCreationResult> {
     const validation = this.validateAdministratorsStep();
     if (!validation.isValid) {
@@ -350,7 +384,7 @@ export class ClientsValidatorService {
 
       const createNextAdmin = (): void => {
         if (adminIndex >= this.registrationState.administrators.length) {
-          // Todos los administradores creados
+          // Todos los administradores creados exitosamente
           this.registrationState.flow.isCompleted = true;
           observer.next({
             companyId: this.registrationState.flow.companyId || 0,
@@ -376,10 +410,10 @@ export class ClientsValidatorService {
         const cleanAdmin = this.cleanClientData(admin);
 
         this.clientsService.createClientes(cleanAdmin).subscribe({
-          next: (response: CreateClientResponse) => {
+          next: (response: Clients) => {
             administratorsCreated++;
             adminIndex++;
-            createNextAdmin();
+            createNextAdmin(); // Crear el siguiente administrador
           },
           error: (error) => {
             observer.error(error);
@@ -387,11 +421,12 @@ export class ClientsValidatorService {
         });
       };
 
-      createNextAdmin();
+      createNextAdmin(); // Iniciar la creación del primer administrador
     });
   }
 
-  processCompleteRegistration(): Observable<CreateClientResponse | CompanyCreationResult> {
+  // Decide si crear empresa+admins o solo cliente según el tipo
+  processCompleteRegistration(): Observable<Clients | CompanyCreationResult> {
     if (this.registrationState.flow.clientType === 'empresa') {
       // Para empresas, crear administradores (la empresa ya está creada)
       return this.createAdministrators();
@@ -401,8 +436,9 @@ export class ClientsValidatorService {
     }
   }
 
-  // ======= MÉTODOS DE CONFIGURACIÓN PARA AUTÓNOMOS =======
+  //MÉTODOS DE CONFIGURACIÓN
 
+  // Asigna una empresa padre a un cliente autónomo
   setParentCompany(companyId: number): void {
     if (companyId && companyId > 0) {
       this.registrationState.client.parent_company_id = companyId;
@@ -413,8 +449,9 @@ export class ClientsValidatorService {
     }
   }
 
-  // ======= MÉTODOS DE UTILIDAD =======
+  //MÉTODOS DE UTILIDAD PARA LA UI
 
+  // Devuelve el título a mostrar según el paso actual
   getStepTitle(): string {
     const currentStep = this.registrationState.flow.currentStep;
     switch (currentStep) {
@@ -427,14 +464,17 @@ export class ClientsValidatorService {
     }
   }
 
+  // Determina si un paso ya se completó (para mostrar check verde)
   isStepCompleted(step: number): boolean {
     return this.registrationState.flow.currentStep > step;
   }
 
+  // Determina si un paso está activo (para resaltarlo)
   isStepActive(step: number): boolean {
     return this.registrationState.flow.currentStep === step;
   }
 
+  // Determina si un paso se debe mostrar (paso 2 solo para empresas)
   isStepVisible(step: number): boolean {
     if (step === 2) {
       return this.registrationState.flow.clientType === 'empresa';
@@ -442,22 +482,25 @@ export class ClientsValidatorService {
     return true;
   }
 
+  // Determina si mostrar el botón "Siguiente" en la UI
   showNextButton(): boolean {
     return this.registrationState.flow.currentStep < this.registrationState.flow.maxSteps - 1 &&
       this.registrationState.flow.clientType !== '';
   }
 
+  // Determina si mostrar el botón "Anterior" en la UI
   showPrevButton(): boolean {
     return this.registrationState.flow.currentStep > 0;
   }
 
+  // Determina si mostrar el botón "Enviar" en la UI
   showSubmitButton(): boolean {
     return this.registrationState.flow.currentStep === this.registrationState.flow.maxSteps - 1;
   }
 
-  // ======= MÉTODOS DE LIMPIEZA Y VALIDACIÓN EXISTENTES =======
+  //MÉTODOS DE LIMPIEZA Y VALIDACIÓN DE DATOS
 
-  // Limpiar y transformar datos
+  // Normaliza datos (mayúsculas, trim, etc.) antes de enviar al backend
   cleanClientData(client: Clients): Clients {
     return {
       id: client.id,
@@ -478,7 +521,7 @@ export class ClientsValidatorService {
     } as Clients;
   }
 
-  // Validar campos requeridos - CORREGIDO
+  // Verifica que todos los campos obligatorios estén completos
   validateRequiredFields(client: Clients): { isValid: boolean; message?: string } {
     // Validación campo por campo
     if (!client.type_client || client.type_client.trim() === '') {
@@ -538,7 +581,7 @@ export class ClientsValidatorService {
     return { isValid: true };
   }
 
-  // Validación de la identificación
+  // Valida que DNI/NIE/CIF sea correcto según el tipo de cliente
   validateIdentification(client: Clients): { isValid: boolean; message?: string } {
     const identification = client.identification?.trim().toUpperCase();
     if (!identification) {
@@ -580,7 +623,7 @@ export class ClientsValidatorService {
     return { isValid: true };
   }
 
-  // Validamos el email
+  // Verifica que el email tenga formato válido
   validateEmail(email: string): { isValid: boolean; message?: string } {
     if (!email || email.trim() === '') {
       return {
@@ -598,7 +641,7 @@ export class ClientsValidatorService {
     return { isValid: true };
   }
 
-  // Validamos el teléfono
+  // Verifica que el teléfono tenga exactamente 9 dígitos
   validatePhone(phone: string): { isValid: boolean; message?: string } {
     if (!phone || phone.trim() === '') {
       return {
@@ -617,7 +660,7 @@ export class ClientsValidatorService {
     return { isValid: true };
   }
 
-  // Validación completa
+  // Ejecuta todas las validaciones anteriores en secuencia
   validateClient(client: Clients): { isValid: boolean; message?: string } {
     // 1. Limpiar datos
     const cleanClient = this.cleanClientData(client);

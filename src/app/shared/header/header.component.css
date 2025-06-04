@@ -1,141 +1,88 @@
-/* ============================================
-   HEADER.COMPONENT.CSS - HEADER INTELIGENTE
-   ============================================ */
-
+/* CONTENEDOR PRINCIPAL HEADER */
 .header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
-
-  /* Mismo color que el fondo */
   background: #020617;
-
-  /* Layout con más altura para logo futuro */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 2rem; /* Más padding vertical para altura */
-  height: 5.5rem; /* Altura generosa para logo */
-
-  /* Transición suave */
+  padding: 1.5rem 2rem;
+  height: 5.5rem;
   transition: all 0.3s ease;
 }
 
-/* Header con scroll - se vuelve translúcido */
+/* HEADER CON SCROLL */
 .header.scrolled {
-  background: rgba(2, 6, 23, 0.85);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(2, 6, 23, 0.9);
+  border-bottom: 0.0625rem solid rgba(255, 255, 255, 0.1);
 }
 
-/* Logo */
+/* LOGO PRINCIPAL */
 .logo {
   font-size: 1.5rem;
   font-weight: 700;
   color: #ffffff;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: color 0.3s ease;
 }
 
 .logo:hover {
   color: #60a5fa;
-  transform: translateY(-1px);
 }
 
-/* Animación del logo */
-.logo.animate-logo {
-  animation: logoGlow 0.6s ease-out;
-}
-
-@keyframes logoGlow {
-  0% {
-    transform: scale(1);
-    text-shadow: none;
-  }
-  50% {
-    transform: scale(1.05);
-    text-shadow: 0 0 20px rgba(96, 165, 250, 0.6);
-  }
-  100% {
-    transform: scale(1);
-    text-shadow: none;
-  }
-}
-
-/* Sección de usuario */
+/* CONTENEDOR DE ESTADO DE USUARIO */
 .user-status {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-/* Indicador de estado */
+/* INDICADOR DE CONEXIÓN */
 .status-indicator {
-  width: 12px;
-  height: 12px;
+  width: 0.75rem;
+  height: 0.75rem;
   border-radius: 50%;
   background: #10b981;
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
-  animation: pulse 2s infinite;
 }
 
 .user-status.not-logged .status-indicator {
   background: #ef4444;
-  box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
 }
 
-/* Animación del indicador */
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.1); }
-}
-
-/* Botón de login/logout */
+/* BOTÓN LOGIN/LOGOUT */
 .login-button button {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  background: #3b82f6;
   color: white;
   border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
+  transition: all 0.2s ease;
 }
 
 .login-button button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+  background: #2563eb;
+  transform: translateY(-0.125rem);
 }
 
-.login-button button:active {
-  transform: translateY(0);
-}
-
-/* Icono del botón */
-.login-button button::before {
-  content: attr(data-icon);
-  margin-right: 0.5rem;
-  font-size: 1.1em;
-}
-
-/* Estado no logueado */
+/* ESTADO NO LOGUEADO */
 .user-status.not-logged .login-button button {
-  background: linear-gradient(135deg, #6b7280, #374151);
+  background: #6b7280;
 }
 
 .user-status.not-logged .login-button button:hover {
-  box-shadow: 0 8px 25px rgba(107, 114, 128, 0.4);
+  background: #4b5563;
 }
 
-/* Responsive */
+/* RESPONSIVE TABLET */
 @media (max-width: 48rem) {
   .header {
     padding: 1.25rem 1rem;
-    height: 4.5rem; /* Altura adecuada en móvil */
+    height: 4.5rem;
   }
 
   .logo {
@@ -143,24 +90,33 @@
   }
 
   .login-button button {
-    padding: 0.75rem 1.25rem;
+    padding: 0.6875rem 1.25rem;
     font-size: 0.875rem;
   }
 }
 
+/* RESPONSIVE MÓVIL */
 @media (max-width: 30rem) {
   .header {
     padding: 1rem 0.75rem;
-    gap: 0.5rem;
-    height: 4rem; /* Compacto pero espacioso */
+    height: 4rem;
   }
 
   .logo {
     font-size: 1.125rem;
   }
 
+  .user-status {
+    gap: 0.75rem;
+  }
+
   .status-indicator {
     width: 0.625rem;
     height: 0.625rem;
+  }
+
+  .login-button button {
+    padding: 0.625rem 1rem;
+    font-size: 0.8125rem;
   }
 }

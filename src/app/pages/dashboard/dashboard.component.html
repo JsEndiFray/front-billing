@@ -1,20 +1,28 @@
 <div class="dashboard-wrapper">
   <h1>Panel de control</h1>
-  <nav class="dashboard-menu">
-    <a [routerLink]="['users']" routerLinkActive="active">Usuarios Registrados</a>
-  </nav>
-  <nav class="dashboard-menu">
 
+  <nav class="dashboard-menu">
+    <a [routerLink]="['users']" routerLinkActive="active">
+      Usuarios Registrados
+    </a>
+  </nav>
+
+  <nav class="dashboard-menu">
     <a [routerLink]="['clients']" routerLinkActive="active">Clientes</a>
     <a [routerLink]="['owners']" routerLinkActive="active">Propietarios</a>
     <a [routerLink]="['estates']" routerLinkActive="active">Propiedades</a>
-    <a [routerLink]="['ownership']" routerLinkActive="active">Porcentajes de las Propiedades</a>
+    <a [routerLink]="['ownership']" routerLinkActive="active">
+      Porcentajes de las Propiedades
+    </a>
     <a [routerLink]="['bills']" routerLinkActive="active">Facturas</a>
   </nav>
 
   <div class="dashboard-intro">
     <h2>Bienvenido al sistema de facturación</h2>
-    <p>Desde aquí podrás gestionar tus clientes, propietarios, propiedades y generar facturas fácilmente.</p>
+    <p>
+      Desde aquí podrás gestionar tus clientes, propietarios, propiedades
+      y generar facturas fácilmente.
+    </p>
     <p>Selecciona una opción del menú para empezar.</p>
   </div>
 

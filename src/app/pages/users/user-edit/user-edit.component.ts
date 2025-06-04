@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {User, UserEdit} from '../../../interface/users-interface';
+import {User} from '../../../interface/users-interface';
 import {UserService} from '../../../core/services/user-services/user.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -42,12 +42,8 @@ export class UserEditComponent implements OnInit {
       if (id) {
         // Cargo los campos del usuario
         this.userService.getById(id).subscribe({
-          next: (response: UserEdit) => {
-            // Verificar la estructura y extraer los datos
-            if (response && response.data) {
-              // Si viene dentro de data.result
-              this.user = response.data;
-            }
+          next: (user) => {
+            this.user = user;
           },
           error: (e: HttpErrorResponse) => {
           }
@@ -98,9 +94,11 @@ export class UserEditComponent implements OnInit {
 
       }
     })
-
-
   }
+
+  goBack() {
+    this.router.navigate(['/dashboard/users/list']);
+  };
 
 
 }

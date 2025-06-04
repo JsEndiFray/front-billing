@@ -5,7 +5,7 @@
     <thead>
     <tr>
       <th>ID</th>
-      <th>Nombre de usuario</th>
+      <th>Usuario</th>
       <th>Contraseña</th>
       <th>Email</th>
       <th>Teléfono</th>
@@ -22,13 +22,12 @@
           <tr>
             <td>{{ user.id }}</td>
             <td>{{ user.username }}</td>
-            <td>{{ user.password }} €</td>
+            <td>{{ user.password }}</td>
             <td>{{ user.email }}</td>
             <td>{{ user.phone }}</td>
             <td>{{ user.role }}</td>
             <td>{{ user.date_create | dataFormat }}</td>
             <td>{{ user.date_update | dataFormat }}</td>
-
             <td>
               <button (click)="editUser(user.id!)">Editar</button>
               <button (click)="deleteUser(user.id!)">Eliminar</button>
@@ -37,16 +36,14 @@
         }
       } @else {
         <tr>
-          <td colspan="16" class="no-clients-cell">
+          <td colspan="9" class="no-clients-cell">
             <div class="no-clients-card">
-              <h3>Sin Usuario</h3>
-              <p>No hay Usuarios disponibles en este momento.</p>
+              <h3>Sin Usuarios</h3>
+              <p>No hay usuarios disponibles en este momento.</p>
             </div>
           </td>
         </tr>
       }
     </tbody>
-
-
   </table>
 </div>

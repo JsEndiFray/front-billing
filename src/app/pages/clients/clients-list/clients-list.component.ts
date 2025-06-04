@@ -4,6 +4,7 @@ import {ClientsService} from '../../../core/services/clients-services/clients.se
 import {HttpErrorResponse} from '@angular/common/http';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
 import Swal from 'sweetalert2';
+import {Router} from '@angular/router';
 
 
 @Component({
@@ -21,7 +22,10 @@ export class ClientsListComponent implements OnInit {
   // Datos que se muestran en la tabla (solo la página actual)
   clients: Clients[] = [];
 
-  constructor(private clientsService: ClientsService) {
+  constructor(
+    private clientsService: ClientsService,
+    private router: Router,
+  ) {
   }
 
   ngOnInit(): void {
@@ -30,8 +34,8 @@ export class ClientsListComponent implements OnInit {
 
   loadClients(): void {
     this.clientsService.getClients().subscribe({
-      next: (response) => {
-        this.clients = response.data;
+      next: (client) => {
+        this.clients = client;
       }, error: (e: HttpErrorResponse) => {
       }
     })
@@ -39,7 +43,7 @@ export class ClientsListComponent implements OnInit {
 
 //UPDATE
   editClient(id: number) {
-
+    this.router.navigate(['/dashboard/clients/edit', id])
 
   }
 
@@ -55,15 +59,16 @@ export class ClientsListComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.clientsService.deleleteUser(id).subscribe({
-          next: () => {
-            Swal.fire({
-              title: 'Eliminado.',
-              text: 'Cliente eliminado correctamente',
-              icon: 'success',
-              confirmButtonText: 'Ok'
-            });
-            this.loadClients();
-
+          next: (success) => {
+            if(success){
+              Swal.fire({
+                title: 'Eliminado.',
+                text: 'Cliente eliminado correctamente',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+              });
+              this.loadClients();
+            }
           }, error: (e: HttpErrorResponse) => {
           }
         })
@@ -75,8 +80,8 @@ export class ClientsListComponent implements OnInit {
   //conexión DB
   getListClients() {
     this.clientsService.getClients().subscribe({
-      next: (response) => {
-        this.clients = response.data;
+      next: (client) => {
+        this.clients = client;
       }, error: (e: HttpErrorResponse) => {
       }
     })

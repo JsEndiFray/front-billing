@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from '../api-service/api.service';
 import {Observable} from 'rxjs';
-import {User, UserEdit, UsersArray} from '../../../interface/users-interface';
+import {User} from '../../../interface/users-interface';
 
 @Injectable({
   providedIn: 'root'
@@ -16,12 +16,12 @@ export class UserService {
   //MÉTODOS DE OBTENER
 
 //obtener listado
-  getAlltUser(): Observable<UsersArray> {
-    return this.api.get<UsersArray>('users');
+  getUser(): Observable<User[]> {
+    return this.api.get<User[]>('users');
   }
 
-  getById(id: number): Observable<UserEdit> {
-    return this.api.get<UserEdit>(`users/${id}`);
+  getById(id: number): Observable<User> {
+    return this.api.get<User>(`users/${id}`);
   }
 
 //MÉTODOS DE UPDATE DELETE

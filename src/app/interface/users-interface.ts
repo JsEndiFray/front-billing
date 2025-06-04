@@ -11,14 +11,7 @@ export interface User {
   date_update?: string;
 
 }
-//listado de array de objeto
-export interface UsersArray {
-  data: User[];
-}
-//editor de los usuarios
-export interface UserEdit {
-  data: User;
-}
+
 //login
 export interface UsersLogin {
   username: string;
@@ -33,11 +26,9 @@ export interface token {
   username: string;
 }
 
+//acceso al token
 export interface LoginResponse {
-  msg: string;
-  data: {
-    user: User;
-    accessToken: string;
-    refreshToken: string;
-  };
+  user: User;
+  accessToken: string;
+  refreshToken: string;
 }

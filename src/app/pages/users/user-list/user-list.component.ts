@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {User, UsersArray} from '../../../interface/users-interface';
+import {User} from '../../../interface/users-interface';
 import {UserService} from '../../../core/services/user-services/user.service';
 import {Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -34,9 +34,9 @@ export class UserListComponent implements OnInit {
 
   //recargar la lista
   loadUsers() {
-    this.userService.getAlltUser().subscribe({
-      next: (response: UsersArray) => {
-        this.users = response.data;
+    this.userService.getUser().subscribe({
+      next: (user) => {
+        this.users = user;
       }, error: (e: HttpErrorResponse) => {
       }
     })
@@ -66,7 +66,7 @@ export class UserListComponent implements OnInit {
               text: 'Usuario eliminado correctamente',
               icon: 'success',
               confirmButtonText: 'Ok'
-            }).then(()=>{
+            }).then(() => {
               this.getListUser();
             });
           }, error: (e: HttpErrorResponse) => {
@@ -80,9 +80,9 @@ export class UserListComponent implements OnInit {
 //conexión DB
   //Listado de los usuarios
   getListUser() {
-    this.userService.getAlltUser().subscribe({
-      next: (result) => {
-        this.users = result.data;
+    this.userService.getUser().subscribe({
+      next: (user) => {
+        this.users = user;
       }, error: (e: HttpErrorResponse) => {
       }
     })

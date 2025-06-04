@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {EstateArray, Estates} from '../../../interface/estates.interface';
+import {Estates} from '../../../interface/estates.interface';
 import {EstatesService} from '../../../core/services/estates-services/estates.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {FormsModule} from '@angular/forms';
@@ -32,8 +32,8 @@ export class EstatesListComponent implements OnInit {
   //recargar la lista
   loadEstates() {
     this.estateService.getAllEstate().subscribe({
-      next: (response) => {
-        this.estates = response.data;
+      next: (estates) => {
+        this.estates = estates;
       }, error: (e: HttpErrorResponse) => {
       }
     })
@@ -57,14 +57,16 @@ export class EstatesListComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.estateService.deleteEstate(id).subscribe({
-          next: () => {
-            Swal.fire({
-              title: 'Eliminado.',
-              text: 'Inmueble eliminado correctamente',
-              icon: 'success',
-              confirmButtonText: 'Ok'
-            });
-            this.loadEstates();
+          next: (success) => {
+            if (success) {
+              Swal.fire({
+                title: 'Eliminado.',
+                text: 'Inmueble eliminado correctamente',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+              });
+              this.loadEstates();
+            }
           },
           error: (e: HttpErrorResponse) => {
           }
@@ -72,16 +74,13 @@ export class EstatesListComponent implements OnInit {
 
       }
     })
-
-
   }
-
   //conexión DB
   //Listado de los inmuebles
   getListEstate() {
     this.estateService.getAllEstate().subscribe({
-      next: (response: EstateArray) => {
-        this.estates = response.data;
+      next: (estates) => {
+        this.estates =estates;
       }, error: (e: HttpErrorResponse) => {
       }
     });

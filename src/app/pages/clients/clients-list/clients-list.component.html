@@ -5,26 +5,27 @@
     <thead>
     <tr>
       <th>ID</th>
-      <th>Tipo de Cliente</th>
+      <th>Tipo</th>
       <th>Nombre</th>
       <th>Apellidos</th>
-      <th>Nombre Empresa</th>
-      <th>Relación empresa</th>
-      <th>Identificación</th>
+      <th>Empresa</th>
+      <th>Relación</th>
+      <th>DNI/CIF</th>
       <th>Teléfono</th>
-      <th>email</th>
+      <th>Email</th>
       <th>Dirección</th>
       <th>C.P</th>
       <th>Localidad</th>
       <th>Provincia</th>
-      <th>Pais</th>
-      <th>Fecha creación</th>
-      <th>Fecha actualizacón</th>
+      <th>País</th>
+      <th>Creado</th>
+      <th>Actualizado</th>
       <th>Acciones</th>
     </tr>
     </thead>
-    @if (clients && clients.length > 0) {
-      <tbody>
+
+    <tbody>
+      @if (clients && clients.length > 0) {
         @for (client of clients; track client.id) {
           <tr>
             <td>{{ client.id }}</td>
@@ -59,16 +60,16 @@
             </td>
           </tr>
         }
-      </tbody>
-    } @else {
-      <tr>
-        <td colspan="17" class="no-clients-cell">
-          <div class="no-clients-card">
-            <h3>Sin Clientes</h3>
-            <p>No hay clientes disponibles en este momento.</p>
-          </div>
-        </td>
-      </tr>
-    }
+      } @else {
+        <tr>
+          <td colspan="17" class="no-clients-cell">
+            <div class="no-clients-card">
+              <h3>Sin Clientes</h3>
+              <p>No hay clientes disponibles en este momento.</p>
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
   </table>
 </div>

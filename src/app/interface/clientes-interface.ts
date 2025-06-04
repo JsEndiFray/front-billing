@@ -1,6 +1,6 @@
 //listado y registro de clientes
 export interface Clients {
-  id?: number;
+  id?: number | null;
   type_client: string;
   name: string;
   lastname: string;
@@ -15,20 +15,9 @@ export interface Clients {
   country: string;
   date_create?: string;
   date_update?: string;
-  parent_company_id?: number;
+  parent_company_id?: number | null;
   relationship_type?: 'administrator';
   parent_company_name?: string;
-}
-
-//listado Backend
-export interface ClientResponse {
-  data : Clients[];
-}
-
-// INTERFACE PARA LA RESPUESTA DE CREAR CLIENTE
-export interface CreateClientResponse {
-  msg: string;
-  data: Clients; // Ahora devuelve el objeto completo del cliente
 }
 
 //INTERFACE PARA EMPRESAS EN DROPDOWN
