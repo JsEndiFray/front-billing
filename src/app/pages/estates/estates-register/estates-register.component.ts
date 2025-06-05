@@ -53,20 +53,8 @@ export class EstatesRegisterComponent {
       });
       return;
     }
-    //objeto para el backend
-    const newEstate: Estates = {
-      cadastral_reference: this.estate.cadastral_reference,
-      price: this.estate.price,
-      address: this.estate.address,
-      postal_code: this.estate.postal_code,
-      location: this.estate.location,
-      province: this.estate.province,
-      country: this.estate.country,
-      surface: this.estate.surface,
-    }
-
     //CONEXION AL BACKEND
-    this.estateService.createEstate(newEstate).subscribe({
+    this.estateService.createEstate(cleanEstate).subscribe({
       next: (data: Estates) => {
         Swal.fire({
           title: "Se ha registrado correctamente.",

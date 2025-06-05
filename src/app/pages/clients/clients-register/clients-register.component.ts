@@ -1,18 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { HttpErrorResponse } from '@angular/common/http';
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {ClientsValidatorService} from '../../../core/services/validator-services/clients-validator.service';
 import Swal from 'sweetalert2';
-
-import {
-  Clients,
-  CompanyOption,
-  ClientRegistrationFlow,
-  RegistrationState,
-  CompanyCreationResult,
-} from '../../../interface/clientes-interface';
-import { ClientsValidatorService } from '../../../core/services/validator-services/clients-validator.service';
+import {Clients} from '../../../interface/clientes-interface';
+import {Router} from '@angular/router';
+import {ClientsService} from '../../../core/services/clients-services/clients.service';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Component({
   selector: 'app-clients',
@@ -28,254 +22,199 @@ import { ClientsValidatorService } from '../../../core/services/validator-servic
   styleUrl: './clients-register.component.css'
 })
 export class ClientsRegisterComponent implements OnInit {
+  client: Clients = {
+    id: null,
+    type_client: '',
+    name: '',
+    lastname: '',
+    company_name: '',
+    identification: '',
+    phone: '',
+    email: '',
+    address: '',
+    postal_code: '',
+    location: '',
+    province: '',
+    country: 'ESPAÑA',
+    date_create: '',
+    date_update: '',
+    parent_company_id: null,
+    relationship_type: undefined
+  };
 
-  // ======= ESTADO DEL COMPONENTE =======
-  registrationState: RegistrationState = {} as RegistrationState;
-  flow: ClientRegistrationFlow = {} as ClientRegistrationFlow;
+  administrators: Clients[] = [];
+  createdCompanyId: number | null | undefined = null;
+
 
   constructor(
     private clientsValidatorService: ClientsValidatorService,
-    private router: Router
+    private router: Router,
+    private clientsService: ClientsService
   ) {}
 
   ngOnInit(): void {
-    this.initializeComponent();
+    // Generar CIF válido para pruebas
+    console.log('CIF válido generado:', this.clientsValidatorService.generateValidCIF());
   }
 
-  // ======= MÉTODOS DE INICIALIZACIÓN =======
-  private initializeComponent(): void {
-    this.clientsValidatorService.initializeRegistration().subscribe({
-      next: (companies: CompanyOption[]) => {
-        this.updateComponentState();
-      },
-      error: (e: HttpErrorResponse) => {
-        // El interceptor maneja el error automáticamente
-      }
-    });
-  }
-
-  private updateComponentState(): void {
-    this.registrationState = this.clientsValidatorService.getRegistrationState();
-    this.flow = this.clientsValidatorService.getFlow();
-  }
-
-  // ======= MÉTODOS DE NAVEGACIÓN =======
   selectClientType(type: string): void {
-    this.clientsValidatorService.selectClientType(type);
-    this.updateComponentState();
-  }
+    this.client.type_client = type;
+    this.client.company_name = '';
+    this.client.parent_company_id = null;
+    this.client.relationship_type = undefined;
 
-  changeStep(direction: number): void {
-    if (direction === 1) {
-      // Avanzar paso
-      if (this.flow.clientType === 'empresa' && this.flow.currentStep === 1 && !this.flow.isCompanyCreated) {
-        this.createCompanyFirst();
-        return;
-      }
-
-      const result = this.clientsValidatorService.nextStep();
-      if (!result.isValid) {
-        // Solo errores de validación local (no HTTP)
-        Swal.fire({
-          title: 'Error de validación',
-          text: result.message || 'Error al avanzar',
-          icon: 'error',
-          confirmButtonText: 'Ok'
-        });
-        return;
-      }
-    } else {
-      // Retroceder paso
-      const result = this.clientsValidatorService.previousStep();
-      if (!result.isValid) {
-        // Solo errores de validación local (no HTTP)
-        Swal.fire({
-          title: 'Error de validación',
-          text: result.message || 'Error al retroceder',
-          icon: 'error',
-          confirmButtonText: 'Ok'
-        });
-        return;
-      }
+    // Limpiar administradores si cambia de empresa
+    if (type !== 'empresa') {
+      this.administrators = [];
     }
 
-    this.updateComponentState();
+    if (type === 'autonomo') {
+      this.client.relationship_type = 'administrator';
+    }
   }
 
-  // ======= MÉTODOS DE CREACIÓN - ACTUALIZADOS =======
-  private createCompanyFirst(): void {
-    this.clientsValidatorService.createCompany().subscribe({
-      next: (client: Clients) => {  // ✅ CORREGIDO: Ahora recibe Clients directamente
-        this.updateComponentState();
+  updateCompanyName(): void {
+    if (this.client.type_client === 'empresa') {
+      this.client.company_name = `${this.client.name} ${this.client.lastname}`.trim();
+    }
+  }
 
-        // Avanzar al siguiente paso
-        const nextStepResult = this.clientsValidatorService.nextStep();
-        if (nextStepResult.isValid) {
-          this.updateComponentState();
+  getIdentificationPlaceholder(): string {
+    switch (this.client.type_client) {
+      case 'empresa':
+        return 'CIF (ej: A12345674)';
+      case 'particular':
+      case 'autonomo':
+        return 'NIF, NIE o Pasaporte';
+      default:
+        return 'Identificación';
+    }
+  }
 
-          Swal.fire({
-            title: "Empresa registrada",
-            text: "Ahora proceda a registrar los administradores",
-            icon: "success",
-            timer: 2000,
-            showConfirmButton: false
-          });
-        }
-      },
-      error: (e: HttpErrorResponse) => {
-        // El interceptor maneja el error automáticamente
-      }
-    });
+  // Gestión de administradores
+  addAdministrator(): void {
+    const newAdmin: Clients = {
+      id: null,
+      type_client: 'autonomo',
+      name: '',
+      lastname: '',
+      company_name: '',
+      identification: '',
+      phone: '',
+      email: '',
+      address: '',
+      postal_code: '',
+      location: '',
+      province: '',
+      country: 'ESPAÑA',
+      date_create: '',
+      date_update: '',
+      parent_company_id: null,
+      relationship_type: 'administrator'
+    };
+    this.administrators.push(newAdmin);
+  }
+
+  removeAdministrator(index: number): void {
+    this.administrators.splice(index, 1);
+  }
+
+  validateAdministrator(admin: Clients): boolean {
+    const validation = this.clientsValidatorService.validateClient(admin);
+    if (!validation.isValid) {
+      Swal.fire({
+        title: 'Error en administrador',
+        text: validation.message,
+        icon: 'error'
+      });
+      return false;
+    }
+    return true;
   }
 
   createClient(): void {
-    const validation = this.clientsValidatorService.validateCurrentStep();
-    if (!validation.isValid) {
-      // Solo errores de validación local (no HTTP)
+    if (!this.client.type_client) {
       Swal.fire({
-        title: 'Error de validación',
-        text: validation.message || 'Error de validación',
-        icon: 'error',
-        confirmButtonText: 'Ok'
+        title: 'Error!',
+        text: 'Debe seleccionar un tipo de cliente',
+        icon: 'error'
       });
       return;
     }
 
-    this.clientsValidatorService.processCompleteRegistration().subscribe({
-      next: (response: Clients | CompanyCreationResult) => {  // ✅ CORREGIDO: Tipos actualizados
-        if (this.flow.clientType === 'empresa') {
-          this.showSuccessAndRedirect('Empresa y administradores registrados correctamente');
-        } else {
-          this.showSuccessAndRedirect('Cliente registrado correctamente');
-        }
-      },
-      error: (e: HttpErrorResponse) => {
-        // El interceptor maneja el error automáticamente
-      }
-    });
-  }
+    const cleanClient = this.clientsValidatorService.cleanClientData(this.client);
+    const validation = this.clientsValidatorService.validateClient(cleanClient);
 
-  // ======= MÉTODOS DE ADMINISTRADORES =======
-  addAdministrator(): void {
-    this.clientsValidatorService.addAdministrator();
-    this.updateComponentState();
-  }
-
-  removeAdministrator(index: number): void {
-    const success = this.clientsValidatorService.removeAdministrator(index);
-    if (success) {
-      this.updateComponentState();
-    }
-  }
-
-  updateAdministrator(index: number, field: keyof Clients, value: any): void {
-    const update: Partial<Clients> = { [field]: value };
-    this.clientsValidatorService.updateAdministrator(index, update);
-    this.updateComponentState();
-  }
-
-  // ======= MÉTODOS PARA AUTÓNOMOS =======
-  onParentCompanyChange(): void {
-    const companyId = this.registrationState.client.parent_company_id;
-
-    if (!companyId) {
-      this.clientsValidatorService.setParentCompany(0);
-      this.updateComponentState();
+    if (!validation.isValid) {
+      Swal.fire({
+        title: 'Error!',
+        text: validation.message,
+        icon: 'error'
+      });
       return;
     }
 
-    const numericId = typeof companyId === 'string' ? parseInt(companyId, 10) : companyId;
+    this.clientsService.createClientes(cleanClient).subscribe({
+      next: (data: Clients) => {
+        this.createdCompanyId = data.id;
 
-    if (isNaN(numericId)) {
-      console.warn('Invalid company ID provided:', companyId);
-      this.clientsValidatorService.setParentCompany(0);
-    } else {
-      this.clientsValidatorService.setParentCompany(numericId);
-    }
-
-    this.updateComponentState();
-  }
-
-  // ======= MÉTODOS DE ACTUALIZACIÓN DE DATOS =======
-  updateCompanyData(field: keyof Clients, value: any): void {
-    const update: Partial<Clients> = { [field]: value };
-    this.clientsValidatorService.updateCompany(update);
-    this.updateComponentState();
-  }
-
-  updateClientData(field: keyof Clients, value: any): void {
-    const update: Partial<Clients> = { [field]: value };
-    this.clientsValidatorService.updateClient(update);
-    this.updateComponentState();
-  }
-
-  // ======= MÉTODOS DE UTILIDAD DE LA UI =======
-  getStepTitle(): string {
-    return this.clientsValidatorService.getStepTitle();
-  }
-
-  isStepCompleted(step: number): boolean {
-    return this.clientsValidatorService.isStepCompleted(step);
-  }
-
-  isStepActive(step: number): boolean {
-    return this.clientsValidatorService.isStepActive(step);
-  }
-
-  isStepVisible(step: number): boolean {
-    return this.clientsValidatorService.isStepVisible(step);
-  }
-
-  showNextButton(): boolean {
-    return this.clientsValidatorService.showNextButton();
-  }
-
-  showPrevButton(): boolean {
-    return this.clientsValidatorService.showPrevButton();
-  }
-
-  showSubmitButton(): boolean {
-    return this.clientsValidatorService.showSubmitButton();
-  }
-
-  // ======= GETTERS PARA ACCESO A DATOS EN EL TEMPLATE =======
-  get company(): Clients {
-    return this.registrationState.company || {} as Clients;
-  }
-
-  get client(): Clients {
-    return this.registrationState.client || {} as Clients;
-  }
-
-  get administrators(): Clients[] {
-    return this.registrationState.administrators || [];
-  }
-
-  get companies(): CompanyOption[] {
-    return this.registrationState.companies || [];
-  }
-
-  get clientType(): string {
-    return this.flow.clientType || '';
-  }
-
-  get currentStep(): number {
-    return this.flow.currentStep || 0;
-  }
-
-  get maxSteps(): number {
-    return this.flow.maxSteps || 2;
-  }
-
-  // ======= MÉTODOS DE UTILIDAD =======
-  private showSuccessAndRedirect(message: string): void {
-    Swal.fire({
-      title: "¡Éxito!",
-      text: message,
-      icon: "success",
-      draggable: true
-    }).then(() => {
-      this.router.navigate(['dashboard/clients/list']);
+        // Si es empresa con administradores, crearlos
+        if (this.client.type_client === 'empresa' && this.administrators.length > 0) {
+          this.createAdministrators();
+        } else {
+          this.showSuccess();
+        }
+      },
+      error: (e: HttpErrorResponse) => {}
     });
   }
+
+  private createAdministrators(): void {
+    // Validar todos los administradores primero
+    for (let i = 0; i < this.administrators.length; i++) {
+      if (!this.validateAdministrator(this.administrators[i])) {
+        return;
+      }
+    }
+
+    const adminPromises = this.administrators.map(admin => {
+      const cleanAdmin = this.clientsValidatorService.cleanClientData(admin);
+      cleanAdmin.parent_company_id = this.createdCompanyId;
+      cleanAdmin.relationship_type = 'administrator';
+      cleanAdmin.type_client = 'autonomo';
+
+      return this.clientsService.createClientes(cleanAdmin).toPromise();
+    });
+
+    Promise.all(adminPromises).then(
+      () => {
+        Swal.fire({
+          title: 'Éxito!',
+          text: `Empresa y ${this.administrators.length} administrador(es) creados`,
+          icon: 'success'
+        });
+        this.router.navigate(['/dashboard/clients/list']);
+      }
+    ).catch(
+      () => {
+        Swal.fire({
+          title: 'Advertencia',
+          text: 'Empresa creada pero error al crear algunos administradores',
+          icon: 'warning'
+        });
+        this.router.navigate(['/dashboard/clients/list']);
+      }
+    );
+  }
+
+  private showSuccess(): void {
+    Swal.fire({
+      title: "Cliente registrado correctamente.",
+      icon: "success",
+      draggable: true
+    });
+    this.router.navigate(['/dashboard/clients/list']);
+  }
 }
+
+
