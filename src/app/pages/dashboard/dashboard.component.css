@@ -2,9 +2,9 @@
 .dashboard-wrapper {
   background: linear-gradient(135deg, #091257 0%, #0d3f8f 50%, #2b104e 100%);
   border-radius: 1rem;
-  padding: 2rem;
+  padding: 1.5rem;
   margin: 2rem auto;
-  max-width: 100rem;
+  max-width: 110rem;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
 }
 
@@ -100,7 +100,7 @@ h1 {
   background: #ffffff;
   border-radius: 0.75rem;
   min-height: 20rem;
-  padding: 2rem;
+  padding: 0.9rem;
   border: 0.0625rem solid #e5e7eb;
 }
 

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from '../api-service/api.service';
-import {map, Observable} from 'rxjs';
+import {map, Observable, switchMap} from 'rxjs';
 import {Clients} from '../../../interface/clientes-interface';
 
 @Injectable({
@@ -36,23 +36,28 @@ export class ClientsService {
     return this.api.get<Clients>(`clients/${id}`);
   }
 
-// lógica de asociar un autónomo a una empresa
-  associateAutonomoToCompany(companyId: number, autonomoId: number): Observable<Clients> {
-    const updateData = {
-      parent_company_id: companyId,
-      relationship_type: 'administrator'
-    } as Clients;
-
-    return this.updateClient(autonomoId, updateData);
+  // Asociar cualquier cliente a una empresa como administrador
+  associateClientToCompany(companyId: number, clientId: number): Observable<Clients> {
+    // Primero obtener todos los datos del cliente
+    return this.getClientById(clientId).pipe(
+      switchMap((clientData: Clients) => {
+        // Luego actualizar con todos los datos + la relación
+        const updateData: Partial<Clients> = {
+          ...clientData,
+          parent_company_id: companyId,
+          relationship_type: 'administrator'
+        };
+        return this.updateClient(clientId, updateData);
+      })
+    );
   }
-
 
   //CREATE
   createClientes(client: Clients): Observable<Clients> {
     return this.api.post<Clients, Clients>('clients', client);
   }
 
-  //UPDATE - Método para actualizar cliente
+  //UPDATE
   updateClient(id: number, data: Partial<Clients>): Observable<Clients> {
     return this.api.put<Clients>(`clients/${id}`, data as Clients);
   }
