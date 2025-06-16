@@ -5,41 +5,70 @@ import {Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
 import Swal from 'sweetalert2';
+import {SearchService} from '../../../core/services/search-services/search.service';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 
 @Component({
   selector: 'app-user-list',
   imports: [
-    DataFormatPipe
+    DataFormatPipe,
+    ReactiveFormsModule,
+    FormsModule
   ],
   templateUrl: './user-list.component.html',
   styleUrl: './user-list.component.css'
 })
 export class UserListComponent implements OnInit {
 
-//listado
+//listado de usuarios
   users: User[] = []
 
+// Lista completa de clientes (datos originales)
+  allUsers: User[] = [];
+
+  // Término de búsqueda
+  searchTerm: string = '';
 
   constructor(
     private userService: UserService,
     private router: Router,
+    private searchService: SearchService,
   ) {
   }
 
   ngOnInit(): void {
     this.getListUser();
-    this.loadUsers();
   }
 
-  //recargar la lista
-  loadUsers() {
+  //Listado de los usuarios
+  getListUser() {
     this.userService.getUser().subscribe({
       next: (user) => {
         this.users = user;
+        this.allUsers = user;
       }, error: (e: HttpErrorResponse) => {
       }
     })
+  };
+
+  //método de flitros
+  filterUser() {
+    this.users = this.searchService.filterData(
+      this.allUsers,
+      this.searchTerm,
+      ['username', "email", "phone", "role"]
+    )
+  };
+
+  //Limpiar el término de búsqueda y mostrar todos los clientes
+  clearSearch() {
+    this.searchTerm = '';
+    this.filterUser();
+  }
+
+  onSearchChange() {
+    this.filterUser();
   }
 
 //ruta para editar (boton)
@@ -75,17 +104,6 @@ export class UserListComponent implements OnInit {
       }
     })
 
-  };
-
-//conexión DB
-  //Listado de los usuarios
-  getListUser() {
-    this.userService.getUser().subscribe({
-      next: (user) => {
-        this.users = user;
-      }, error: (e: HttpErrorResponse) => {
-      }
-    })
   };
 
 

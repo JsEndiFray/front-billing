@@ -1,0 +1,160 @@
+<div class="form-wrapper">
+  <h2>Editar Porcentaje de Propiedad</h2>
+
+  <form (ngSubmit)="updateOwnership()" #ownershipForm="ngForm">
+
+    <!-- Información de la Relación -->
+    <div class="form-section">
+      <h3>🏢 Relación Propietario-Inmueble</h3>
+      <div class="form-grid">
+
+        <!-- Selector de Inmueble -->
+        <div class="form-field">
+          <label for="estate_id">Inmueble *</label>
+          <select
+            [(ngModel)]="estateOwners.estate_id"
+            name="estate_id"
+            id="estate_id"
+            class="form-select"
+            (ngModelChange)="onEstateChange()"
+            required>
+            <option value="">Seleccionar inmueble</option>
+            @if (estates && estates.length > 0) {
+              @for (estate of estates; track estate.id) {
+                <option [value]="estate.id">
+                  {{ estate.address }} - {{ estate.cadastral_reference }}
+                </option>
+              }
+            } @else {
+              <option disabled>Cargando inmuebles...</option>
+            }
+          </select>
+          @if (selectedEstate) {
+            <div class="selected-info">
+              <small>📍 Seleccionado: {{ selectedEstate.address }}</small>
+            </div>
+          }
+        </div>
+
+        <!-- Selector de Propietario -->
+        <div class="form-field">
+          <label for="owners_id">Propietario *</label>
+          <select
+            [(ngModel)]="estateOwners.owners_id"
+            name="owners_id"
+            id="owners_id"
+            class="form-select"
+            (ngModelChange)="onOwnerChange()"
+            required>
+            <option value="">Seleccionar propietario</option>
+            @if (owners && owners.length > 0) {
+              @for (owner of owners; track owner.id) {
+                <option [value]="owner.id">
+                  {{ owner.name }} {{ owner.lastname }} ({{ owner.identification }})
+                </option>
+              }
+            } @else {
+              <option disabled>Cargando propietarios...</option>
+            }
+          </select>
+          @if (selectedOwner) {
+            <div class="selected-info">
+              <small>👤 Seleccionado: {{ selectedOwner.name }} {{ selectedOwner.lastname }}</small>
+            </div>
+          }
+        </div>
+
+        <!-- Input de Porcentaje -->
+        <div class="form-field">
+          <label for="ownership_percent">Porcentaje de Propiedad * (%)</label>
+          <input
+            type="number"
+            [(ngModel)]="estateOwners.ownership_percentage"
+            name="ownership_percent"
+            id="ownership_percent"
+            class="form-input"
+            placeholder="50.00"
+            min="0.01"
+            max="100"
+            step="0.01"
+            required>
+          <small class="help-text">Ejemplo: 50.00 = 50%</small>
+
+          <!-- Validación en tiempo real -->
+          @if (estateOwners.ownership_percentage) {
+            <div class="percentage-preview">
+              <span class="percentage-value">{{ estateOwners.ownership_percentage }}%</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Resumen de la Edición -->
+    @if (isEditMode && selectedEstate && selectedOwner) {
+      <div class="edit-summary">
+        <h3>📝 Resumen de Cambios</h3>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <strong>Inmueble:</strong>
+            <span>{{ selectedEstate.address }}</span>
+          </div>
+          <div class="summary-item">
+            <strong>Propietario:</strong>
+            <span>{{ selectedOwner.name }} {{ selectedOwner.lastname }}</span>
+          </div>
+          <div class="summary-item">
+            <strong>Porcentaje Actual:</strong>
+            <span class="old-value">{{ originalPercentage }}%</span>
+          </div>
+          <div class="summary-item">
+            <strong>Nuevo Porcentaje:</strong>
+            <span class="new-value">{{ estateOwners.ownership_percentage }}%</span>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Información Adicional -->
+    <div class="info-section">
+      <div class="info-card">
+        <h4>ℹ️ Información Importante</h4>
+        <ul>
+          <li>El porcentaje debe estar entre 0.01% y 100%</li>
+          <li>La suma de todos los porcentajes de un inmueble no debe exceder 100%</li>
+          <li>Use decimales para porcentajes precisos (ej: 33.33 para un tercio)</li>
+        </ul>
+
+        <!-- Validación de porcentaje total -->
+        @if (selectedEstate && totalPercentageForEstate > 0) {
+          <div class="percentage-validation">
+            <strong>Total actual para este inmueble: {{ totalPercentageForEstate }}%</strong>
+            @if (totalPercentageForEstate > 100) {
+              <span class="error">⚠️ Excede el 100%</span>
+            } @else {
+              <span class="success">✅ Válido</span>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="button-group">
+      <button type="button" class="btn-secondary" (click)="goBack()">
+        ← Cancelar
+      </button>
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="!ownershipForm.valid || totalPercentageForEstate > 100">
+        @if (isEditMode) {
+          ✓ Actualizar Porcentaje
+        } @else {
+          ✓ Crear Relación
+        }
+      </button>
+    </div>
+
+  </form>
+</div>

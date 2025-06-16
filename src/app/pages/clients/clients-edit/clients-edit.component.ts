@@ -38,9 +38,6 @@ export class ClientsEditComponent implements OnInit {
     parent_company_name: ''
   }
 
-  // Guardar la identificación original para validar cambios
-  originalIdentification: string = '';
-
   // Propiedades para manejar administradores
   adminType: 'existing' | 'new' | '' = '';
   availableAdmins: Clients[] = [];
@@ -79,10 +76,7 @@ export class ClientsEditComponent implements OnInit {
         this.clientesServices.getClientById(id).subscribe({
           next: (client: Clients) => {
             this.client = client;
-            // Guardar la identificación original para comparar
-            this.originalIdentification = this.client.identification;
-
-            // NUEVO: Cargar el nombre de la empresa si es autónomo con empresa
+            //Cargar el nombre de la empresa si es autónomo con empresa
             if (this.client.type_client === 'autonomo' && this.client.parent_company_id) {
               this.loadCompanyName(this.client.parent_company_id);
             }

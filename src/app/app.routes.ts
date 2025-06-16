@@ -28,10 +28,10 @@ import { EstatesListComponent } from './pages/estates/estates-list/estates-list.
 import { EstatesEditComponent } from './pages/estates/estates-edit/estates-edit.component';
 
 //Porcentajes de propiedades (Ownership)
-import { OwnershipHomeComponent } from './pages/ownership/ownership-home/ownership-home.component';
-import { OwnershipRegisterComponent } from './pages/ownership/ownership-register/ownership-register.component';
-import { OwnershipListComponent } from './pages/ownership/ownership-list/ownership-list.component';
-import { OwnershipEditComponent } from './pages/ownership/ownership-edit/ownership-edit.component';
+import { EstateOwnersHomeComponent } from './pages/estate-owners/estate-owners-home/estate-owners-home.component';
+import { EstateOwnersRegisterComponent } from './pages/estate-owners/estate-owners-register/estate-owners-register.component';
+import { EstateOwnersListComponent } from './pages/estate-owners/estate-owners-list/estate-owners-list.component';
+import { EstateOwnersEditComponent } from './pages/estate-owners/estate-owners-edit/estate-owners-edit.component';
 
 //Facturas (Bills)
 import { BillsHomeComponent } from './pages/bills/bills-home/bills-home.component';
@@ -102,12 +102,12 @@ export const routes: Routes = [
       },
       // Porcentajes de Propiedades
       {
-        path: 'ownership',
+        path: 'estates-owners',
         children: [
-          { path: '', component: OwnershipHomeComponent, title: 'Propiedades - Propietarios' },
-          { path: 'user', component: OwnershipRegisterComponent, title: 'Registrar Porcentaje' },
-          { path: 'list', component: OwnershipListComponent, title: 'Listado Porcentajes' },
-          { path: 'edit/:id', component: OwnershipEditComponent, title: 'Editar Porcentaje' }
+          { path: '', component: EstateOwnersHomeComponent, title: 'Propiedades - Propietarios' },
+          { path: 'register', component: EstateOwnersRegisterComponent, title: 'Registrar Porcentaje' },
+          { path: 'list', component: EstateOwnersListComponent, title: 'Listado Porcentajes' },
+          { path: 'edit/:id', component: EstateOwnersEditComponent, title: 'Editar Porcentaje' }
         ]
       },
       // Facturas

@@ -1,0 +1,83 @@
+<div class="form-wrapper">
+  <h2>Registrar Porcentaje de la Propiedad</h2>
+
+  <!-- ✅ Form con grid layout -->
+  <form (ngSubmit)="register()" #ownershipForm="ngForm">
+
+    <!-- ✅ Campo Propiedad -->
+    <div>
+      <label for="estate">Propiedad *</label>
+      <select
+        [(ngModel)]="ownership.estate_id"
+        name="estate_id"
+        id="estate"
+        required>
+        <option value="" disabled>Selecciona una propiedad</option>
+        @if (loading) {
+          <option disabled>Cargando propiedades...</option>
+        } @else {
+          @for (estate of estates; track estate.id) {
+            <option [value]="estate.id">
+              {{ estate.address }} - {{ estate.cadastral_reference }}
+            </option>
+          }
+        }
+      </select>
+    </div>
+
+    <!-- ✅ Campo Propietario -->
+    <div>
+      <label for="owner">Propietario *</label>
+      <select
+        [(ngModel)]="ownership.owners_id"
+        name="owners_id"
+        id="owner"
+        required>
+        <option value="" disabled>Selecciona un propietario</option>
+        @if (loading) {
+          <option disabled>Cargando propietarios...</option>
+        } @else {
+          @for (owner of owners; track owner.id) {
+            <option [value]="owner.id">
+              {{ owner.name }} {{ owner.lastname }} ({{ owner.identification }})
+            </option>
+          }
+        }
+      </select>
+    </div>
+
+    <!-- ✅ Campo Porcentaje (ocupa todo el ancho) -->
+    <div>
+      <label for="porcentaje">Porcentaje de la Propiedad (%) *</label>
+      <input
+        type="number"
+        step="0.01"
+        min="0.01"
+        max="100"
+        [(ngModel)]="ownership.ownership_percentage"
+        name="ownership_percentage"
+        id="porcentaje"
+        placeholder="50.00"
+        required />
+      <small>Ejemplo: 50.00 = 50%</small>
+    </div>
+
+    <!-- ✅ Botones de acción -->
+    <div class="button-group">
+      <button type="button" class="btn-secondary" (click)="goBack()">
+        ← Cancelar
+      </button>
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="!ownershipForm.valid || loading">
+        @if (loading) {
+          ⏳ Registrando...
+        } @else {
+          ✓ Registrar
+        }
+      </button>
+    </div>
+
+  </form>
+</div>

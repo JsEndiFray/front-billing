@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { OwnersService } from './owners.service';
 
-describe('OwnersService', () => {
+describe('OwnersValidatorService', () => {
   let service: OwnersService;
 
   beforeEach(() => {

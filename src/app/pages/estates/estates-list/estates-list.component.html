@@ -1,6 +1,37 @@
 <div class="list-wrapper">
   <h2>Listado de Propiedades</h2>
 
+  <!-- BARRA DE BÚSQUEDA -->
+  <div class="search-container">
+    <div class="search-wrapper">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()"
+        placeholder="Buscar por Referencia Catastro, dirección, localidad y provincia..."
+        class="search-input"
+      >
+      <div class="search-actions">
+        <span class="search-icon">🔍</span>
+        @if (searchTerm && searchTerm.trim() !== '') {
+          <button
+            type="button"
+            (click)="clearSearch()"
+            class="clear-button"
+            title="Limpiar búsqueda"
+          >
+            ✕
+          </button>
+        }
+      </div>
+    </div>
+    @if (searchTerm && searchTerm.trim() !== '') {
+      <div class="search-results-info">
+        <span>Mostrando {{ estates.length }} de {{ allStates.length }} Inmuebles</span>
+      </div>
+    }
+  </div>
+
   <table>
     <thead>
     <tr>

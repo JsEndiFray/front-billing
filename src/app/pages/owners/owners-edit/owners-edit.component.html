@@ -1,1 +1,145 @@
-<p>owners-edit works!</p>
+<div class="form-wrapper">
+  <h2>Editar Propietario</h2>
+
+  <form (ngSubmit)="updateOwner()">
+
+    <!-- Información Personal -->
+    <div class="form-section">
+      <h3>👤 Información Personal</h3>
+      <div class="form-grid">
+        <div>
+          <label for="name">Nombre *</label>
+          <input
+            type="text"
+            [(ngModel)]="owner.name"
+            name="name"
+            id="name"
+            placeholder="Nombre del propietario"
+            required>
+        </div>
+
+        <div>
+          <label for="lastname">Apellidos *</label>
+          <input
+            type="text"
+            [(ngModel)]="owner.lastname"
+            name="lastname"
+            id="lastname"
+            placeholder="Apellidos del propietario"
+            required>
+        </div>
+
+        <div>
+          <label for="identification">Identificación *</label>
+          <input
+            type="text"
+            [(ngModel)]="owner.identification"
+            name="identification"
+            id="identification"
+            placeholder="DNI/NIE/CIF"
+            required>
+        </div>
+      </div>
+    </div>
+
+    <!-- Información de Contacto -->
+    <div class="form-section">
+      <h3>📞 Información de Contacto</h3>
+      <div class="form-grid">
+        <div>
+          <label for="email">Email *</label>
+          <input
+            type="email"
+            [(ngModel)]="owner.email"
+            name="email"
+            id="email"
+            placeholder="propietario@email.com"
+            required>
+        </div>
+
+        <div>
+          <label for="phone">Teléfono *</label>
+          <input
+            type="tel"
+            [(ngModel)]="owner.phone"
+            name="phone"
+            id="phone"
+            placeholder="123 456 789"
+            required>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dirección -->
+    <div class="form-section">
+      <h3>🏠 Dirección</h3>
+      <div class="form-grid">
+        <div class="full-width">
+          <label for="address">Dirección *</label>
+          <input
+            type="text"
+            [(ngModel)]="owner.address"
+            name="address"
+            id="address"
+            placeholder="Calle Principal 123, 2º A"
+            required>
+        </div>
+
+        <div>
+          <label for="postal_code">Código Postal</label>
+          <input
+            type="text"
+            [(ngModel)]="owner.postal_code"
+            name="postal_code"
+            id="postal_code"
+            placeholder="28001"
+            pattern="[0-9]{5}">
+        </div>
+
+        <div>
+          <label for="location">Localidad *</label>
+          <input
+            type="text"
+            [(ngModel)]="owner.location"
+            name="location"
+            id="location"
+            placeholder="Madrid"
+            required>
+        </div>
+
+        <div>
+          <label for="province">Provincia *</label>
+          <input
+            type="text"
+            [(ngModel)]="owner.province"
+            name="province"
+            id="province"
+            placeholder="Madrid"
+            required>
+        </div>
+
+        <div>
+          <label for="country">País</label>
+          <input
+            type="text"
+            [(ngModel)]="owner.country"
+            name="country"
+            id="country"
+            placeholder="España"
+            value="España">
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="button-group">
+      <button type="button" class="btn-secondary" (click)="goBack()">
+        ← Cancelar
+      </button>
+      <button type="submit" class="btn-primary">
+        ✓ Actualizar Propietario
+      </button>
+    </div>
+
+  </form>
+</div>

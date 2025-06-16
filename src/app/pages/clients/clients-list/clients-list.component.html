@@ -1,6 +1,37 @@
 <div class="list-wrapper">
   <h2>Listado de Clientes</h2>
 
+  <!-- BARRA DE BÚSQUEDA -->
+  <div class="search-container">
+    <div class="search-wrapper">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()"
+        placeholder="Buscar por nombre, identificación, teléfono o empresa..."
+        class="search-input"
+      >
+      <div class="search-actions">
+        <span class="search-icon">🔍</span>
+        @if (searchTerm && searchTerm.trim() !== '') {
+          <button
+            type="button"
+            (click)="clearSearch()"
+            class="clear-button"
+            title="Limpiar búsqueda"
+          >
+            ✕
+          </button>
+        }
+      </div>
+    </div>
+    @if (searchTerm && searchTerm.trim() !== '') {
+      <div class="search-results-info">
+        <span>Mostrando {{ clients.length }} de {{ allClients.length }} clientes</span>
+      </div>
+    }
+  </div>
+
   <table>
     <thead>
     <tr>
@@ -10,7 +41,7 @@
       <th>Apellidos</th>
       <th>Empresa</th>
       <th>Relación</th>
-      <th>DNI/CIF</th>
+      <th>Identificación</th>
       <th>Teléfono</th>
       <th>Email</th>
       <th>Dirección</th>

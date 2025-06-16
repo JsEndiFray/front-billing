@@ -6,6 +6,7 @@ import {FormsModule} from '@angular/forms';
 import {Router} from '@angular/router';
 import Swal from 'sweetalert2';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
+import {SearchService} from '../../../core/services/search-services/search.service';
 
 
 @Component({
@@ -20,24 +21,53 @@ export class EstatesListComponent implements OnInit {
   //para monstrar el listado
   estates: Estates[] = [];
 
+  // Lista completa de clientes (datos originales)
+  allStates: Estates[] = [];
+
+  // Término de búsqueda
+  searchTerm: string = '';
+
   constructor(
     private estateService: EstatesService,
-    private router: Router,) {
+    private router: Router,
+    private searchService: SearchService,
+  ) {
   }
 
   ngOnInit(): void {
     this.getListEstate();
   }
 
-  //recargar la lista
-  loadEstates() {
+  //Listado de los inmuebles
+  getListEstate() {
     this.estateService.getAllEstate().subscribe({
       next: (estates) => {
         this.estates = estates;
+        this.allStates = estates;
       }, error: (e: HttpErrorResponse) => {
       }
-    })
+    });
   }
+
+  //meto de flitros
+  filterEstates() {
+    this.estates = this.searchService.filterData(
+      this.allStates,
+      this.searchTerm,
+      ['cadastral_reference', 'address', 'location', 'province']
+    );
+  }
+
+  //Limpiar el término de búsqueda y mostrar todos los clientes
+  clearSearch() {
+    this.searchTerm = '';
+    this.filterEstates();
+
+  };
+
+  onSearchChange() {
+    this.filterEstates();
+  };
 
   //ruta para editar (boton)
   editEstate(id: number) {
@@ -57,16 +87,14 @@ export class EstatesListComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.estateService.deleteEstate(id).subscribe({
-          next: (success) => {
-            if (success) {
-              Swal.fire({
-                title: 'Eliminado.',
-                text: 'Inmueble eliminado correctamente',
-                icon: 'success',
-                confirmButtonText: 'Ok'
-              });
-              this.loadEstates();
-            }
+          next: () => {
+            Swal.fire({
+              title: 'Eliminado.',
+              text: 'Inmueble eliminado correctamente',
+              icon: 'success',
+              confirmButtonText: 'Ok'
+            });
+            this.getListEstate();
           },
           error: (e: HttpErrorResponse) => {
           }
@@ -75,14 +103,5 @@ export class EstatesListComponent implements OnInit {
       }
     })
   }
-  //conexión DB
-  //Listado de los inmuebles
-  getListEstate() {
-    this.estateService.getAllEstate().subscribe({
-      next: (estates) => {
-        this.estates =estates;
-      }, error: (e: HttpErrorResponse) => {
-      }
-    });
-  }
+
 }

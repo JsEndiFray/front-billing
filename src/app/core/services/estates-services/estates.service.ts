@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from '../api-service/api.service';
-import {map, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
 import {Estates} from '../../../interface/estates.interface';
 
 @Injectable({
@@ -11,6 +11,7 @@ export class EstatesService {
 
   constructor(private api: ApiService) {
   }
+
   //métodos de obtener
 
   //Listado de todos los estates
@@ -41,10 +42,7 @@ export class EstatesService {
   }
 
   //delete
-  deleteEstate(id: number): Observable<boolean> {
-    return this.api.delete<boolean>('estates/' + id)
-      .pipe(
-        map(() => true)
-      )
+  deleteEstate(id: number): Observable<Estates> {
+    return this.api.delete<Estates>('estates/' + id)
   }
 }

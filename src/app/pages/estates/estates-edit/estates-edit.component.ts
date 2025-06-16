@@ -29,9 +29,6 @@ export class EstatesEditComponent implements OnInit {
     country: '',
     surface: null
   }
-  // Guardar la referencia catastral original para comparar
-  originalCadastralReference: string = '';
-
   constructor(
     private estateService: EstatesService,
     private router: Router,
@@ -49,8 +46,6 @@ export class EstatesEditComponent implements OnInit {
         this.estateService.getById(id).subscribe({
           next: (estates) => {
             this.estate = estates;
-            // Guardar la referencia catastral
-            this.originalCadastralReference = this.estate.cadastral_reference;
           },
           error: (e: HttpErrorResponse) => {
           }

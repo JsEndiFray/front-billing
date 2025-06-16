@@ -1,6 +1,10 @@
 export interface EstatesOwners {
-  id: number;
-  estate_id: number | null;
-  owners_id: number | null;
-  ownership_precent: number | null;
+  id?: number | null;
+  estate_id?: number | null;
+  estate_name?: string;
+  owners_id?: number | null;
+  owner_name?: string;
+  ownership_percentage?: number | null;
+  date_create?: string;
+  date_update?: string;
 }

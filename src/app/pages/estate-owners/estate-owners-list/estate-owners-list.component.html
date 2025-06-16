@@ -1,0 +1,33 @@
+<div class="list-wrapper">
+  <h2>Listado de Porcentajes de Propiedades</h2>
+
+  <table>
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Propiedad</th>
+      <th>Propietario</th>
+      <th>Porcentaje (%)</th>
+      <th>Creación</th>
+      <th>Actualizado</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (item of estateOwners; track item.id) {
+        <tr>
+          <td>{{ item.id }}</td>
+          <td>{{ item.estate_name }}</td>
+          <td>{{ item.owner_name }}</td>
+          <td>{{ item.ownership_percentage }}</td>
+          <td>{{ item.date_create | dataFormat }}</td>
+          <td>{{ item.date_update| dataFormat }}</td>
+          <td>
+            <button (click)="editEstateOwners(item.id!)">Editar</button>
+            <button (click)="deleteEstateOwners(item.id!)">Eliminar</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

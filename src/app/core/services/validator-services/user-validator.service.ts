@@ -13,12 +13,12 @@ export class UserValidatorService {
   cleanUserData(user: User): User {
     return {
       id: user.id,
-      username: user.username.toLowerCase().trim(),
-      password: user.password.trim(),
-      confirm_password: user.confirm_password?.trim(),
-      email: user.email.toLowerCase().trim(),
-      phone: user.phone.trim(),
-      role: user.role.trim(),
+      username: user.username?.toLowerCase().trim() || '',
+      password: user.password?.trim() || '',
+      confirm_password: user.confirm_password?.trim() || '',
+      email: user.email?.toLowerCase().trim() || '',
+      phone: user.phone?.trim() || '',
+      role: user.role?.trim() || '',
     } as User;
   }
 
@@ -27,7 +27,8 @@ export class UserValidatorService {
     if (!user.username ||
       !user.password ||
       !user.email ||
-      !user.phone) {
+      !user.phone
+    ) {
       return {
         isValid: false,
         message: 'Todos los campos son obligatorios.'

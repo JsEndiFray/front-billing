@@ -1,36 +1,75 @@
 <div class="list-wrapper">
   <h2>Listado de Propietarios</h2>
 
+  <!-- BARRA DE BÚSQUEDA -->
+  <div class="search-container">
+    <div class="search-wrapper">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()"
+        placeholder="Busqueda por nombre, indentificacion, teléfono o NIF..."
+        class="search-input"
+      >
+      <div class="search-actions">
+        <span class="search-icon">🔍</span>
+        @if (searchTerm && searchTerm.trim() !== '') {
+          <button
+            type="button"
+            (click)="clearSearch()"
+            class="clear-button"
+            title="Limpiar búsqueda"
+          >
+            ✕
+          </button>
+        }
+      </div>
+    </div>
+    @if (searchTerm && searchTerm.trim() !== '') {
+      <div class="search-results-info">
+        <span>Mostrando {{ owners.length }} de {{ allOwners.length }} clientes</span>
+      </div>
+    }
+  </div>
+
   <table>
     <thead>
     <tr>
+      <th>ID</th>
       <th>Nombre</th>
       <th>Apellidos</th>
       <th>Email</th>
       <th>NIF</th>
+      <th>Teléfono</th>
       <th>Dirección</th>
       <th>C.P</th>
       <th>Localidad</th>
       <th>Provincia</th>
       <th>Pais</th>
+      <th>Creado</th>
+      <th>Actualizado</th>
       <th>Acciones</th>
     </tr>
     </thead>
     <tbody>
       @for (owner of owners; track owner.id) {
         <tr>
+          <td>{{ owner.id }}</td>
           <td>{{ owner.name }}</td>
           <td>{{ owner.lastname }}</td>
           <td>{{ owner.email }}</td>
-          <td>{{ owner.nif }}</td>
+          <td>{{ owner.identification }}</td>
+          <td>{{ owner.phone }}</td>
           <td>{{ owner.address }}</td>
           <td>{{ owner.postal_code }}</td>
           <td>{{ owner.location }}</td>
           <td>{{ owner.province }}</td>
           <td>{{ owner.country }}</td>
+          <td>{{ owner.date_create | dataFormat }}</td>
+          <td>{{ owner.date_update | dataFormat }}</td>
           <td>
-            <button (click)="editOwner(owner.id)">Editar</button>
-            <button (click)="deleteOwner(owner.id)">Eliminar</button>
+            <button (click)="editOwner(owner.id!)">Editar</button>
+            <button (click)="deleteOwner(owner.id!)">Eliminar</button>
           </td>
         </tr>
       }

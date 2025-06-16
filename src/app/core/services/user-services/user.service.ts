@@ -32,9 +32,9 @@ export class UserService {
   }
 
   //DELETE
-deleteUser(id: number): Observable<User>{
+  deleteUser(id: number): Observable<User> {
     return this.api.delete<User>(`users/${id}`);
-}
+  }
 
 }
 

@@ -1,6 +1,6 @@
 <div class="form-wrapper">
   <h2>Registrar Propietario</h2>
-  <form>
+  <form (ngSubmit)="createOwners()">
 
     <label for="name">Nombre</label>
     <input type="text" [(ngModel)]="owner.name" name="nombre" id="name"/>
@@ -11,8 +11,11 @@
     <label for="email">Email</label>
     <input type="email" [(ngModel)]="owner.email" name="email" id="email"/>
 
-    <label for="nif">NIF</label>
-    <input type="text" [(ngModel)]="owner.nif" name="nif" id="nif"/>
+    <label for="identification">NIF</label>
+    <input type="text" [(ngModel)]="owner.identification" name="identification" id="identification"/>
+
+    <label for="phone">Teléfono</label>
+    <input type="text" [(ngModel)]="owner.phone " name="phone" id="phone"/>
 
     <label for="address">Dirección</label>
     <input type="text" [(ngModel)]="owner.address" name="direccion" id="address"/>

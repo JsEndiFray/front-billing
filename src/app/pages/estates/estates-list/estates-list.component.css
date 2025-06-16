@@ -5,7 +5,7 @@
   padding: 1rem;
   margin: 2rem auto;
   width: 100%;
-  max-width: 99rem;
+  max-width: auto;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
   overflow-x: auto;
 }
@@ -19,6 +19,102 @@ h2 {
   margin-bottom: 2rem;
 }
 
+/* CONTENEDOR DE BÚSQUEDA */
+.search-container {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.search-wrapper {
+  position: relative;
+  max-width: 32rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 3rem 0.75rem 1rem;
+  border: 0.125rem solid #e5e7eb;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: #374151;
+  background: #ffffff;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 0.1875rem rgba(59, 130, 246, 0.1);
+}
+
+.search-input::placeholder {
+  color: #9ca3af;
+}
+
+.search-actions {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.search-icon {
+  color: #6b7280;
+  font-size: 0.875rem;
+  pointer-events: none;
+}
+
+.clear-button {
+  background: #f3f4f6;
+  border: none;
+  border-radius: 50%;
+  width: 1.25rem;
+  height: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6b7280;
+  font-size: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.clear-button:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.search-results-info {
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.clear-search-button {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.clear-search-button:hover {
+  background: #2563eb;
+}
 /* TABLA PRINCIPAL */
 table {
   width: 100%;
@@ -47,18 +143,18 @@ th {
 }
 
 /* DISTRIBUCIÓN DE COLUMNAS PARA PROPIEDADES (12 COLUMNAS) */
-th:nth-child(1) { width: 5%; }
-th:nth-child(2) { width: 18%; }
-th:nth-child(3) { width: 8%; }
-th:nth-child(4) { width: 18%; }
-th:nth-child(5) { width: 6%; }
-th:nth-child(6) { width: 10%; }
-th:nth-child(7) { width: 8%; }
-th:nth-child(8) { width: 6%; }
-th:nth-child(9) { width: 8%; }
-th:nth-child(10) { width: 8%; }
-th:nth-child(11) { width: 8%; }
-th:nth-child(12) { width: 10%; }
+th:nth-child(1) { width: auto }/*id*/
+th:nth-child(2) { width: auto }/*ref catastral*/
+th:nth-child(3) { width: auto }/*precio*/
+th:nth-child(4) { width: auto }/*direción*/
+th:nth-child(5) { width: auto }/*cp*/
+th:nth-child(6) { width: auto }/*localidad*/
+th:nth-child(7) { width: auto }/*provincia*/
+th:nth-child(8) { width: auto }/*país*/
+th:nth-child(9) { width: auto }/*m2*/
+th:nth-child(10) { width: auto }/*creado*/
+th:nth-child(11) { width: auto }/*actualizado*/
+th:nth-child(12) { width: auto }/*acciones*/
 
 /* FILAS DE DATOS */
 td {

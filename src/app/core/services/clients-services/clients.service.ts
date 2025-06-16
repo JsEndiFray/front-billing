@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from '../api-service/api.service';
-import {map, Observable, switchMap} from 'rxjs';
+import {Observable, switchMap} from 'rxjs';
 import {Clients} from '../../../interface/clientes-interface';
 
 @Injectable({
@@ -63,10 +63,7 @@ export class ClientsService {
   }
 
   //DELETE:
-  deleleteUser(id: number): Observable<boolean> {
-    return this.api.delete<void>(`clients/${id}`)
-      .pipe(
-        map(() => true) // El backend devuelve 204 No Content, lo convertimos a boolean
-      );
+  deleleteUser(id: number): Observable<Clients> {
+    return this.api.delete<Clients>(`clients/${id}`)
   }
 }

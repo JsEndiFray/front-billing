@@ -1,12 +1,15 @@
 export interface Owners {
-  id: number;
+  id?: number;
   name: string;
   lastname: string;
   email: string;
-  nif: string;
+  identification: string;
+  phone: string;
   address: string;
   postal_code: string;
   location: string;
   province: string;
   country: string;
+  date_create?: string;
+  date_update?: string;
 }

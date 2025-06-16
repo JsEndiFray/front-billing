@@ -1,6 +1,37 @@
 <div class="list-wrapper">
   <h2>Listado de usuarios</h2>
 
+  <!-- BARRA DE BÚSQUEDA -->
+  <div class="search-container">
+    <div class="search-wrapper">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()"
+        placeholder="Buscar por nombre de usuario, email, telélfono y rol..."
+        class="search-input"
+      >
+      <div class="search-actions">
+        <span class="search-icon">🔍</span>
+        @if (searchTerm && searchTerm.trim() !== '') {
+          <button
+            type="button"
+            (click)="clearSearch()"
+            class="clear-button"
+            title="Limpiar búsqueda"
+          >
+            ✕
+          </button>
+        }
+      </div>
+    </div>
+    @if (searchTerm && searchTerm.trim() !== '') {
+      <div class="search-results-info">
+        <span>Mostrando {{ users.length }} de {{ allUsers.length }} Usuarios</span>
+      </div>
+    }
+  </div>
+
   <table>
     <thead>
     <tr>
