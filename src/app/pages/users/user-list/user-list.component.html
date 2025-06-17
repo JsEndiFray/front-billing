@@ -1,8 +1,10 @@
+<!-- Listado y gestión de usuarios -->
 <div class="list-wrapper">
   <h2>Listado de usuarios</h2>
 
   <!-- BARRA DE BÚSQUEDA -->
   <div class="search-container">
+    <!-- Campo de búsqueda con filtro en tiempo real -->
     <div class="search-wrapper">
       <input
         type="text"
@@ -11,6 +13,7 @@
         placeholder="Buscar por nombre de usuario, email, telélfono y rol..."
         class="search-input"
       >
+      <!-- Iconos de búsqueda y limpiar -->
       <div class="search-actions">
         <span class="search-icon">🔍</span>
         @if (searchTerm && searchTerm.trim() !== '') {
@@ -25,6 +28,7 @@
         }
       </div>
     </div>
+    <!-- Contador de resultados de búsqueda -->
     @if (searchTerm && searchTerm.trim() !== '') {
       <div class="search-results-info">
         <span>Mostrando {{ users.length }} de {{ allUsers.length }} Usuarios</span>
@@ -32,7 +36,9 @@
     }
   </div>
 
+  <!-- Tabla de usuarios -->
   <table>
+    <!-- Encabezados de la tabla -->
     <thead>
     <tr>
       <th>ID</th>
@@ -47,7 +53,9 @@
     </tr>
     </thead>
 
+    <!-- Contenido de la tabla -->
     <tbody>
+    <!-- Lista de usuarios existentes -->
       @if (users && users.length > 0) {
         @for (user of users; track user.id) {
           <tr>
@@ -59,6 +67,7 @@
             <td>{{ user.role }}</td>
             <td>{{ user.date_create | dataFormat }}</td>
             <td>{{ user.date_update | dataFormat }}</td>
+            <!-- Botones de acción por usuario -->
             <td>
               <button (click)="editUser(user.id!)">Editar</button>
               <button (click)="deleteUser(user.id!)">Eliminar</button>
@@ -66,6 +75,7 @@
           </tr>
         }
       } @else {
+        <!-- Mensaje cuando no hay usuarios -->
         <tr>
           <td colspan="9" class="no-clients-cell">
             <div class="no-clients-card">

@@ -1,8 +1,10 @@
+<!-- Listado y gestión de propietarios -->
 <div class="list-wrapper">
   <h2>Listado de Propietarios</h2>
 
-  <!-- BARRA DE BÚSQUEDA -->
+  <!-- Barra de búsqueda -->
   <div class="search-container">
+    <!-- Campo de búsqueda con filtro en tiempo real -->
     <div class="search-wrapper">
       <input
         type="text"
@@ -11,6 +13,7 @@
         placeholder="Busqueda por nombre, indentificacion, teléfono o NIF..."
         class="search-input"
       >
+      <!-- Iconos de búsqueda y limpiar -->
       <div class="search-actions">
         <span class="search-icon">🔍</span>
         @if (searchTerm && searchTerm.trim() !== '') {
@@ -25,6 +28,7 @@
         }
       </div>
     </div>
+    <!-- Contador de resultados de búsqueda -->
     @if (searchTerm && searchTerm.trim() !== '') {
       <div class="search-results-info">
         <span>Mostrando {{ owners.length }} de {{ allOwners.length }} clientes</span>
@@ -32,7 +36,9 @@
     }
   </div>
 
+  <!-- Tabla de propietarios -->
   <table>
+    <!-- Encabezados de la tabla -->
     <thead>
     <tr>
       <th>ID</th>
@@ -51,7 +57,10 @@
       <th>Acciones</th>
     </tr>
     </thead>
+
+    <!-- Contenido de la tabla -->
     <tbody>
+    <!-- Lista de propietarios existentes -->
       @for (owner of owners; track owner.id) {
         <tr>
           <td>{{ owner.id }}</td>
@@ -67,6 +76,7 @@
           <td>{{ owner.country }}</td>
           <td>{{ owner.date_create | dataFormat }}</td>
           <td>{{ owner.date_update | dataFormat }}</td>
+          <!-- Botones de acción por propietario -->
           <td>
             <button (click)="editOwner(owner.id!)">Editar</button>
             <button (click)="deleteOwner(owner.id!)">Eliminar</button>

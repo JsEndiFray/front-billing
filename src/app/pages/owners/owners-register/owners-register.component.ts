@@ -7,7 +7,10 @@ import {Router} from '@angular/router';
 import Swal from 'sweetalert2';
 import {HttpErrorResponse} from '@angular/common/http';
 
-
+/**
+ * Componente para registrar nuevos propietarios
+ * Permite crear propietarios con datos completos de contacto y dirección
+ */
 @Component({
   selector: 'app-owners',
   imports: [
@@ -18,6 +21,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 })
 export class OwnersRegisterComponent {
 
+  // Objeto que guarda los datos del nuevo propietario
   owner: Owners = {
     name: '',
     lastname: '',
@@ -40,11 +44,15 @@ export class OwnersRegisterComponent {
   ) {
   }
 
-
-  //registrar los propietarios
+  /**
+   * Registra un nuevo propietario en el sistema
+   * Valida todos los datos antes de enviar al servidor
+   */
   createOwners() {
-
+    // Limpiar espacios y preparar datos
     const cleanOwners = this.ownersValidator.cleanOwnerData(this.owner);
+
+    // Validar que todos los campos estén correctos
     const validation = this.ownersValidator.validateOwners(cleanOwners)
     if (!validation.isValid) {
       Swal.fire({
@@ -54,18 +62,21 @@ export class OwnersRegisterComponent {
       });
       return;
     }
+
+    // Enviar datos al servidor para crear propietario
     this.ownersServices.createOwners(cleanOwners).subscribe({
       next: (data) => {
         Swal.fire({
-          title: "Propietario registrado correctamente" ,
+          title: "Propietario registrado correctamente",
           icon: "success",
           draggable: true
         });
+        // Redirigir a la lista después del registro exitoso
         this.router.navigate(['/dashboard/owners/list']);
 
       }, error: (e: HttpErrorResponse) => {
+        // Error manejado por interceptor
       }
     })
   }
-
 }

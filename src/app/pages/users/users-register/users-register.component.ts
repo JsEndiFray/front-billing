@@ -8,7 +8,10 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {User} from '../../../interface/users-interface';
 import {UserValidatorService} from '../../../core/services/validator-services/user-validator.service';
 
-
+/**
+ * Componente para registrar nuevos usuarios
+ * Permite crear cuentas de usuario con validación
+ */
 @Component({
   selector: 'app-clients-user',
   imports: [
@@ -18,7 +21,8 @@ import {UserValidatorService} from '../../../core/services/validator-services/us
   styleUrl: './users-register.component.css'
 })
 export class UsersRegisterComponent {
-  // se inicializa para el formulario
+
+  // Objeto que guarda los datos del nuevo usuario
   user: User = {
     id: null,
     username: '',
@@ -36,11 +40,15 @@ export class UsersRegisterComponent {
   ) {
   }
 
-  //Registros de los usuarios
+  /**
+   * Registra un nuevo usuario en el sistema
+   * Valida datos antes de enviar al servidor
+   */
   registerUser() {
-    //Limpiar y transformar datos
+    // Limpiar espacios y preparar datos
     const cleanUser = this.userValidatorService.cleanUserData(this.user)
-    // Validar campos requeridos y confirmacion de contraseñas
+
+    // Validar que todos los campos estén correctos
     const validation = this.userValidatorService.validateUser(cleanUser)
     if (!validation.isValid) {
       Swal.fire({
@@ -51,10 +59,11 @@ export class UsersRegisterComponent {
       });
       return;
     }
-    //cambiar el nombre de español a ingles al backend
+
+    // Convertir rol de español a inglés para el backend
     const backendRoles = this.userValidatorService.transformRoleToBackend(cleanUser.role);
 
-    //creamos el objeto para el registro al backend.
+    // Crear objeto con datos listos para enviar
     const newUser: User = {
       username: cleanUser.username,
       password: cleanUser.password,
@@ -62,7 +71,8 @@ export class UsersRegisterComponent {
       phone: cleanUser.phone,
       role: backendRoles
     }
-    //conexion al backend.
+
+    // Enviar datos al servidor para crear usuario
     this.authService.registerUser(newUser).subscribe({
       next: (data) => {
         Swal.fire({
@@ -70,15 +80,12 @@ export class UsersRegisterComponent {
           icon: "success",
           draggable: true
         });
+        // Redirigir al login después del registro exitoso
         this.router.navigate(['/login']);
       },
       error: (e: HttpErrorResponse) => {
+        // Error manejado por interceptor
       },
     });
   };
-
-
 }
-
-
-

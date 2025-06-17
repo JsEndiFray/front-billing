@@ -3,42 +3,36 @@ import {ApiService} from '../api-service/api.service';
 import {Owners} from '../../../interface/owners-interface';
 import {Observable} from 'rxjs';
 
+/**
+ * Servicio para gestión de propietarios
+ * Wrapper HTTP sobre ApiService para operaciones de owners
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class OwnersService {
 
-  constructor(private api: ApiService) {
-  }
+  constructor(private api: ApiService) {}
 
-  //métodos de obtener o búsquedas
-
-  //listado de propietarios
+  // Métodos de consulta
   getOwners(): Observable<Owners[]> {
     return this.api.get<Owners[]>('owners');
   }
 
-  //obtener la ID
   getOwnerById(id: number): Observable<Owners> {
     return this.api.get<Owners>(`owners/${id}`);
   }
 
-  //create
+  // Métodos CRUD
   createOwners(owners: Owners): Observable<Owners> {
     return this.api.post<Owners>('owners', owners);
   }
 
-  //update
   updateOwners(id: number, data: Owners): Observable<Owners> {
     return this.api.put<Owners>(`owners/${id}`, data)
   }
 
-
-  //delete
   deleteOwner(id: number): Observable<Owners> {
     return this.api.delete<Owners>(`owners/${id}`)
-
   }
-
-
 }

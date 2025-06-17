@@ -1,19 +1,22 @@
 import {Injectable} from '@angular/core';
 
+/**
+ * Servicio utilitario para filtrado y búsqueda en arrays
+ * Funciones genéricas reutilizables para cualquier tipo de datos
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class SearchService {
 
   /**
-   * Función simple para filtrar cualquier array de datos
-   * @param data - Array de datos a filtrar
-   * @param searchTerm - Término de búsqueda
-   * @param fields - Array con los nombres de los campos donde buscar
+   * Filtra array por término de búsqueda en campos específicos
+   * @param data Array de datos a filtrar
+   * @param searchTerm Término de búsqueda
+   * @param fields Campos donde buscar
    * @returns Array filtrado
    */
   filterData<T>(data: T[], searchTerm: string, fields: (keyof T)[]): T[] {
-    // Si no hay término de búsqueda, devolver todos los datos
     if (!searchTerm || searchTerm.trim() === '') {
       return [...data];
     }
@@ -21,7 +24,6 @@ export class SearchService {
     const searchTermLower = searchTerm.toLowerCase().trim();
 
     return data.filter(item => {
-      // Buscar en cada campo especificado
       return fields.some(field => {
         const value = item[field];
         return value && value.toString().toLowerCase().includes(searchTermLower);
@@ -30,12 +32,12 @@ export class SearchService {
   }
 
   /**
-   * Función específica para buscar en nombre completo (nombre + apellido)
-   * @param data - Array de datos a filtrar
-   * @param searchTerm - Término de búsqueda
-   * @param nameField - Campo del nombre
-   * @param lastNameField - Campo del apellido
-   * @param otherFields - Otros campos donde buscar
+   * Filtra con búsqueda en nombre completo (nombre + apellido)
+   * @param data Array de datos a filtrar
+   * @param searchTerm Término de búsqueda
+   * @param nameField Campo del nombre
+   * @param lastNameField Campo del apellido
+   * @param otherFields Otros campos donde buscar
    * @returns Array filtrado
    */
   filterWithFullName<T>(
@@ -45,7 +47,6 @@ export class SearchService {
     lastNameField: keyof T,
     otherFields: (keyof T)[] = []
   ): T[] {
-    // Si no hay término de búsqueda, devolver todos los datos
     if (!searchTerm || searchTerm.trim() === '') {
       return [...data];
     }
@@ -53,17 +54,16 @@ export class SearchService {
     const searchTermLower = searchTerm.toLowerCase().trim();
 
     return data.filter(item => {
-      // Crear nombre completo
+      // Buscar en nombre completo
       const name = item[nameField] || '';
       const lastName = item[lastNameField] || '';
       const fullName = `${name} ${lastName}`.toLowerCase();
 
-      // Verificar si encuentra en nombre completo
       if (fullName.includes(searchTermLower)) {
         return true;
       }
 
-      // Verificar en otros campos
+      // Buscar en otros campos
       return otherFields.some(field => {
         const value = item[field];
         return value && value.toString().toLowerCase().includes(searchTermLower);

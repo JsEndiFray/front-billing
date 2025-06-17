@@ -1,8 +1,16 @@
+<!-- Layout principal de la aplicación -->
 <div class="app-container">
+  <!-- Header fijo con navegación -->
   <app-header></app-header>
+
+  <!-- Espaciador para header fijo -->
   <div class="header-spacer"></div>
+
+  <!-- Contenido dinámico según ruta -->
   <main class="content">
     <router-outlet></router-outlet>
   </main>
+
+  <!-- Footer -->
   <app-footer></app-footer>
 </div>

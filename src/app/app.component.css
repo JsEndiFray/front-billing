@@ -1,37 +1,39 @@
+/* Layout principal de la aplicación */
 .app-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 
-  /* Fondo oscuro azulado + sombra gris desde el medio */
+  /* Fondo degradado azul oscuro */
   background:
     linear-gradient(to top, rgb(4, 8, 53) 40%, transparent 70%),
     #0b2163;
 }
 
+/* Espaciador para compensar header fijo */
 .header-spacer {
   height: 5.5rem;
   display: block;
 }
 
-/* Contenido principal */
+/* Contenido principal expansible */
 .content {
-  flex: 1;
-  padding: 0; /* Sin padding para no limitar */
+  flex: 1; /* Ocupa espacio restante */
+  padding: 0;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden; /* Evitar scroll horizontal */
+  overflow-x: hidden; /* Evita scroll horizontal */
 }
 
-/* Responsive */
+/* Responsive - mantiene padding 0 en móviles */
 @media (max-width: 768px) {
   .content {
-    padding: 0; /* Sin padding en móvil */
+    padding: 0;
   }
 }
 
 @media (max-width: 480px) {
   .content {
-    padding: 0; /* Sin padding en móvil pequeño */
+    padding: 0;
   }
 }

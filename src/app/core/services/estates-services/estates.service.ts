@@ -3,45 +3,39 @@ import {ApiService} from '../api-service/api.service';
 import {Observable} from 'rxjs';
 import {Estates} from '../../../interface/estates.interface';
 
+/**
+ * Servicio para gestión de propiedades inmobiliarias
+ * Wrapper HTTP sobre ApiService para operaciones de estates
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class EstatesService {
 
+  constructor(private api: ApiService) {}
 
-  constructor(private api: ApiService) {
-  }
-
-  //métodos de obtener
-
-  //Listado de todos los estates
+  // Métodos de consulta
   getAllEstate(): Observable<Estates[]> {
     return this.api.get<Estates[]>('estates');
   }
 
-  //búsqueda por ID
   getById(id: number): Observable<Estates> {
     return this.api.get<Estates>(`estates/${id}`);
   }
 
-  //búsqueda por catastro
   getByCadastralReference(cadastral: string): Observable<Estates> {
     return this.api.get<Estates>(`search/cadastral/${cadastral}`);
   }
 
-  //métodos CREATE UPDATE DELETE
-
-  //create
+  // Métodos CRUD
   createEstate(data: Estates): Observable<Estates> {
     return this.api.post<Estates>(`estates`, data)
   }
 
-  //update
   updateEstate(id: number, data: Estates): Observable<Estates> {
     return this.api.put<Estates>(`estates/${id}`, data);
   }
 
-  //delete
   deleteEstate(id: number): Observable<Estates> {
     return this.api.delete<Estates>('estates/' + id)
   }

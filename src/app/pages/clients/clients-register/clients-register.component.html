@@ -1,15 +1,16 @@
+<!-- Formulario de registro de clientes con tipos dinámicos y administradores -->
 <div class="form-wrapper">
   <!-- Título principal -->
   <h2>Registro de Cliente</h2>
 
-  <!-- Formulario simple -->
+  <!-- Formulario principal -->
   <form #clientForm="ngForm" (ngSubmit)="createClient()">
     <div class="step-container">
 
-      <!-- Selección tipo de cliente -->
+      <!-- Sección selección de tipo de cliente -->
       <h3 class="step-title">Tipo de Cliente</h3>
       <div class="client-type-selection">
-        <!-- BLOQUE EMPRESA -->
+        <!-- Card para empresas -->
         <div class="client-type-card"
              [class.selected]="client.type_client === 'empresa'"
              (click)="selectClientType('empresa')">
@@ -17,7 +18,7 @@
           <p>Sociedades, SL, SA, cooperativas</p>
         </div>
 
-        <!-- BLOQUE PARTICULAR -->
+        <!-- Card para particulares -->
         <div class="client-type-card"
              [class.selected]="client.type_client === 'particular'"
              (click)="selectClientType('particular')">
@@ -25,7 +26,7 @@
           <p>Personas físicas individuales</p>
         </div>
 
-        <!-- BLOQUE AUTONOMO -->
+        <!-- Card para autónomos -->
         <div class="client-type-card"
              [class.selected]="client.type_client === 'autonomo'"
              (click)="selectClientType('autonomo')">
@@ -34,17 +35,19 @@
         </div>
       </div>
 
-      <!-- Información específica para empresas -->
+      <!-- Información especial para empresas -->
       @if (client.type_client === 'empresa') {
         <div class="info-message">
           Los datos de nombre y apellidos se utilizarán como nombre de la empresa
         </div>
       }
 
-      <!-- Datos del cliente -->
+      <!-- Sección datos del cliente -->
       <h3 class="step-title">Datos del Cliente</h3>
       <div>
-        <!-- CAMPOS COMUNES PARA TODOS LOS TIPOS -->
+        <!-- Campos comunes para todos los tipos -->
+
+        <!-- Campo nombre -->
         <div>
           <label for="name">Nombre *</label>
           <input type="text"
@@ -56,6 +59,7 @@
                  required>
         </div>
 
+        <!-- Campo apellidos -->
         <div>
           <label for="lastname">Apellidos *</label>
           <input type="text"
@@ -67,7 +71,7 @@
                  required>
         </div>
 
-        <!-- CAMPO EXCLUSIVO EMPRESA -->
+        <!-- Campo razón social (solo para empresas) -->
         @if (client.type_client === 'empresa') {
           <div>
             <label for="company_name">Razón Social *</label>
@@ -80,7 +84,7 @@
           </div>
         }
 
-        <!-- CAMPO IDENTIFICACION TODOS LOS TIPOS -->
+        <!-- Campo identificación con label dinámico -->
         <div>
           <label for="identification">
             @if (client.type_client === 'empresa') {
@@ -97,7 +101,7 @@
                  required>
         </div>
 
-        <!-- CAMPOS COMUNES PARA TODOS LOS TIPOS -->
+        <!-- Campos comunes de contacto y dirección -->
         <div>
           <label for="phone">Teléfono *</label>
           <input type="tel"
@@ -170,7 +174,7 @@
         </div>
       </div>
 
-      <!-- SECCION ADMINISTRADORES PARA EMPRESAS -->
+      <!-- Sección administradores (solo para empresas) -->
       @if (client.type_client === 'empresa') {
         <div style="margin-top: 2rem;">
           <h3 class="step-title">Administradores (Opcional)</h3>
@@ -179,7 +183,7 @@
             Puede añadir administradores autónomos para esta empresa
           </div>
 
-          <!-- Botón añadir administrador -->
+          <!-- Botón para añadir administrador -->
           <div style="margin-bottom: 1.5rem;">
             <button type="button"
                     class="btn-secondary"
@@ -188,9 +192,10 @@
             </button>
           </div>
 
-          <!-- Lista de administradores -->
+          <!-- Lista dinámica de administradores -->
           @for (admin of administrators; track $index) {
             <div class="admin-form-container">
+              <!-- Cabecera del administrador -->
               <div class="admin-header">
                 <h4>Administrador {{$index + 1}}</h4>
                 <button type="button"
@@ -200,7 +205,9 @@
                 </button>
               </div>
 
+              <!-- Formulario del administrador -->
               <div class="admin-form">
+                <!-- Campos del administrador (mismo patrón que cliente) -->
                 <div>
                   <label [for]="'admin_name_' + $index">Nombre *</label>
                   <input type="text"
@@ -307,7 +314,7 @@
         </div>
       }
 
-      <!-- Botón enviar -->
+      <!-- Botón de envío con texto dinámico -->
       <div style="text-align: center; margin-top: 2rem;">
         <button type="submit" class="btn-success">
           @if (client.type_client === 'empresa') {

@@ -8,7 +8,10 @@ import Swal from 'sweetalert2';
 import {SearchService} from '../../../core/services/search-services/search.service';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
-
+/**
+ * Componente para mostrar y gestionar la lista de usuarios
+ * Permite buscar, editar y eliminar usuarios
+ */
 @Component({
   selector: 'app-user-list',
   imports: [
@@ -21,13 +24,13 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 })
 export class UserListComponent implements OnInit {
 
-//listado de usuarios
+  // Lista de usuarios que se muestra en la tabla
   users: User[] = []
 
-// Lista completa de clientes (datos originales)
+  // Lista completa de usuarios (datos originales sin filtrar)
   allUsers: User[] = [];
 
-  // Término de búsqueda
+  // Texto que escribe el usuario para buscar
   searchTerm: string = '';
 
   constructor(
@@ -37,22 +40,33 @@ export class UserListComponent implements OnInit {
   ) {
   }
 
+  /**
+   * Se ejecuta al cargar el componente
+   * Carga la lista de usuarios automáticamente
+   */
   ngOnInit(): void {
     this.getListUser();
   }
 
-  //Listado de los usuarios
+  /**
+   * Obtiene todos los usuarios del servidor
+   * Guarda una copia original para los filtros de búsqueda
+   */
   getListUser() {
     this.userService.getUser().subscribe({
       next: (user) => {
-        this.users = user;
-        this.allUsers = user;
+        this.users = user;        // Lista que se muestra
+        this.allUsers = user;     // Copia original para filtros
       }, error: (e: HttpErrorResponse) => {
+        // Error manejado por interceptor
       }
     })
   };
 
-  //método de flitros
+  /**
+   * Filtra la lista de usuarios según el texto de búsqueda
+   * Busca en: username, email, phone y role
+   */
   filterUser() {
     this.users = this.searchService.filterData(
       this.allUsers,
@@ -61,23 +75,32 @@ export class UserListComponent implements OnInit {
     )
   };
 
-  //Limpiar el término de búsqueda y mostrar todos los clientes
+  /**
+   * Limpia el filtro de búsqueda y muestra todos los usuarios
+   */
   clearSearch() {
     this.searchTerm = '';
     this.filterUser();
   }
 
+  /**
+   * Se ejecuta cada vez que el usuario escribe en el buscador
+   */
   onSearchChange() {
     this.filterUser();
   }
 
-//ruta para editar (boton)
+  /**
+   * Navega a la página de edición de usuario
+   */
   editUser(id: number) {
     this.router.navigate(['/dashboard/users/edit', id]);
-
   };
 
-//ruta para eliminar (boton)
+  /**
+   * Elimina un usuario después de confirmar la acción
+   * Muestra mensaje de confirmación antes de eliminar
+   */
   deleteUser(id: number) {
     Swal.fire({
       title: '¿Estás seguro?',
@@ -88,6 +111,7 @@ export class UserListComponent implements OnInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
+        // Usuario confirmó, proceder a eliminar
         this.userService.deleteUser(id).subscribe({
           next: () => {
             Swal.fire({
@@ -96,15 +120,14 @@ export class UserListComponent implements OnInit {
               icon: 'success',
               confirmButtonText: 'Ok'
             }).then(() => {
+              // Recargar la lista para mostrar cambios
               this.getListUser();
             });
           }, error: (e: HttpErrorResponse) => {
+            // Error manejado por interceptor
           }
         })
       }
     })
-
   };
-
-
 }

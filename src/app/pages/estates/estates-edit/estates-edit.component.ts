@@ -7,7 +7,10 @@ import Swal from 'sweetalert2';
 import {HttpErrorResponse} from '@angular/common/http';
 import {EstatesValidatorService} from '../../../core/services/validator-services/estates-validator.service';
 
-
+/**
+ * Componente para editar propiedades inmobiliarias existentes
+ * Permite modificar datos de inmuebles con validaciones específicas
+ */
 @Component({
   selector: 'app-estates-edit',
   imports: [
@@ -18,6 +21,7 @@ import {EstatesValidatorService} from '../../../core/services/validator-services
 })
 export class EstatesEditComponent implements OnInit {
 
+  // Objeto que guarda todos los datos de la propiedad
   estate: Estates = {
     id: null,
     cadastral_reference: '',
@@ -29,33 +33,42 @@ export class EstatesEditComponent implements OnInit {
     country: '',
     surface: null
   }
+
   constructor(
     private estateService: EstatesService,
     private router: Router,
     private route: ActivatedRoute,
     private estateValidatorServices: EstatesValidatorService,
-  ) {
-  }
+  ) {}
 
+  /**
+   * Se ejecuta al cargar el componente
+   * Busca la propiedad que se quiere editar
+   */
   ngOnInit(): void {
-    // Obtener el ID de la URL
+    // Sacar el ID de la URL (ejemplo: /edit/123)
     this.route.params.subscribe(params => {
-      const id = params['id']; // Convertir a número
+      const id = params['id'];
       if (id) {
-        // Cargo los campos del inmueble
+        // Buscar los datos de la propiedad por su ID
         this.estateService.getById(id).subscribe({
           next: (estates) => {
-            this.estate = estates;
+            this.estate = estates; // Cargar los datos en el formulario
           },
           error: (e: HttpErrorResponse) => {
+            // Error manejado por interceptor
           }
         });
       }
     });
   }
 
+  /**
+   * Actualiza los datos de la propiedad
+   * Valida información antes de enviar al servidor
+   */
   updateEstate() {
-    //verifica id
+    // Verificar que la propiedad tenga ID válido
     if (this.estate.id === null || this.estate.id === undefined) {
       Swal.fire({
         title: 'Error!',
@@ -66,10 +79,10 @@ export class EstatesEditComponent implements OnInit {
       return;
     }
 
-    //Limpiar y transformar datos
+    // Limpiar espacios y preparar datos
     const cleanEstate = this.estateValidatorServices.cleanEstatesData(this.estate)
 
-    // Validar campos requeridos
+    // Validar que todos los campos estén correctos
     const validation = this.estateValidatorServices.validateEstate(cleanEstate)
     if (!validation.isValid) {
       Swal.fire({
@@ -80,7 +93,8 @@ export class EstatesEditComponent implements OnInit {
       });
       return;
     }
-    //acceso al backend
+
+    // Enviar datos actualizados al servidor
     this.estateService.updateEstate(this.estate.id, cleanEstate).subscribe({
       next: (data: Estates) => {
         this.estate = data;
@@ -90,14 +104,19 @@ export class EstatesEditComponent implements OnInit {
           icon: 'success',
           confirmButtonText: 'Ok'
         });
+        // Regresar a la lista de propiedades
         this.router.navigate(['/dashboard/estates/list']);
-      }, error: (e: HttpErrorResponse) => {
+      },
+      error: (e: HttpErrorResponse) => {
+        // Error manejado por interceptor
       }
     })
   }
+
+  /**
+   * Cancelar edición y regresar a la lista
+   */
   goBack(){
     this.router.navigate(['/dashboard/estates/list']);
   }
-
-
 }

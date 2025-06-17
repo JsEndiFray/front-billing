@@ -1,7 +1,9 @@
+<!-- Formulario de edición de usuario -->
 <div class="form-wrapper">
   <h2>Editar Usuario</h2>
 
   <form (ngSubmit)="updateUser()">
+    <!-- Campo nombre de usuario -->
     <div>
       <label for="username">Nombre de usuario</label>
       <input
@@ -13,6 +15,7 @@
         required>
     </div>
 
+    <!-- Campo contraseña -->
     <div>
       <label for="password">Contraseña</label>
       <input
@@ -24,6 +27,7 @@
         required>
     </div>
 
+    <!-- Campo confirmación de contraseña -->
     <div>
       <label for="confirm-password">Confirme la Contraseña</label>
       <input
@@ -35,6 +39,7 @@
         required>
     </div>
 
+    <!-- Campo correo electrónico -->
     <div>
       <label for="email">Correo electrónico</label>
       <input
@@ -46,6 +51,7 @@
         required>
     </div>
 
+    <!-- Campo teléfono -->
     <div>
       <label for="phone">Teléfono</label>
       <input
@@ -57,6 +63,7 @@
         required>
     </div>
 
+    <!-- Campo rol del usuario -->
     <div>
       <label for="role">Rol</label>
       <select [(ngModel)]="user.role" name="role" id="role" required>
@@ -75,9 +82,6 @@
         ✓ Actualizar Usuario
       </button>
     </div>
-
-
-
 
   </form>
 </div>

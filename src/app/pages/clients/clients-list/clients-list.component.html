@@ -1,8 +1,10 @@
+<!-- Listado y gestión de clientes con tipos y relaciones empresariales -->
 <div class="list-wrapper">
   <h2>Listado de Clientes</h2>
 
-  <!-- BARRA DE BÚSQUEDA -->
+  <!-- Barra de búsqueda -->
   <div class="search-container">
+    <!-- Campo de búsqueda con filtro en tiempo real -->
     <div class="search-wrapper">
       <input
         type="text"
@@ -11,6 +13,7 @@
         placeholder="Buscar por nombre, identificación, teléfono o empresa..."
         class="search-input"
       >
+      <!-- Iconos de búsqueda y limpiar -->
       <div class="search-actions">
         <span class="search-icon">🔍</span>
         @if (searchTerm && searchTerm.trim() !== '') {
@@ -25,6 +28,7 @@
         }
       </div>
     </div>
+    <!-- Contador de resultados de búsqueda -->
     @if (searchTerm && searchTerm.trim() !== '') {
       <div class="search-results-info">
         <span>Mostrando {{ clients.length }} de {{ allClients.length }} clientes</span>
@@ -32,7 +36,9 @@
     }
   </div>
 
+  <!-- Tabla de clientes -->
   <table>
+    <!-- Encabezados de la tabla -->
     <thead>
     <tr>
       <th>ID</th>
@@ -55,7 +61,9 @@
     </tr>
     </thead>
 
+    <!-- Contenido de la tabla -->
     <tbody>
+    <!-- Lista de clientes existentes -->
       @if (clients && clients.length > 0) {
         @for (client of clients; track client.id) {
           <tr>
@@ -64,6 +72,7 @@
             <td>{{ client.name }}</td>
             <td>{{ client.lastname }}</td>
             <td>{{ client.company_name }}</td>
+            <!-- Lógica especial para mostrar relaciones empresariales -->
             <td>
               @if (client.relationship_type && client.parent_company_name) {
                 <span class="relationship-badge">
@@ -85,6 +94,7 @@
             <td>{{ client.country }}</td>
             <td>{{ client.date_create | dataFormat }}</td>
             <td>{{ client.date_update | dataFormat }}</td>
+            <!-- Botones de acción por cliente -->
             <td>
               <button (click)="editClient(client.id!)">Editar</button>
               <button (click)="deleteClient(client.id!)">Eliminar</button>
@@ -92,6 +102,7 @@
           </tr>
         }
       } @else {
+        <!-- Mensaje cuando no hay clientes -->
         <tr>
           <td colspan="17" class="no-clients-cell">
             <div class="no-clients-card">

@@ -4,7 +4,7 @@ import {EstatesOwners} from '../../../interface/estates-owners-interface';
 import {Estates} from '../../../interface/estates.interface';
 import {Owners} from '../../../interface/owners-interface';
 import {EstateOwnersService} from '../../../core/services/estate-owners-services/estate-owners.service';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Router} from '@angular/router';
 import {EstatesService} from '../../../core/services/estates-services/estates.service';
 import {OwnersService} from '../../../core/services/owners-services/owners.service';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -12,39 +12,36 @@ import {OwnersEstateValidatorService} from '../../../core/services/validator-ser
 import Swal from 'sweetalert2';
 
 /**
- * Componente para registrar relaciones propiedad-propietario
- * Maneja la asignación de porcentajes de propiedad
+ * Componente para crear nuevas relaciones inmueble-propietario
+ * Permite asignar porcentajes de propiedad a propietarios
  */
 @Component({
   selector: 'app-estate-owners',
   imports: [
-    FormsModule  // Para formularios template-driven
+    FormsModule
   ],
   templateUrl: './estate-owners-register.component.html',
   styleUrl: './estate-owners-register.component.css'
 })
 export class EstateOwnersRegisterComponent implements OnInit {
 
-  /**
-   * Modelo principal del formulario
-   * Incluye campos de visualización (estate_name, owner_name) y datos relacionales
-   */
+  // Objeto que guarda los datos de la nueva relación
   ownership: EstatesOwners = {
     id: null,
     estate_id: null,
-    estate_name: '',           // Para mostrar en UI
+    estate_name: '',           // Para mostrar información en la UI
     owners_id: null,
-    owner_name: '',            // Para mostrar en UI
+    owner_name: '',            // Para mostrar información en la UI
     ownership_percentage: null, // Porcentaje de propiedad
     date_create: '',
     date_update: ''
   }
 
-  // Datos para dropdowns
+  // Listas para los selectores del formulario
   estates: Estates[] = [];
   owners: Owners[] = [];
 
-  // Control de estado UI
+  // Control de estado de carga
   loading = false;
 
   constructor(
@@ -56,18 +53,17 @@ export class EstateOwnersRegisterComponent implements OnInit {
   ) {
   }
 
+  /**
+   * Se ejecuta al cargar el componente
+   * Carga las listas de inmuebles y propietarios para los selectores
+   */
   ngOnInit(): void {
-    // Cargar datos para dropdowns al inicializar
     this.getEstateList();
     this.getOwnersLIst();
   }
 
-  // ========================================
-  // CARGA DE DATOS PARA DROPDOWNS
-  // ========================================
-
   /**
-   * Obtiene lista de propiedades para dropdown
+   * Obtiene lista de inmuebles para el selector
    */
   getEstateList() {
     this.estateServices.getAllEstate().subscribe({
@@ -75,12 +71,13 @@ export class EstateOwnersRegisterComponent implements OnInit {
         this.estates = data;
       },
       error: (e: HttpErrorResponse) => {
+        // Error manejado por interceptor
       }
     })
   }
 
   /**
-   * Obtiene lista de propietarios para dropdown
+   * Obtiene lista de propietarios para el selector
    */
   getOwnersLIst() {
     this.ownersServices.getOwners().subscribe({
@@ -88,23 +85,20 @@ export class EstateOwnersRegisterComponent implements OnInit {
         this.owners = data;
       },
       error: (e: HttpErrorResponse) => {
+        // Error manejado por interceptor
       }
     })
   }
 
-  // ========================================
-  // LÓGICA DE REGISTRO CON VALIDACIONES
-  // ========================================
-
   /**
-   * Registra relación propiedad-propietario con validaciones múltiples
-   * Proceso: limpiar → validar → crear objeto → enviar
+   * Registra una nueva relación inmueble-propietario
+   * Valida datos antes de enviar al servidor
    */
   register() {
-    //Limpiar datos usando servicio validador
+    // Limpiar espacios y preparar datos
     const cleanData = this.ownersEstateValidatorService.cleanData(this.ownership);
 
-    //Validación principal de estructura y reglas de negocio
+    // Validar que todos los campos estén correctos
     const validation = this.ownersEstateValidatorService.validateEstateOwners(cleanData)
     if (!validation.isValid) {
       Swal.fire({
@@ -115,34 +109,37 @@ export class EstateOwnersRegisterComponent implements OnInit {
       return;
     }
 
-
-    //Crear objeto limpio para envío (solo campos necesarios)
+    // Crear objeto con solo los datos necesarios para el servidor
     const newOwnersEstate: EstatesOwners = {
       estate_id: Number(this.ownership.estate_id),
       owners_id: Number(this.ownership.owners_id),
       ownership_percentage: Number(cleanData.ownership_percentage),
     };
+
     this.loading = true;
 
-    this.estateOwnerService.createOwnersEstates(newOwnersEstate).subscribe({
+    // Enviar datos al servidor para crear la relación
+    this.estateOwnerService.createEstateOwners(newOwnersEstate).subscribe({
       next: (data) => {
         Swal.fire({
           title: '¡Éxito!',
           text: 'Relación registrada correctamente',
           icon: 'success'
         });
+        // Regresar a la lista después del registro exitoso
         this.router.navigate(['/dashboard/estates-owners/list']);
       },
       error: (e: HttpErrorResponse) => {
+        // Error manejado por interceptor
+        this.loading = false;
       }
     });
   }
 
   /**
-   * Navegación de regreso a lista
+   * Cancela el registro y regresa a la lista
    */
   goBack() {
     this.router.navigate(['/dashboard/estates-owners/list']);
   }
 }
-

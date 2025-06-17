@@ -1,15 +1,20 @@
 import {Injectable} from '@angular/core';
 import {Owners} from '../../../interface/owners-interface';
 
+/**
+ * Servicio de validación para propietarios
+ * Incluye sanitización y validación de documentos españoles (NIF, NIE, pasaporte)
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class OwnersValidatorService {
 
-  constructor() {
-  }
+  constructor() {}
 
-  //Limpiar y transformar datos
+  /**
+   * Limpia y transforma datos de propietario
+   */
   cleanOwnerData(owners: Owners): Owners {
     return {
       id: owners.id,
@@ -26,6 +31,9 @@ export class OwnersValidatorService {
     } as Owners;
   }
 
+  /**
+   * Valida campos obligatorios
+   */
   validateRequiredFields(owner: Owners): { isValid: boolean; message?: string } {
     if (
       !owner.name ||
@@ -47,7 +55,9 @@ export class OwnersValidatorService {
     return {isValid: true};
   }
 
-  // Validar NIF
+  /**
+   * Valida NIF con algoritmo de letra de control
+   */
   private validateNIF(nif: string): boolean {
     if (!nif || nif.length !== 9) return false;
 
@@ -61,7 +71,9 @@ export class OwnersValidatorService {
     return letter === letters.charAt(number % 23);
   }
 
-  // Validar NIE
+  /**
+   * Valida NIE con conversión a NIF equivalente
+   */
   private validateNIE(nie: string): boolean {
     if (!nie || nie.length !== 9) return false;
 
@@ -71,6 +83,7 @@ export class OwnersValidatorService {
     const letters = 'TRWAGMYFPDXBNJZSQVHLCKE';
     let number = nie.substring(1, 8);
 
+    // Convertir prefijo a número
     if (nie.charAt(0) === 'Y') number = '1' + number;
     else if (nie.charAt(0) === 'Z') number = '2' + number;
     else number = '0' + number;
@@ -79,15 +92,18 @@ export class OwnersValidatorService {
     return letter === letters.charAt(parseInt(number) % 23);
   }
 
-  // Validar pasaporte
+  /**
+   * Valida formato de pasaporte básico
+   */
   private validatePassport(passport: string): boolean {
     if (!passport || passport.length < 6 || passport.length > 9) return false;
-
     const passportRegex = /^[A-Z0-9]{6,9}$/;
     return passportRegex.test(passport.toUpperCase());
   }
 
-  // Validar identificación según tipo de cliente
+  /**
+   * Valida identificación (NIF, NIE o pasaporte)
+   */
   validateIdentification(identification: string): { isValid: boolean; message?: string } {
     if (!identification || identification.trim() === '') {
       return {isValid: false, message: 'La identificación es obligatoria'}
@@ -105,9 +121,9 @@ export class OwnersValidatorService {
       }
     }
     return {isValid: true};
-  };
+  }
 
-  //validar email
+  // Validaciones específicas
   validateEmail(email: string): { isValid: boolean; message?: string } {
     if (!email || email.trim() === '') {
       return {isValid: false, message: 'El email es obligatorio'};
@@ -119,11 +135,11 @@ export class OwnersValidatorService {
     return {isValid: true};
   }
 
-  // Validar teléfono
   validatePhone(phone: string): { isValid: boolean; message?: string } {
     if (!phone || phone.trim() === '') {
       return {isValid: false, message: 'El teléfono es obligatorio'};
     }
+    // Teléfonos españoles: empiezan por 6, 7, 8 o 9
     const phoneRegex = /^[6-9][0-9]{8}$/;
     if (!phoneRegex.test(phone)) {
       return {isValid: false, message: 'El teléfono debe tener 9 dígitos y empezar por 6, 7, 8 o 9'};
@@ -131,7 +147,6 @@ export class OwnersValidatorService {
     return {isValid: true}
   }
 
-  //validar codigo postal
   validatePostalCode(postal_code: string): { isValid: boolean; message?: string } {
     if (!postal_code || postal_code.trim() === '') {
       return {isValid: false, message: 'El código postal es obligatorio'};
@@ -143,41 +158,28 @@ export class OwnersValidatorService {
     return {isValid: true};
   }
 
-  //validacion completa
+  /**
+   * Validación completa - orquesta todas las validaciones
+   */
   validateOwners(owners: Owners): { isValid: boolean; message?: string } {
     const cleanOwner = this.cleanOwnerData(owners);
 
-    // Validar campos requeridos
+    // Ejecutar validaciones en secuencia
     const requiredValidation = this.validateRequiredFields(cleanOwner);
-    if (!requiredValidation.isValid) {
-      return requiredValidation
-    }
+    if (!requiredValidation.isValid) return requiredValidation;
 
+    const idValidate = this.validateIdentification(cleanOwner.identification);
+    if (!idValidate.isValid) return idValidate;
 
-    //validamos la identificacion
-    const idValidate = this.validateIdentification(cleanOwner.identification)
-    if (!idValidate.isValid) {
-      return idValidate;
-    }
-    //validamos el email
     const emailValidate = this.validateEmail(cleanOwner.email);
-    if (!emailValidate.isValid) {
-      return emailValidate;
-    }
-    //dvalidamos el telefono
-    const phoneValidate = this.validatePhone(cleanOwner.phone);
-    if (!phoneValidate.isValid) {
-      return phoneValidate;
-    }
-    //validamos el codigo postal
-    const postalValidation = this.validatePostalCode(cleanOwner.postal_code);
-    if (!postalValidation.isValid) {
-      return postalValidation;
-    }
+    if (!emailValidate.isValid) return emailValidate;
 
+    const phoneValidate = this.validatePhone(cleanOwner.phone);
+    if (!phoneValidate.isValid) return phoneValidate;
+
+    const postalValidation = this.validatePostalCode(cleanOwner.postal_code);
+    if (!postalValidation.isValid) return postalValidation;
 
     return {isValid: true};
   }
-
-
 }

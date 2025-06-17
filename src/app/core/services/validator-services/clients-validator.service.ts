@@ -1,13 +1,18 @@
 import {Injectable} from '@angular/core';
 import {Clients} from '../../../interface/clientes-interface';
 
-
+/**
+ * Servicio de validación para clientes
+ * Incluye sanitización de datos y validación de documentos españoles
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class ClientsValidatorService {
 
-  // Limpiar y transformar datos
+  /**
+   * Limpia y transforma datos de cliente
+   */
   cleanClientData(client: Clients): Clients {
     return {
       ...client,
@@ -26,7 +31,9 @@ export class ClientsValidatorService {
     } as Clients;
   }
 
-  // Validar campos requeridos
+  /**
+   * Valida campos obligatorios
+   */
   validateRequiredFields(client: Clients): { isValid: boolean; message?: string } {
     if (!client.name||
       !client.lastname ||
@@ -46,7 +53,9 @@ export class ClientsValidatorService {
     return {isValid: true};
   }
 
-  // Validar CIF para empresas
+  /**
+   * Valida CIF para empresas con algoritmo de dígito de control
+   */
   private validateCIF(cif: string): boolean {
     if (!cif || cif.length !== 9) return false;
 
@@ -61,7 +70,9 @@ export class ClientsValidatorService {
     return letter === expectedLetter || letter === this.calculateCIFControl(number).toString();
   }
 
-// Calcular dígito de control para CIF
+  /**
+   * Calcula dígito de control para CIF usando algoritmo oficial
+   */
   private calculateCIFControl(number: string): number {
     let sum = 0;
     for (let i = 0; i < number.length; i++) {
@@ -75,11 +86,12 @@ export class ClientsValidatorService {
     return (10 - (sum % 10)) % 10;
   }
 
-  // Generar CIF válido para testing
+  /**
+   * Genera CIF válido para testing
+   */
   generateValidCIF(): string {
     const letters = 'ABCDEFGHJNPQRSUVW';
     const letter = letters[Math.floor(Math.random() * letters.length)];
-    //const numbers = Math.floor(Math.random() * 90000000) + 10000000;
     const numbers = Math.floor(Math.random() * 9000000) + 1000000; // 7 dígitos
 
     const control = this.calculateCIFControl(numbers.toString());
@@ -88,7 +100,9 @@ export class ClientsValidatorService {
     return `${letter}${numbers}${controlChar}`;
   }
 
-  // Validar NIF
+  /**
+   * Valida NIF con algoritmo de letra de control
+   */
   private validateNIF(nif: string): boolean {
     if (!nif || nif.length !== 9) return false;
 
@@ -102,7 +116,9 @@ export class ClientsValidatorService {
     return letter === letters.charAt(number % 23);
   }
 
-  // Validar NIE
+  /**
+   * Valida NIE con conversión a NIF equivalente
+   */
   private validateNIE(nie: string): boolean {
     if (!nie || nie.length !== 9) return false;
 
@@ -112,6 +128,7 @@ export class ClientsValidatorService {
     const letters = 'TRWAGMYFPDXBNJZSQVHLCKE';
     let number = nie.substring(1, 8);
 
+    // Convertir X/Y/Z a números
     if (nie.charAt(0) === 'Y') number = '1' + number;
     else if (nie.charAt(0) === 'Z') number = '2' + number;
     else number = '0' + number;
@@ -120,15 +137,18 @@ export class ClientsValidatorService {
     return letter === letters.charAt(parseInt(number) % 23);
   }
 
-  // Validar pasaporte
+  /**
+   * Valida formato de pasaporte básico
+   */
   private validatePassport(passport: string): boolean {
     if (!passport || passport.length < 6 || passport.length > 9) return false;
-
     const passportRegex = /^[A-Z0-9]{6,9}$/;
     return passportRegex.test(passport.toUpperCase());
   }
 
-// Validar identificación según tipo de cliente
+  /**
+   * Valida identificación según tipo de cliente
+   */
   validateIdentification(identification: string, clientType: string): { isValid: boolean; message?: string } {
     if (!identification || identification.trim() === '') {
       return {isValid: false, message: 'La identificación es obligatoria'};
@@ -155,7 +175,7 @@ export class ClientsValidatorService {
     return {isValid: true};
   }
 
-  // Validar email
+  // Validaciones específicas
   validateEmail(email: string): { isValid: boolean; message?: string } {
     if (!email || email.trim() === '') {
       return {isValid: false, message: 'El email es obligatorio'};
@@ -169,12 +189,12 @@ export class ClientsValidatorService {
     return {isValid: true};
   }
 
-// Validar teléfono
   validatePhone(phone: string): { isValid: boolean; message?: string } {
     if (!phone || phone.trim() === '') {
       return {isValid: false, message: 'El teléfono es obligatorio'};
     }
 
+    // Teléfonos españoles: empiezan por 6, 7, 8 o 9
     const phoneRegex = /^[6-9][0-9]{8}$/;
     const cleanPhone = phone.replace(/\s/g, '');
 
@@ -185,7 +205,6 @@ export class ClientsValidatorService {
     return {isValid: true};
   }
 
-  // Validar código postal
   validatePostalCode(postalCode: string): { isValid: boolean; message?: string } {
     if (!postalCode || postalCode.trim() === '') {
       return {isValid: false, message: 'El código postal es obligatorio'};
@@ -199,41 +218,28 @@ export class ClientsValidatorService {
     return {isValid: true};
   }
 
-// Validación completa
+  /**
+   * Validación completa - orquesta todas las validaciones
+   */
   validateClient(client: Clients): { isValid: boolean; message?: string } {
     const cleanClient = this.cleanClientData(client);
 
-    // Validar campos requeridos
+    // Ejecutar todas las validaciones en secuencia
     const requiredValidation = this.validateRequiredFields(cleanClient);
-    if (!requiredValidation.isValid) {
-      return requiredValidation;
-    }
+    if (!requiredValidation.isValid) return requiredValidation;
 
-    // Validar identificación
     const idValidation = this.validateIdentification(cleanClient.identification, cleanClient.type_client);
-    if (!idValidation.isValid) {
-      return idValidation;
-    }
+    if (!idValidation.isValid) return idValidation;
 
-    // Validar email
     const emailValidation = this.validateEmail(cleanClient.email);
-    if (!emailValidation.isValid) {
-      return emailValidation;
-    }
+    if (!emailValidation.isValid) return emailValidation;
 
-    // Validar teléfono
     const phoneValidation = this.validatePhone(cleanClient.phone);
-    if (!phoneValidation.isValid) {
-      return phoneValidation;
-    }
+    if (!phoneValidation.isValid) return phoneValidation;
 
-    // Validar código postal
     const postalValidation = this.validatePostalCode(cleanClient.postal_code);
-    if (!postalValidation.isValid) {
-      return postalValidation;
-    }
+    if (!postalValidation.isValid) return postalValidation;
 
     return {isValid: true};
   }
-
 }

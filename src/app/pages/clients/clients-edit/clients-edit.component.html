@@ -1,12 +1,14 @@
+<!-- Formulario de edición de clientes con gestión de tipos y administradores -->
 <div class="form-wrapper">
   <h2>Editar Cliente</h2>
 
   <form (ngSubmit)="updateClient()">
 
-    <!-- Información básica -->
+    <!-- Sección información básica -->
     <div class="form-section">
       <h3>📋 Información Básica</h3>
       <div class="form-grid">
+        <!-- Campo tipo de cliente -->
         <div>
           <label for="type_client">Tipo de Cliente</label>
           <select [(ngModel)]="client.type_client" name="type_client" id="type_client" required>
@@ -17,6 +19,7 @@
           </select>
         </div>
 
+        <!-- Campo nombre -->
         <div>
           <label for="name">Nombre *</label>
           <input
@@ -28,6 +31,7 @@
             required>
         </div>
 
+        <!-- Campo apellidos -->
         <div>
           <label for="lastname">Apellidos</label>
           <input
@@ -38,6 +42,7 @@
             placeholder="Apellidos del cliente">
         </div>
 
+        <!-- Campo identificación -->
         <div>
           <label for="identification">Identificación *</label>
           <input
@@ -51,10 +56,11 @@
       </div>
     </div>
 
-    <!-- Información de contacto -->
+    <!-- Sección información de contacto -->
     <div class="form-section">
       <h3>📞 Información de Contacto</h3>
       <div class="form-grid">
+        <!-- Campo email -->
         <div>
           <label for="email">Email *</label>
           <input
@@ -66,6 +72,7 @@
             required>
         </div>
 
+        <!-- Campo teléfono -->
         <div>
           <label for="phone">Teléfono *</label>
           <input
@@ -79,10 +86,11 @@
       </div>
     </div>
 
-    <!-- Dirección -->
+    <!-- Sección dirección -->
     <div class="form-section">
       <h3>🏠 Dirección</h3>
       <div class="form-grid">
+        <!-- Campo dirección -->
         <div>
           <label for="address">Dirección</label>
           <input
@@ -93,6 +101,7 @@
             placeholder="Calle Principal 123">
         </div>
 
+        <!-- Campo código postal -->
         <div>
           <label for="postal_code">Código Postal</label>
           <input
@@ -104,6 +113,7 @@
             pattern="[0-9]{5}">
         </div>
 
+        <!-- Campo localidad -->
         <div>
           <label for="location">Localidad</label>
           <input
@@ -114,6 +124,7 @@
             placeholder="Madrid">
         </div>
 
+        <!-- Campo provincia -->
         <div>
           <label for="province">Provincia</label>
           <input
@@ -124,6 +135,7 @@
             placeholder="Madrid">
         </div>
 
+        <!-- Campo país -->
         <div>
           <label for="country">País</label>
           <input
@@ -137,48 +149,12 @@
       </div>
     </div>
 
-   <!-- @if (client.type_client === 'empresa' || client.type_client === 'autonomo') {
-      <div class="form-section">
-        <h3>🏢 Información Empresarial</h3>
-        <div class="form-grid">
-          <div>
-            <label for="company_name">Nombre de Empresa</label>
-            <input
-              type="text"
-              [(ngModel)]="client.company_name"
-              name="company_name"
-              id="company_name"
-              placeholder="Empresa S.L.">
-          </div>
-
-          @if (client.type_client === 'autonomo') {
-            <div>
-              <label for="parent_company_name">Empresa Relacionada</label>
-              <input
-                type="text"
-                [(ngModel)]="client.parent_company_name"
-                name="parent_company_name"
-                id="parent_company_name"
-                placeholder="Empresa relacionada"
-                readonly>
-            </div>
-
-            <div>
-              <label for="relationship_type">Tipo de Relación</label>
-              <select [(ngModel)]="client.relationship_type" name="relationship_type" id="relationship_type">
-                <option value="">Sin relación</option>
-                <option value="administrator">Administrador</option>
-              </select>
-            </div>
-          }
-        </div>
-      </div>
-    }-->
-    <!-- Información empresarial (si aplica) -->
+    <!-- Sección información empresarial (solo para empresa/autónomo) -->
     @if (client.type_client === 'empresa' || client.type_client === 'autonomo') {
       <div class="form-section">
         <h3>🏢 Información Empresarial</h3>
         <div class="form-grid">
+          <!-- Campo nombre de empresa -->
           <div>
             <label for="company_name">Nombre de Empresa</label>
             <input
@@ -189,6 +165,7 @@
               placeholder="Empresa S.L.">
           </div>
 
+          <!-- Campos específicos para autónomos -->
           @if (client.type_client === 'autonomo') {
             <div>
               <label for="parent_company_name">Empresa Relacionada</label>
@@ -213,12 +190,13 @@
       </div>
     }
 
-    <!-- NUEVA SECCIÓN: Administrador para empresas -->
+    <!-- Sección administrador para empresas -->
     @if (client.type_client === 'empresa') {
       <div class="form-section">
         <h3>👨‍💼 Administrador de la Empresa</h3>
 
         <div class="form-grid">
+          <!-- Selector de tipo de administrador -->
           <div style="grid-column: 1 / -1;">
             <label>¿Cómo quieres asignar el administrador?</label>
             <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
@@ -233,6 +211,7 @@
             </div>
           </div>
 
+          <!-- Selector de administrador existente -->
           @if (adminType === 'existing') {
             <div>
               <label for="existing_admin">Administrador</label>
@@ -244,6 +223,8 @@
               </select>
             </div>
           }
+
+          <!-- Formulario para nuevo administrador -->
           @if (adminType === 'new') {
             <div>
               <label for="admin_name">Nombre del Administrador *</label>
@@ -298,7 +279,6 @@
         </div>
       </div>
     }
-
 
     <!-- Botones de acción -->
     <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">

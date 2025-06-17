@@ -1,3 +1,4 @@
+/*
 // Definir posibles tipos para valores adicionales
 type ErrorDetailValue = string | number | boolean | string[] | number[] | object | null | undefined;
 
@@ -9,3 +10,4 @@ export interface ErrorResponseBase {
 export interface ErrorResponse extends ErrorResponseBase{
   [key: string]: string | ErrorDetailValue | Record<string, ErrorDetailValue>;
 }
+*/

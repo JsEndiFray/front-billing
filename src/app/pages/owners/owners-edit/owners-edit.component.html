@@ -1,12 +1,14 @@
+<!-- Formulario de edición de propietarios -->
 <div class="form-wrapper">
   <h2>Editar Propietario</h2>
 
   <form (ngSubmit)="updateOwner()">
 
-    <!-- Información Personal -->
+    <!-- Sección información personal -->
     <div class="form-section">
       <h3>👤 Información Personal</h3>
       <div class="form-grid">
+        <!-- Campo nombre -->
         <div>
           <label for="name">Nombre *</label>
           <input
@@ -18,6 +20,7 @@
             required>
         </div>
 
+        <!-- Campo apellidos -->
         <div>
           <label for="lastname">Apellidos *</label>
           <input
@@ -29,6 +32,7 @@
             required>
         </div>
 
+        <!-- Campo identificación -->
         <div>
           <label for="identification">Identificación *</label>
           <input
@@ -42,10 +46,11 @@
       </div>
     </div>
 
-    <!-- Información de Contacto -->
+    <!-- Sección información de contacto -->
     <div class="form-section">
       <h3>📞 Información de Contacto</h3>
       <div class="form-grid">
+        <!-- Campo email -->
         <div>
           <label for="email">Email *</label>
           <input
@@ -57,6 +62,7 @@
             required>
         </div>
 
+        <!-- Campo teléfono -->
         <div>
           <label for="phone">Teléfono *</label>
           <input
@@ -70,10 +76,11 @@
       </div>
     </div>
 
-    <!-- Dirección -->
+    <!-- Sección dirección -->
     <div class="form-section">
       <h3>🏠 Dirección</h3>
       <div class="form-grid">
+        <!-- Campo dirección completa -->
         <div class="full-width">
           <label for="address">Dirección *</label>
           <input
@@ -85,6 +92,7 @@
             required>
         </div>
 
+        <!-- Campo código postal -->
         <div>
           <label for="postal_code">Código Postal</label>
           <input
@@ -96,6 +104,7 @@
             pattern="[0-9]{5}">
         </div>
 
+        <!-- Campo localidad -->
         <div>
           <label for="location">Localidad *</label>
           <input
@@ -107,6 +116,7 @@
             required>
         </div>
 
+        <!-- Campo provincia -->
         <div>
           <label for="province">Provincia *</label>
           <input
@@ -118,6 +128,7 @@
             required>
         </div>
 
+        <!-- Campo país -->
         <div>
           <label for="country">País</label>
           <input

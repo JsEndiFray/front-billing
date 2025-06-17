@@ -1,11 +1,13 @@
-//listado y registro de clientes
+/**
+ * Interface para clientes con relaciones empresa-administrador
+ */
 export interface Clients {
   id?: number | null;
-  type_client: string;
+  type_client: string;                    // 'particular', 'autonomo', 'empresa'
   name: string;
   lastname: string;
-  company_name?: string;
-  identification: string;
+  company_name?: string;                  // Requerido para type_client = 'empresa'
+  identification: string;                 // NIF/NIE/CIF según tipo
   phone: string;
   email: string;
   address: string;
@@ -15,8 +17,9 @@ export interface Clients {
   country: string;
   date_create?: string;
   date_update?: string;
-  parent_company_id?: number | null;
-  relationship_type?: 'administrator';
-  parent_company_name?: string;
-}
 
+  // Campos para relación empresa-administrador
+  parent_company_id?: number | null;      // ID de empresa padre
+  relationship_type?: 'administrator';    // Tipo de relación
+  parent_company_name?: string;           // Nombre de empresa padre (para display)
+}

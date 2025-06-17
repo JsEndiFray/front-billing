@@ -1,5 +1,10 @@
 import {Pipe, PipeTransform} from '@angular/core';
 
+/**
+ * Pipe para formatear fechas en español
+ * Uso: {{ fecha | dataFormat }}
+ * Resultado: "17/06/2025, 14:30:25"
+ */
 @Pipe({
   name: 'dataFormat',
   standalone: true
@@ -10,6 +15,8 @@ export class DataFormatPipe implements PipeTransform {
     if (!value) {
       return '';
     }
+
+    // Convierte string a fecha y formatea en español
     const date = new Date(value);
     return date.toLocaleString('es-Es', {
       year: 'numeric',
@@ -20,5 +27,4 @@ export class DataFormatPipe implements PipeTransform {
       second: '2-digit'
     })
   }
-
 }

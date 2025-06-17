@@ -1,37 +1,49 @@
+<!-- Formulario de registro de nuevos propietarios -->
 <div class="form-wrapper">
   <h2>Registrar Propietario</h2>
   <form (ngSubmit)="createOwners()">
 
+    <!-- Campo nombre -->
     <label for="name">Nombre</label>
     <input type="text" [(ngModel)]="owner.name" name="nombre" id="name"/>
 
+    <!-- Campo apellidos -->
     <label for="lastname">Apellidos</label>
     <input type="text" [(ngModel)]="owner.lastname" name="apellidos" id="lastname"/>
 
+    <!-- Campo email -->
     <label for="email">Email</label>
     <input type="email" [(ngModel)]="owner.email" name="email" id="email"/>
 
+    <!-- Campo identificación -->
     <label for="identification">NIF</label>
     <input type="text" [(ngModel)]="owner.identification" name="identification" id="identification"/>
 
+    <!-- Campo teléfono -->
     <label for="phone">Teléfono</label>
     <input type="text" [(ngModel)]="owner.phone " name="phone" id="phone"/>
 
+    <!-- Campo dirección -->
     <label for="address">Dirección</label>
     <input type="text" [(ngModel)]="owner.address" name="direccion" id="address"/>
 
+    <!-- Campo código postal -->
     <label for="posta_code">Código Postal</label>
     <input type="text" [(ngModel)]="owner.postal_code" name="codigoPostal" id="posta_code"/>
 
+    <!-- Campo localidad -->
     <label for="location">Localidad</label>
     <input type="text" [(ngModel)]="owner.location" name="localidad" id="location"/>
 
+    <!-- Campo provincia -->
     <label for="province">Provincia</label>
     <input type="text" [(ngModel)]="owner.province" name="provincia" id="province"/>
 
+    <!-- Campo país -->
     <label for="country">País</label>
     <input type="text" [(ngModel)]="owner.country" name="pais" id="country"/>
 
+    <!-- Botón de registro -->
     <button type="submit">Registrar Propietario</button>
 
   </form>

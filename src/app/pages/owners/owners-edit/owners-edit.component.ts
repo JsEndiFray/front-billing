@@ -7,6 +7,10 @@ import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
 import {OwnersValidatorService} from '../../../core/services/validator-services/owners-validator.service';
 
+/**
+ * Componente para editar propietarios existentes
+ * Permite modificar datos personales, contacto y dirección
+ */
 @Component({
   selector: 'app-owners-edit',
   imports: [
@@ -17,6 +21,7 @@ import {OwnersValidatorService} from '../../../core/services/validator-services/
 })
 export class OwnersEditComponent implements OnInit {
 
+  // Objeto que guarda todos los datos del propietario
   owner: Owners = {
     id: 0,
     name: '',
@@ -39,24 +44,33 @@ export class OwnersEditComponent implements OnInit {
   ) {
   }
 
+  /**
+   * Se ejecuta al cargar el componente
+   * Busca el propietario que se quiere editar
+   */
   ngOnInit(): void {
-    // Obtener ID de la ruta
+    // Sacar el ID de la URL (ejemplo: /edit/123)
     this.route.params.subscribe(params => {
       const id = params['id'];
       if (id) {
-        // Cargo los campos del cliente
+        // Buscar los datos del propietario por su ID
         this.ownersService.getOwnerById(id).subscribe({
           next: (data) => {
-            this.owner = data;
+            this.owner = data; // Cargar los datos en el formulario
           }, error: (e: HttpErrorResponse) => {
+            // Error manejado por interceptor
           }
         });
       }
     });
   };
 
+  /**
+   * Actualiza los datos del propietario
+   * Valida información antes de enviar al servidor
+   */
   updateOwner() {
-    //verifica id
+    // Verificar que el propietario tenga ID válido
     if (this.owner.id == null) {
       Swal.fire({
         title: 'Error',
@@ -66,9 +80,11 @@ export class OwnersEditComponent implements OnInit {
       });
       return;
     }
-    //Limpiar y transformar datos
+
+    // Limpiar espacios y preparar datos
     const cleanOwners = this.ownerValidator.cleanOwnerData(this.owner);
-    //validar campos requeridos
+
+    // Validar que todos los campos estén correctos
     const validation = this.ownerValidator.validateOwners(cleanOwners);
     if (!validation.isValid) {
       Swal.fire({
@@ -79,6 +95,8 @@ export class OwnersEditComponent implements OnInit {
       });
       return;
     }
+
+    // Enviar datos actualizados al servidor
     this.ownersService.updateOwners(this.owner.id, cleanOwners).subscribe({
       next: (data) => {
         this.owner = data;
@@ -88,16 +106,18 @@ export class OwnersEditComponent implements OnInit {
           icon: 'success',
           confirmButtonText: 'Ok'
         });
+        // Regresar a la lista de propietarios
         this.router.navigate(['/dashboard/owners/list'])
       }, error: (e: HttpErrorResponse) => {
+        // Error manejado por interceptor
       }
     })
   }
 
+  /**
+   * Cancelar edición y regresar a la lista
+   */
   goBack() {
     this.router.navigate(['/dashboard/owners/list'])
   }
-
 }
-
-

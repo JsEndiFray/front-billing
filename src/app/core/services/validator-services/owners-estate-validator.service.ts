@@ -1,15 +1,20 @@
 import {Injectable} from '@angular/core';
 import {EstatesOwners} from '../../../interface/estates-owners-interface';
 
+/**
+ * Servicio de validación para relaciones propiedad-propietario
+ * Valida porcentajes de propiedad y campos requeridos
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class OwnersEstateValidatorService {
 
-  constructor() {
-  }
+  constructor() {}
 
-  // Limpiar datos
+  /**
+   * Limpia datos manteniendo solo campos necesarios
+   */
   cleanData(ownerEstate: EstatesOwners) {
     return {
       id: ownerEstate.id,
@@ -19,9 +24,10 @@ export class OwnersEstateValidatorService {
     } as EstatesOwners;
   }
 
-  //Validaciones requeridas - retorna el número del porcentaje
+  /**
+   * Valida campos obligatorios
+   */
   validateRequiredFields(ownerEstate: EstatesOwners): { isValid: boolean; message?: string } {
-
     if (!ownerEstate.estate_id) {
       return {
         isValid: false,
@@ -43,11 +49,12 @@ export class OwnersEstateValidatorService {
       };
     }
 
-
     return {isValid: true};
   }
 
-  // Validar porcentaje específicamente
+  /**
+   * Valida porcentaje de propiedad (rango 0-100)
+   */
   validatePercentage(percentage: number | string | null | undefined): { isValid: boolean; message?: string } {
     if (!percentage && percentage !== 0) {
       return {
@@ -82,18 +89,20 @@ export class OwnersEstateValidatorService {
     return {isValid: true};
   }
 
-  // Validación completa
+  /**
+   * Validación completa - orquesta todas las validaciones
+   */
   validateEstateOwners(ownerEstate: EstatesOwners): { isValid: boolean; message?: string } {
     const cleanData = this.cleanData(ownerEstate);
 
-    // Validar campos requeridos
+    // Ejecutar validaciones en secuencia
     const requiredValidation = this.validateRequiredFields(cleanData);
-    if (!requiredValidation) {
+    if (!requiredValidation.isValid) {
       return requiredValidation;
     }
-    // Validar porcentaje específicamente
+
     const percentageValidation = this.validatePercentage(cleanData.ownership_percentage);
-    if (!percentageValidation) {
+    if (!percentageValidation.isValid) {
       return percentageValidation;
     }
 

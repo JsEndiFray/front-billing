@@ -1,6 +1,10 @@
 import {Injectable} from '@angular/core';
 import {User} from '../../../interface/users-interface';
 
+/**
+ * Servicio de validación para usuarios del sistema
+ * Validaciones básicas y transformación de roles
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -9,7 +13,9 @@ export class UserValidatorService {
   constructor() {
   }
 
-  //Limpiar y transformar datos
+  /**
+   * Limpia y transforma datos de usuario
+   */
   cleanUserData(user: User): User {
     return {
       id: user.id,
@@ -22,7 +28,9 @@ export class UserValidatorService {
     } as User;
   }
 
-  // Validar campos requeridos
+  /**
+   * Valida campos obligatorios
+   */
   validateRequiredFields(user: User): { isValid: boolean; message?: string } {
     if (!user.username ||
       !user.password ||
@@ -37,7 +45,9 @@ export class UserValidatorService {
     return {isValid: true};
   }
 
-  //validacion password
+  /**
+   * Valida coincidencia de contraseñas
+   */
   validatePasswords(password: string, confirmPassword: string): { isValid: boolean; message?: string } {
     if (password !== confirmPassword) {
       return {
@@ -48,7 +58,9 @@ export class UserValidatorService {
     return {isValid: true};
   }
 
-  // Comprobar si se ha seleccionado un rol
+  /**
+   * Valida selección de rol
+   */
   validateRole(role: string): { isValid: boolean; message?: string } {
     if (!role || role === '') {
       return {
@@ -56,40 +68,38 @@ export class UserValidatorService {
         message: "Debe seleccionar un rol"
       };
     }
-    ;
     return {isValid: true};
   }
 
-  //cambiar el nombre de español a ingles al backend
+  /**
+   * Transforma rol de español a inglés para backend
+   */
   transformRoleToBackend(role: string) {
     if (role === 'empleado') return 'employee';
     if (role === 'administrador') return 'admin';
     return role;
   }
 
-  //Validación completa
+  /**
+   * Validación completa - orquesta todas las validaciones
+   */
   validateUser(user: User): { isValid: boolean; message?: string } {
-    // 1. LIMPIAR datos
     const cleanUser = this.cleanUserData(user);
 
-    // 2. VALIDAR campos requeridos
+    // Ejecutar validaciones en secuencia
     const requiredValidation = this.validateRequiredFields(cleanUser);
-    if (!requiredValidation.isValid) {
-      return requiredValidation;
-    }
-    // 3. VALIDAR contraseñas (si existe confirm_password)
+    if (!requiredValidation.isValid) return requiredValidation;
+
+    // Validar contraseñas si existe confirmación
     if (cleanUser.confirm_password !== undefined) {
       const passwordValidation = this.validatePasswords(cleanUser.password, cleanUser.confirm_password);
-      if (!passwordValidation.isValid) {
-        return passwordValidation;
-      }
+      if (!passwordValidation.isValid) return passwordValidation;
+
     }
-    // 4. VALIDAR rol
+
     const roleValidation = this.validateRole(cleanUser.role);
-    if (!roleValidation.isValid) {
-      return roleValidation;
-    }
+    if (!roleValidation.isValid) return roleValidation;
+
     return {isValid: true};
   }
-
 }

@@ -1,8 +1,10 @@
+<!-- Listado y gestión de propiedades inmobiliarias -->
 <div class="list-wrapper">
   <h2>Listado de Propiedades</h2>
 
-  <!-- BARRA DE BÚSQUEDA -->
+  <!-- Barra de búsqueda -->
   <div class="search-container">
+    <!-- Campo de búsqueda con filtro en tiempo real -->
     <div class="search-wrapper">
       <input
         type="text"
@@ -11,6 +13,7 @@
         placeholder="Buscar por Referencia Catastro, dirección, localidad y provincia..."
         class="search-input"
       >
+      <!-- Iconos de búsqueda y limpiar -->
       <div class="search-actions">
         <span class="search-icon">🔍</span>
         @if (searchTerm && searchTerm.trim() !== '') {
@@ -25,6 +28,7 @@
         }
       </div>
     </div>
+    <!-- Contador de resultados de búsqueda -->
     @if (searchTerm && searchTerm.trim() !== '') {
       <div class="search-results-info">
         <span>Mostrando {{ estates.length }} de {{ allStates.length }} Inmuebles</span>
@@ -32,7 +36,9 @@
     }
   </div>
 
+  <!-- Tabla de propiedades -->
   <table>
+    <!-- Encabezados de la tabla -->
     <thead>
     <tr>
       <th>ID</th>
@@ -50,7 +56,9 @@
     </tr>
     </thead>
 
+    <!-- Contenido de la tabla -->
     <tbody>
+    <!-- Lista de propiedades existentes -->
       @if (estates && estates.length > 0) {
         @for (estate of estates; track estate.id) {
           <tr>
@@ -65,6 +73,7 @@
             <td>{{ estate.surface }}</td>
             <td>{{ estate.date_create | dataFormat }}</td>
             <td>{{ estate.date_update | dataFormat }}</td>
+            <!-- Botones de acción por propiedad -->
             <td>
               <button (click)="editEstate(estate.id!)">Editar</button>
               <button (click)="deleteEstate(estate.id!)">Eliminar</button>
@@ -72,6 +81,7 @@
           </tr>
         }
       } @else {
+        <!-- Mensaje cuando no hay propiedades -->
         <tr>
           <td colspan="12" class="no-clients-cell">
             <div class="no-clients-card">

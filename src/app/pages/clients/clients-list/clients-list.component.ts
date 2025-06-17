@@ -8,28 +8,29 @@ import {Router} from '@angular/router';
 import {FormsModule} from '@angular/forms';
 import {SearchService} from '../../../core/services/search-services/search.service';
 
-
+/**
+ * Componente para mostrar y gestionar la lista de clientes
+ * Permite buscar, editar y eliminar clientes con diferentes tipos y relaciones
+ */
 @Component({
   selector: 'app-clients-list',
   standalone: true,
   imports: [
     DataFormatPipe, FormsModule,
-
   ],
   templateUrl: './clients-list.component.html',
   styleUrl: './clients-list.component.css'
 })
 export class ClientsListComponent implements OnInit {
 
-  // Lista completa de clientes (datos originales)
+  // Lista completa de clientes (datos originales sin filtrar)
   allClients: Clients[] = [];
 
-  // Datos que se muestran en la tabla (solo la página actual)
+  // Lista de clientes que se muestra en la tabla
   clients: Clients[] = [];
 
-  // Término de búsqueda
+  // Texto que escribe el usuario para buscar
   searchTerm: string = '';
-
 
   constructor(
     private clientsService: ClientsService,
@@ -38,23 +39,33 @@ export class ClientsListComponent implements OnInit {
   ) {
   }
 
+  /**
+   * Se ejecuta al cargar el componente
+   * Carga la lista de clientes automáticamente
+   */
   ngOnInit(): void {
     this.getListClients();
-
   }
 
-  //obtener el lislatado
+  /**
+   * Obtiene todos los clientes del servidor
+   * Guarda una copia original para los filtros de búsqueda
+   */
   getListClients() {
     this.clientsService.getClients().subscribe({
       next: (client) => {
-        this.clients = client;
-        this.allClients = client;
+        this.clients = client;        // Lista que se muestra
+        this.allClients = client;     // Copia original para filtros
       }, error: (e: HttpErrorResponse) => {
+        // Error manejado por interceptor
       }
     })
   }
 
-  //método de flitros
+  /**
+   * Filtra la lista de clientes según el texto de búsqueda
+   * Busca en: nombre completo, identificación, teléfono y nombre de empresa
+   */
   filterClientes() {
     this.clients = this.searchService.filterWithFullName(
       this.allClients,
@@ -65,23 +76,32 @@ export class ClientsListComponent implements OnInit {
     );
   }
 
-  //Limpiar el término de búsqueda y mostrar todos los clientes
+  /**
+   * Limpia el filtro de búsqueda y muestra todos los clientes
+   */
   clearSearch() {
     this.searchTerm = '';
     this.filterClientes();
-
   };
 
+  /**
+   * Se ejecuta cada vez que el usuario escribe en el buscador
+   */
   onSearchChange() {
     this.filterClientes();
   };
 
-//UPDATE
+  /**
+   * Navega a la página de edición de cliente
+   */
   editClient(id: number) {
     this.router.navigate(['/dashboard/clients/edit', id])
   }
 
-//DELETE
+  /**
+   * Elimina un cliente después de confirmar la acción
+   * Muestra mensaje de confirmación antes de eliminar
+   */
   deleteClient(id: number) {
     Swal.fire({
       title: '¿Estás seguro?',
@@ -92,6 +112,7 @@ export class ClientsListComponent implements OnInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
+        // Usuario confirmó, proceder a eliminar
         this.clientsService.deleleteUser(id).subscribe({
           next: () => {
             Swal.fire({
@@ -100,12 +121,13 @@ export class ClientsListComponent implements OnInit {
               icon: 'success',
               confirmButtonText: 'Ok'
             });
+            // Recargar la lista para mostrar cambios
             this.getListClients();
           }, error: (e: HttpErrorResponse) => {
+            // Error manejado por interceptor
           }
         })
       }
     })
   }
-
 }

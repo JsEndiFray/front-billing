@@ -1,31 +1,50 @@
+<!-- dashboard.component.html -->
 <div class="dashboard-wrapper">
-  <h1>Panel de control</h1>
+  <h1>Panel de Control</h1>
 
-  <nav class="dashboard-menu">
-    <a [routerLink]="['users']" routerLinkActive="active">
-      Usuarios Registrados
-    </a>
-  </nav>
-
-  <nav class="dashboard-menu">
-    <a [routerLink]="['clients']" routerLinkActive="active">Clientes</a>
-    <a [routerLink]="['owners']" routerLinkActive="active">Propietarios</a>
-    <a [routerLink]="['estates']" routerLinkActive="active">Propiedades</a>
-    <a [routerLink]="['estates-owners']" routerLinkActive="active">
-      Porcentajes de las Propiedades
-    </a>
-    <a [routerLink]="['bills']" routerLinkActive="active">Facturas</a>
-  </nav>
-
-  <div class="dashboard-intro">
-    <h2>Bienvenido al sistema de facturación</h2>
-    <p>
-      Desde aquí podrás gestionar tus clientes, propietarios, propiedades
-      y generar facturas fácilmente.
-    </p>
-    <p>Selecciona una opción del menú para empezar.</p>
+  <!-- Navegación para usuarios -->
+  <div class="nav-section">
+    <div class="nav-title">Gestión de Usuarios</div>
+    <nav class="dashboard-menu">
+      <a [routerLink]="['users']" routerLinkActive="active">👥 Usuarios Registrados</a>
+      <a>👔 Empleados</a>
+    </nav>
   </div>
 
+  <div class="section-divider"></div>
+
+  <!-- Navegación para propietarios -->
+  <div class="nav-section">
+    <div class="nav-title">Gestión Inmobiliaria</div>
+    <nav class="dashboard-menu">
+      <a [routerLink]="['owners']" routerLinkActive="active">🏠 Propietarios</a>
+      <a [routerLink]="['estates']" routerLinkActive="active">🏢 Propiedades</a>
+      <a [routerLink]="['estates-owners']" routerLinkActive="active">📊 Porcentajes de las Propiedades</a>
+    </nav>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Navegación principal del sistema -->
+  <div class="nav-section">
+    <div class="nav-title">Sistema de Facturación</div>
+    <nav class="dashboard-menu">
+      <a [routerLink]="['clients']" routerLinkActive="active">👤 Clientes</a>
+      <a [routerLink]="['bills']" routerLinkActive="active">🧾 Facturas</a>
+    </nav>
+  </div>
+
+  <!-- Contenido de bienvenida -->
+  <div class="dashboard-intro">
+    <h2>Bienvenido al Sistema de Facturación</h2>
+    <p>
+      Desde aquí podrás gestionar tus clientes, propietarios, propiedades
+      y generar facturas de manera eficiente y organizada.
+    </p>
+    <p>Selecciona una opción del menú para comenzar a trabajar.</p>
+  </div>
+
+  <!-- Área donde se muestran las páginas seleccionadas -->
   <div class="dashboard-content">
     <router-outlet></router-outlet>
   </div>

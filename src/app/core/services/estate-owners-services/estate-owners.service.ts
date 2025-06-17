@@ -3,41 +3,36 @@ import {ApiService} from '../api-service/api.service';
 import {Observable} from 'rxjs';
 import {EstatesOwners} from '../../../interface/estates-owners-interface';
 
-
+/**
+ * Servicio para gestión de relaciones propiedad-propietario
+ * Wrapper HTTP sobre ApiService para operaciones de estate-owners
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class EstateOwnersService {
 
-  constructor(
-    private api: ApiService,
-  ) {
-  }
+  constructor(private api: ApiService) {}
 
-  //métodos de obtener
-  getAllOwnerships(): Observable<EstatesOwners[]> {
+  // Métodos de consulta
+  getAllEstateOwners(): Observable<EstatesOwners[]> {
     return this.api.get<EstatesOwners[]>('estate-owners')
   }
 
-  //búsqueda por ID
-  getOwnersShipById(id: number): Observable<EstatesOwners> {
+  getEstatesOwnersById(id: number): Observable<EstatesOwners> {
     return this.api.get<EstatesOwners>(`estate-owners/${id}`)
   }
 
-  //create
-  createOwnersEstates(data: EstatesOwners): Observable<EstatesOwners> {
+  // Métodos CRUD
+  createEstateOwners(data: EstatesOwners): Observable<EstatesOwners> {
     return this.api.post<EstatesOwners>('estate-owners', data)
   }
 
-  //update
-  updateOwnersEstates(id: number, data: EstatesOwners): Observable<EstatesOwners> {
-    return this.api.put<EstatesOwners>(`estate.owners/${id}`, data)
+  updateEstateOwners(id: number, data: EstatesOwners): Observable<EstatesOwners> {
+    return this.api.put<EstatesOwners>(`estate-owners/${id}`, data)
   }
 
-  //delete
-  deleteOwnersEstates(id: number): Observable<EstatesOwners> {
+  deleteEstateOwners(id: number): Observable<EstatesOwners> {
     return this.api.delete<EstatesOwners>(`estate-owners/${id}`)
   }
-
-
 }

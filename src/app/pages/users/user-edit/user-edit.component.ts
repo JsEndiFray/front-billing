@@ -7,6 +7,10 @@ import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
 import {UserValidatorService} from '../../../core/services/validator-services/user-validator.service';
 
+/**
+ * Componente para editar usuarios existentes
+ * Carga los datos del usuario y permite modificarlos
+ */
 @Component({
   selector: 'app-user-edit',
   imports: [
@@ -17,7 +21,7 @@ import {UserValidatorService} from '../../../core/services/validator-services/us
 })
 export class UserEditComponent implements OnInit {
 
-
+  // Objeto que guarda todos los datos del usuario
   user: User = {
     username: '',
     password: '',
@@ -35,27 +39,34 @@ export class UserEditComponent implements OnInit {
   ) {
   }
 
+  /**
+   * Se ejecuta al cargar el componente
+   * Busca el usuario que se quiere editar
+   */
   ngOnInit(): void {
-    // Obtener el ID de la URL
+    // Sacar el ID de la URL (ejemplo: /edit/123)
     this.route.params.subscribe(params => {
-      const id = params['id'];// Convertir a número
+      const id = params['id'];
       if (id) {
-        // Cargo los campos del usuario
+        // Buscar los datos del usuario por su ID
         this.userService.getById(id).subscribe({
           next: (user) => {
-            this.user = user;
+            this.user = user; // Cargar los datos en el formulario
           },
           error: (e: HttpErrorResponse) => {
+            // Error manejado por interceptor
           }
         })
       }
     })
   }
 
-
-  //actualizar usuarios
+  /**
+   * Actualiza los datos del usuario
+   * Valida información antes de enviar al servidor
+   */
   updateUser() {
-    //verifica id
+    // Verificar que el usuario tenga ID válido
     if (this.user.id == null) {
       Swal.fire({
         title: 'Error',
@@ -65,10 +76,11 @@ export class UserEditComponent implements OnInit {
       });
       return;
     }
-    //Limpiar y transformar datos
+
+    // Limpiar espacios y preparar datos
     const cleanUser = this.userValidatorService.cleanUserData(this.user)
 
-    // Validar campos requeridos y confirmacion de contraseñas
+    // Validar que todos los campos estén correctos
     const validation = this.userValidatorService.validateUser(cleanUser)
     if (!validation.isValid) {
       Swal.fire({
@@ -79,7 +91,8 @@ export class UserEditComponent implements OnInit {
       });
       return;
     }
-    //acceso al backemd
+
+    // Enviar datos actualizados al servidor
     this.userService.updateUser(this.user.id, this.user).subscribe({
       next: (data) => {
         this.user = data;
@@ -89,16 +102,18 @@ export class UserEditComponent implements OnInit {
           icon: 'success',
           confirmButtonText: 'Ok'
         });
+        // Regresar a la lista de usuarios
         this.router.navigate(['/dashboard/users/list']);
       }, error: (e: HttpErrorResponse) => {
-
+        // Error manejado por interceptor
       }
     })
   }
 
+  /**
+   * Cancelar edición y regresar a la lista
+   */
   goBack() {
     this.router.navigate(['/dashboard/users/list']);
   };
-
-
 }

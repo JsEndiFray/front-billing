@@ -6,6 +6,10 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {FormsModule} from '@angular/forms';
 import {UsersLogin} from '../../../interface/users-interface';
 
+/**
+ * Componente de autenticación
+ * Maneja login de usuarios y redirección a dashboard
+ */
 
 @Component({
   selector: 'app-login',
@@ -17,17 +21,21 @@ import {UsersLogin} from '../../../interface/users-interface';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
+  // Modelo del formulario
   user: UsersLogin = {
     username: '',
     password: '',
   }
 
-
   constructor(private router: Router, private authService: AuthService) {
   }
 
+  /**
+   * Procesa login con validación básica
+   * Nota: AuthService maneja el guardado de tokens automáticamente
+   */
   login() {
-    //validaciones
+    // Validación básica de campos
     if (this.user.username == '' || this.user.password == '') {
       Swal.fire({
         title: 'Error!',
@@ -38,34 +46,32 @@ export class LoginComponent {
       return;
     }
 
-    //objeto para el backend del login
+    // Preparar datos para backend
     const user: UsersLogin = {
       username: this.user.username,
       password: this.user.password,
     }
-    //conexion al bakcen
+
+    // Autenticar usuario
     this.authService.login(user).subscribe({
       next: (login) => {
-        //guardamos el token
+        // TODO: El AuthService ya maneja tokens automáticamente
+        // Este código duplica funcionalidad del servicio
         localStorage.setItem('token', login.accessToken);
         localStorage.setItem('refreshToken', login.refreshToken);
 
-        //datos del usuario que inicia sesion
         localStorage.setItem('userData', JSON.stringify({
           id: login.user.id,
           username: login.user.username,
           role: login.user.role
         }));
 
-        //activacion del cierre de sesion
         this.authService.activateSession();
         this.router.navigate(['/dashboard']);
-
       },
       error: (e: HttpErrorResponse) => {
+        // Manejo de errores por interceptor
       }
     });
-
   }
-
 }

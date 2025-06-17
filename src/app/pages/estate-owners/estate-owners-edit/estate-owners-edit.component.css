@@ -1,277 +1,345 @@
+/* CONTENEDOR PRINCIPAL DEL FORMULARIO */
 .form-wrapper {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 50rem;           /* Ancho maximo del formulario */
+  margin: 0 auto;             /* Centrado horizontal */
+  padding: 2rem;              /* Espaciado interno */
+  background: #ffffff;        /* Fondo blanco */
+  border-radius: 0.75rem;     /* Bordes redondeados */
+  box-shadow: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.1); /* Sombra suave */
 }
 
+/* TITULO PRINCIPAL DEL FORMULARIO */
 .form-wrapper h2 {
-  color: #1e293b;
-  margin-bottom: 2rem;
-  text-align: center;
-  font-size: 1.75rem;
-  font-weight: 600;
+  color: #1e293b;             /* Color del texto */
+  margin-bottom: 2rem;        /* Espacio inferior */
+  text-align: center;         /* Centrado */
+  font-size: 1.75rem;         /* Tamaño de fuente */
+  font-weight: 600;           /* Grosor de fuente */
 }
 
-/* Secciones del formulario */
+/* SECCIONES DEL FORMULARIO - CONTENEDORES DE GRUPOS DE CAMPOS */
 .form-section {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: #f8fafc;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  margin-bottom: 2rem;        /* Espacio entre secciones */
+  padding: 1.5rem;            /* Espaciado interno */
+  background: #f8fafc;        /* Fondo gris claro */
+  border-radius: 0.5rem;      /* Bordes redondeados */
+  border: 0.0625rem solid #e2e8f0;  /* Borde gris */
 }
 
+/* TITULOS DE LAS SECCIONES */
 .form-section h3 {
-  color: #334155;
-  margin-bottom: 1.5rem;
-  font-size: 1.25rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  color: #334155;             /* Color del texto */
+  margin-bottom: 1.5rem;      /* Espacio inferior */
+  font-size: 1.25rem;         /* Tamaño de fuente */
+  font-weight: 600;           /* Grosor de fuente */
+  display: flex;              /* Flexbox para alinear con icono */
+  align-items: center;        /* Centrado vertical */
+  gap: 0.5rem;                /* Espacio entre texto e icono */
 }
 
-/* Grid del formulario */
+/* GRID PARA ORGANIZAR LOS CAMPOS EN COLUMNAS */
 .form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  display: grid;                    /* Layout en grid */
+  grid-template-columns: 1fr 1fr;   /* Dos columnas iguales */
+  gap: 1.5rem;                      /* Espacio entre campos */
 }
 
+/* EL ULTIMO CAMPO OCUPA TODA LA FILA */
 .form-grid .form-field:last-child {
-  grid-column: 1 / -1;
+  grid-column: 1 / -1;              /* Ocupa desde columna 1 hasta el final */
 }
 
-/* Campos del formulario */
+/* CONTENEDOR DE CADA CAMPO INDIVIDUAL */
 .form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  display: flex;              /* Flexbox vertical */
+  flex-direction: column;     /* Elementos en columna */
+  gap: 0.5rem;                /* Espacio entre label e input */
+  min-width: 0;               /* Permitir reducir tamaño */
 }
 
+/* ETIQUETAS DE LOS CAMPOS */
 .form-field label {
-  font-weight: 600;
-  color: #374151;
-  font-size: 0.875rem;
+  font-weight: 600;           /* Texto en negrilla */
+  color: #374151;             /* Color gris oscuro */
+  font-size: 0.875rem;        /* Tamaño pequeño */
 }
 
+/* ESTILOS PARA SELECTS E INPUTS */
 .form-select,
 .form-input {
-  padding: 0.75rem;
-  border: 2px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 1rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  padding: 0.75rem;                              /* Espaciado interno */
+  border: 0.125rem solid #d1d5db;                /* Borde gris */
+  border-radius: 0.375rem;                       /* Bordes redondeados */
+  font-size: 1rem;                               /* Tamaño de fuente */
+  width: 100%;                                   /* Ancho completo del contenedor */
+  max-width: 100%;                               /* No exceder el contenedor */
+  box-sizing: border-box;                        /* Incluir padding en el ancho total */
+  overflow: hidden;                              /* Ocultar desbordamiento */
+  text-overflow: ellipsis;                       /* Puntos suspensivos si es muy largo */
+  transition: border-color 0.2s, box-shadow 0.2s; /* Animaciones suaves */
 }
 
+/* OPCIONES DEL SELECT */
+.form-select option {
+  padding: 0.5rem;            /* Espaciado interno de opciones */
+  white-space: nowrap;        /* No quebrar texto */
+}
+
+/* ESTADO FOCUS DE LOS CAMPOS */
 .form-select:focus,
 .form-input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  outline: none;                                 /* Quitar outline por defecto */
+  border-color: #3b82f6;                         /* Borde azul */
+  box-shadow: 0 0 0 0.1875rem rgba(59, 130, 246, 0.1); /* Sombra azul suave */
 }
 
+/* TEXTO DE AYUDA DEBAJO DE LOS CAMPOS */
 .help-text {
-  color: #6b7280;
-  font-size: 0.875rem;
+  color: #6b7280;             /* Color gris */
+  font-size: 0.875rem;        /* Tamaño pequeño */
 }
 
-/* Información seleccionada */
+/* INFORMACION DEL ELEMENTO SELECCIONADO */
 .selected-info {
-  padding: 0.5rem;
-  background: #dbeafe;
-  border-radius: 4px;
-  border-left: 4px solid #3b82f6;
+  padding: 0.5rem;            /* Espaciado interno */
+  background: #dbeafe;        /* Fondo azul claro */
+  border-radius: 0.25rem;     /* Bordes redondeados */
+  border-left: 0.25rem solid #3b82f6; /* Borde izquierdo azul */
 }
 
 .selected-info small {
-  color: #1e40af;
-  font-weight: 500;
+  color: #1e40af;             /* Texto azul oscuro */
+  font-weight: 500;           /* Peso medio */
 }
 
-/* Vista previa del porcentaje */
+/* PREVIEW DEL PORCENTAJE EN TIEMPO REAL */
 .percentage-preview {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 0.5rem;
+  display: flex;              /* Flexbox */
+  justify-content: flex-end;  /* Alineado a la derecha */
+  margin-top: 0.5rem;         /* Espacio superior */
 }
 
 .percentage-value {
-  background: #10b981;
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 0.875rem;
+  background: #10b981;        /* Fondo verde */
+  color: white;               /* Texto blanco */
+  padding: 0.25rem 0.75rem;   /* Espaciado interno */
+  border-radius: 1.25rem;     /* Bordes muy redondeados */
+  font-weight: 600;           /* Texto en negrilla */
+  font-size: 0.875rem;        /* Tamaño pequeño */
 }
 
-/* Resumen de edición */
+/* SECCION DE RESUMEN DE CAMBIOS */
 .edit-summary {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: #fef3c7;
-  border-radius: 8px;
-  border: 1px solid #f59e0b;
+  margin-bottom: 2rem;        /* Espacio inferior */
+  padding: 1.5rem;            /* Espaciado interno */
+  background: #fef3c7;        /* Fondo amarillo claro */
+  border-radius: 0.5rem;      /* Bordes redondeados */
+  border: 0.0625rem solid #f59e0b;  /* Borde amarillo */
 }
 
 .edit-summary h3 {
-  color: #92400e;
-  margin-bottom: 1rem;
-  font-size: 1.125rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  color: #92400e;             /* Texto marron */
+  margin-bottom: 1rem;        /* Espacio inferior */
+  font-size: 1.125rem;        /* Tamaño mediano */
+  display: flex;              /* Flexbox */
+  align-items: center;        /* Centrado vertical */
+  gap: 0.5rem;                /* Espacio con icono */
 }
 
+/* GRID PARA EL RESUMEN */
 .summary-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  display: grid;                    /* Layout en grid */
+  grid-template-columns: 1fr 1fr;   /* Dos columnas iguales */
+  gap: 1rem;                        /* Espacio entre items */
 }
 
+/* CADA ITEM DEL RESUMEN */
 .summary-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  display: flex;              /* Flexbox vertical */
+  flex-direction: column;     /* Elementos en columna */
+  gap: 0.25rem;               /* Espacio pequeño */
 }
 
 .summary-item strong {
-  color: #92400e;
-  font-size: 0.875rem;
+  color: #92400e;             /* Texto marron */
+  font-size: 0.875rem;        /* Tamaño pequeño */
 }
 
+/* VALOR ANTERIOR (TACHADO) */
 .old-value {
-  color: #dc2626;
-  text-decoration: line-through;
+  color: #dc2626;             /* Texto rojo */
+  text-decoration: line-through; /* Tachado */
 }
 
+/* VALOR NUEVO */
 .new-value {
-  color: #059669;
-  font-weight: 600;
+  color: #059669;             /* Texto verde */
+  font-weight: 600;           /* Negrilla */
 }
 
-/* Sección de información */
+/* SECCION DE INFORMACION GENERAL */
 .info-section {
-  margin-bottom: 2rem;
+  margin-bottom: 2rem;        /* Espacio inferior */
 }
 
+/* TARJETA DE INFORMACION */
 .info-card {
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  border-radius: 8px;
-  padding: 1.5rem;
+  background: #eff6ff;        /* Fondo azul muy claro */
+  border: 0.0625rem solid #bfdbfe;  /* Borde azul claro */
+  border-radius: 0.5rem;      /* Bordes redondeados */
+  padding: 1.5rem;            /* Espaciado interno */
 }
 
 .info-card h4 {
-  color: #1e40af;
-  margin-bottom: 1rem;
-  font-size: 1.125rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  color: #1e40af;             /* Texto azul oscuro */
+  margin-bottom: 1rem;        /* Espacio inferior */
+  font-size: 1.125rem;        /* Tamaño mediano */
+  display: flex;              /* Flexbox */
+  align-items: center;        /* Centrado vertical */
+  gap: 0.5rem;                /* Espacio con icono */
 }
 
 .info-card ul {
-  color: #1e40af;
-  margin: 0;
-  padding-left: 1.5rem;
+  color: #1e40af;             /* Texto azul oscuro */
+  margin: 0;                  /* Sin margenes */
+  padding-left: 1.5rem;       /* Sangria */
 }
 
 .info-card li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.5rem;      /* Espacio entre items */
 }
 
-/* Validación de porcentaje */
+/* VALIDACION DEL PORCENTAJE TOTAL */
 .percentage-validation {
-  margin-top: 1rem;
-  padding: 1rem;
-  border-radius: 6px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  margin-top: 1rem;           /* Espacio superior */
+  padding: 1rem;              /* Espaciado interno */
+  border-radius: 0.375rem;    /* Bordes redondeados */
+  display: flex;              /* Flexbox */
+  justify-content: space-between; /* Espacio entre elementos */
+  align-items: center;        /* Centrado vertical */
 }
 
+/* ESTADO DE ERROR EN VALIDACION */
 .percentage-validation.error {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: #fef2f2;        /* Fondo rojo claro */
+  border: 0.0625rem solid #fecaca;  /* Borde rojo claro */
 }
 
+/* TEXTO DE ERROR */
 .percentage-validation .error {
-  color: #dc2626;
-  font-weight: 600;
+  color: #dc2626;             /* Texto rojo */
+  font-weight: 600;           /* Negrilla */
 }
 
+/* TEXTO DE EXITO */
 .percentage-validation .success {
-  color: #059669;
-  font-weight: 600;
+  color: #059669;             /* Texto verde */
+  font-weight: 600;           /* Negrilla */
 }
 
-/* Botones */
+/* CONTENEDOR DE BOTONES */
 .button-group {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  padding-top: 2rem;
-  border-top: 1px solid #e5e7eb;
+  display: flex;              /* Flexbox horizontal */
+  gap: 1rem;                  /* Espacio entre botones */
+  justify-content: flex-end;  /* Alineados a la derecha */
+  padding-top: 2rem;          /* Espacio superior */
+  border-top: 0.0625rem solid #e5e7eb; /* Linea separadora */
 }
 
+/* ESTILOS BASE PARA BOTONES */
 .btn-secondary,
 .btn-primary {
-  padding: 0.75rem 1.5rem;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: none;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;    /* Espaciado interno */
+  border-radius: 0.375rem;    /* Bordes redondeados */
+  font-weight: 600;           /* Texto en negrilla */
+  font-size: 1rem;            /* Tamaño de fuente */
+  cursor: pointer;            /* Cursor de puntero */
+  transition: all 0.2s;       /* Animaciones suaves */
+  border: none;               /* Sin borde por defecto */
+  display: flex;              /* Flexbox */
+  align-items: center;        /* Centrado vertical */
+  gap: 0.5rem;                /* Espacio con iconos */
 }
 
+/* BOTON SECUNDARIO (CANCELAR) */
 .btn-secondary {
-  background: #f3f4f6;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background: #f3f4f6;        /* Fondo gris claro */
+  color: #374151;             /* Texto gris oscuro */
+  border: 0.0625rem solid #d1d5db;  /* Borde gris */
 }
 
 .btn-secondary:hover {
-  background: #e5e7eb;
+  background: #e5e7eb;        /* Fondo mas oscuro al pasar mouse */
 }
 
+/* BOTON PRIMARIO (ACTUALIZAR) */
 .btn-primary {
-  background: #3b82f6;
-  color: white;
+  background: #3b82f6;        /* Fondo azul */
+  color: white;               /* Texto blanco */
 }
 
 .btn-primary:hover {
-  background: #2563eb;
+  background: #2563eb;        /* Azul mas oscuro al pasar mouse */
 }
 
+/* BOTON DESHABILITADO */
 .btn-primary:disabled {
-  background: #9ca3af;
-  cursor: not-allowed;
+  background: #9ca3af;        /* Fondo gris */
+  cursor: not-allowed;        /* Cursor de prohibido */
 }
 
-/* Responsive */
+/* RESPONSIVE DESIGN - PANTALLAS PEQUEÑAS */
 @media (max-width: 768px) {
+  /* FORMULARIO EN MOVILES */
   .form-wrapper {
-    margin: 1rem;
-    padding: 1rem;
+    margin: 1rem;             /* Margenes reducidos */
+    padding: 1rem;            /* Espaciado reducido */
   }
 
+  /* GRID A UNA SOLA COLUMNA */
   .form-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* Una sola columna */
   }
 
+  /* RESUMEN A UNA SOLA COLUMNA */
   .summary-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* Una sola columna */
   }
 
+  /* BOTONES EN COLUMNA */
   .button-group {
-    flex-direction: column;
+    flex-direction: column;   /* Botones en vertical */
+  }
+
+  /* ASEGURAR QUE LOS SELECTS NO SE DESBORDEN */
+  .form-select,
+  .form-input {
+    min-width: 0;             /* Permitir reducir tamaño */
+    font-size: 1rem;          /* Mantener tamaño legible */
+  }
+
+  /* AJUSTAR VALIDACION DE PORCENTAJE EN MOVIL */
+  .percentage-validation {
+    flex-direction: column;   /* Elementos en vertical */
+    gap: 0.5rem;              /* Espacio entre elementos */
+    text-align: center;       /* Centrar texto */
+  }
+}
+
+/* PANTALLAS MUY PEQUEÑAS */
+@media (max-width: 480px) {
+  .form-wrapper {
+    margin: 0.5rem;           /* Margenes aun menores */
+    padding: 0.75rem;         /* Espaciado reducido */
+  }
+
+  .form-section {
+    padding: 1rem;            /* Padding reducido */
+  }
+
+  .form-select,
+  .form-input {
+    padding: 0.625rem;        /* Padding ligeramente menor */
+    font-size: 0.875rem;      /* Fuente un poco menor */
   }
 }

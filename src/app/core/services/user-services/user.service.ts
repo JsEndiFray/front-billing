@@ -3,19 +3,19 @@ import {ApiService} from '../api-service/api.service';
 import {Observable} from 'rxjs';
 import {User} from '../../../interface/users-interface';
 
+/**
+ * Servicio para gestión de usuarios del sistema
+ * Wrapper HTTP sobre ApiService para operaciones de usuarios
+ * Nota: Creación de usuarios se maneja en AuthService
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
 
-  constructor(
-    private api: ApiService,
-  ) {
-  }
+  constructor(private api: ApiService) {}
 
-  //MÉTODOS DE OBTENER
-
-//obtener listado
+  // Métodos de consulta
   getUser(): Observable<User[]> {
     return this.api.get<User[]>('users');
   }
@@ -24,21 +24,12 @@ export class UserService {
     return this.api.get<User>(`users/${id}`);
   }
 
-//MÉTODOS DE UPDATE DELETE
-
-  //UPDATE
+  // Métodos de modificación
   updateUser(id: number, data: User): Observable<User> {
     return this.api.put<User>(`users/${id}`, data)
   }
 
-  //DELETE
   deleteUser(id: number): Observable<User> {
     return this.api.delete<User>(`users/${id}`);
   }
-
 }
-
-
-
-
-

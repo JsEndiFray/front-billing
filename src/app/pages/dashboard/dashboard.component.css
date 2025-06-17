@@ -1,151 +1,255 @@
+/* dashboard.component.css */
+
 /* CONTENEDOR PRINCIPAL */
 .dashboard-wrapper {
-  background: linear-gradient(135deg, #091257 0%, #0d3f8f 50%, #2b104e 100%);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  margin: 2rem auto;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  margin: 1.5rem auto;
   max-width: 98%;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
 }
 
 /* TÍTULO PRINCIPAL */
 h1 {
   color: #ffffff;
-  font-size: 2.5rem;
-  font-weight: 700;
+  font-size: 2.8rem;
+  font-weight: 800;
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #ffffff, #e2e8f0);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* SECCIONES DE NAVEGACIÓN */
+.nav-section {
+  margin-bottom: 1.5rem;
+}
+
+.nav-title {
+  color: #cbd5e1;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+  padding-left: 0.5rem;
+  opacity: 0.8;
 }
 
 /* NAVEGACIÓN PRINCIPAL */
 .dashboard-menu {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-}
-
-.dashboard-menu:last-of-type {
-  margin-bottom: 2.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.875rem;
+  margin-bottom: 1rem;
 }
 
 /* ENLACES DE NAVEGACIÓN */
 .dashboard-menu a {
-  padding: 0.75rem 1.5rem;
-  background: #f3f4f6;
-  border: 0.125rem solid #e5e7eb;
-  border-radius: 0.5rem;
-  color: #374151;
+  padding: 0.75rem 1.25rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.625rem;
+  color: #1e293b;
   text-decoration: none;
-  font-weight: 500;
-  font-size: 0.875rem;
-  transition: all 0.2s ease;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  cursor: pointer;
+}
+
+.dashboard-menu a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.dashboard-menu a:hover::before {
+  left: 100%;
 }
 
 /* HOVER EN ENLACES */
 .dashboard-menu a:hover {
-  background: #e5e7eb;
+  background: rgba(255, 255, 255, 1);
   border-color: #3b82f6;
-  color: #1f2937;
-  transform: translateY(-0.125rem);
+  color: #1e293b;
+  transform: translateY(-2px);
+  box-shadow:
+    0 10px 25px -5px rgba(59, 130, 246, 0.25),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 /* ESTADO ACTIVO */
 .dashboard-menu a.active {
-  background: #3b82f6;
-  border-color: #2563eb;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border-color: #1e40af;
   color: #ffffff;
+  box-shadow:
+    0 8px 25px -5px rgba(59, 130, 246, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 }
 
 .dashboard-menu a.active:hover {
-  background: #2563eb;
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  transform: translateY(-2px);
+  box-shadow:
+    0 12px 30px -5px rgba(59, 130, 246, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
 }
 
 /* SECCIÓN DE INTRODUCCIÓN */
 .dashboard-intro {
   text-align: center;
-  margin-bottom: 2rem;
-  padding: 2rem;
-  background: #f9fafb;
-  border-radius: 0.75rem;
-  border: 0.0625rem solid #e5e7eb;
+  margin-bottom: 2.5rem;
+  padding: 2.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
 }
 
 .dashboard-intro h2 {
-  color: #1f2937;
-  font-size: 1.75rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
+  color: #1e293b;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  background: linear-gradient(135deg, #1e293b, #475569);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .dashboard-intro p {
-  color: #6b7280;
-  font-size: 1rem;
-  line-height: 1.6;
-  margin-bottom: 0.75rem;
-  max-width: 40rem;
+  color: #64748b;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin-bottom: 1rem;
+  max-width: 42rem;
   margin-left: auto;
   margin-right: auto;
 }
 
 .dashboard-intro p:last-child {
   margin-bottom: 0;
-  font-weight: 500;
-  color: #374151;
+  font-weight: 600;
+  color: #475569;
 }
 
 /* ÁREA DE CONTENIDO */
 .dashboard-content {
-  background: #ffffff;
-  border-radius: 0.75rem;
-  min-height: 20rem;
-  padding: 0.9rem;
-  border: 0.0625rem solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border-radius: 1rem;
+  min-height: 24rem;
+  padding: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
 }
+
+/* SEPARADOR VISUAL */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  margin: 1.5rem 0;
+}
+
+/* ANIMACIONES SUTILES */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dashboard-menu a {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.dashboard-menu a:nth-child(1) { animation-delay: 0.1s; }
+.dashboard-menu a:nth-child(2) { animation-delay: 0.15s; }
+.dashboard-menu a:nth-child(3) { animation-delay: 0.2s; }
+.dashboard-menu a:nth-child(4) { animation-delay: 0.25s; }
 
 /* RESPONSIVE TABLET */
 @media (max-width: 48rem) {
   .dashboard-wrapper {
     padding: 1.5rem;
     margin: 1rem;
+    border-radius: 1rem;
   }
 
   h1 {
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
+    font-size: 2.2rem;
+    margin-bottom: 2rem;
   }
 
   .dashboard-menu {
-    flex-direction: column;
-    align-items: center;
-    gap: 0.75rem;
+    grid-template-columns: 1fr;
+    gap: 0.625rem;
   }
 
   .dashboard-menu a {
-    padding: 0.625rem 1.25rem;
-    font-size: 0.8125rem;
-    width: 100%;
-    max-width: 20rem;
-    text-align: center;
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
   }
 
   .dashboard-intro {
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
   }
 
   .dashboard-intro h2 {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
   }
 
   .dashboard-intro p {
-    font-size: 0.875rem;
+    font-size: 1rem;
   }
 
   .dashboard-content {
     padding: 1.5rem;
-    min-height: 15rem;
+    min-height: 18rem;
+  }
+
+  .nav-section {
+    margin-bottom: 1.25rem;
   }
 }
 
@@ -157,32 +261,41 @@ h1 {
   }
 
   h1 {
-    font-size: 1.75rem;
-    margin-bottom: 1.25rem;
+    font-size: 1.9rem;
+    margin-bottom: 1.5rem;
   }
 
   .dashboard-menu a {
-    padding: 0.5rem 1rem;
+    padding: 0.625rem 0.875rem;
     font-size: 0.75rem;
   }
 
   .dashboard-intro {
-    padding: 1rem;
-    margin-bottom: 1.25rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
   }
 
   .dashboard-intro h2 {
-    font-size: 1.25rem;
-    margin-bottom: 0.75rem;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
   }
 
   .dashboard-intro p {
-    font-size: 0.8125rem;
-    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
   }
 
   .dashboard-content {
-    padding: 1rem;
-    min-height: 12rem;
+    padding: 1.25rem;
+    min-height: 16rem;
+  }
+
+  .nav-section {
+    margin-bottom: 1rem;
+  }
+
+  .nav-title {
+    font-size: 0.75rem;
+    margin-bottom: 0.625rem;
   }
 }

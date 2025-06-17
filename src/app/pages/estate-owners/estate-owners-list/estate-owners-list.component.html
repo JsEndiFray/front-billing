@@ -1,7 +1,10 @@
+<!-- Lista de relaciones inmueble-propietario con porcentajes -->
 <div class="list-wrapper">
   <h2>Listado de Porcentajes de Propiedades</h2>
 
+  <!-- Tabla de relaciones inmueble-propietario -->
   <table>
+    <!-- Encabezados de la tabla -->
     <thead>
     <tr>
       <th>ID</th>
@@ -13,7 +16,10 @@
       <th>Acciones</th>
     </tr>
     </thead>
+
+    <!-- Contenido de la tabla -->
     <tbody>
+    <!-- Lista de relaciones existentes -->
       @for (item of estateOwners; track item.id) {
         <tr>
           <td>{{ item.id }}</td>
@@ -22,6 +28,7 @@
           <td>{{ item.ownership_percentage }}</td>
           <td>{{ item.date_create | dataFormat }}</td>
           <td>{{ item.date_update| dataFormat }}</td>
+          <!-- Botones de acción por relación -->
           <td>
             <button (click)="editEstateOwners(item.id!)">Editar</button>
             <button (click)="deleteEstateOwners(item.id!)">Eliminar</button>

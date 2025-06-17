@@ -1,20 +1,27 @@
 import {Injectable} from '@angular/core';
 import {Estates} from '../../../interface/estates.interface';
 
+/**
+ * Servicio de validación para propiedades inmobiliarias
+ * Incluye sanitización y validación de referencia catastral española
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class EstatesValidatorService {
 
-  constructor() {
-  }
+  constructor() {}
 
-  //validar formato de referencia catastral
+  /**
+   * Valida formato de referencia catastral española (20 caracteres alfanuméricos)
+   */
   isValidRefCatFormat(refCat: string): boolean {
     return /^[0-9A-Z]{20}$/i.test(refCat);
   }
 
-  //Limpiar y transformar datos
+  /**
+   * Limpia y transforma datos de propiedad
+   */
   cleanEstatesData(estate: Estates): Estates {
     return {
       id: estate.id,
@@ -29,7 +36,9 @@ export class EstatesValidatorService {
     } as Estates;
   }
 
-  // Validar campos requeridos
+  /**
+   * Valida campos obligatorios
+   */
   validateRequiredFields(estate: Estates): { isValid: boolean; message?: string } {
     if (!estate.cadastral_reference ||
       !estate.price ||
@@ -47,7 +56,9 @@ export class EstatesValidatorService {
     return {isValid: true};
   }
 
-  // Validar referencia catastral
+  /**
+   * Valida referencia catastral española
+   */
   validateCadastralReference(refCat: string): { isValid: boolean; message?: string } {
     if (refCat.length !== 20 || !this.isValidRefCatFormat(refCat)) {
       return {
@@ -58,21 +69,23 @@ export class EstatesValidatorService {
     return {isValid: true};
   }
 
-  //Validación completa
+  /**
+   * Validación completa - orquesta todas las validaciones
+   */
   validateEstate(estate: Estates): { isValid: boolean; message?: string } {
     const cleanEstate = this.cleanEstatesData(estate);
 
-    // Validar campos requeridos
+    // Ejecutar validaciones en secuencia
     const requiredValidation = this.validateRequiredFields(cleanEstate);
     if (!requiredValidation.isValid) {
       return requiredValidation;
     }
 
-    // Validar referencia catastral
     const refValidation = this.validateCadastralReference(cleanEstate.cadastral_reference);
     if (!refValidation.isValid) {
       return refValidation;
     }
+
     return {isValid: true};
   }
 }

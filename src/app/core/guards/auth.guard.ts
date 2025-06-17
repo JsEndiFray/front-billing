@@ -2,6 +2,10 @@ import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
 import { AuthService } from '../services/auth-service/auth.service';
 
+/**
+ * Guard de autenticación para proteger rutas
+ * Verifica token en localStorage y redirige a login si no existe
+ */
 export const authGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
   const authService = inject(AuthService);
@@ -9,12 +13,10 @@ export const authGuard: CanActivateFn = (route, state) => {
   // Verificar si hay token en localStorage
   const token = localStorage.getItem('token');
 
-  // Si hay token, permitir acceso a la ruta
   if (token) {
-    // Opcional: Verificar si el token es válido/no ha expirado
-    // Si utilizas JWT, puedes decodificarlo para verificar la expiración
+    // Token existe - verificar validez
     try {
-      // Si usas JWT, puedes decodificar para verificar exp
+      // TODO: Validación de expiración JWT (opcional)
       // const payload = JSON.parse(atob(token.split('.')[1]));
       // const tokenExpired = payload.exp < Date.now() / 1000;
 
@@ -27,10 +29,9 @@ export const authGuard: CanActivateFn = (route, state) => {
       //   return false;
       // }
 
-      // Si no hay problemas con el token
-      return true;
+      return true; // Token válido
     } catch (error) {
-      // Error al procesar el token, asumimos que es inválido
+      // Token inválido - limpiar sesión
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
       authService.deactivateSession();
@@ -39,7 +40,7 @@ export const authGuard: CanActivateFn = (route, state) => {
     }
   }
 
-  // No hay token, redirigir al login
+  // Sin token - redirigir a login
   router.navigate(['/login']);
   return false;
 };

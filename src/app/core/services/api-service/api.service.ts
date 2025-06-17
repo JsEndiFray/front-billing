@@ -3,6 +3,10 @@ import {environment} from '../../../../environments/environment.development';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 
+/**
+ * Servicio base para llamadas HTTP
+ * Wrapper centralizado de HttpClient con URL base configurada
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -13,22 +17,23 @@ export class ApiService {
     this.apiUrl = environment.apiUrl
   }
 
-  //métodos de obtener
+  // Método GET genérico
   get<T>(endpoint: string): Observable<T> {
     return this.http.get<T>(`${this.apiUrl}/${endpoint}`);
   }
 
-  //métodos CREATE UPDATE DELETE
+  // Método POST genérico
   post<T, R = T>(endpoint: string, data: T): Observable<R> {
     return this.http.post<R>(`${this.apiUrl}/${endpoint}`, data);
   }
 
+  // Método PUT genérico
   put<T, R = T>(endpoint: string, data: T): Observable<R> {
     return this.http.put<R>(`${this.apiUrl}/${endpoint}`, data);
   }
 
+  // Método DELETE genérico
   delete<T>(endpoint: string): Observable<T> {
     return this.http.delete<T>(`${this.apiUrl}/${endpoint}`);
   }
-
 }

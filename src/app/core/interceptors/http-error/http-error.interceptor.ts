@@ -2,18 +2,22 @@ import {HttpErrorResponse, HttpInterceptorFn} from '@angular/common/http';
 import {catchError, throwError} from 'rxjs';
 import Swal from 'sweetalert2';
 
+/**
+ * Interceptor global para manejo de errores HTTP
+ * Captura errores, muestra SweetAlert al usuario y re-lanza el error
+ */
 export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((e: HttpErrorResponse) => {
       let message = 'Ha ocurrido un error en el servidor';
       let title = 'Error';
 
-      // Ahora el backend envía strings directos
+      // Extraer mensaje del backend (strings directos)
       if (e.error && typeof e.error === 'string') {
         message = e.error;
       }
 
-      // Títulos según código HTTP
+      // Títulos específicos según código HTTP
       switch (e.status) {
         case 400:
           title = 'Error de validación';
@@ -28,7 +32,7 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
           title = 'No encontrado';
           break;
         case 409:
-          title = 'Conflicto';
+          title = 'Conflicto'; // Duplicados, integridad
           break;
         case 429:
           title = 'Demasiadas peticiones';
@@ -41,12 +45,14 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
           break;
       }
 
+      // Mostrar error al usuario
       Swal.fire({
         icon: 'error',
         title: title,
         text: message
       });
 
+      // Re-lanzar error para que componentes puedan manejarlo si necesitan
       return throwError(() => new Error(message));
     })
   );

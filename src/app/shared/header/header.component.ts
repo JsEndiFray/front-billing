@@ -20,23 +20,26 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Suscripción al servicio de autenticación
+    // Escucha cambios de estado de autenticación
     this.authService.isLoggedIn$.subscribe(status => {
       this.isLoggedIn = status;
     });
 
-    // Activar la animación del logo al cargar la página
+    // Anima logo al cargar
     setTimeout(() => {
       this.animateLogo = true;
     }, 300);
   }
-  // ← Detector de scroll
+
+  // Detecta scroll para cambiar estilo del header
   @HostListener('window:scroll', ['$event'])
   onWindowScroll() {
     this.isScrolled = window.pageYOffset > 50;
   }
 
-
+  /**
+   * Toggle login/logout con animación de logo
+   */
   loginOrLogout() {
     if (this.isLoggedIn) {
       this.authService.logout();
@@ -44,7 +47,7 @@ export class HeaderComponent implements OnInit {
       this.router.navigate(['/login']);
     }
 
-    //Animar logo al iniciar/cerrar sesión
+    // Anima logo en cambio de estado
     this.animateLogo = false;
     setTimeout(() => {
       this.animateLogo = true;

@@ -1,7 +1,9 @@
+<!-- Formulario de edición de propiedades inmobiliarias -->
 <div class="form-wrapper">
   <h2>Editar Propiedad</h2>
 
   <form (ngSubmit)="updateEstate()">
+    <!-- Campo referencia catastral -->
     <div>
       <label for="referencia">Referencia Catastral</label>
       <input
@@ -13,6 +15,7 @@
         required>
     </div>
 
+    <!-- Campo precio -->
     <div>
       <label for="price">Precio (€)</label>
       <input
@@ -26,6 +29,7 @@
         required>
     </div>
 
+    <!-- Campo dirección -->
     <div>
       <label for="address">Dirección</label>
       <input
@@ -37,6 +41,7 @@
         required>
     </div>
 
+    <!-- Campo código postal -->
     <div>
       <label for="postal_code">Código Postal</label>
       <input
@@ -49,6 +54,7 @@
         required>
     </div>
 
+    <!-- Campo localidad -->
     <div>
       <label for="location">Localidad</label>
       <input
@@ -60,6 +66,7 @@
         required>
     </div>
 
+    <!-- Campo provincia -->
     <div>
       <label for="province">Provincia</label>
       <input
@@ -71,6 +78,7 @@
         required>
     </div>
 
+    <!-- Campo país -->
     <div>
       <label for="country">País</label>
       <input
@@ -82,6 +90,7 @@
         required>
     </div>
 
+    <!-- Campo superficie -->
     <div>
       <label for="surface">Superficie (m²)</label>
       <input
@@ -104,9 +113,6 @@
         ✓ Actualizar Propiedad
       </button>
     </div>
-
-
-
 
   </form>
 </div>
