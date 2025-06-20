@@ -22,6 +22,7 @@ export class ApiService {
     return this.http.get<T>(`${this.apiUrl}/${endpoint}`);
   }
 
+
   // Método POST genérico
   post<T, R = T>(endpoint: string, data: T): Observable<R> {
     return this.http.post<R>(`${this.apiUrl}/${endpoint}`, data);
@@ -35,5 +36,10 @@ export class ApiService {
   // Método DELETE genérico
   delete<T>(endpoint: string): Observable<T> {
     return this.http.delete<T>(`${this.apiUrl}/${endpoint}`);
+  }
+
+  //Getter público para exponer la URL base
+  get baseUrl(): string {
+    return this.apiUrl;
   }
 }

@@ -1,4 +1,4 @@
-/* dashboard.component.css */
+/* dashboard.component.css - VERSIÓN COMPACTA */
 
 /* CONTENEDOR PRINCIPAL */
 .dashboard-wrapper {
@@ -6,7 +6,7 @@
   border-radius: 1.5rem;
   padding: 2rem;
   margin: 1.5rem auto;
-  max-width: 98%;
+  max-width: 115rem;
   box-shadow:
     0 25px 50px -12px rgba(0, 0, 0, 0.25),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
@@ -42,6 +42,9 @@ h1 {
 /* SECCIONES DE NAVEGACIÓN */
 .nav-section {
   margin-bottom: 1.5rem;
+  max-width: 60rem; /* ✅ Limitamos ancho de secciones */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .nav-title {
@@ -55,17 +58,18 @@ h1 {
   opacity: 0.8;
 }
 
-/* NAVEGACIÓN PRINCIPAL */
+/* NAVEGACIÓN PRINCIPAL - MÁS COMPACTA */
 .dashboard-menu {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 0.875rem;
+  display: flex; /* ✅ Cambiamos a flex */
+  flex-wrap: wrap;
+  justify-content: center; /* ✅ Centramos */
+  gap: 1rem;
   margin-bottom: 1rem;
 }
 
-/* ENLACES DE NAVEGACIÓN */
+/* ENLACES DE NAVEGACIÓN - ANCHO FIJO */
 .dashboard-menu a {
-  padding: 0.75rem 1.25rem;
+  padding: 0.875rem 1.5rem;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -79,6 +83,9 @@ h1 {
   overflow: hidden;
   text-align: center;
   cursor: pointer;
+  min-width: 200px; /* ✅ Ancho mínimo fijo */
+  max-width: 250px; /* ✅ Ancho máximo fijo */
+  flex: 0 0 auto; /* ✅ No se expande */
 }
 
 .dashboard-menu a::before {
@@ -125,11 +132,11 @@ h1 {
     0 0 0 1px rgba(255, 255, 255, 0.2) inset;
 }
 
-/* SECCIÓN DE INTRODUCCIÓN */
+/* SECCIÓN DE INTRODUCCIÓN - MÁS COMPACTA */
 .dashboard-intro {
   text-align: center;
   margin-bottom: 2.5rem;
-  padding: 2.5rem;
+  padding: 2rem;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-radius: 1rem;
@@ -137,13 +144,16 @@ h1 {
   box-shadow:
     0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+  max-width: 50rem; /* ✅ Limitamos el ancho */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .dashboard-intro h2 {
   color: #1e293b;
-  font-size: 2rem;
+  font-size: 1.75rem; /* ✅ Más pequeño */
   font-weight: 700;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
   background: linear-gradient(135deg, #1e293b, #475569);
   background-clip: text;
   -webkit-background-clip: text;
@@ -152,10 +162,10 @@ h1 {
 
 .dashboard-intro p {
   color: #64748b;
-  font-size: 1.1rem;
-  line-height: 1.7;
-  margin-bottom: 1rem;
-  max-width: 42rem;
+  font-size: 1rem; /* ✅ Más pequeño */
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+  max-width: 40rem;
   margin-left: auto;
   margin-right: auto;
 }
@@ -184,6 +194,9 @@ h1 {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
   margin: 1.5rem 0;
+  max-width: 30rem; /* ✅ Separador más corto */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* ANIMACIONES SUTILES */
@@ -213,6 +226,7 @@ h1 {
     padding: 1.5rem;
     margin: 1rem;
     border-radius: 1rem;
+    max-width: 95%;
   }
 
   h1 {
@@ -221,35 +235,34 @@ h1 {
   }
 
   .dashboard-menu {
-    grid-template-columns: 1fr;
-    gap: 0.625rem;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
   }
 
   .dashboard-menu a {
+    min-width: 280px;
+    max-width: 320px;
     padding: 0.75rem 1rem;
     font-size: 0.8rem;
   }
 
   .dashboard-intro {
-    padding: 2rem;
+    padding: 1.5rem;
     margin-bottom: 2rem;
   }
 
   .dashboard-intro h2 {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
   }
 
   .dashboard-intro p {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 
   .dashboard-content {
     padding: 1.5rem;
     min-height: 18rem;
-  }
-
-  .nav-section {
-    margin-bottom: 1.25rem;
   }
 }
 
@@ -266,36 +279,29 @@ h1 {
   }
 
   .dashboard-menu a {
+    min-width: 100%;
+    max-width: 100%;
     padding: 0.625rem 0.875rem;
     font-size: 0.75rem;
   }
 
   .dashboard-intro {
-    padding: 1.5rem;
+    padding: 1.25rem;
     margin-bottom: 1.5rem;
   }
 
   .dashboard-intro h2 {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     margin-bottom: 1rem;
   }
 
   .dashboard-intro p {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     margin-bottom: 0.75rem;
   }
 
   .dashboard-content {
     padding: 1.25rem;
     min-height: 16rem;
-  }
-
-  .nav-section {
-    margin-bottom: 1rem;
-  }
-
-  .nav-title {
-    font-size: 0.75rem;
-    margin-bottom: 0.625rem;
   }
 }

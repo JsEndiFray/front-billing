@@ -145,9 +145,9 @@ th {
 
 /* DISTRIBUCIÓN DE COLUMNAS PARA 17 COLUMNAS */
 th:nth-child(1) { width: auto; }/*id*/
-th:nth-child(2) { width: auto; }/*nombre*/
-th:nth-child(3) { width: auto; }
-th:nth-child(4) { width: auto; }/*epellidos*/
+th:nth-child(2) { width: 5%; }/*tipo*/
+th:nth-child(3) { width: auto; }/*nombre*/
+th:nth-child(4) { width: auto; }/*apellidos*/
 th:nth-child(5) { width: auto; }/*empresa*/
 th:nth-child(6) { width: 15rem; }/*relacion*/
 th:nth-child(7) { width: auto; }/*identificación*/
@@ -160,7 +160,7 @@ th:nth-child(13) { width: auto; }/*provincia*/
 th:nth-child(14) { width: auto; }/*país*/
 th:nth-child(15) { width: auto; }/*creado*/
 th:nth-child(16) { width: auto; }/*actualizado*/
-th:nth-child(17) { width: auto; }/*acciones*/
+th:nth-child(17) { width: 10%; }/*acciones*/
 
 /* FILAS DE DATOS */
 td {

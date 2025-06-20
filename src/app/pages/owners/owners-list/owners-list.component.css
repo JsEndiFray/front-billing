@@ -157,7 +157,7 @@ th:nth-child(10) { width: auto; }   /* Provincia */
 th:nth-child(11) { width: auto; }   /* País */
 th:nth-child(12) { width: auto; }   /* Create */
 th:nth-child(13) { width: auto; }   /* Update */
-th:nth-child(14) { width: auto; } /* Acciones */
+th:nth-child(14) { width: 10%; } /* Acciones */
 
 /* FILAS DE DATOS */
 td {

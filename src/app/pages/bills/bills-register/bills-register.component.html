@@ -1,23 +1,31 @@
+<!-- CONTENEDOR PRINCIPAL DEL FORMULARIO -->
 <div class="form-wrapper">
   <h2>Crear Factura</h2>
 
-  <form>
-    <label for="bills">Número de Factura (automático)</label>
-    <input type="text"  disabled id="bills"/>
+  <!-- FORMULARIO DE CREACIÓN DE FACTURAS -->
+  <form (ngSubmit)="registerBills()">
 
+    <!-- NÚMERO DE FACTURA AUTOMÁTICO -->
+    <label for="bills">Número de Factura (automático)</label>
+    <input type="text" disabled id="bills"/>
+
+    <!-- SELECTOR DE PROPIEDAD -->
     <label for="estate">Selecciona una propiedad</label>
-    <select required [(ngModel)]="bill.estate_id" name="estate_id" id="estate">
+    <select required [(ngModel)]="bill.estates_id" name="estate_id" id="estate">
       @for (estate of estates; track estate.id) {
-        <option [value]="estate.id">{{ estate.name }}</option>
+        <option [value]="estate.id">{{ estate.address }} {{ estate.cadastral_reference }}</option>
       }
     </select>
+
+    <!-- SELECTOR DE CLIENTE -->
     <label for="clients">Selecciona un cliente</label>
     <select required [(ngModel)]="bill.clients_id" name="client_id" id="clients">
       @for (client of clients; track client.id) {
-        <option [value]="client.id">{{ client.name }}</option>
+        <option [value]="client.id">{{ client.name }} {{ client.lastname }}</option>
       }
     </select>
 
+    <!-- SELECTOR DE PROPIETARIO -->
     <label for="owners">Selecciona un propietario</label>
     <select required [(ngModel)]="bill.owners_id" name="owner_id" id="owners">
       @for (owner of owners; track owner.id) {
@@ -25,19 +33,33 @@
       }
     </select>
 
+    <!-- CAMPO DE FECHA -->
     <label for="fecha">Fecha</label>
     <input type="date" [(ngModel)]="bill.date" name="date" id="fecha"/>
+
+    <!-- CAMPO BASE IMPONIBLE -->
     <label for="tax_base">Base Imponible (€)</label>
-    <input type="number" [(ngModel)]="bill.tax_base" name="base" id="tax_base"/>
+    <input type="number" [(ngModel)]="bill.tax_base" name="base" id="tax_base"
+           (input)="onTaxBaseChange()" step="0.01" min="0"/>
+
+    <!-- CAMPO IVA -->
     <label for="iva">IVA (%)</label>
-    <input type="number" [(ngModel)]="bill.iva" name="iva" id="iva"/>
+    <input type="number" [(ngModel)]="bill.iva" name="iva" id="iva"
+           (input)="onIvaChange()" step="0.01" min="0" max="100"/>
+
+    <!-- CAMPO IRPF -->
     <label for="irpf">IRPF (%)</label>
-    <input type="number" [(ngModel)]="bill.irpf" name="irpf" id="irpf"/>
+    <input type="number" [(ngModel)]="bill.irpf" name="irpf" id="irpf"
+           (input)="onIrpfChange()" step="0.01" min="0" max="100"/>
+
+    <!-- CAMPO TOTAL (CALCULADO AUTOMÁTICAMENTE) -->
     <label for="total">Total (€)</label>
-    <input type="number" [(ngModel)]="bill.total" name="total" id="total"/>
+    <input type="number" [(ngModel)]="bill.total" name="total" id="total" readonly
+           style="background-color: #f5f5f5; color: #666;"/>
+
+    <!-- BOTÓN DE ENVÍO -->
     <button type="submit">Crear Factura</button>
 
   </form>
-
 
 </div>
