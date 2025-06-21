@@ -272,4 +272,8 @@ export class ClientsRegisterComponent implements OnInit {
     });
     this.router.navigate(['/dashboard/clients/list']);
   }
+
+  goBack(){
+    this.router.navigate(['/dashboard/clients/list'])
+  }
 }

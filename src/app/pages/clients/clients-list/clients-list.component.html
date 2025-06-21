@@ -1,26 +1,31 @@
 <!-- Listado y gestión de clientes con tipos y relaciones empresariales -->
-<div class="list-wrapper">
-  <h2>Listado de Clientes</h2>
+<div class="clients-wrapper">
 
-  <!-- Barra de búsqueda -->
-  <div class="search-container">
+  <!-- Título principal -->
+  <h2 class="clients-title">Listado de Clientes</h2>
+
+  <!-- Sección de búsqueda -->
+  <div class="clients-search-container">
+
     <!-- Campo de búsqueda con filtro en tiempo real -->
-    <div class="search-wrapper">
+    <div class="clients-search-wrapper">
       <input
         type="text"
         [(ngModel)]="searchTerm"
         (input)="onSearchChange()"
         placeholder="Buscar por nombre, identificación, teléfono o empresa..."
-        class="search-input"
+        class="clients-search-input"
+        autocomplete="off"
       >
+
       <!-- Iconos de búsqueda y limpiar -->
-      <div class="search-actions">
-        <span class="search-icon">🔍</span>
+      <div class="clients-search-actions">
+        <span class="clients-search-icon">🔍</span>
         @if (searchTerm && searchTerm.trim() !== '') {
           <button
             type="button"
             (click)="clearSearch()"
-            class="clear-button"
+            class="clients-clear-button"
             title="Limpiar búsqueda"
           >
             ✕
@@ -28,90 +33,121 @@
         }
       </div>
     </div>
+
     <!-- Contador de resultados de búsqueda -->
     @if (searchTerm && searchTerm.trim() !== '') {
-      <div class="search-results-info">
+      <div class="clients-search-results">
         <span>Mostrando {{ clients.length }} de {{ allClients.length }} clientes</span>
       </div>
     }
   </div>
 
-  <!-- Tabla de clientes -->
-  <table>
-    <!-- Encabezados de la tabla -->
-    <thead>
-    <tr>
-      <th>ID</th>
-      <th>Tipo</th>
-      <th>Nombre</th>
-      <th>Apellidos</th>
-      <th>Empresa</th>
-      <th>Relación</th>
-      <th>Identificación</th>
-      <th>Teléfono</th>
-      <th>Email</th>
-      <th>Dirección</th>
-      <th>C.P</th>
-      <th>Localidad</th>
-      <th>Provincia</th>
-      <th>País</th>
-      <th>Creado</th>
-      <th>Actualizado</th>
-      <th>Acciones</th>
-    </tr>
-    </thead>
+  <!-- Botón para nuevo cliente -->
+  <button type="button" class="clients-btn-new" (click)="newClient()">
+    + Nuevo registro
+  </button>
 
-    <!-- Contenido de la tabla -->
-    <tbody>
-    <!-- Lista de clientes existentes -->
-      @if (clients && clients.length > 0) {
-        @for (client of clients; track client.id) {
+  <!-- Tabla de clientes -->
+  <div class="clients-table-container">
+    <table class="clients-table">
+
+      <!-- Encabezados de la tabla -->
+      <thead class="clients-table-head">
+      <tr>
+        <th class="clients-th">ID</th>
+        <th class="clients-th">Tipo</th>
+        <th class="clients-th">Nombre</th>
+        <th class="clients-th">Apellidos</th>
+        <th class="clients-th">Empresa</th>
+        <th class="clients-th">Relación</th>
+        <th class="clients-th">Identificación</th>
+        <th class="clients-th">Teléfono</th>
+        <th class="clients-th">Email</th>
+        <th class="clients-th">Dirección</th>
+        <th class="clients-th">C.P</th>
+        <th class="clients-th">Localidad</th>
+        <th class="clients-th">Provincia</th>
+        <th class="clients-th">País</th>
+        <th class="clients-th">Creado</th>
+        <th class="clients-th">Actualizado</th>
+        <th class="clients-th">Acciones</th>
+      </tr>
+      </thead>
+
+      <!-- Contenido de la tabla -->
+      <tbody class="clients-table-body">
+
+      <!-- Lista de clientes existentes -->
+        @if (clients && clients.length > 0) {
+          @for (client of clients; track client.id) {
+            <tr class="clients-table-row">
+              <td class="clients-td">{{ client.id }}</td>
+              <td class="clients-td clients-type">{{ client.type_client }}</td>
+              <td class="clients-td clients-name">{{ client.name }}</td>
+              <td class="clients-td clients-lastname">{{ client.lastname }}</td>
+              <td class="clients-td clients-company">{{ client.company_name }}</td>
+
+              <!-- Lógica especial para mostrar relaciones empresariales -->
+              <td class="clients-td">
+                @if (client.relationship_type && client.parent_company_name) {
+                  <span class="clients-relationship-badge">
+                    {{ client.relationship_type }} de {{ client.parent_company_name }}
+                  </span>
+                } @else if (client.type_client === 'autonomo') {
+                  <span class="clients-no-relationship">Sin relación</span>
+                } @else {
+                  <span class="clients-not-applicable">N/A</span>
+                }
+              </td>
+
+              <td class="clients-td clients-identification">{{ client.identification }}</td>
+              <td class="clients-td">{{ client.phone }}</td>
+              <td class="clients-td clients-email">{{ client.email }}</td>
+              <td class="clients-td">{{ client.address }}</td>
+              <td class="clients-td clients-postal">{{ client.postal_code }}</td>
+              <td class="clients-td">{{ client.location }}</td>
+              <td class="clients-td">{{ client.province }}</td>
+              <td class="clients-td">{{ client.country }}</td>
+              <td class="clients-td">{{ client.date_create | dataFormat }}</td>
+              <td class="clients-td">{{ client.date_update | dataFormat }}</td>
+
+              <!-- Botones de acción por cliente -->
+              <td class="clients-td">
+                <button class="clients-btn-edit" (click)="editClient(client.id!)">
+                  Editar
+                </button>
+                <button class="clients-btn-delete" (click)="deleteClient(client.id!)">
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          }
+        } @else {
+
+          <!-- Estado cuando no hay clientes -->
           <tr>
-            <td>{{ client.id }}</td>
-            <td>{{ client.type_client }}</td>
-            <td>{{ client.name }}</td>
-            <td>{{ client.lastname }}</td>
-            <td>{{ client.company_name }}</td>
-            <!-- Lógica especial para mostrar relaciones empresariales -->
-            <td>
-              @if (client.relationship_type && client.parent_company_name) {
-                <span class="relationship-badge">
-                  {{ client.relationship_type }} de {{ client.parent_company_name }}
-                </span>
-              } @else if (client.type_client === 'autonomo') {
-                <span class="no-relationship">Sin relación</span>
-              } @else {
-                <span class="not-applicable">N/A</span>
-              }
-            </td>
-            <td>{{ client.identification }}</td>
-            <td>{{ client.phone }}</td>
-            <td>{{ client.email }}</td>
-            <td>{{ client.address }}</td>
-            <td>{{ client.postal_code }}</td>
-            <td>{{ client.location }}</td>
-            <td>{{ client.province }}</td>
-            <td>{{ client.country }}</td>
-            <td>{{ client.date_create | dataFormat }}</td>
-            <td>{{ client.date_update | dataFormat }}</td>
-            <!-- Botones de acción por cliente -->
-            <td>
-              <button (click)="editClient(client.id!)">Editar</button>
-              <button (click)="deleteClient(client.id!)">Eliminar</button>
+            <td colspan="17" class="clients-no-data">
+              <div class="clients-empty-state">
+
+                <!-- Icono visual -->
+                <div class="clients-empty-icon">👥</div>
+
+                <!-- Mensaje -->
+                <h3 class="clients-empty-title">Sin clientes</h3>
+                <p class="clients-empty-text">
+                  No hay clientes disponibles en este momento.
+                </p>
+
+                <!-- Botón para crear nuevo cliente -->
+                <button class="clients-btn-create" (click)="newClient()" type="button">
+                  + Nuevo registro
+                </button>
+              </div>
             </td>
           </tr>
         }
-      } @else {
-        <!-- Mensaje cuando no hay clientes -->
-        <tr>
-          <td colspan="17" class="no-clients-cell">
-            <div class="no-clients-card">
-              <h3>Sin Clientes</h3>
-              <p>No hay clientes disponibles en este momento.</p>
-            </div>
-          </td>
-        </tr>
-      }
-    </tbody>
-  </table>
+
+      </tbody>
+    </table>
+  </div>
 </div>

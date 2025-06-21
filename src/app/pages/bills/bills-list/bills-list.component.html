@@ -1,25 +1,31 @@
-<div class="list-wrapper">
-  <h2>Listado de Facturas</h2>
+<!-- Listado y gestión de facturas -->
+<div class="bills-wrapper">
 
-  <!-- Barra de búsqueda -->
-  <div class="search-container">
+  <!-- Título principal -->
+  <h2 class="bills-title">Listado de Facturas</h2>
+
+  <!-- Sección de búsqueda -->
+  <div class="bills-search-container">
+
     <!-- Campo de búsqueda con filtro en tiempo real -->
-    <div class="search-wrapper">
+    <div class="bills-search-wrapper">
       <input
         type="text"
         [(ngModel)]="searchTerm"
         (input)="onSearchChange()"
         placeholder="Buscar por número de factura, cliente, propietario..."
-        class="search-input"
+        class="bills-search-input"
+        autocomplete="off"
       >
+
       <!-- Iconos de búsqueda y limpiar -->
-      <div class="search-actions">
-        <span class="search-icon">🔍</span>
+      <div class="bills-search-actions">
+        <span class="bills-search-icon">🔍</span>
         @if (searchTerm && searchTerm.trim() !== '') {
           <button
             type="button"
             (click)="clearSearch()"
-            class="clear-button"
+            class="bills-clear-button"
             title="Limpiar búsqueda"
           >
             ✕
@@ -27,109 +33,118 @@
         }
       </div>
     </div>
+
     <!-- Contador de resultados de búsqueda -->
     @if (searchTerm && searchTerm.trim() !== '') {
-      <div class="search-results-info">
-        <span>Mostrando {{ bills.length }} de {{ allBills.length }} Facturas</span>
+      <div class="bills-search-results">
+        <span>Mostrando {{ bills.length }} de {{ allBills.length }} facturas</span>
       </div>
     }
   </div>
-  <!-- Botón principal con nueva clase -->
-  <button class="btn-new-bill" (click)="createNewBill()" type="button">
+
+  <!-- Botón para nueva factura -->
+  <button type="button" class="bills-btn-new" (click)="createNewBill()">
     + Nueva Factura
   </button>
 
-
   <!-- Tabla de facturas -->
-  <table>
-    <!-- Encabezados de la tabla -->
-    <thead>
-    <tr>
-      <th>ID</th>
-      <th>Nº Factura</th>
-      <th>Propiedad</th>
-      <th>Cliente</th>
-      <th>Propietario</th>
-      <th>%</th>
-      <th>Fecha de factura</th>
-      <th>Base Imponible</th>
-      <th>Iva</th>
-      <th>Irpf</th>
-      <th>Total</th>
-      <th>Abonos</th>
-      <th>F. Abonada</th>
-      <th>Creado</th>
-      <th>Actualizado</th>
-      <th>Acciones</th>
-    </tr>
-    </thead>
+  <div class="bills-table-container">
+    <table class="bills-table">
 
-    <!-- Contenido de la tabla -->
-    <tbody>
-      @if (bills && bills.length > 0) {
-        @for (bill of bills; track bill.id) {
+      <!-- Encabezados de la tabla -->
+      <thead class="bills-table-head">
+      <tr>
+        <th class="bills-th">ID</th>
+        <th class="bills-th">Nº Factura</th>
+        <th class="bills-th">Propiedad</th>
+        <th class="bills-th">Cliente</th>
+        <th class="bills-th">Propietario</th>
+        <th class="bills-th">%</th>
+        <th class="bills-th">Fecha de factura</th>
+        <th class="bills-th">Base Imponible</th>
+        <th class="bills-th">IVA</th>
+        <th class="bills-th">IRPF</th>
+        <th class="bills-th">Total</th>
+        <th class="bills-th">Abonos</th>
+        <th class="bills-th">F. Abonada</th>
+        <th class="bills-th">Creado</th>
+        <th class="bills-th">Actualizado</th>
+        <th class="bills-th">Acciones</th>
+      </tr>
+      </thead>
+
+      <!-- Contenido de la tabla -->
+      <tbody class="bills-table-body">
+
+      <!-- Lista de facturas existentes -->
+        @if (bills && bills.length > 0) {
+          @for (bill of bills; track bill.id) {
+            <tr class="bills-table-row">
+              <td class="bills-td">{{ bill.id }}</td>
+              <td class="bills-td bills-bill-number">{{ bill.bill_number }}</td>
+              <td class="bills-td">{{ bill.estates_id }}</td>
+              <td class="bills-td bills-client">{{ bill.clients_id }}</td>
+              <td class="bills-td bills-owner">{{ bill.owners_id }}</td>
+              <td class="bills-td bills-percentage">{{ bill.ownership_percent }}%</td>
+              <td class="bills-td">{{ bill.date | dataFormat }}</td>
+              <td class="bills-td bills-currency">{{ bill.tax_base | currency:'EUR':'symbol':'1.2-2' }}</td>
+              <td class="bills-td bills-tax">{{ bill.iva }}%</td>
+              <td class="bills-td bills-tax">{{ bill.irpf }}%</td>
+              <td class="bills-td bills-total">{{ bill.total | currency:'EUR':'symbol':'1.2-2' }}</td>
+
+              <!-- Badge de devolución -->
+              <td class="bills-td">
+                <span [ngClass]="bill.is_refund === 1 ? 'bills-refund-badge' : 'bills-no-refund'">
+                  {{ bill.is_refund === 1 ? 'Sí' : 'No' }}
+                </span>
+              </td>
+
+              <!-- Factura original -->
+              <td class="bills-td bills-original">{{ bill.original_bill_number || '-' }}</td>
+
+              <td class="bills-td">{{ bill.date_create | dataFormat }}</td>
+              <td class="bills-td">{{ bill.date_update | dataFormat }}</td>
+
+              <!-- Botones de acción por factura -->
+              <td class="bills-td">
+                <button class="bills-btn-pdf" (click)="downloadPDF(bill.id!)">
+                  📄 PDF
+                </button>
+                <button class="bills-btn-edit" (click)="editBill(bill.id!)">
+                  Editar
+                </button>
+                <button class="bills-btn-delete" (click)="deleteBill(bill.id!)">
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          }
+        } @else {
+
+          <!-- Estado cuando no hay facturas -->
           <tr>
-            <td>{{ bill.id }}</td>
-            <td>{{ bill.bill_number }}</td>
-            <td>{{ bill.estates_id }}</td>
-            <td>{{ bill.clients_id }}</td>
-            <td>{{ bill.owners_id }}</td>
-            <td>{{ bill.ownership_percent }}%</td>
-            <td>{{ bill.date | dataFormat }}</td>
-            <td>{{ bill.tax_base }} €</td>
-            <td>{{ bill.iva }}%</td>
-            <td>{{ bill.irpf }}%</td>
-            <td>{{ bill.total }} €</td>
+            <td colspan="16" class="bills-no-data">
+              <div class="bills-empty-state">
 
+                <!-- Icono visual -->
+                <div class="bills-empty-icon">📄</div>
 
-            <!-- DEVOLUCIÓN: 1 = Sí, 0 = No -->
-            <td>
-    <span [ngClass]="bill.is_refund ===1 ? 'refund-badge' : 'no-refund'">
-      {{ bill.is_refund === 1 ? 'Sí' : 'No' }}
-    </span>
-            </td>
+                <!-- Mensaje -->
+                <h3 class="bills-empty-title">Sin facturas</h3>
+                <p class="bills-empty-text">
+                  No hay facturas disponibles en este momento.
+                </p>
 
-            <!-- FACTURA ORIGINAL: NULL = '-', número = mostrar ID -->
-            <td>{{ bill.original_bill_number || '-' }}</td>
-
-
-            <td>{{ bill.date_create | dataFormat }}</td>
-            <td>{{ bill.date_update | dataFormat }}</td>
-
-            <!-- Botones de acción por propiedad -->
-            <td>
-
-              <button (click)="editBill(bill.id!)">Editar</button>
-              <button (click)="downloadPDF(bill.id!)">📄 PDF</button>
-
-              <button (click)="deleteBill(bill.id!)">Eliminar</button>
-
-
+                <!-- Botón para crear nueva factura -->
+                <button class="bills-btn-create" (click)="createNewBill()" type="button">
+                  + Nueva Factura
+                </button>
+              </div>
             </td>
           </tr>
         }
 
-      } @else {
-        <!--MENSAJE CUANDO NO HAY FACTURAS-->
-        <tr>
-          <td colspan="16" class="no-bills-cell">
-            <div class="no-bills-card">
-              <!-- Icono visual para mejor UX -->
-              <div class="no-bills-icon">
-                📄
-              </div>
-              <h3>Sin Facturas</h3>
-              <p>No hay facturas disponibles en este momento.</p>
-              <!-- Botón opcional para crear nueva factura -->
-              <button
-                class="btn-create-bill" (click)="createNewBill()" type="button"> + Nueva Factura
-              </button>
-            </div>
-          </td>
-        </tr>
-
-      }
-
-    </tbody>
-  </table>
+      </tbody>
+    </table>
+  </div>
 </div>

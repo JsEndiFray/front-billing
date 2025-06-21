@@ -128,4 +128,8 @@ export class EstatesListComponent implements OnInit {
       }
     })
   }
+
+  newEstate(){
+    this.router.navigate(['/dashboard/estates/register'])
+  }
 }

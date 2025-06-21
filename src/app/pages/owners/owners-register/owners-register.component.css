@@ -1,5 +1,5 @@
-/* CONTENEDOR PRINCIPAL */
-.form-wrapper {
+/* Contenedor principal del formulario */
+.owners-register-wrapper {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 1rem;
   padding: 2.5rem;
@@ -9,8 +9,8 @@
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
 }
 
-/* TÍTULO PRINCIPAL */
-h2 {
+/* Título del formulario */
+.owners-register-title {
   color: #1f2937;
   font-size: 2rem;
   font-weight: 700;
@@ -18,21 +18,27 @@ h2 {
   margin-bottom: 2rem;
 }
 
-/* FORMULARIO CON GRID */
-form {
+/* Formulario con diseño grid */
+.owners-register-form {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
   gap: 1.5rem;
   align-items: start;
 }
 
-/* CAMPO DIRECCIÓN OCUPA TODO EL ANCHO */
-form > div:has(label[for="address"]) {
+/* Campo que ocupa todo el ancho (dirección) */
+.owners-register-field-full {
   grid-column: 1 / -1;
 }
 
-/* LABELS */
-label {
+/* Contenedor de cada campo */
+.owners-register-field {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Etiquetas de los campos */
+.owners-register-label {
   color: #374151;
   font-weight: 600;
   font-size: 0.875rem;
@@ -40,8 +46,8 @@ label {
   display: block;
 }
 
-/* INPUTS */
-input {
+/* Estilos base para inputs */
+.owners-register-input {
   padding: 0.75rem;
   border: 0.0625rem solid #d1d5db;
   border-radius: 0.5rem;
@@ -53,136 +59,188 @@ input {
   box-sizing: border-box;
 }
 
-/* PLACEHOLDER */
-input::placeholder {
+/* Placeholder de los inputs */
+.owners-register-input::placeholder {
   color: #9ca3af;
 }
 
-/* ESTADOS FOCUS */
-input:focus {
+/* Estado focus de los inputs */
+.owners-register-input:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* ESTADOS HOVER */
-input:hover:not(:focus) {
+/* Estado hover de los inputs */
+.owners-register-input:hover:not(:focus) {
   border-color: #9ca3af;
 }
 
-/* ESTILO ESPECIAL PARA EMAIL */
-input[type="email"] {
+/* Estilo especial para campo email */
+.owners-register-email {
   color: #3b82f6;
   font-weight: 500;
 }
 
-/* ESTILO ESPECIAL PARA NIF */
-input[id="nif"] {
+/* Estilo especial para campo NIF */
+.owners-register-nif {
   color: #059669;
   font-weight: 600;
   font-family: 'Courier New', monospace;
   text-transform: uppercase;
 }
 
-/* ESTILO ESPECIAL PARA CÓDIGO POSTAL */
-input[id="posta_code"] {
+/* Estilo especial para código postal */
+.owners-register-postal {
   color: #6b7280;
   font-weight: 600;
   font-family: 'Courier New', monospace;
   text-align: center;
 }
 
-/* BOTÓN PRINCIPAL */
-button[type="submit"] {
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  padding: 1rem 2rem;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  grid-column: 1 / -1;
-  justify-self: center;
-  margin-top: 1rem;
-}
-
-/* HOVER BOTÓN */
-button[type="submit"]:hover {
-  background: #2563eb;
-  transform: translateY(-0.0625rem);
-}
-
-/* ACTIVE BOTÓN */
-button[type="submit"]:active {
-  transform: translateY(0);
-}
-
-/* VALIDACIÓN VISUAL */
-input:invalid:not(:placeholder-shown) {
+/* Validación visual para campos inválidos */
+.owners-register-input:invalid:not(:placeholder-shown) {
   border-color: #ef4444;
 }
 
-input:valid:not(:placeholder-shown) {
+/* Validación visual para campos válidos */
+.owners-register-input:valid:not(:placeholder-shown) {
   border-color: #10b981;
 }
 
-/* RESPONSIVE TABLET */
+/* Contenedor de botones */
+.owners-register-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+  grid-column: 1 / -1;
+}
+
+/* Botón principal (registrar) */
+.owners-register-btn-primary {
+  background: linear-gradient(135deg, #22c55e, #3b82f6);
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+/* Efecto hover para botón principal */
+.owners-register-btn-primary:hover {
+  transform: translateY(-1px);
+}
+
+/* Efecto active para botón principal */
+.owners-register-btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Botón secundario (cancelar) */
+.owners-register-btn-secondary {
+  background: #f9fafb;
+  color: #374151;
+  border: 0.0625rem solid #d1d5db;
+  border-radius: 0.375rem;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Efecto hover para botón secundario */
+.owners-register-btn-secondary:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+/* Responsive para tablet */
 @media (max-width: 48rem) {
-  .form-wrapper {
+  /* Ajustes del contenedor principal */
+  .owners-register-wrapper {
     padding: 2rem;
     margin: 1.5rem auto;
     width: 95%;
   }
 
-  h2 {
+  /* Ajustes del título */
+  .owners-register-title {
     font-size: 1.75rem;
     margin-bottom: 1.5rem;
   }
 
-  form {
+  /* Formulario en una sola columna */
+  .owners-register-form {
     grid-template-columns: 1fr;
     gap: 1.25rem;
   }
 
-  form > div:has(label[for="address"]) {
+  /* Campo de dirección en una sola columna */
+  .owners-register-field-full {
     grid-column: 1;
   }
 
-  input {
+  /* Ajustes de inputs */
+  .owners-register-input {
     padding: 0.6875rem;
   }
 
-  button[type="submit"] {
+  /* Ajustes de botones */
+  .owners-register-btn-primary,
+  .owners-register-btn-secondary {
     padding: 0.875rem 1.5rem;
     font-size: 0.875rem;
   }
+
+  /* Botones en columna en pantallas pequeñas */
+  .owners-register-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
 }
 
-/* RESPONSIVE MÓVIL */
+/* Responsive para móvil */
 @media (max-width: 30rem) {
-  .form-wrapper {
+  /* Ajustes del contenedor principal */
+  .owners-register-wrapper {
     padding: 1.5rem;
     margin: 1rem auto;
+    width: 95%;
   }
 
-  h2 {
+  /* Ajustes del título */
+  .owners-register-title {
     font-size: 1.5rem;
     margin-bottom: 1.25rem;
   }
 
-  form {
+  /* Ajustes del formulario */
+  .owners-register-form {
     gap: 1rem;
   }
 
-  input {
+  /* Ajustes de inputs */
+  .owners-register-input {
     padding: 0.625rem;
     font-size: 0.875rem;
   }
 
-  button[type="submit"] {
+  /* Ajustes de botones */
+  .owners-register-btn-primary,
+  .owners-register-btn-secondary {
     padding: 0.75rem 1.25rem;
     font-size: 0.875rem;
+    width: 100%;
+  }
+
+  /* Botones de ancho completo */
+  .owners-register-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
   }
 }

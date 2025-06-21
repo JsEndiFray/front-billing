@@ -1,40 +1,120 @@
 <!-- Lista de relaciones inmueble-propietario con porcentajes -->
-<div class="list-wrapper">
-  <h2>Listado de Porcentajes de Propiedades</h2>
+<div class="estate-owners-wrapper">
+
+  <!-- Título principal -->
+  <h2 class="estate-owners-title">Listado de Porcentajes de Propiedades</h2>
+
+  <!-- Sección de búsqueda -->
+  <div class="estate-owners-search-container">
+
+    <!-- Campo de búsqueda con filtro en tiempo real -->
+    <div class="estate-owners-search-wrapper">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()"
+        placeholder="Buscar por propiedad, propietario o porcentaje..."
+        class="estate-owners-search-input"
+        autocomplete="off"
+      >
+
+      <!-- Iconos de búsqueda y limpiar -->
+      <div class="estate-owners-search-actions">
+        <span class="estate-owners-search-icon">🔍</span>
+        @if (searchTerm && searchTerm.trim() !== '') {
+          <button
+            type="button"
+            (click)="clearSearch()"
+            class="estate-owners-clear-button"
+            title="Limpiar búsqueda"
+          >
+            ✕
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Contador de resultados de búsqueda -->
+    @if (searchTerm && searchTerm.trim() !== '') {
+      <div class="estate-owners-search-results">
+        <span>Mostrando {{ estateOwners.length }} de {{ allEstateOwners.length }} relaciones</span>
+      </div>
+    }
+  </div>
+
+  <!-- Botón para nuevo registro -->
+  <button type="button" class="estate-owners-btn-new" (click)="newEstateOwner()">
+    + Nuevo registro
+  </button>
 
   <!-- Tabla de relaciones inmueble-propietario -->
-  <table>
-    <!-- Encabezados de la tabla -->
-    <thead>
-    <tr>
-      <th>ID</th>
-      <th>Propiedad</th>
-      <th>Propietario</th>
-      <th>Porcentaje (%)</th>
-      <th>Creación</th>
-      <th>Actualizado</th>
-      <th>Acciones</th>
-    </tr>
-    </thead>
+  <div class="estate-owners-table-container">
+    <table class="estate-owners-table">
 
-    <!-- Contenido de la tabla -->
-    <tbody>
-    <!-- Lista de relaciones existentes -->
-      @for (item of estateOwners; track item.id) {
-        <tr>
-          <td>{{ item.id }}</td>
-          <td>{{ item.estate_name }}</td>
-          <td>{{ item.owner_name }}</td>
-          <td>{{ item.ownership_percentage }}</td>
-          <td>{{ item.date_create | dataFormat }}</td>
-          <td>{{ item.date_update| dataFormat }}</td>
-          <!-- Botones de acción por relación -->
-          <td>
-            <button (click)="editEstateOwners(item.id!)">Editar</button>
-            <button (click)="deleteEstateOwners(item.id!)">Eliminar</button>
-          </td>
-        </tr>
-      }
-    </tbody>
-  </table>
+      <!-- Encabezados de la tabla -->
+      <thead class="estate-owners-table-head">
+      <tr>
+        <th class="estate-owners-th">ID</th>
+        <th class="estate-owners-th">Propiedad</th>
+        <th class="estate-owners-th">Propietario</th>
+        <th class="estate-owners-th">Porcentaje (%)</th>
+        <th class="estate-owners-th">Creación</th>
+        <th class="estate-owners-th">Actualizado</th>
+        <th class="estate-owners-th">Acciones</th>
+      </tr>
+      </thead>
+
+      <!-- Contenido de la tabla -->
+      <tbody class="estate-owners-table-body">
+
+      <!-- Lista de relaciones existentes -->
+        @if (estateOwners && estateOwners.length > 0) {
+          @for (item of estateOwners; track item.id) {
+            <tr class="estate-owners-table-row">
+              <td class="estate-owners-td">{{ item.id }}</td>
+              <td class="estate-owners-td estate-owners-property">{{ item.estate_name }}</td>
+              <td class="estate-owners-td estate-owners-owner">{{ item.owner_name }}</td>
+              <td class="estate-owners-td estate-owners-percentage">{{ item.ownership_percentage }}%</td>
+              <td class="estate-owners-td">{{ item.date_create | dataFormat }}</td>
+              <td class="estate-owners-td">{{ item.date_update | dataFormat }}</td>
+
+              <!-- Botones de acción por relación -->
+              <td class="estate-owners-td">
+                <button class="estate-owners-btn-edit" (click)="editEstateOwners(item.id!)">
+                  Editar
+                </button>
+                <button class="estate-owners-btn-delete" (click)="deleteEstateOwners(item.id!)">
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          }
+        } @else {
+
+          <!-- Estado cuando no hay relaciones -->
+          <tr>
+            <td colspan="7" class="estate-owners-no-data">
+              <div class="estate-owners-empty-state">
+
+                <!-- Icono visual -->
+                <div class="estate-owners-empty-icon">📊</div>
+
+                <!-- Mensaje -->
+                <h3 class="estate-owners-empty-title">No hay relaciones registradas</h3>
+                <p class="estate-owners-empty-text">
+                  No hay porcentajes de propiedades asignados en este momento.
+                </p>
+
+                <!-- Botón para crear nueva relación -->
+                <button class="estate-owners-btn-create" (click)="newEstateOwner()" type="button">
+                  + Nuevo registro
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+
+      </tbody>
+    </table>
+  </div>
 </div>

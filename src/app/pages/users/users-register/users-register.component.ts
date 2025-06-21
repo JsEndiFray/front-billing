@@ -81,11 +81,15 @@ export class UsersRegisterComponent {
           draggable: true
         });
         // Redirigir al login después del registro exitoso
-        this.router.navigate(['/login']);
+        this.router.navigate(['/dashboard/users/lits']);
       },
       error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
       },
     });
   };
+
+  goBack(){
+    this.router.navigate(['/dashboard/users/list'])
+  }
 }

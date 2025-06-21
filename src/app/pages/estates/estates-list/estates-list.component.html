@@ -1,26 +1,31 @@
 <!-- Listado y gestión de propiedades inmobiliarias -->
-<div class="list-wrapper">
-  <h2>Listado de Propiedades</h2>
+<div class="estates-wrapper">
 
-  <!-- Barra de búsqueda -->
-  <div class="search-container">
+  <!-- Título principal -->
+  <h2 class="estates-title">Listado de Propiedades</h2>
+
+  <!-- Sección de búsqueda -->
+  <div class="estates-search-container">
+
     <!-- Campo de búsqueda con filtro en tiempo real -->
-    <div class="search-wrapper">
+    <div class="estates-search-wrapper">
       <input
         type="text"
         [(ngModel)]="searchTerm"
         (input)="onSearchChange()"
-        placeholder="Buscar por Referencia Catastro, dirección, localidad y provincia..."
-        class="search-input"
+        placeholder="Buscar por referencia catastral, dirección, localidad y provincia..."
+        class="estates-search-input"
+        autocomplete="off"
       >
+
       <!-- Iconos de búsqueda y limpiar -->
-      <div class="search-actions">
-        <span class="search-icon">🔍</span>
+      <div class="estates-search-actions">
+        <span class="estates-search-icon">🔍</span>
         @if (searchTerm && searchTerm.trim() !== '') {
           <button
             type="button"
             (click)="clearSearch()"
-            class="clear-button"
+            class="estates-clear-button"
             title="Limpiar búsqueda"
           >
             ✕
@@ -28,69 +33,98 @@
         }
       </div>
     </div>
+
     <!-- Contador de resultados de búsqueda -->
     @if (searchTerm && searchTerm.trim() !== '') {
-      <div class="search-results-info">
-        <span>Mostrando {{ estates.length }} de {{ allStates.length }} Inmuebles</span>
+      <div class="estates-search-results">
+        <span>Mostrando {{ estates.length }} de {{ allStates.length }} inmuebles</span>
       </div>
     }
   </div>
 
-  <!-- Tabla de propiedades -->
-  <table>
-    <!-- Encabezados de la tabla -->
-    <thead>
-    <tr>
-      <th>ID</th>
-      <th>Ref. Catastral</th>
-      <th>Precio</th>
-      <th>Dirección</th>
-      <th>C.P</th>
-      <th>Localidad</th>
-      <th>Provincia</th>
-      <th>País</th>
-      <th>Superficie</th>
-      <th>Creado</th>
-      <th>Actualizado</th>
-      <th>Acciones</th>
-    </tr>
-    </thead>
+  <!-- Botón para nuevo registro -->
+  <button type="button" class="estates-btn-new" (click)="newEstate()">
+    + Nuevo registro
+  </button>
 
-    <!-- Contenido de la tabla -->
-    <tbody>
-    <!-- Lista de propiedades existentes -->
-      @if (estates && estates.length > 0) {
-        @for (estate of estates; track estate.id) {
+  <!-- Tabla de propiedades -->
+  <div class="estates-table-container">
+    <table class="estates-table">
+
+      <!-- Encabezados de la tabla -->
+      <thead class="estates-table-head">
+      <tr>
+        <th class="estates-th">ID</th>
+        <th class="estates-th">Ref. Catastral</th>
+        <th class="estates-th">Precio</th>
+        <th class="estates-th">Dirección</th>
+        <th class="estates-th">C.P</th>
+        <th class="estates-th">Localidad</th>
+        <th class="estates-th">Provincia</th>
+        <th class="estates-th">País</th>
+        <th class="estates-th">Superficie</th>
+        <th class="estates-th">Creado</th>
+        <th class="estates-th">Actualizado</th>
+        <th class="estates-th">Acciones</th>
+      </tr>
+      </thead>
+
+      <!-- Contenido de la tabla -->
+      <tbody class="estates-table-body">
+
+      <!-- Lista de propiedades existentes -->
+        @if (estates && estates.length > 0) {
+          @for (estate of estates; track estate.id) {
+            <tr class="estates-table-row">
+              <td class="estates-td">{{ estate.id }}</td>
+              <td class="estates-td estates-reference">{{ estate.cadastral_reference }}</td>
+              <td class="estates-td estates-price">{{ estate.price }} €</td>
+              <td class="estates-td">{{ estate.address }}</td>
+              <td class="estates-td">{{ estate.postal_code }}</td>
+              <td class="estates-td">{{ estate.location }}</td>
+              <td class="estates-td">{{ estate.province }}</td>
+              <td class="estates-td">{{ estate.country }}</td>
+              <td class="estates-td estates-surface">{{ estate.surface }}</td>
+              <td class="estates-td">{{ estate.date_create | dataFormat }}</td>
+              <td class="estates-td">{{ estate.date_update | dataFormat }}</td>
+
+              <!-- Botones de acción por propiedad -->
+              <td class="estates-td">
+                <button class="estates-btn-edit" (click)="editEstate(estate.id!)">
+                  Editar
+                </button>
+                <button class="estates-btn-delete" (click)="deleteEstate(estate.id!)">
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          }
+        } @else {
+
+          <!-- Estado cuando no hay propiedades -->
           <tr>
-            <td>{{ estate.id }}</td>
-            <td>{{ estate.cadastral_reference }}</td>
-            <td>{{ estate.price }} €</td>
-            <td>{{ estate.address }}</td>
-            <td>{{ estate.postal_code }}</td>
-            <td>{{ estate.location }}</td>
-            <td>{{ estate.province }}</td>
-            <td>{{ estate.country }}</td>
-            <td>{{ estate.surface }}</td>
-            <td>{{ estate.date_create | dataFormat }}</td>
-            <td>{{ estate.date_update | dataFormat }}</td>
-            <!-- Botones de acción por propiedad -->
-            <td>
-              <button (click)="editEstate(estate.id!)">Editar</button>
-              <button (click)="deleteEstate(estate.id!)">Eliminar</button>
+            <td colspan="12" class="estates-no-data">
+              <div class="estates-empty-state">
+
+                <!-- Icono visual -->
+                <div class="estates-empty-icon">🏠</div>
+
+                <!-- Mensaje -->
+                <h3 class="estates-empty-title">Sin propiedades</h3>
+                <p class="estates-empty-text">
+                  No hay propiedades disponibles en este momento.
+                </p>
+
+                <!-- Botón para crear nueva propiedad -->
+                <button class="estates-btn-create" (click)="newEstate()" type="button">
+                  + Nuevo registro
+                </button>
+              </div>
             </td>
           </tr>
         }
-      } @else {
-        <!-- Mensaje cuando no hay propiedades -->
-        <tr>
-          <td colspan="12" class="no-clients-cell">
-            <div class="no-clients-card">
-              <h3>Sin Propiedades</h3>
-              <p>No hay propiedades disponibles en este momento.</p>
-            </div>
-          </td>
-        </tr>
-      }
-    </tbody>
-  </table>
+
+      </tbody>
+    </table>
+  </div>
 </div>

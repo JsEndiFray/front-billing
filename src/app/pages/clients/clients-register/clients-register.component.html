@@ -1,312 +1,395 @@
 <!-- Formulario de registro de clientes con tipos dinámicos y administradores -->
-<div class="form-wrapper">
+<div class="clients-register-wrapper">
+
   <!-- Título principal -->
-  <h2>Registro de Cliente</h2>
+  <h2 class="clients-register-title">Registro de Cliente</h2>
 
   <!-- Formulario principal -->
-  <form #clientForm="ngForm" (ngSubmit)="createClient()">
-    <div class="step-container">
+  <form #clientForm="ngForm" (ngSubmit)="createClient()" class="clients-register-form">
+    <div class="clients-register-container">
 
-      <!-- Sección selección de tipo de cliente -->
-      <h3 class="step-title">Tipo de Cliente</h3>
-      <div class="client-type-selection">
+      <!-- Sección: Selección de tipo de cliente -->
+      <h3 class="clients-register-step-title">Tipo de Cliente</h3>
+      <div class="clients-register-type-selection">
+
         <!-- Card para empresas -->
-        <div class="client-type-card"
+        <div class="clients-register-type-card"
              [class.selected]="client.type_client === 'empresa'"
              (click)="selectClientType('empresa')">
-          <h3>Empresa</h3>
+          <h3>🏢 Empresa</h3>
           <p>Sociedades, SL, SA, cooperativas</p>
         </div>
 
         <!-- Card para particulares -->
-        <div class="client-type-card"
+        <div class="clients-register-type-card"
              [class.selected]="client.type_client === 'particular'"
              (click)="selectClientType('particular')">
-          <h3>Particular</h3>
+          <h3>👤 Particular</h3>
           <p>Personas físicas individuales</p>
         </div>
 
         <!-- Card para autónomos -->
-        <div class="client-type-card"
+        <div class="clients-register-type-card"
              [class.selected]="client.type_client === 'autonomo'"
              (click)="selectClientType('autonomo')">
-          <h3>Autónomo</h3>
+          <h3>💼 Autónomo</h3>
           <p>Trabajadores por cuenta propia</p>
         </div>
       </div>
 
       <!-- Información especial para empresas -->
       @if (client.type_client === 'empresa') {
-        <div class="info-message">
-          Los datos de nombre y apellidos se utilizarán como nombre de la empresa
+        <div class="clients-register-info-message">
+          💡 Los datos de nombre y apellidos se utilizarán como nombre de la empresa
         </div>
       }
 
-      <!-- Sección datos del cliente -->
-      <h3 class="step-title">Datos del Cliente</h3>
-      <div>
-        <!-- Campos comunes para todos los tipos -->
+      <!-- Sección: Datos del cliente -->
+      <h3 class="clients-register-step-title">Datos del Cliente</h3>
+      <div class="clients-register-fields-grid">
 
         <!-- Campo nombre -->
-        <div>
-          <label for="name">Nombre *</label>
-          <input type="text"
-                 id="name"
-                 name="name"
-                 [(ngModel)]="client.name"
-                 (ngModelChange)="updateCompanyName()"
-                 placeholder="Introduce el nombre"
-                 required>
+        <div class="clients-register-field">
+          <label for="name" class="clients-register-label">Nombre *</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            [(ngModel)]="client.name"
+            (ngModelChange)="updateCompanyName()"
+            placeholder="Introduce el nombre"
+            class="clients-register-input"
+            autocomplete="given-name"
+            required>
         </div>
 
         <!-- Campo apellidos -->
-        <div>
-          <label for="lastname">Apellidos *</label>
-          <input type="text"
-                 id="lastname"
-                 name="lastname"
-                 [(ngModel)]="client.lastname"
-                 (ngModelChange)="updateCompanyName()"
-                 placeholder="Introduce los apellidos"
-                 required>
+        <div class="clients-register-field">
+          <label for="lastname" class="clients-register-label">Apellidos *</label>
+          <input
+            type="text"
+            id="lastname"
+            name="lastname"
+            [(ngModel)]="client.lastname"
+            (ngModelChange)="updateCompanyName()"
+            placeholder="Introduce los apellidos"
+            class="clients-register-input"
+            autocomplete="family-name"
+            required>
         </div>
 
         <!-- Campo razón social (solo para empresas) -->
         @if (client.type_client === 'empresa') {
-          <div>
-            <label for="company_name">Razón Social *</label>
-            <input type="text"
-                   id="company_name"
-                   name="company_name"
-                   [(ngModel)]="client.company_name"
-                   placeholder="Se completa automáticamente"
-                   required>
+          <div class="clients-register-field clients-register-field-full">
+            <label for="company_name" class="clients-register-label">Razón Social *</label>
+            <input
+              type="text"
+              id="company_name"
+              name="company_name"
+              [(ngModel)]="client.company_name"
+              placeholder="Se completa automáticamente"
+              class="clients-register-input clients-register-company"
+              autocomplete="organization"
+              required>
           </div>
         }
 
         <!-- Campo identificación con label dinámico -->
-        <div>
-          <label for="identification">
+        <div class="clients-register-field">
+          <label for="identification" class="clients-register-label">
             @if (client.type_client === 'empresa') {
               CIF *
             } @else {
               Identificación *
             }
           </label>
-          <input type="text"
-                 id="identification"
-                 name="identification"
-                 [(ngModel)]="client.identification"
-                 [placeholder]="getIdentificationPlaceholder()"
-                 required>
+          <input
+            type="text"
+            id="identification"
+            name="identification"
+            [(ngModel)]="client.identification"
+            [placeholder]="getIdentificationPlaceholder()"
+            class="clients-register-input clients-register-identification"
+            required>
         </div>
 
-        <!-- Campos comunes de contacto y dirección -->
-        <div>
-          <label for="phone">Teléfono *</label>
-          <input type="tel"
-                 id="phone"
-                 name="phone"
-                 [(ngModel)]="client.phone"
-                 placeholder="123456789"
-                 required>
+        <!-- Campo teléfono -->
+        <div class="clients-register-field">
+          <label for="phone" class="clients-register-label">Teléfono *</label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            [(ngModel)]="client.phone"
+            placeholder="+34 123 456 789"
+            class="clients-register-input"
+            autocomplete="tel"
+            required>
         </div>
 
-        <div>
-          <label for="email">Email *</label>
-          <input type="email"
-                 id="email"
-                 name="email"
-                 [(ngModel)]="client.email"
-                 placeholder="ejemplo@correo.com"
-                 required>
+        <!-- Campo email -->
+        <div class="clients-register-field">
+          <label for="email" class="clients-register-label">Email *</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            [(ngModel)]="client.email"
+            placeholder="ejemplo@correo.com"
+            class="clients-register-input"
+            autocomplete="email"
+            required>
         </div>
 
-        <div>
-          <label for="address">Dirección *</label>
-          <input type="text"
-                 id="address"
-                 name="address"
-                 [(ngModel)]="client.address"
-                 placeholder="Calle, número, piso..."
-                 required>
+        <!-- Campo dirección -->
+        <div class="clients-register-field clients-register-field-full">
+          <label for="address" class="clients-register-label">Dirección *</label>
+          <input
+            type="text"
+            id="address"
+            name="address"
+            [(ngModel)]="client.address"
+            placeholder="Calle, número, piso..."
+            class="clients-register-input"
+            autocomplete="street-address"
+            required>
         </div>
 
-        <div>
-          <label for="postal_code">Código Postal *</label>
-          <input type="text"
-                 id="postal_code"
-                 name="postal_code"
-                 [(ngModel)]="client.postal_code"
-                 placeholder="28001"
-                 maxlength="5"
-                 required>
+        <!-- Campo código postal -->
+        <div class="clients-register-field">
+          <label for="postal_code" class="clients-register-label">Código Postal *</label>
+          <input
+            type="text"
+            id="postal_code"
+            name="postal_code"
+            [(ngModel)]="client.postal_code"
+            placeholder="28001"
+            class="clients-register-input clients-register-postal"
+            autocomplete="postal-code"
+            pattern="[0-9]{5}"
+            maxlength="5"
+            required>
         </div>
 
-        <div>
-          <label for="location">Localidad *</label>
-          <input type="text"
-                 id="location"
-                 name="location"
-                 [(ngModel)]="client.location"
-                 placeholder="Ciudad"
-                 required>
+        <!-- Campo localidad -->
+        <div class="clients-register-field">
+          <label for="location" class="clients-register-label">Localidad *</label>
+          <input
+            type="text"
+            id="location"
+            name="location"
+            [(ngModel)]="client.location"
+            placeholder="Madrid"
+            class="clients-register-input"
+            autocomplete="address-level2"
+            required>
         </div>
 
-        <div>
-          <label for="province">Provincia *</label>
-          <input type="text"
-                 id="province"
-                 name="province"
-                 [(ngModel)]="client.province"
-                 placeholder="Provincia"
-                 required>
+        <!-- Campo provincia -->
+        <div class="clients-register-field">
+          <label for="province" class="clients-register-label">Provincia *</label>
+          <input
+            type="text"
+            id="province"
+            name="province"
+            [(ngModel)]="client.province"
+            placeholder="Madrid"
+            class="clients-register-input"
+            autocomplete="address-level1"
+            required>
         </div>
 
-        <div>
-          <label for="country">País *</label>
-          <input type="text"
-                 id="country"
-                 name="country"
-                 [(ngModel)]="client.country"
-                 placeholder="País"
-                 required>
+        <!-- Campo país -->
+        <div class="clients-register-field">
+          <label for="country" class="clients-register-label">País *</label>
+          <input
+            type="text"
+            id="country"
+            name="country"
+            [(ngModel)]="client.country"
+            placeholder="España"
+            class="clients-register-input"
+            autocomplete="country-name"
+            required>
         </div>
       </div>
 
-      <!-- Sección administradores (solo para empresas) -->
+      <!-- Sección: Administradores (solo para empresas) -->
       @if (client.type_client === 'empresa') {
-        <div style="margin-top: 2rem;">
-          <h3 class="step-title">Administradores (Opcional)</h3>
+        <div class="clients-register-admins-section">
+          <h3 class="clients-register-step-title">Administradores (Opcional)</h3>
 
-          <div class="info-message">
-            Puede añadir administradores autónomos para esta empresa
+          <div class="clients-register-info-message">
+            📋 Puede añadir administradores autónomos para esta empresa
           </div>
 
           <!-- Botón para añadir administrador -->
-          <div style="margin-bottom: 1.5rem;">
-            <button type="button"
-                    class="btn-secondary"
-                    (click)="addAdministrator()">
-              Añadir Administrador
+          <div class="clients-register-admin-actions">
+            <button
+              type="button"
+              class="clients-register-btn-add-admin"
+              (click)="addAdministrator()">
+              + Añadir Administrador
             </button>
           </div>
 
           <!-- Lista dinámica de administradores -->
           @for (admin of administrators; track $index) {
-            <div class="admin-form-container">
+            <div class="clients-register-admin-container">
+
               <!-- Cabecera del administrador -->
-              <div class="admin-header">
-                <h4>Administrador {{$index + 1}}</h4>
-                <button type="button"
-                        class="btn-remove"
-                        (click)="removeAdministrator($index)">
-                  Eliminar
+              <div class="clients-register-admin-header">
+                <h4>👤 Administrador {{$index + 1}}</h4>
+                <button
+                  type="button"
+                  class="clients-register-btn-remove"
+                  (click)="removeAdministrator($index)">
+                  🗑️ Eliminar
                 </button>
               </div>
 
               <!-- Formulario del administrador -->
-              <div class="admin-form">
-                <!-- Campos del administrador (mismo patrón que cliente) -->
-                <div>
-                  <label [for]="'admin_name_' + $index">Nombre *</label>
-                  <input type="text"
-                         [id]="'admin_name_' + $index"
-                         [(ngModel)]="admin.name"
-                         [name]="'admin_name_' + $index"
-                         placeholder="Nombre del administrador"
-                         required>
+              <div class="clients-register-admin-form">
+
+                <!-- Campo nombre administrador -->
+                <div class="clients-register-field">
+                  <label [for]="'admin_name_' + $index" class="clients-register-label">Nombre *</label>
+                  <input
+                    type="text"
+                    [id]="'admin_name_' + $index"
+                    [(ngModel)]="admin.name"
+                    [name]="'admin_name_' + $index"
+                    placeholder="Nombre del administrador"
+                    class="clients-register-input"
+                    autocomplete="given-name"
+                    required>
                 </div>
 
-                <div>
-                  <label [for]="'admin_lastname_' + $index">Apellidos *</label>
-                  <input type="text"
-                         [id]="'admin_lastname_' + $index"
-                         [(ngModel)]="admin.lastname"
-                         [name]="'admin_lastname_' + $index"
-                         placeholder="Apellidos del administrador"
-                         required>
+                <!-- Campo apellidos administrador -->
+                <div class="clients-register-field">
+                  <label [for]="'admin_lastname_' + $index" class="clients-register-label">Apellidos *</label>
+                  <input
+                    type="text"
+                    [id]="'admin_lastname_' + $index"
+                    [(ngModel)]="admin.lastname"
+                    [name]="'admin_lastname_' + $index"
+                    placeholder="Apellidos del administrador"
+                    class="clients-register-input"
+                    autocomplete="family-name"
+                    required>
                 </div>
 
-                <div>
-                  <label [for]="'admin_identification_' + $index">Identificación *</label>
-                  <input type="text"
-                         [id]="'admin_identification_' + $index"
-                         [(ngModel)]="admin.identification"
-                         [name]="'admin_identification_' + $index"
-                         placeholder="NIF, NIE o Pasaporte"
-                         required>
+                <!-- Campo identificación administrador -->
+                <div class="clients-register-field">
+                  <label [for]="'admin_identification_' + $index" class="clients-register-label">Identificación *</label>
+                  <input
+                    type="text"
+                    [id]="'admin_identification_' + $index"
+                    [(ngModel)]="admin.identification"
+                    [name]="'admin_identification_' + $index"
+                    placeholder="NIF, NIE o Pasaporte"
+                    class="clients-register-input clients-register-identification"
+                    required>
                 </div>
 
-                <div>
-                  <label [for]="'admin_phone_' + $index">Teléfono *</label>
-                  <input type="tel"
-                         [id]="'admin_phone_' + $index"
-                         [(ngModel)]="admin.phone"
-                         [name]="'admin_phone_' + $index"
-                         placeholder="123456789"
-                         required>
+                <!-- Campo teléfono administrador -->
+                <div class="clients-register-field">
+                  <label [for]="'admin_phone_' + $index" class="clients-register-label">Teléfono *</label>
+                  <input
+                    type="tel"
+                    [id]="'admin_phone_' + $index"
+                    [(ngModel)]="admin.phone"
+                    [name]="'admin_phone_' + $index"
+                    placeholder="+34 123 456 789"
+                    class="clients-register-input"
+                    autocomplete="tel"
+                    required>
                 </div>
 
-                <div>
-                  <label [for]="'admin_email_' + $index">Email *</label>
-                  <input type="email"
-                         [id]="'admin_email_' + $index"
-                         [(ngModel)]="admin.email"
-                         [name]="'admin_email_' + $index"
-                         placeholder="administrador@empresa.com"
-                         required>
+                <!-- Campo email administrador -->
+                <div class="clients-register-field">
+                  <label [for]="'admin_email_' + $index" class="clients-register-label">Email *</label>
+                  <input
+                    type="email"
+                    [id]="'admin_email_' + $index"
+                    [(ngModel)]="admin.email"
+                    [name]="'admin_email_' + $index"
+                    placeholder="administrador@empresa.com"
+                    class="clients-register-input"
+                    autocomplete="email"
+                    required>
                 </div>
 
-                <div>
-                  <label [for]="'admin_address_' + $index">Dirección *</label>
-                  <input type="text"
-                         [id]="'admin_address_' + $index"
-                         [(ngModel)]="admin.address"
-                         [name]="'admin_address_' + $index"
-                         placeholder="Dirección completa"
-                         required>
+                <!-- Campo dirección administrador -->
+                <div class="clients-register-field clients-register-field-full">
+                  <label [for]="'admin_address_' + $index" class="clients-register-label">Dirección *</label>
+                  <input
+                    type="text"
+                    [id]="'admin_address_' + $index"
+                    [(ngModel)]="admin.address"
+                    [name]="'admin_address_' + $index"
+                    placeholder="Dirección completa"
+                    class="clients-register-input"
+                    autocomplete="street-address"
+                    required>
                 </div>
 
-                <div>
-                  <label [for]="'admin_postal_code_' + $index">Código Postal *</label>
-                  <input type="text"
-                         [id]="'admin_postal_code_' + $index"
-                         [(ngModel)]="admin.postal_code"
-                         [name]="'admin_postal_code_' + $index"
-                         placeholder="28001"
-                         maxlength="5"
-                         required>
+                <!-- Campo código postal administrador -->
+                <div class="clients-register-field">
+                  <label [for]="'admin_postal_code_' + $index" class="clients-register-label">Código Postal *</label>
+                  <input
+                    type="text"
+                    [id]="'admin_postal_code_' + $index"
+                    [(ngModel)]="admin.postal_code"
+                    [name]="'admin_postal_code_' + $index"
+                    placeholder="28001"
+                    class="clients-register-input clients-register-postal"
+                    autocomplete="postal-code"
+                    pattern="[0-9]{5}"
+                    maxlength="5"
+                    required>
                 </div>
 
-                <div>
-                  <label [for]="'admin_location_' + $index">Localidad *</label>
-                  <input type="text"
-                         [id]="'admin_location_' + $index"
-                         [(ngModel)]="admin.location"
-                         [name]="'admin_location_' + $index"
-                         placeholder="Ciudad"
-                         required>
+                <!-- Campo localidad administrador -->
+                <div class="clients-register-field">
+                  <label [for]="'admin_location_' + $index" class="clients-register-label">Localidad *</label>
+                  <input
+                    type="text"
+                    [id]="'admin_location_' + $index"
+                    [(ngModel)]="admin.location"
+                    [name]="'admin_location_' + $index"
+                    placeholder="Madrid"
+                    class="clients-register-input"
+                    autocomplete="address-level2"
+                    required>
                 </div>
 
-                <div>
-                  <label [for]="'admin_province_' + $index">Provincia *</label>
-                  <input type="text"
-                         [id]="'admin_province_' + $index"
-                         [(ngModel)]="admin.province"
-                         [name]="'admin_province_' + $index"
-                         placeholder="Provincia"
-                         required>
+                <!-- Campo provincia administrador -->
+                <div class="clients-register-field">
+                  <label [for]="'admin_province_' + $index" class="clients-register-label">Provincia *</label>
+                  <input
+                    type="text"
+                    [id]="'admin_province_' + $index"
+                    [(ngModel)]="admin.province"
+                    [name]="'admin_province_' + $index"
+                    placeholder="Madrid"
+                    class="clients-register-input"
+                    autocomplete="address-level1"
+                    required>
                 </div>
 
-                <div>
-                  <label [for]="'admin_country_' + $index">País *</label>
-                  <input type="text"
-                         [id]="'admin_country_' + $index"
-                         [(ngModel)]="admin.country"
-                         [name]="'admin_country_' + $index"
-                         placeholder="País"
-                         required>
+                <!-- Campo país administrador -->
+                <div class="clients-register-field">
+                  <label [for]="'admin_country_' + $index" class="clients-register-label">País *</label>
+                  <input
+                    type="text"
+                    [id]="'admin_country_' + $index"
+                    [(ngModel)]="admin.country"
+                    [name]="'admin_country_' + $index"
+                    placeholder="España"
+                    class="clients-register-input"
+                    autocomplete="country-name"
+                    required>
                 </div>
               </div>
             </div>
@@ -314,16 +397,20 @@
         </div>
       }
 
-      <!-- Botón de envío con texto dinámico -->
-      <div style="text-align: center; margin-top: 2rem;">
-        <button type="submit" class="btn-success">
+      <!-- Botones de acción -->
+      <div class="clients-register-buttons">
+        <button type="submit" class="clients-register-btn-primary">
           @if (client.type_client === 'empresa') {
-            Crear Empresa
+            🏢 Crear Empresa
           } @else {
-            Crear Cliente
+            👤 Crear Cliente
           }
         </button>
+        <button type="button" class="clients-register-btn-secondary" (click)="goBack()">
+          ← Cancelar
+        </button>
       </div>
+
     </div>
   </form>
 </div>

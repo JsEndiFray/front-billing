@@ -1,26 +1,31 @@
 <!-- Listado y gestión de usuarios -->
-<div class="list-wrapper">
-  <h2>Listado de usuarios</h2>
+<div class="users-list-wrapper">
 
-  <!-- BARRA DE BÚSQUEDA -->
-  <div class="search-container">
+  <!-- Título principal -->
+  <h2 class="users-list-title">Listado de Usuarios</h2>
+
+  <!-- Sección de búsqueda -->
+  <div class="users-list-search-container">
+
     <!-- Campo de búsqueda con filtro en tiempo real -->
-    <div class="search-wrapper">
+    <div class="users-list-search-wrapper">
       <input
         type="text"
         [(ngModel)]="searchTerm"
         (input)="onSearchChange()"
-        placeholder="Buscar por nombre de usuario, email, telélfono y rol..."
-        class="search-input"
+        placeholder="Buscar por nombre de usuario, email, teléfono o rol..."
+        class="users-list-search-input"
+        autocomplete="off"
       >
+
       <!-- Iconos de búsqueda y limpiar -->
-      <div class="search-actions">
-        <span class="search-icon">🔍</span>
+      <div class="users-list-search-actions">
+        <span class="users-list-search-icon">🔍</span>
         @if (searchTerm && searchTerm.trim() !== '') {
           <button
             type="button"
             (click)="clearSearch()"
-            class="clear-button"
+            class="users-list-clear-button"
             title="Limpiar búsqueda"
           >
             ✕
@@ -28,63 +33,92 @@
         }
       </div>
     </div>
+
     <!-- Contador de resultados de búsqueda -->
     @if (searchTerm && searchTerm.trim() !== '') {
-      <div class="search-results-info">
-        <span>Mostrando {{ users.length }} de {{ allUsers.length }} Usuarios</span>
+      <div class="users-list-search-results">
+        <span>Mostrando {{ users.length }} de {{ allUsers.length }} usuarios</span>
       </div>
     }
   </div>
 
-  <!-- Tabla de usuarios -->
-  <table>
-    <!-- Encabezados de la tabla -->
-    <thead>
-    <tr>
-      <th>ID</th>
-      <th>Usuario</th>
-      <th>Contraseña</th>
-      <th>Email</th>
-      <th>Teléfono</th>
-      <th>Rol</th>
-      <th>Creado</th>
-      <th>Actualizado</th>
-      <th>Acciones</th>
-    </tr>
-    </thead>
+  <!-- Botón para nuevo usuario -->
+  <button type="button" class="users-list-btn-new" (click)="newUser()">
+    + Nuevo registro
+  </button>
 
-    <!-- Contenido de la tabla -->
-    <tbody>
-    <!-- Lista de usuarios existentes -->
-      @if (users && users.length > 0) {
-        @for (user of users; track user.id) {
+  <!-- Tabla de usuarios -->
+  <div class="users-list-table-container">
+    <table class="users-list-table">
+
+      <!-- Encabezados de la tabla -->
+      <thead class="users-list-table-head">
+      <tr>
+        <th class="users-list-th">ID</th>
+        <th class="users-list-th">Usuario</th>
+        <th class="users-list-th">Contraseña</th>
+        <th class="users-list-th">Email</th>
+        <th class="users-list-th">Teléfono</th>
+        <th class="users-list-th">Rol</th>
+        <th class="users-list-th">Creado</th>
+        <th class="users-list-th">Actualizado</th>
+        <th class="users-list-th">Acciones</th>
+      </tr>
+      </thead>
+
+      <!-- Contenido de la tabla -->
+      <tbody class="users-list-table-body">
+
+      <!-- Lista de usuarios existentes -->
+        @if (users && users.length > 0) {
+          @for (user of users; track user.id) {
+            <tr class="users-list-table-row">
+              <td class="users-list-td">{{ user.id }}</td>
+              <td class="users-list-td users-list-username">{{ user.username }}</td>
+              <td class="users-list-td users-list-password">{{ user.password }}</td>
+              <td class="users-list-td users-list-email">{{ user.email }}</td>
+              <td class="users-list-td">{{ user.phone }}</td>
+              <td class="users-list-td users-list-role">{{ user.role }}</td>
+              <td class="users-list-td">{{ user.date_create | dataFormat }}</td>
+              <td class="users-list-td">{{ user.date_update | dataFormat }}</td>
+
+              <!-- Botones de acción por usuario -->
+              <td class="users-list-td">
+                <button class="users-list-btn-edit" (click)="editUser(user.id!)">
+                  Editar
+                </button>
+                <button class="users-list-btn-delete" (click)="deleteUser(user.id!)">
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          }
+        } @else {
+
+          <!-- Estado cuando no hay usuarios -->
           <tr>
-            <td>{{ user.id }}</td>
-            <td>{{ user.username }}</td>
-            <td>{{ user.password }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.phone }}</td>
-            <td>{{ user.role }}</td>
-            <td>{{ user.date_create | dataFormat }}</td>
-            <td>{{ user.date_update | dataFormat }}</td>
-            <!-- Botones de acción por usuario -->
-            <td>
-              <button (click)="editUser(user.id!)">Editar</button>
-              <button (click)="deleteUser(user.id!)">Eliminar</button>
+            <td colspan="9" class="users-list-no-data">
+              <div class="users-list-empty-state">
+
+                <!-- Icono visual -->
+                <div class="users-list-empty-icon">👤</div>
+
+                <!-- Mensaje -->
+                <h3 class="users-list-empty-title">No hay usuarios registrados</h3>
+                <p class="users-list-empty-text">
+                  No hay usuarios disponibles en este momento.
+                </p>
+
+                <!-- Botón para crear nuevo usuario -->
+                <button class="users-list-btn-create" (click)="newUser()" type="button">
+                  + Nuevo registro
+                </button>
+              </div>
             </td>
           </tr>
         }
-      } @else {
-        <!-- Mensaje cuando no hay usuarios -->
-        <tr>
-          <td colspan="9" class="no-clients-cell">
-            <div class="no-clients-card">
-              <h3>Sin Usuarios</h3>
-              <p>No hay usuarios disponibles en este momento.</p>
-            </div>
-          </td>
-        </tr>
-      }
-    </tbody>
-  </table>
+
+      </tbody>
+    </table>
+  </div>
 </div>

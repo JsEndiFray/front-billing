@@ -1,17 +1,22 @@
 <!-- Formulario para registrar relaciones inmueble-propietario -->
-<div class="form-wrapper">
-  <h2>Registrar Porcentaje de la Propiedad</h2>
+<div class="estate-owners-register-wrapper">
 
-  <!-- Formulario con validación -->
-  <form (ngSubmit)="register()" #ownershipForm="ngForm">
+  <!-- Título del formulario -->
+  <h2 class="estate-owners-register-title">Registrar Porcentaje de Propiedad</h2>
+
+  <!-- Formulario principal con validación -->
+  <form (ngSubmit)="register()" #ownershipForm="ngForm" class="estate-owners-register-form">
+
+    <!-- Sección: Selección de elementos -->
 
     <!-- Campo selector de propiedad -->
-    <div>
-      <label for="estate">Propiedad *</label>
+    <div class="estate-owners-register-field">
+      <label for="estate" class="estate-owners-register-label">Propiedad *</label>
       <select
         [(ngModel)]="ownership.estate_id"
         name="estate_id"
         id="estate"
+        class="estate-owners-register-select"
         required>
         <option value="" disabled>Selecciona una propiedad</option>
         @if (loading) {
@@ -27,12 +32,13 @@
     </div>
 
     <!-- Campo selector de propietario -->
-    <div>
-      <label for="owner">Propietario *</label>
+    <div class="estate-owners-register-field">
+      <label for="owner" class="estate-owners-register-label">Propietario *</label>
       <select
         [(ngModel)]="ownership.owners_id"
         name="owners_id"
         id="owner"
+        class="estate-owners-register-select"
         required>
         <option value="" disabled>Selecciona un propietario</option>
         @if (loading) {
@@ -47,9 +53,11 @@
       </select>
     </div>
 
+    <!-- Sección: Porcentaje de propiedad -->
+
     <!-- Campo input de porcentaje -->
-    <div>
-      <label for="porcentaje">Porcentaje de la Propiedad (%) *</label>
+    <div class="estate-owners-register-field estate-owners-register-field-full">
+      <label for="porcentaje" class="estate-owners-register-label">Porcentaje de Propiedad (%) *</label>
       <input
         type="number"
         step="0.01"
@@ -59,24 +67,23 @@
         name="ownership_percentage"
         id="porcentaje"
         placeholder="50.00"
-        required />
-      <small>Ejemplo: 50.00 = 50%</small>
+        class="estate-owners-register-input estate-owners-register-percentage"
+        required
+      />
+      <small class="estate-owners-register-help">Ejemplo: 50.00 = 50% de la propiedad</small>
     </div>
 
     <!-- Botones de acción -->
-    <div class="button-group">
-      <button type="button" class="btn-secondary" (click)="goBack()">
-        ← Cancelar
-      </button>
-      <button
-        type="submit"
-        class="btn-primary"
-        [disabled]="!ownershipForm.valid || loading">
+    <div class="estate-owners-register-buttons">
+      <button type="submit" class="estate-owners-register-btn-primary" [disabled]="!ownershipForm.valid || loading">
         @if (loading) {
           ⏳ Registrando...
         } @else {
-          ✓ Registrar
+          ✓ Registrar Porcentaje
         }
+      </button>
+      <button type="button" class="estate-owners-register-btn-secondary" (click)="goBack()">
+        ← Cancelar
       </button>
     </div>
 

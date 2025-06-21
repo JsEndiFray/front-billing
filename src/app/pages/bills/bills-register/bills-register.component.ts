@@ -190,4 +190,8 @@ export class BillsRegisterComponent implements OnInit {
       }
     });
   };
+
+  goBack(){
+    this.router.navigate(['/dashboard/bills/list'])
+  }
 }

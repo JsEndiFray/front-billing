@@ -8,6 +8,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {NgClass} from '@angular/common';
 import {SearchService} from '../../../core/services/search-services/search.service';
 import Swal from 'sweetalert2';
+import { CommonModule } from '@angular/common';
 
 /**
  * Componente para mostrar y gestionar la lista de facturas
@@ -20,6 +21,7 @@ import Swal from 'sweetalert2';
     ReactiveFormsModule,
     FormsModule,
     NgClass,
+    CommonModule,
   ],
   templateUrl: './bills-list.component.html',
   styleUrl: './bills-list.component.css'

@@ -1,26 +1,31 @@
 <!-- Listado y gestión de propietarios -->
-<div class="list-wrapper">
-  <h2>Listado de Propietarios</h2>
+<div class="owners-wrapper">
 
-  <!-- Barra de búsqueda -->
-  <div class="search-container">
+  <!-- Título principal -->
+  <h2 class="owners-title">Listado de Propietarios</h2>
+
+  <!-- Sección de búsqueda -->
+  <div class="owners-search-container">
+
     <!-- Campo de búsqueda con filtro en tiempo real -->
-    <div class="search-wrapper">
+    <div class="owners-search-wrapper">
       <input
         type="text"
         [(ngModel)]="searchTerm"
         (input)="onSearchChange()"
-        placeholder="Busqueda por nombre, indentificacion, teléfono o NIF..."
-        class="search-input"
+        placeholder="Busqueda por nombre, identificación, teléfono o NIF..."
+        class="owners-search-input"
+        autocomplete="off"
       >
+
       <!-- Iconos de búsqueda y limpiar -->
-      <div class="search-actions">
-        <span class="search-icon">🔍</span>
+      <div class="owners-search-actions">
+        <span class="owners-search-icon">🔍</span>
         @if (searchTerm && searchTerm.trim() !== '') {
           <button
             type="button"
             (click)="clearSearch()"
-            class="clear-button"
+            class="owners-clear-button"
             title="Limpiar búsqueda"
           >
             ✕
@@ -28,61 +33,102 @@
         }
       </div>
     </div>
+
     <!-- Contador de resultados de búsqueda -->
     @if (searchTerm && searchTerm.trim() !== '') {
-      <div class="search-results-info">
-        <span>Mostrando {{ owners.length }} de {{ allOwners.length }} clientes</span>
+      <div class="owners-search-results">
+        <span>Mostrando {{ owners.length }} de {{ allOwners.length }} propietarios</span>
       </div>
     }
   </div>
 
-  <!-- Tabla de propietarios -->
-  <table>
-    <!-- Encabezados de la tabla -->
-    <thead>
-    <tr>
-      <th>ID</th>
-      <th>Nombre</th>
-      <th>Apellidos</th>
-      <th>Email</th>
-      <th>NIF</th>
-      <th>Teléfono</th>
-      <th>Dirección</th>
-      <th>C.P</th>
-      <th>Localidad</th>
-      <th>Provincia</th>
-      <th>Pais</th>
-      <th>Creado</th>
-      <th>Actualizado</th>
-      <th>Acciones</th>
-    </tr>
-    </thead>
+  <!-- Botón para nuevo registro -->
+  <button type="button" class="owners-btn-new" (click)="newOwners()">
+    + Nuevo registro
+  </button>
 
-    <!-- Contenido de la tabla -->
-    <tbody>
-    <!-- Lista de propietarios existentes -->
-      @for (owner of owners; track owner.id) {
-        <tr>
-          <td>{{ owner.id }}</td>
-          <td>{{ owner.name }}</td>
-          <td>{{ owner.lastname }}</td>
-          <td>{{ owner.email }}</td>
-          <td>{{ owner.identification }}</td>
-          <td>{{ owner.phone }}</td>
-          <td>{{ owner.address }}</td>
-          <td>{{ owner.postal_code }}</td>
-          <td>{{ owner.location }}</td>
-          <td>{{ owner.province }}</td>
-          <td>{{ owner.country }}</td>
-          <td>{{ owner.date_create | dataFormat }}</td>
-          <td>{{ owner.date_update | dataFormat }}</td>
-          <!-- Botones de acción por propietario -->
-          <td>
-            <button (click)="editOwner(owner.id!)">Editar</button>
-            <button (click)="deleteOwner(owner.id!)">Eliminar</button>
-          </td>
-        </tr>
-      }
-    </tbody>
-  </table>
+  <!-- Tabla de propietarios -->
+  <div class="owners-table-container">
+    <table class="owners-table">
+
+      <!-- Encabezados de la tabla -->
+      <thead class="owners-table-head">
+      <tr>
+        <th class="owners-th">ID</th>
+        <th class="owners-th">Nombre</th>
+        <th class="owners-th">Apellidos</th>
+        <th class="owners-th">Email</th>
+        <th class="owners-th">NIF</th>
+        <th class="owners-th">Teléfono</th>
+        <th class="owners-th">Dirección</th>
+        <th class="owners-th">C.P</th>
+        <th class="owners-th">Localidad</th>
+        <th class="owners-th">Provincia</th>
+        <th class="owners-th">País</th>
+        <th class="owners-th">Creado</th>
+        <th class="owners-th">Actualizado</th>
+        <th class="owners-th">Acciones</th>
+      </tr>
+      </thead>
+
+      <!-- Contenido de la tabla -->
+      <tbody class="owners-table-body">
+
+      <!-- Lista de propietarios existentes -->
+        @if(owners && owners.length > 0){
+          @for (owner of owners; track owner.id) {
+            <tr class="owners-table-row">
+              <td class="owners-td">{{ owner.id }}</td>
+              <td class="owners-td">{{ owner.name }}</td>
+              <td class="owners-td">{{ owner.lastname }}</td>
+              <td class="owners-td owners-email">{{ owner.email }}</td>
+              <td class="owners-td owners-nif">{{ owner.identification }}</td>
+              <td class="owners-td">{{ owner.phone }}</td>
+              <td class="owners-td">{{ owner.address }}</td>
+              <td class="owners-td">{{ owner.postal_code }}</td>
+              <td class="owners-td">{{ owner.location }}</td>
+              <td class="owners-td">{{ owner.province }}</td>
+              <td class="owners-td">{{ owner.country }}</td>
+              <td class="owners-td">{{ owner.date_create | dataFormat }}</td>
+              <td class="owners-td">{{ owner.date_update | dataFormat }}</td>
+
+              <!-- Botones de acción por propietario -->
+              <td class="owners-td">
+                <button class="owners-btn-edit" (click)="editOwner(owner.id!)">
+                  Editar
+                </button>
+                <button class="owners-btn-delete" (click)="deleteOwner(owner.id!)">
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          }
+        }@else {
+
+          <!-- Estado cuando no hay propietarios -->
+          <tr>
+            <td colspan="14" class="owners-no-data">
+              <div class="owners-empty-state">
+
+                <!-- Icono visual -->
+                <div class="owners-empty-icon">📄</div>
+
+                <!-- Mensaje -->
+                <h3 class="owners-empty-title">No hay registros</h3>
+                <p class="owners-empty-text">
+                  No hay propietarios disponibles en este momento.
+                </p>
+
+                <!-- Botón para crear nuevo registro -->
+                <button class="owners-btn-create" (click)="newOwners()" type="button">
+                  + Nuevo registro
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+
+      </tbody>
+    </table>
+  </div>
 </div>

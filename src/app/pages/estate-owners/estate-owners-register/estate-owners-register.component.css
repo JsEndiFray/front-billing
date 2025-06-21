@@ -1,7 +1,5 @@
-/* ESTATE OWNERS REGISTER - ESTILO MODERNO */
-
-/* CONTENEDOR PRINCIPAL */
-.form-wrapper {
+/* Contenedor principal del formulario */
+.estate-owners-register-wrapper {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 1rem;
   padding: 2.5rem;
@@ -11,8 +9,8 @@
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
 }
 
-/* TÍTULO PRINCIPAL */
-h2 {
+/* Título del formulario */
+.estate-owners-register-title {
   color: #1f2937;
   font-size: 2rem;
   font-weight: 700;
@@ -20,21 +18,27 @@ h2 {
   margin-bottom: 2rem;
 }
 
-/* FORMULARIO CON GRID */
-form {
+/* Formulario con diseño grid */
+.estate-owners-register-form {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
   gap: 1.5rem;
   align-items: start;
 }
 
-/* CAMPO PORCENTAJE OCUPA TODO EL ANCHO */
-form > div:has(label[for="porcentaje"]) {
+/* Campo que ocupa todo el ancho */
+.estate-owners-register-field-full {
   grid-column: 1 / -1;
 }
 
-/* LABELS */
-label {
+/* Contenedor de cada campo */
+.estate-owners-register-field {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Etiquetas de los campos */
+.estate-owners-register-label {
   color: #374151;
   font-weight: 600;
   font-size: 0.875rem;
@@ -42,8 +46,8 @@ label {
   display: block;
 }
 
-/* INPUTS Y SELECTS */
-input, select {
+/* Estilos base para inputs */
+.estate-owners-register-input {
   padding: 0.75rem;
   border: 0.0625rem solid #d1d5db;
   border-radius: 0.5rem;
@@ -55,25 +59,34 @@ input, select {
   box-sizing: border-box;
 }
 
-/* PLACEHOLDER */
-input::placeholder {
+/* Placeholder de los inputs */
+.estate-owners-register-input::placeholder {
   color: #9ca3af;
 }
 
-/* ESTADOS FOCUS */
-input:focus, select:focus {
+/* Estado focus de los inputs */
+.estate-owners-register-input:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* ESTADOS HOVER */
-input:hover:not(:focus), select:hover:not(:focus) {
+/* Estado hover de los inputs */
+.estate-owners-register-input:hover:not(:focus) {
   border-color: #9ca3af;
 }
 
-/* SELECT ESPECÍFICO */
-select {
+/* Estilos base para selects */
+.estate-owners-register-select {
+  padding: 0.75rem;
+  border: 0.0625rem solid #d1d5db;
+  border-radius: 0.5rem;
+  background: #ffffff;
+  color: #374151;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
   cursor: pointer;
   appearance: none;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
@@ -82,166 +95,203 @@ select {
   background-size: 1rem;
 }
 
-/* ESTILO ESPECIAL PARA PORCENTAJE */
-input[type="number"] {
+/* Estado focus de los selects */
+.estate-owners-register-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Estado hover de los selects */
+.estate-owners-register-select:hover:not(:focus) {
+  border-color: #9ca3af;
+}
+
+/* Estilo especial para campo de porcentaje */
+.estate-owners-register-percentage {
   color: #10b981;
   font-weight: 600;
   text-align: center;
+  font-size: 1.125rem;
 }
 
-/* ESTADOS DISABLED */
-select:disabled, input:disabled {
+/* Estados disabled para inputs y selects */
+.estate-owners-register-input:disabled,
+.estate-owners-register-select:disabled {
   background-color: #f9fafb;
   cursor: not-allowed;
   color: #9ca3af;
+  border-color: #e5e7eb;
 }
 
-/* TEXTO PEQUEÑO */
-small {
+/* Texto de ayuda */
+.estate-owners-register-help {
   color: #6b7280;
   font-size: 0.75rem;
   margin-top: 0.25rem;
   display: block;
+  text-align: center;
+  font-style: italic;
 }
 
-/* CONTENEDOR DE BOTONES */
-.button-group {
+/* Validación visual para campos inválidos */
+.estate-owners-register-input:invalid:not(:placeholder-shown),
+.estate-owners-register-select:invalid {
+  border-color: #ef4444;
+}
+
+/* Validación visual para campos válidos */
+.estate-owners-register-input:valid:not(:placeholder-shown) {
+  border-color: #10b981;
+}
+
+/* Contenedor de botones */
+.estate-owners-register-buttons {
   display: flex;
   gap: 1rem;
   justify-content: center;
-  margin-top: 1.5rem;
+  margin-top: 2rem;
   grid-column: 1 / -1;
 }
 
-/* BOTÓN PRINCIPAL */
-.btn-primary {
-  background: #3b82f6;
+/* Botón principal (registrar) */
+.estate-owners-register-btn-primary {
+  background: linear-gradient(135deg, #22c55e, #3b82f6);
   color: white;
   border: none;
-  border-radius: 0.5rem;
-  padding: 1rem 2rem;
+  border-radius: 0.375rem;
+  padding: 0.875rem 1.5rem;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
-/* HOVER BOTÓN PRINCIPAL */
-.btn-primary:hover:not(:disabled) {
-  background: #2563eb;
-  transform: translateY(-0.0625rem);
+/* Efecto hover para botón principal */
+.estate-owners-register-btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
 }
 
-/* DISABLED BOTÓN PRINCIPAL */
-.btn-primary:disabled {
+/* Estado disabled para botón principal */
+.estate-owners-register-btn-primary:disabled {
   background: #9ca3af;
   cursor: not-allowed;
   transform: none;
 }
 
-/* ACTIVE BOTÓN PRINCIPAL */
-.btn-primary:active {
+/* Efecto active para botón principal */
+.estate-owners-register-btn-primary:active:not(:disabled) {
   transform: translateY(0);
 }
 
-/* BOTÓN SECUNDARIO */
-.btn-secondary {
+/* Botón secundario (cancelar) */
+.estate-owners-register-btn-secondary {
   background: #f9fafb;
   color: #374151;
   border: 0.0625rem solid #d1d5db;
-  border-radius: 0.5rem;
+  border-radius: 0.375rem;
   padding: 0.875rem 1.5rem;
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-/* HOVER BOTÓN SECUNDARIO */
-.btn-secondary:hover {
+/* Efecto hover para botón secundario */
+.estate-owners-register-btn-secondary:hover {
   background: #f3f4f6;
   border-color: #9ca3af;
 }
 
-/* VALIDACIÓN VISUAL */
-input:invalid:not(:placeholder-shown) {
-  border-color: #ef4444;
-}
-
-input:valid:not(:placeholder-shown) {
-  border-color: #10b981;
-}
-
-select:invalid {
-  border-color: #ef4444;
-}
-
-/* RESPONSIVE TABLET */
+/* Responsive para tablet */
 @media (max-width: 48rem) {
-  .form-wrapper {
+  /* Ajustes del contenedor principal */
+  .estate-owners-register-wrapper {
     padding: 2rem;
     margin: 1.5rem auto;
     width: 95%;
   }
 
-  h2 {
+  /* Ajustes del título */
+  .estate-owners-register-title {
     font-size: 1.75rem;
     margin-bottom: 1.5rem;
   }
 
-  form {
+  /* Formulario en una sola columna */
+  .estate-owners-register-form {
     grid-template-columns: 1fr;
     gap: 1.25rem;
   }
 
-  form > div:has(label[for="porcentaje"]) {
+  /* Campo de porcentaje en una sola columna */
+  .estate-owners-register-field-full {
     grid-column: 1;
   }
 
-  input, select {
+  /* Ajustes de inputs y selects */
+  .estate-owners-register-input,
+  .estate-owners-register-select {
     padding: 0.6875rem;
   }
 
-  .btn-primary {
+  /* Ajustes de botones */
+  .estate-owners-register-btn-primary,
+  .estate-owners-register-btn-secondary {
     padding: 0.875rem 1.5rem;
     font-size: 0.875rem;
   }
 
-  .btn-secondary {
-    padding: 0.75rem 1.25rem;
-    font-size: 0.8125rem;
+  /* Botones en columna en pantallas pequeñas */
+  .estate-owners-register-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
   }
 }
 
-/* RESPONSIVE MÓVIL */
+/* Responsive para móvil */
 @media (max-width: 30rem) {
-  .form-wrapper {
+  /* Ajustes del contenedor principal */
+  .estate-owners-register-wrapper {
     padding: 1.5rem;
     margin: 1rem auto;
+    width: 95%;
   }
 
-  h2 {
+  /* Ajustes del título */
+  .estate-owners-register-title {
     font-size: 1.5rem;
     margin-bottom: 1.25rem;
   }
 
-  form {
+  /* Ajustes del formulario */
+  .estate-owners-register-form {
     gap: 1rem;
   }
 
-  input, select {
+  /* Ajustes de inputs y selects */
+  .estate-owners-register-input,
+  .estate-owners-register-select {
     padding: 0.625rem;
     font-size: 0.875rem;
   }
 
-  .button-group {
-    flex-direction: column;
-    align-items: center;
+  /* Ajustes del campo de porcentaje */
+  .estate-owners-register-percentage {
+    font-size: 1rem;
   }
 
-  .btn-primary, .btn-secondary {
+  /* Ajustes de botones */
+  .estate-owners-register-btn-primary,
+  .estate-owners-register-btn-secondary {
     padding: 0.75rem 1.25rem;
     font-size: 0.875rem;
     width: 100%;
+  }
+
+  /* Botones de ancho completo */
+  .estate-owners-register-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
   }
 }

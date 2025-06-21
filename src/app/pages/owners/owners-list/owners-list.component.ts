@@ -131,4 +131,8 @@ export class OwnersListComponent implements OnInit {
       }
     })
   }
+
+  newOwners(){
+    this.router.navigate(['/dashboard/owners/register'])
+  }
 }

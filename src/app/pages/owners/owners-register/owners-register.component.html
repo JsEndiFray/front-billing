@@ -1,50 +1,178 @@
 <!-- Formulario de registro de nuevos propietarios -->
-<div class="form-wrapper">
-  <h2>Registrar Propietario</h2>
-  <form (ngSubmit)="createOwners()">
+<div class="owners-register-wrapper">
+
+  <!-- Título del formulario -->
+  <h2 class="owners-register-title">Registrar Propietario</h2>
+
+  <!-- Formulario principal -->
+  <form (ngSubmit)="createOwners()" class="owners-register-form">
+
+    <!-- Sección: Datos personales -->
 
     <!-- Campo nombre -->
-    <label for="name">Nombre</label>
-    <input type="text" [(ngModel)]="owner.name" name="nombre" id="name"/>
+    <div class="owners-register-field">
+      <label for="name" class="owners-register-label">Nombre</label>
+      <input
+        type="text"
+        [(ngModel)]="owner.name"
+        name="name"
+        id="name"
+        placeholder="Ingresa el nombre"
+        class="owners-register-input"
+        autocomplete="given-name"
+        required
+      />
+    </div>
 
     <!-- Campo apellidos -->
-    <label for="lastname">Apellidos</label>
-    <input type="text" [(ngModel)]="owner.lastname" name="apellidos" id="lastname"/>
+    <div class="owners-register-field">
+      <label for="lastname" class="owners-register-label">Apellidos</label>
+      <input
+        type="text"
+        [(ngModel)]="owner.lastname"
+        name="lastname"
+        id="lastname"
+        placeholder="Ingresa los apellidos"
+        class="owners-register-input"
+        autocomplete="family-name"
+        required
+      />
+    </div>
+
+    <!-- Sección: Datos de contacto -->
 
     <!-- Campo email -->
-    <label for="email">Email</label>
-    <input type="email" [(ngModel)]="owner.email" name="email" id="email"/>
+    <div class="owners-register-field">
+      <label for="email" class="owners-register-label">Email</label>
+      <input
+        type="email"
+        [(ngModel)]="owner.email"
+        name="email"
+        id="email"
+        placeholder="ejemplo@correo.com"
+        class="owners-register-input owners-register-email"
+        autocomplete="email"
+        required
+      />
+    </div>
 
     <!-- Campo identificación -->
-    <label for="identification">NIF</label>
-    <input type="text" [(ngModel)]="owner.identification" name="identification" id="identification"/>
+    <div class="owners-register-field">
+      <label for="identification" class="owners-register-label">NIF</label>
+      <input
+        type="text"
+        [(ngModel)]="owner.identification"
+        name="identification"
+        id="identification"
+        placeholder="12345678A"
+        class="owners-register-input owners-register-nif"
+        required
+      />
+    </div>
 
     <!-- Campo teléfono -->
-    <label for="phone">Teléfono</label>
-    <input type="text" [(ngModel)]="owner.phone " name="phone" id="phone"/>
+    <div class="owners-register-field">
+      <label for="phone" class="owners-register-label">Teléfono</label>
+      <input
+        type="tel"
+        [(ngModel)]="owner.phone"
+        name="phone"
+        id="phone"
+        placeholder="+34 123 456 789"
+        class="owners-register-input"
+        autocomplete="tel"
+        required
+      />
+    </div>
 
-    <!-- Campo dirección -->
-    <label for="address">Dirección</label>
-    <input type="text" [(ngModel)]="owner.address" name="direccion" id="address"/>
+    <!-- Sección: Dirección -->
+
+    <!-- Campo dirección completa -->
+    <div class="owners-register-field owners-register-field-full">
+      <label for="address" class="owners-register-label">Dirección</label>
+      <input
+        type="text"
+        [(ngModel)]="owner.address"
+        name="address"
+        id="address"
+        placeholder="Calle, número, piso, puerta"
+        class="owners-register-input"
+        autocomplete="street-address"
+        required
+      />
+    </div>
 
     <!-- Campo código postal -->
-    <label for="posta_code">Código Postal</label>
-    <input type="text" [(ngModel)]="owner.postal_code" name="codigoPostal" id="posta_code"/>
+    <div class="owners-register-field">
+      <label for="postal_code" class="owners-register-label">Código Postal</label>
+      <input
+        type="text"
+        [(ngModel)]="owner.postal_code"
+        name="postal_code"
+        id="postal_code"
+        placeholder="28001"
+        class="owners-register-input owners-register-postal"
+        autocomplete="postal-code"
+        pattern="[0-9]{5}"
+        maxlength="5"
+        required
+      />
+    </div>
 
     <!-- Campo localidad -->
-    <label for="location">Localidad</label>
-    <input type="text" [(ngModel)]="owner.location" name="localidad" id="location"/>
+    <div class="owners-register-field">
+      <label for="location" class="owners-register-label">Localidad</label>
+      <input
+        type="text"
+        [(ngModel)]="owner.location"
+        name="location"
+        id="location"
+        placeholder="Madrid"
+        class="owners-register-input"
+        autocomplete="address-level2"
+        required
+      />
+    </div>
 
     <!-- Campo provincia -->
-    <label for="province">Provincia</label>
-    <input type="text" [(ngModel)]="owner.province" name="provincia" id="province"/>
+    <div class="owners-register-field">
+      <label for="province" class="owners-register-label">Provincia</label>
+      <input
+        type="text"
+        [(ngModel)]="owner.province"
+        name="province"
+        id="province"
+        placeholder="Madrid"
+        class="owners-register-input"
+        autocomplete="address-level1"
+        required
+      />
+    </div>
 
     <!-- Campo país -->
-    <label for="country">País</label>
-    <input type="text" [(ngModel)]="owner.country" name="pais" id="country"/>
+    <div class="owners-register-field">
+      <label for="country" class="owners-register-label">País</label>
+      <input
+        type="text"
+        [(ngModel)]="owner.country"
+        name="country"
+        id="country"
+        placeholder="España"
+        class="owners-register-input"
+        autocomplete="country-name"
+        required
+      />
+    </div>
 
-    <!-- Botón de registro -->
-    <button type="submit">Registrar Propietario</button>
+    <!-- Botones de acción -->
+    <div class="owners-register-buttons">
+      <button type="submit" class="owners-register-btn-primary">
+        Registrar Propietario
+      </button>
+      <button type="button" class="owners-register-btn-secondary" (click)="goBack()">
+        ← Cancelar
+      </button>
+    </div>
 
   </form>
 </div>

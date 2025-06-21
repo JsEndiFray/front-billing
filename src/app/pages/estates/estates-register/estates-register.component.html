@@ -1,111 +1,141 @@
 <!-- Formulario de registro de nuevas propiedades inmobiliarias -->
-<div class="form-wrapper">
-  <h2>Registrar Propiedad</h2>
+<div class="estates-register-wrapper">
 
-  <form (ngSubmit)="createEstate()">
+  <!-- Título del formulario -->
+  <h2 class="estates-register-title">Registrar Propiedad</h2>
+
+  <!-- Formulario principal -->
+  <form (ngSubmit)="createEstate()" class="estates-register-form">
+
+    <!-- Sección: Identificación de la propiedad -->
+
     <!-- Campo referencia catastral -->
-    <div>
-      <label for="referencia">Referencia Catastral</label>
+    <div class="estates-register-field estates-register-field-full">
+      <label for="referencia" class="estates-register-label">Referencia Catastral</label>
       <input
         type="text"
         [(ngModel)]="estate.cadastral_reference"
-        name="referencia"
+        name="cadastral_reference"
         id="referencia"
         placeholder="Ej: 1234567AB0001XX"
+        class="estates-register-input estates-register-reference"
         required>
     </div>
 
     <!-- Campo precio -->
-    <div>
-      <label for="price">Precio (€)</label>
+    <div class="estates-register-field">
+      <label for="price" class="estates-register-label">Precio (€)</label>
       <input
         type="number"
         [(ngModel)]="estate.price"
-        name="precio"
+        name="price"
         id="price"
         placeholder="250000"
+        class="estates-register-input estates-register-price"
         min="0"
         step="1000"
         required>
     </div>
 
-    <!-- Campo dirección -->
-    <div>
-      <label for="address">Dirección</label>
-      <input
-        type="text"
-        [(ngModel)]="estate.address"
-        name="direccion"
-        id="address"
-        placeholder="Calle Principal 123, 2º A"
-        required>
-    </div>
-
-    <!-- Campo código postal -->
-    <div>
-      <label for="postal_code">Código Postal</label>
-      <input
-        type="text"
-        [(ngModel)]="estate.postal_code"
-        name="codigoPostal"
-        id="postal_code"
-        placeholder="28001"
-        pattern="[0-9]{5}"
-        required>
-    </div>
-
-    <!-- Campo localidad -->
-    <div>
-      <label for="location">Localidad</label>
-      <input
-        type="text"
-        [(ngModel)]="estate.location"
-        name="localidad"
-        id="location"
-        placeholder="Madrid"
-        required>
-    </div>
-
-    <!-- Campo provincia -->
-    <div>
-      <label for="province">Provincia</label>
-      <input
-        type="text"
-        [(ngModel)]="estate.province"
-        name="provincia"
-        id="province"
-        placeholder="Madrid"
-        required>
-    </div>
-
-    <!-- Campo país -->
-    <div>
-      <label for="country">País</label>
-      <input
-        type="text"
-        [(ngModel)]="estate.country"
-        name="pais"
-        id="country"
-        placeholder="España"
-        value="España"
-        required>
-    </div>
-
     <!-- Campo superficie -->
-    <div>
-      <label for="surface">Superficie (m²)</label>
+    <div class="estates-register-field">
+      <label for="surface" class="estates-register-label">Superficie (m²)</label>
       <input
         type="number"
         [(ngModel)]="estate.surface"
-        name="superficie"
+        name="surface"
         id="surface"
         placeholder="120"
+        class="estates-register-input estates-register-surface"
         min="1"
         step="1"
         required>
     </div>
 
-    <!-- Botón de registro -->
-    <button type="submit">Registrar Propiedad</button>
+    <!-- Sección: Dirección -->
+
+    <!-- Campo dirección completa -->
+    <div class="estates-register-field estates-register-field-full">
+      <label for="address" class="estates-register-label">Dirección</label>
+      <input
+        type="text"
+        [(ngModel)]="estate.address"
+        name="address"
+        id="address"
+        placeholder="Calle Principal 123, 2º A"
+        class="estates-register-input"
+        autocomplete="street-address"
+        required>
+    </div>
+
+    <!-- Campo código postal -->
+    <div class="estates-register-field">
+      <label for="postal_code" class="estates-register-label">Código Postal</label>
+      <input
+        type="text"
+        [(ngModel)]="estate.postal_code"
+        name="postal_code"
+        id="postal_code"
+        placeholder="28001"
+        class="estates-register-input estates-register-postal"
+        autocomplete="postal-code"
+        pattern="[0-9]{5}"
+        maxlength="5"
+        required>
+    </div>
+
+    <!-- Campo localidad -->
+    <div class="estates-register-field">
+      <label for="location" class="estates-register-label">Localidad</label>
+      <input
+        type="text"
+        [(ngModel)]="estate.location"
+        name="location"
+        id="location"
+        placeholder="Madrid"
+        class="estates-register-input"
+        autocomplete="address-level2"
+        required>
+    </div>
+
+    <!-- Campo provincia -->
+    <div class="estates-register-field">
+      <label for="province" class="estates-register-label">Provincia</label>
+      <input
+        type="text"
+        [(ngModel)]="estate.province"
+        name="province"
+        id="province"
+        placeholder="Madrid"
+        class="estates-register-input"
+        autocomplete="address-level1"
+        required>
+    </div>
+
+    <!-- Campo país -->
+    <div class="estates-register-field">
+      <label for="country" class="estates-register-label">País</label>
+      <input
+        type="text"
+        [(ngModel)]="estate.country"
+        name="country"
+        id="country"
+        placeholder="España"
+        class="estates-register-input"
+        autocomplete="country-name"
+        value="España"
+        required>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="estates-register-buttons">
+      <button type="submit" class="estates-register-btn-primary">
+        Registrar Propiedad
+      </button>
+      <button type="button" class="estates-register-btn-secondary" (click)="goBack()">
+        ← Cancelar
+      </button>
+    </div>
+
   </form>
 </div>

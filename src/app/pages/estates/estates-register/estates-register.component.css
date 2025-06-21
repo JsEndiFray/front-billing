@@ -1,5 +1,5 @@
-/* CONTENEDOR PRINCIPAL */
-.form-wrapper {
+/* Contenedor principal del formulario */
+.estates-register-wrapper {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 1rem;
   padding: 2.5rem;
@@ -9,8 +9,8 @@
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
 }
 
-/* TÍTULO PRINCIPAL */
-h2 {
+/* Título del formulario */
+.estates-register-title {
   color: #1f2937;
   font-size: 2rem;
   font-weight: 700;
@@ -18,22 +18,27 @@ h2 {
   margin-bottom: 2rem;
 }
 
-/* FORMULARIO CON GRID */
-form {
+/* Formulario con diseño grid */
+.estates-register-form {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
   gap: 1.5rem;
   align-items: start;
 }
 
-/* CAMPOS QUE OCUPAN TODO EL ANCHO */
-form > div:has(label[for="address"]),
-form > div:has(label[for="referencia"]) {
+/* Campos que ocupan todo el ancho */
+.estates-register-field-full {
   grid-column: 1 / -1;
 }
 
-/* LABELS */
-label {
+/* Contenedor de cada campo */
+.estates-register-field {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Etiquetas de los campos */
+.estates-register-label {
   color: #374151;
   font-weight: 600;
   font-size: 0.875rem;
@@ -41,8 +46,8 @@ label {
   display: block;
 }
 
-/* INPUTS */
-input {
+/* Estilos base para inputs */
+.estates-register-input {
   padding: 0.75rem;
   border: 0.0625rem solid #d1d5db;
   border-radius: 0.5rem;
@@ -51,114 +56,199 @@ input {
   font-size: 1rem;
   transition: all 0.2s ease;
   width: 100%;
+  box-sizing: border-box;
 }
 
-/* PLACEHOLDER */
-input::placeholder {
+/* Placeholder de los inputs */
+.estates-register-input::placeholder {
   color: #9ca3af;
 }
 
-/* ESTADOS FOCUS */
-input:focus {
+/* Estado focus de los inputs */
+.estates-register-input:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* ESTADOS HOVER */
-input:hover:not(:focus) {
+/* Estado hover de los inputs */
+.estates-register-input:hover:not(:focus) {
   border-color: #9ca3af;
 }
 
-/* CAMPOS ESPECIALES NUMÉRICOS */
-input[type="number"] {
-  color: #10b981;
+/* Estilo especial para referencia catastral */
+.estates-register-reference {
+  color: #6366f1;
   font-weight: 600;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
 }
 
-/* BOTÓN PRINCIPAL */
-button[type="submit"] {
-  background: #3b82f6;
+/* Estilo especial para campos de precio */
+.estates-register-price {
+  color: #10b981;
+  font-weight: 600;
+  text-align: right;
+}
+
+/* Estilo especial para superficie */
+.estates-register-surface {
+  color: #f59e0b;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Estilo especial para código postal */
+.estates-register-postal {
+  color: #6b7280;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+}
+
+/* Validación visual para campos inválidos */
+.estates-register-input:invalid:not(:placeholder-shown) {
+  border-color: #ef4444;
+}
+
+/* Validación visual para campos válidos */
+.estates-register-input:valid:not(:placeholder-shown) {
+  border-color: #10b981;
+}
+
+/* Contenedor de botones */
+.estates-register-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+  grid-column: 1 / -1;
+}
+
+/* Botón principal (registrar) */
+.estates-register-btn-primary {
+  background: linear-gradient(135deg, #22c55e, #3b82f6);
   color: white;
   border: none;
-  border-radius: 0.5rem;
-  padding: 1rem 2rem;
+  border-radius: 0.375rem;
+  padding: 0.875rem 1.5rem;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  grid-column: 1 / -1;
-  justify-self: center;
-  margin-top: 1rem;
+  transition: transform 0.2s ease;
 }
 
-/* HOVER BOTÓN */
-button[type="submit"]:hover {
-  background: #2563eb;
-  transform: translateY(-0.0625rem);
+/* Efecto hover para botón principal */
+.estates-register-btn-primary:hover {
+  transform: translateY(-1px);
 }
 
-/* ACTIVE BOTÓN */
-button[type="submit"]:active {
+/* Efecto active para botón principal */
+.estates-register-btn-primary:active {
   transform: translateY(0);
 }
 
-/* RESPONSIVE TABLET */
+/* Botón secundario (cancelar) */
+.estates-register-btn-secondary {
+  background: #f9fafb;
+  color: #374151;
+  border: 0.0625rem solid #d1d5db;
+  border-radius: 0.375rem;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Efecto hover para botón secundario */
+.estates-register-btn-secondary:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+/* Responsive para tablet */
 @media (max-width: 48rem) {
-  .form-wrapper {
+  /* Ajustes del contenedor principal */
+  .estates-register-wrapper {
     padding: 2rem;
     margin: 1.5rem auto;
     width: 95%;
   }
 
-  h2 {
+  /* Ajustes del título */
+  .estates-register-title {
     font-size: 1.75rem;
     margin-bottom: 1.5rem;
   }
 
-  form {
+  /* Formulario en una sola columna */
+  .estates-register-form {
     grid-template-columns: 1fr;
     gap: 1.25rem;
   }
 
-  form > div:has(label[for="address"]),
-  form > div:has(label[for="referencia"]) {
+  /* Campos de ancho completo en una sola columna */
+  .estates-register-field-full {
     grid-column: 1;
   }
 
-  input {
+  /* Ajustes de inputs */
+  .estates-register-input {
     padding: 0.6875rem;
   }
 
-  button[type="submit"] {
+  /* Ajustes de botones */
+  .estates-register-btn-primary,
+  .estates-register-btn-secondary {
     padding: 0.875rem 1.5rem;
     font-size: 0.875rem;
   }
+
+  /* Botones en columna en pantallas pequeñas */
+  .estates-register-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
 }
 
-/* RESPONSIVE MÓVIL */
+/* Responsive para móvil */
 @media (max-width: 30rem) {
-  .form-wrapper {
+  /* Ajustes del contenedor principal */
+  .estates-register-wrapper {
     padding: 1.5rem;
     margin: 1rem auto;
+    width: 95%;
   }
 
-  h2 {
+  /* Ajustes del título */
+  .estates-register-title {
     font-size: 1.5rem;
     margin-bottom: 1.25rem;
   }
 
-  form {
+  /* Ajustes del formulario */
+  .estates-register-form {
     gap: 1rem;
   }
 
-  input {
+  /* Ajustes de inputs */
+  .estates-register-input {
     padding: 0.625rem;
     font-size: 0.875rem;
   }
 
-  button[type="submit"] {
+  /* Ajustes de botones */
+  .estates-register-btn-primary,
+  .estates-register-btn-secondary {
     padding: 0.75rem 1.25rem;
     font-size: 0.875rem;
+    width: 100%;
+  }
+
+  /* Botones de ancho completo */
+  .estates-register-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
   }
 }

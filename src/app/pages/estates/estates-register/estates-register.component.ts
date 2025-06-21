@@ -78,4 +78,8 @@ export class EstatesRegisterComponent {
       }
     })
   }
+
+  goBack(){
+    this.router.navigate(['/dashboard/estates/list'])
+  }
 }

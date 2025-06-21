@@ -5,6 +5,8 @@ import {EstateOwnersService} from '../../../core/services/estate-owners-services
 import {Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
+import {FormsModule} from '@angular/forms';
+import {SearchService} from '../../../core/services/search-services/search.service';
 
 /**
  * Componente para mostrar la lista de relaciones inmueble-propietario
@@ -13,7 +15,8 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-estate-owners-list',
   imports: [
-    DataFormatPipe
+    DataFormatPipe,
+    FormsModule
   ],
   templateUrl: './estate-owners-list.component.html',
   styleUrl: './estate-owners-list.component.css'
@@ -23,9 +26,16 @@ export class EstateOwnersListComponent implements OnInit {
   // Lista de relaciones inmueble-propietario que se muestra en la tabla
   estateOwners: EstatesOwners[] = [];
 
+// Lista completa de propietarios y propiedades (datos originales sin filtrar)
+  allEstateOwners: EstatesOwners[] = [];
+
+// Texto que escribe el usuario para buscar
+  searchTerm: string = '';
+
   constructor(
     private estateOwnersService: EstateOwnersService,
     private router: Router,
+    private searchService: SearchService,
   ) {
   }
 
@@ -56,6 +66,32 @@ export class EstateOwnersListComponent implements OnInit {
    */
   editEstateOwners(id: number) {
     this.router.navigate(['/dashboard/estates-owners/edit', id])
+  }
+
+  /**
+   * Filtra la lista de porcentajes según el texto de búsqueda
+   * Busca en: propietario y direccion, identificación y teléfono
+   */
+  filterOwners() {
+    this.estateOwners = this.searchService.filterData(
+      this.allEstateOwners,
+      this.searchTerm,
+      ['owners_id', 'estate_id']
+    )
+  }
+
+  /**
+   * Limpia el filtro de búsqueda y muestra todo el porcentajes
+   */
+  clearSearch() {
+    this.searchTerm = '';
+    this.filterOwners();
+  }
+  /**
+   * Se ejecuta cada vez que el usuario escribe en el buscador
+   */
+  onSearchChange() {
+    this.filterOwners();
   }
 
   /**
@@ -90,5 +126,9 @@ export class EstateOwnersListComponent implements OnInit {
         })
       }
     })
+  }
+
+  newEstateOwner() {
+    this.router.navigate(['/dashboard/estates-owners/register'])
   }
 }

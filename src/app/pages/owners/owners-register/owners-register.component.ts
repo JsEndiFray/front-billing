@@ -79,4 +79,7 @@ export class OwnersRegisterComponent {
       }
     })
   }
+  goBack(){
+    this.router.navigate(['/dashboard/owners/list'])
+  }
 }

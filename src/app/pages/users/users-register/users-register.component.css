@@ -1,41 +1,49 @@
-/* Contenedor principal centrado en pantalla con fondo degradado multicolor */
-.register-wrapper {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #091257 0%, #0d3f8f 50%, #2b104e 100%);
-  padding: 1rem;
+/* Contenedor principal del formulario */
+.users-register-wrapper {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 1rem;
+  padding: 2.5rem;
+  margin: 2rem auto;
+  max-width: 50rem;
+  width: 90%;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
 }
 
-/* Caja del formulario con fondo blanco, bordes redondeados y sombra suave */
-.register-container {
-  background: white;
-  border-radius: 0.75rem;
-  padding: 2rem;
+/* Caja del formulario */
+.users-register-container {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
   width: 100%;
-  max-width: 26.25rem;
-  box-shadow: 0 0.625rem 1.5625rem rgba(0,0,0,0.15);
+  max-width: none;
+  box-shadow: none;
 }
 
-/* Título centrado con tamaño grande y color oscuro */
-h1 {
-  color: #2d3748;
-  font-size: 1.75rem;
+/* Título del formulario */
+.users-register-title {
+  color: #1f2937;
+  font-size: 2rem;
   font-weight: 700;
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-/* Formulario en columna con separación entre campos */
-form {
+/* Contenedor del formulario */
+.users-register-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* Contenedor de cada campo */
+.users-register-field {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
 }
 
-/* Etiquetas con color gris oscuro, tamaño pequeño y margen inferior */
-label {
+/* Etiquetas de los campos */
+.users-register-label {
   color: #4a5568;
   font-weight: 500;
   font-size: 0.875rem;
@@ -43,8 +51,8 @@ label {
   display: block;
 }
 
-/* Estilo común para inputs y selects: padding, borde suave y fondo blanco */
-input, select {
+/* Estilos base para inputs */
+.users-register-input {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid #e2e8f0;
@@ -52,62 +60,162 @@ input, select {
   font-size: 1rem;
   transition: border-color 0.2s ease;
   background: white;
+  box-sizing: border-box;
 }
 
-/* Efecto visual al enfocar input o select: borde azul y sombra suave */
-input:focus, select:focus {
+/* Estado de focus para inputs */
+.users-register-input:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 0.1875rem rgba(59, 130, 246, 0.1);
 }
 
-/* Estilo adicional para select: icono personalizado y cursor tipo botón */
-select {
+/* Estilos específicos para select */
+.users-register-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+  background: white;
   cursor: pointer;
   appearance: none;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
   background-position: right 0.75rem center;
   background-repeat: no-repeat;
   background-size: 1rem;
+  box-sizing: border-box;
 }
 
-/* Botón de enviar con degradado, texto blanco y efecto de elevación al hacer hover */
-button[type="submit"] {
+/* Estado de focus para select */
+.users-register-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 0.1875rem rgba(59, 130, 246, 0.1);
+}
+
+/* Contenedor de botones */
+.users-register-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+  grid-column: 1 / -1;
+}
+
+/* Botón principal (registrar) */
+.users-register-btn-primary {
   background: linear-gradient(135deg, #22c55e, #3b82f6);
   color: white;
   border: none;
   border-radius: 0.375rem;
-  padding: 0.875rem;
+  padding: 0.875rem 1.5rem;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  margin-top: 0.5rem;
   transition: transform 0.2s ease;
 }
 
-/* Eleva el botón ligeramente al pasar el cursor */
-button[type="submit"]:hover {
+/* Efecto hover para botón principal */
+.users-register-btn-primary:hover {
   transform: translateY(-1px);
 }
 
-/* =======================
-   Ajustes Responsive
-   ======================= */
+/* Efecto active para botón principal */
+.users-register-btn-primary:active {
+  transform: translateY(0);
+}
 
-/* Reduce el padding y margen del formulario en móviles */
+/* Botón secundario (cancelar) */
+.users-register-btn-secondary {
+  background: #f9fafb;
+  color: #374151;
+  border: 0.0625rem solid #d1d5db;
+  border-radius: 0.375rem;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Efecto hover para botón secundario */
+.users-register-btn-secondary:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+/* Responsive para tablet */
+@media (max-width: 48rem) {
+  /* Ajustes del contenedor principal */
+  .users-register-wrapper {
+    padding: 2rem;
+    margin: 1.5rem auto;
+    width: 95%;
+  }
+
+  /* Ajustes del título */
+  .users-register-title {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Formulario en una sola columna */
+  .users-register-form {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  /* Ajustes de inputs */
+  .users-register-input,
+  .users-register-select {
+    padding: 0.6875rem;
+  }
+
+  /* Botones en columna en pantallas pequeñas */
+  .users-register-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+/* Responsive para móviles */
 @media (max-width: 30rem) {
-  .register-container {
+  /* Ajustes del contenedor en móviles */
+  .users-register-wrapper {
     padding: 1.5rem;
-    margin: 1rem;
+    margin: 1rem auto;
+    width: 95%;
   }
 
-  /* Reduce el tamaño del título en móviles */
-  h1 {
+  /* Ajustes del título en móviles */
+  .users-register-title {
     font-size: 1.5rem;
+    margin-bottom: 1.25rem;
   }
 
-  /* Reduce el espacio entre campos en móviles */
-  form {
+  /* Ajustes del formulario en móviles */
+  .users-register-form {
     gap: 1rem;
+  }
+
+  /* Ajustes de inputs en móviles */
+  .users-register-input,
+  .users-register-select {
+    padding: 0.625rem;
+    font-size: 0.875rem;
+  }
+
+  /* Ajustes de botones en móviles */
+  .users-register-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  /* Botones de ancho completo en móviles */
+  .users-register-btn-primary,
+  .users-register-btn-secondary {
+    width: 100%;
   }
 }

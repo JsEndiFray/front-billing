@@ -1,80 +1,115 @@
-<!-- Formulario de registro de nuevos usuarios -->
-<div class="register-wrapper">
-  <div class="register-container">
-    <h1>Registrar nuevo usuario</h1>
+<!-- Formulario de registro de usuarios -->
+<div class="users-register-wrapper">
+  <div class="users-register-container">
 
-    <form (ngSubmit)="registerUser()">
-      <!-- Campo nombre de usuario -->
-      <div>
-        <label for="username">Usuario</label>
+    <!-- Título del formulario -->
+    <h1 class="users-register-title">Registrar nuevo usuario</h1>
+
+    <!-- Formulario principal -->
+    <form (ngSubmit)="registerUser()" class="users-register-form">
+
+      <!-- Sección: Datos de acceso -->
+
+      <!-- Campo: Nombre de usuario -->
+      <div class="users-register-field">
+        <label for="username" class="users-register-label">Usuario</label>
         <input
           type="text"
           id="username"
           [(ngModel)]="user.username"
           name="username"
           placeholder="Ingresa el nombre de usuario"
+          class="users-register-input"
+          autocomplete="username"
           required>
       </div>
 
-      <!-- Campo correo electrónico -->
-      <div>
-        <label for="email">Correo electrónico</label>
+      <!-- Campo: Correo electrónico -->
+      <div class="users-register-field">
+        <label for="email" class="users-register-label">Correo electrónico</label>
         <input
           type="email"
           id="email"
           [(ngModel)]="user.email"
           name="email"
           placeholder="ejemplo@correo.com"
+          class="users-register-input"
+          autocomplete="email"
           required>
       </div>
 
-      <!-- Campo contraseña -->
-      <div>
-        <label for="password">Contraseña</label>
+      <!-- Sección: Contraseñas -->
+
+      <!-- Campo: Contraseña principal -->
+      <div class="users-register-field">
+        <label for="password" class="users-register-label">Contraseña</label>
         <input
           type="password"
           id="password"
           [(ngModel)]="user.password"
           name="password"
           placeholder="Mínimo 6 caracteres"
+          class="users-register-input"
+          autocomplete="new-password"
+          minlength="6"
           required>
       </div>
 
-      <!-- Campo confirmación de contraseña -->
-      <div>
-        <label for="confirm_password">Confirmar Contraseña</label>
+      <!-- Campo: Confirmación de contraseña -->
+      <div class="users-register-field">
+        <label for="confirm_password" class="users-register-label">Confirmar Contraseña</label>
         <input
           type="password"
           id="confirm_password"
           [(ngModel)]="user.confirm_password"
           name="confirm_password"
           placeholder="Repite la contraseña"
+          class="users-register-input"
+          autocomplete="new-password"
+          minlength="6"
           required>
       </div>
 
-      <!-- Campo teléfono -->
-      <div>
-        <label for="phone">Teléfono</label>
+      <!-- Sección: Información adicional -->
+
+      <!-- Campo: Número de teléfono -->
+      <div class="users-register-field">
+        <label for="phone" class="users-register-label">Teléfono</label>
         <input
           type="tel"
           id="phone"
           [(ngModel)]="user.phone"
           name="phone"
           placeholder="+34 123 456 789"
+          class="users-register-input"
+          autocomplete="tel"
           required>
       </div>
 
-      <!-- Campo rol del usuario -->
-      <div>
-        <label for="role">Rol</label>
-        <select id="role" [(ngModel)]="user.role" name="role" required>
+      <!-- Campo: Rol del usuario -->
+      <div class="users-register-field">
+        <label for="role" class="users-register-label">Rol</label>
+        <select
+          id="role"
+          [(ngModel)]="user.role"
+          name="role"
+          class="users-register-select"
+          required>
           <option value="">Selecciona un rol</option>
           <option value="empleado">Empleado</option>
         </select>
       </div>
 
-      <!-- Botón de registro -->
-      <button type="submit">Registrar Usuario</button>
+      <!-- Botones de acción -->
+      <div class="users-register-buttons">
+        <button type="submit" class="users-register-btn-primary">
+          Registrar Usuario
+        </button>
+        <button type="button" class="users-register-btn-secondary" (click)="goBack()">
+          ← Cancelar
+        </button>
+      </div>
+
     </form>
   </div>
 </div>

@@ -130,4 +130,8 @@ export class ClientsListComponent implements OnInit {
       }
     })
   }
+  newClient(){
+    this.router.navigate(['/dashboard/clients/register'])
+  }
+
 }

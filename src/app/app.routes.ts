@@ -68,11 +68,7 @@ export const routes: Routes = [
     component: LoginComponent,
     title: 'Login'
   },
-  {
-    path: 'register',
-    component: UsersRegisterComponent,
-    title: 'Registro de Usuarios'
-  },
+
 
   // ========================================
   // RUTAS PROTEGIDAS (requieren authGuard)
@@ -92,6 +88,7 @@ export const routes: Routes = [
           {path: '', component: UsersHomeComponent, title: 'Usuarios'},
           {path: 'list', component: UserListComponent, title: 'Listado'},
           {path: 'edit/:id', component: UserEditComponent, title: 'Editar'},
+          {path: 'register', component: UsersRegisterComponent, title: 'Registro de Usuarios'},
         ]
       },
 
@@ -100,7 +97,7 @@ export const routes: Routes = [
         path: 'clients',
         children: [
           { path: '', component: ClientsHomeComponent, title: 'Clientes' },
-          { path: 'user', component: ClientsRegisterComponent, title: 'Registrar Cliente' },
+          { path: 'register', component: ClientsRegisterComponent, title: 'Registrar Cliente' },
           { path: 'list', component: ClientsListComponent, title: 'Listado Clientes' },
           { path: 'edit/:id', component: ClientsEditComponent, title: 'Editar Cliente' },
         ]
@@ -111,7 +108,7 @@ export const routes: Routes = [
         path: 'owners',
         children: [
           { path: '', component: OwnersHomeComponent, title: 'Propietarios' },
-          { path: 'user', component: OwnersRegisterComponent, title: 'Registrar Propietario' },
+          { path: 'register', component: OwnersRegisterComponent, title: 'Registrar Propietario' },
           { path: 'list', component: OwnersListComponent, title: 'Listado Propietarios' },
           { path: 'edit/:id', component: OwnersEditComponent, title: 'Editar Propietario' }
         ]
@@ -122,7 +119,7 @@ export const routes: Routes = [
         path: 'estates',
         children: [
           { path: '', component: EstatesHomeComponent, title: 'Propiedades' },
-          { path: 'user', component: EstatesRegisterComponent, title: 'Registrar Propiedad' },
+          { path: 'register', component: EstatesRegisterComponent, title: 'Registrar Propiedad' },
           { path: 'list', component: EstatesListComponent, title: 'Listado Propiedades' },
           { path: 'edit/:id', component: EstatesEditComponent, title: 'Editar Propiedad' }
         ]

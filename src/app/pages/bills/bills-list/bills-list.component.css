@@ -1,17 +1,17 @@
-/* CONTENEDOR PRINCIPAL (.list-wrapper) */
-.list-wrapper {
+/* Contenedor principal */
+.bills-wrapper {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 1rem;
   padding: 1.5rem;
   margin: 2rem auto;
   width: 100%;
-  max-width: auto;
+  max-width: 100%;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
   overflow-x: auto;
 }
 
-/* TÍTULO PRINCIPAL (h2) */
-h2 {
+/* Título principal */
+.bills-title {
   color: #1f2937;
   font-size: 2rem;
   font-weight: 700;
@@ -19,22 +19,24 @@ h2 {
   margin-bottom: 2rem;
 }
 
-/* BARRA DE BÚSQUEDA (.search-container) */
-.search-container {
+/* Contenedor de búsqueda */
+.bills-search-container {
   margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.search-wrapper {
+/* Wrapper del campo de búsqueda */
+.bills-search-wrapper {
   position: relative;
   max-width: 32rem;
   margin: 0 auto;
   width: 100%;
 }
 
-.search-input {
+/* Campo de búsqueda */
+.bills-search-input {
   width: 100%;
   padding: 0.75rem 3rem 0.75rem 1rem;
   border: 0.125rem solid #e5e7eb;
@@ -46,17 +48,20 @@ h2 {
   box-sizing: border-box;
 }
 
-.search-input:focus {
+/* Estado focus del campo de búsqueda */
+.bills-search-input:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 0.1875rem rgba(59, 130, 246, 0.1);
 }
 
-.search-input::placeholder {
+/* Placeholder del campo de búsqueda */
+.bills-search-input::placeholder {
   color: #9ca3af;
 }
 
-.search-actions {
+/* Contenedor de acciones de búsqueda */
+.bills-search-actions {
   position: absolute;
   right: 0.75rem;
   top: 50%;
@@ -64,16 +69,17 @@ h2 {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  pointer-events: none;
 }
 
-.search-icon {
+/* Icono de búsqueda */
+.bills-search-icon {
   color: #6b7280;
   font-size: 0.875rem;
   pointer-events: none;
 }
 
-.clear-button {
+/* Botón limpiar búsqueda */
+.bills-clear-button {
   background: #f3f4f6;
   border: none;
   border-radius: 50%;
@@ -89,73 +95,47 @@ h2 {
   pointer-events: auto;
 }
 
-.clear-button:hover {
+/* Hover del botón limpiar */
+.bills-clear-button:hover {
   background: #e5e7eb;
   color: #374151;
 }
 
-.search-results-info {
+/* Información de resultados de búsqueda */
+.bills-search-results {
   text-align: center;
   color: #6b7280;
   font-size: 0.75rem;
   font-weight: 500;
 }
 
-.clear-search-button {
+/* Botón nueva factura */
+.bills-btn-new {
   background: #3b82f6;
   color: white;
   border: none;
   border-radius: 0.375rem;
   padding: 0.5rem 1rem;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  margin-top: 0.75rem;
+  margin: 0.75rem auto 1.5rem auto;
+  display: block;
   transition: all 0.2s ease;
 }
 
-.clear-search-button:hover {
+/* Hover del botón nueva factura */
+.bills-btn-new:hover {
   background: #2563eb;
 }
 
-/* BOTÓN PRINCIPAL - Nueva clase */
-.btn-new-bill {
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 0.375rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  cursor: pointer;
-  margin: 0.75rem auto 1.5rem auto; /* Centrado horizontal */
-  display: block; /* Necesario para centrado */
-  transition: all 0.2s ease;
+/* Contenedor de la tabla */
+.bills-table-container {
+  overflow-x: auto;
 }
 
-.btn-new-bill:hover {
-  background: #2563eb;
-}
-
-/* BOTÓN DEL ESTADO VACÍO - Se mantiene igual */
-.btn-create-bill {
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 0.375rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  cursor: pointer;
-  margin-top: 0.75rem;
-  transition: all 0.2s ease;
-}
-
-.btn-create-bill:hover {
-  background: #2563eb;
-}
-/* TABLA DE FACTURAS (table) */
-table {
+/* Tabla principal */
+.bills-table {
   width: 100%;
   min-width: 85rem;
   border-collapse: separate;
@@ -166,12 +146,13 @@ table {
   border: 0.0625rem solid #e5e7eb;
 }
 
-/* CABECERA DE TABLA (thead) */
-thead {
+/* Cabecera de la tabla */
+.bills-table-head {
   background: #f9fafb;
 }
 
-th {
+/* Celdas de encabezado */
+.bills-th {
   padding: 0.75rem 0.5rem;
   color: #374151;
   font-weight: 600;
@@ -197,10 +178,24 @@ th:nth-child(12) { width: auto; }/*Devoluciones*/
 th:nth-child(13) { width: 6%; }/*Abono Nº Factura*/
 th:nth-child(14) { width: auto; }/*Creado*/
 th:nth-child(15) { width: auto; }/*Actualizado*/
-th:nth-child(16) { width: 10%; }/*Acciones*/
+th:nth-child(16) { width: 12%; }/*Acciones*/
 
-/* FILAS DE DATOS (tbody td) */
-td {
+/* Cuerpo de la tabla */
+.bills-table-body {
+  background: #ffffff;
+}
+
+/* Filas de datos */
+.bills-table-row:hover .bills-td {
+  background: #f9fafb;
+}
+
+.bills-table-row:last-child .bills-td {
+  border-bottom: none;
+}
+
+/* Celdas de datos */
+.bills-td {
   padding: 0.75rem 0.5rem;
   border-bottom: 0.0625rem solid #f3f4f6;
   color: #374151;
@@ -210,17 +205,67 @@ td {
   max-width: 0;
 }
 
-/* HOVER EN FILAS */
-tbody tr:hover td {
-  background: #f9fafb;
+/* Estilo especial para número de factura */
+.bills-bill-number {
+  color: #3b82f6;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
 }
 
-tbody tr:last-child td {
-  border-bottom: none;
+/* Estilo especial para cliente */
+.bills-client {
+  color: #6366f1;
+  font-weight: 500;
 }
 
-/* BADGES DE DEVOLUCIÓN */
-.refund-badge {
+/* Estilo especial para propietario */
+.bills-owner {
+  color: #0891b2;
+  font-weight: 500;
+}
+
+/* Estilo especial para porcentaje */
+.bills-percentage {
+  color: #f59e0b;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Estilo especial para campos monetarios */
+.bills-currency {
+  color: #059669;
+  font-weight: 600;
+  text-align: right;
+  font-family: 'Courier New', monospace;
+}
+
+/* Estilo especial para impuestos */
+.bills-tax {
+  color: #f59e0b;
+  font-weight: 600;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+}
+
+/* Estilo especial para total */
+.bills-total {
+  color: #059669;
+  font-weight: 700;
+  text-align: right;
+  font-family: 'Courier New', monospace;
+  background: linear-gradient(45deg, #f0fdf4, #ecfdf5);
+  border-radius: 0.25rem;
+}
+
+/* Estilo especial para factura original */
+.bills-original {
+  color: #6b7280;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+}
+
+/* Badge de devolución - Sí */
+.bills-refund-badge {
   background: #ef4444;
   color: white;
   padding: 0.25rem 0.5rem;
@@ -231,7 +276,8 @@ tbody tr:last-child td {
   display: inline-block;
 }
 
-.no-refund {
+/* Badge de devolución - No */
+.bills-no-refund {
   background: #10b981;
   color: white;
   padding: 0.25rem 0.5rem;
@@ -242,15 +288,10 @@ tbody tr:last-child td {
   display: inline-block;
 }
 
-.not-applicable {
-  color: #9ca3af;
-  font-style: italic;
-  font-size: 0.6875rem;
-}
-
-/* BOTONES DE ACCIÓN */
-/* BOTONES DE ACCIÓN - 3 botones */
-td button {
+/* Botones de acción en tabla */
+.bills-btn-pdf,
+.bills-btn-edit,
+.bills-btn-delete {
   padding: 0.25rem 0.5rem;
   margin: 0 0.125rem;
   border: none;
@@ -261,43 +302,44 @@ td button {
   transition: all 0.2s ease;
 }
 
-/* Botón PDF (primero) */
-td button:nth-child(1) {
+/* Botón PDF */
+.bills-btn-pdf {
   background: #3b82f6;
   color: white;
 }
 
-td button:nth-child(1):hover {
+.bills-btn-pdf:hover {
   background: #2563eb;
 }
 
-/* Botón Editar (segundo) */
-td button:nth-child(2) {
-  background: #2e911f;
+/* Botón editar */
+.bills-btn-edit {
+  background: #059669;
   color: white;
 }
 
-td button:nth-child(2):hover {
-  background: #d97706;
+.bills-btn-edit:hover {
+  background: #047857;
 }
 
-/* Botón Eliminar (tercero) */
-td button:nth-child(3) {
+/* Botón eliminar */
+.bills-btn-delete {
   background: #ef4444;
   color: white;
 }
 
-td button:nth-child(3):hover {
+.bills-btn-delete:hover {
   background: #dc2626;
 }
 
-/* ESTADO SIN DATOS (.no-bills-card) */
-.no-bills-cell {
+/* Estado sin datos */
+.bills-no-data {
   text-align: center;
   padding: 3rem;
 }
 
-.no-bills-card {
+/* Tarjeta de estado vacío */
+.bills-empty-state {
   background: #f9fafb;
   border: 0.0625rem solid #e5e7eb;
   border-radius: 0.5rem;
@@ -306,115 +348,122 @@ td button:nth-child(3):hover {
   margin: 0 auto;
 }
 
-.no-bills-card h3 {
+/* Icono de estado vacío */
+.bills-empty-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  opacity: 0.7;
+}
+
+/* Título de estado vacío */
+.bills-empty-title {
   color: #1f2937;
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 0.75rem;
 }
 
-.no-bills-card p {
+/* Texto de estado vacío */
+.bills-empty-text {
   color: #6b7280;
   font-size: 0.875rem;
   line-height: 1.5;
-  margin: 0;
+  margin: 0 0 1.5rem 0;
 }
 
-.no-bills-icon {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  opacity: 0.7;
-}
-
-.btn-create-bill {
+/* Botón crear en estado vacío */
+.bills-btn-create {
   background: #3b82f6;
   color: white;
   border: none;
   border-radius: 0.375rem;
   padding: 0.5rem 1rem;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  margin-top: 0.75rem;
   transition: all 0.2s ease;
 }
 
-.btn-create-bill:hover {
+.bills-btn-create:hover {
   background: #2563eb;
 }
 
-/* RESPONSIVE TABLET GRANDE */
+/* Responsive para tablet grande */
 @media (max-width: 90rem) {
-  .list-wrapper {
+  .bills-wrapper {
     padding: 1.25rem;
     margin: 1.5rem auto;
     width: 99%;
   }
 
-  .search-wrapper {
+  .bills-search-wrapper {
     max-width: 28rem;
   }
 
-  .search-input {
+  .bills-search-input {
     padding: 0.625rem 2.75rem 0.625rem 0.875rem;
     font-size: 0.8125rem;
   }
 
-  table {
+  .bills-table {
     min-width: 80rem;
   }
 
-  th, td {
+  .bills-th,
+  .bills-td {
     padding: 0.625rem 0.375rem;
     font-size: 0.6875rem;
   }
 }
 
-/* RESPONSIVE TABLET */
+/* Responsive para tablet */
 @media (max-width: 48rem) {
-  .list-wrapper {
+  .bills-wrapper {
     padding: 1rem;
     margin: 1rem auto;
   }
 
-  h2 {
+  .bills-title {
     font-size: 1.5rem;
     margin-bottom: 1.5rem;
   }
 
-  .search-container {
+  .bills-search-container {
     margin-bottom: 1.25rem;
   }
 
-  .search-wrapper {
+  .bills-search-wrapper {
     max-width: 100%;
   }
 
-  .search-input {
+  .bills-search-input {
     padding: 0.5rem 2.5rem 0.5rem 0.75rem;
     font-size: 0.75rem;
   }
 
-  .search-actions {
+  .bills-search-actions {
     right: 0.625rem;
   }
 
-  .clear-button {
+  .bills-clear-button {
     width: 1.125rem;
     height: 1.125rem;
     font-size: 0.6875rem;
   }
 
-  table {
+  .bills-table {
     min-width: 70rem;
   }
 
-  th, td {
+  .bills-th,
+  .bills-td {
     padding: 0.5rem 0.25rem;
     font-size: 0.625rem;
   }
 
-  td button {
+  .bills-btn-pdf,
+  .bills-btn-edit,
+  .bills-btn-delete {
     display: block;
     width: 100%;
     margin: 0.0625rem 0;
@@ -423,45 +472,40 @@ td button:nth-child(3):hover {
   }
 }
 
-/* RESPONSIVE MÓVIL */
+/* Responsive para móvil */
 @media (max-width: 30rem) {
-  .list-wrapper {
+  .bills-wrapper {
     padding: 0.75rem;
     margin: 0.5rem auto;
   }
 
-  h2 {
+  .bills-title {
     font-size: 1.25rem;
     margin-bottom: 1rem;
   }
 
-  .search-container {
+  .bills-search-container {
     margin-bottom: 1rem;
   }
 
-  .search-input {
+  .bills-search-input {
     padding: 0.5rem 2.25rem 0.5rem 0.625rem;
     font-size: 0.6875rem;
   }
 
-  .search-input::placeholder {
+  .bills-search-input::placeholder {
     font-size: 0.6875rem;
   }
 
-  .search-results-info {
+  .bills-search-results {
     font-size: 0.6875rem;
   }
 
-  table {
+  .bills-table {
     min-width: 60rem;
   }
 
-  .no-bills-card {
+  .bills-empty-state {
     padding: 1.5rem;
-  }
-
-  .clear-search-button {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.6875rem;
   }
 }

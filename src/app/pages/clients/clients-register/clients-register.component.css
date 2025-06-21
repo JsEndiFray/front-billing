@@ -1,97 +1,30 @@
-/* CONTENEDOR PRINCIPAL */
-.form-wrapper {
-  background: linear-gradient(135deg, #091257 0%, #0d3f8f 50%, #2b104e 100%);
+/* Contenedor principal del formulario */
+.clients-register-wrapper {
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 1rem;
-  padding: 2rem;
+  padding: 2.5rem;
   margin: 2rem auto;
   max-width: 60rem;
-  width: 95%;
+  width: 90%;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
 }
 
-/* TÍTULO PRINCIPAL */
-h2 {
-  color: #ffffff;
+/* Título principal */
+.clients-register-title {
+  color: #1f2937;
   font-size: 2rem;
   font-weight: 700;
   text-align: center;
   margin-bottom: 2rem;
 }
 
-/* INDICADOR DE PROGRESO */
-.progress-indicator {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
+/* Formulario principal */
+.clients-register-form {
+  width: 100%;
 }
 
-.step-indicator {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  min-width: 8rem;
-  transition: all 0.2s ease;
-}
-
-.step-indicator.active {
-  background: #dbeafe;
-  border: 0.125rem solid #3b82f6;
-}
-
-.step-indicator.completed {
-  background: #d1fae5;
-  border: 0.125rem solid #10b981;
-}
-
-.step-indicator.inactive {
-  background: #f9fafb;
-  border: 0.125rem solid #e5e7eb;
-  opacity: 0.6;
-}
-
-/* NÚMERO DE PASO */
-.step-number {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 1rem;
-}
-
-.step-indicator.active .step-number {
-  background: #3b82f6;
-  color: white;
-}
-
-.step-indicator.completed .step-number {
-  background: #10b981;
-  color: white;
-}
-
-.step-indicator.inactive .step-number {
-  background: #e5e7eb;
-  color: #6b7280;
-}
-
-/* TEXTO DEL PASO */
-.step-indicator span:last-child {
-  color: #374151;
-  font-weight: 500;
-  font-size: 0.875rem;
-  text-align: center;
-}
-
-/* CONTAINER DE PASOS */
-.step-container {
+/* Contenedor principal del paso */
+.clients-register-container {
   background: #ffffff;
   border-radius: 0.75rem;
   padding: 2rem;
@@ -100,24 +33,27 @@ h2 {
   min-height: 20rem;
 }
 
-/* TÍTULOS DE PASO */
-.step-title, h3 {
+/* Títulos de sección */
+.clients-register-step-title {
   color: #1f2937;
   font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
   text-align: center;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.75rem;
 }
 
-/* SELECCIÓN DE TIPO DE CLIENTE */
-.client-type-selection {
+/* Selección de tipo de cliente */
+.clients-register-type-selection {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
   gap: 1.5rem;
-  margin-top: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-.client-type-card {
+/* Cards de tipo de cliente */
+.clients-register-type-card {
   background: #f9fafb;
   border: 0.125rem solid #e5e7eb;
   border-radius: 0.75rem;
@@ -125,54 +61,57 @@ h2 {
   text-align: center;
   cursor: pointer;
   transition: all 0.2s ease;
+  position: relative;
 }
 
-.client-type-card:hover {
+.clients-register-type-card:hover {
   background: #f3f4f6;
   border-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.client-type-card.selected {
+.clients-register-type-card.selected {
   background: #dbeafe;
   border-color: #3b82f6;
   box-shadow: 0 0.25rem 0.75rem rgba(59, 130, 246, 0.2);
+  transform: translateY(-2px);
 }
 
-.client-type-card h3 {
+.clients-register-type-card h3 {
   font-size: 1.25rem;
   margin-bottom: 0.75rem;
+  color: #1f2937;
 }
 
-.client-type-card p {
+.clients-register-type-card p {
   color: #6b7280;
   font-size: 0.875rem;
   margin: 0;
+  line-height: 1.4;
 }
 
-/* SECCIONES DE FORMULARIO */
-.company-section, .company-relationship-section {
-  background: #f9fafb;
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  border: 0.0625rem solid #e5e7eb;
-  margin-bottom: 1.5rem;
-}
-
-/* GRID DE CAMPOS */
-form > div > div:not(.client-type-selection):not(.company-section):not(.company-relationship-section) {
+/* Grid de campos */
+.clients-register-fields-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
   gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-.company-section, .admin-form {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-  gap: 1.5rem;
+/* Campo que ocupa todo el ancho */
+.clients-register-field-full {
+  grid-column: 1 / -1;
 }
 
-/* LABELS */
-label {
+/* Contenedor de cada campo */
+.clients-register-field {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Etiquetas de los campos */
+.clients-register-label {
   color: #374151;
   font-weight: 600;
   font-size: 0.875rem;
@@ -180,8 +119,8 @@ label {
   display: block;
 }
 
-/* INPUTS Y SELECT */
-input, select {
+/* Estilos base para inputs */
+.clients-register-input {
   padding: 0.75rem;
   border: 0.0625rem solid #d1d5db;
   border-radius: 0.5rem;
@@ -190,39 +129,113 @@ input, select {
   font-size: 1rem;
   transition: all 0.2s ease;
   width: 100%;
+  box-sizing: border-box;
 }
 
-input::placeholder {
+/* Placeholder de los inputs */
+.clients-register-input::placeholder {
   color: #9ca3af;
 }
 
-/* ESTADOS FOCUS */
-input:focus, select:focus {
+/* Estado focus de los inputs */
+.clients-register-input:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* SELECT ESPECÍFICO */
-select {
-  cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-  background-position: right 0.75rem center;
-  background-repeat: no-repeat;
-  background-size: 1rem;
+/* Estado hover de los inputs */
+.clients-register-input:hover:not(:focus) {
+  border-color: #9ca3af;
 }
 
-/* ADMINISTRADORES */
-.admin-form-container {
-  background: #f9fafb;
+/* Estilo especial para razón social */
+.clients-register-company {
+  color: #6366f1;
+  font-weight: 600;
+  background: linear-gradient(45deg, #f8fafc, #f0f9ff);
+}
+
+/* Estilo especial para identificación */
+.clients-register-identification {
+  color: #059669;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+}
+
+/* Estilo especial para código postal */
+.clients-register-postal {
+  color: #6b7280;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+}
+
+/* Validación visual para campos inválidos */
+.clients-register-input:invalid:not(:placeholder-shown) {
+  border-color: #ef4444;
+}
+
+/* Validación visual para campos válidos */
+.clients-register-input:valid:not(:placeholder-shown) {
+  border-color: #10b981;
+}
+
+/* Mensaje informativo */
+.clients-register-info-message {
+  background: #d1fae5;
+  color: #065f46;
+  padding: 1rem;
   border-radius: 0.5rem;
+  border-left: 0.25rem solid #10b981;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+/* Sección de administradores */
+.clients-register-admins-section {
+  margin-top: 2rem;
+  border-top: 2px solid #e5e7eb;
+  padding-top: 2rem;
+}
+
+/* Acciones de administrador */
+.clients-register-admin-actions {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Botón añadir administrador */
+.clients-register-btn-add-admin {
+  background: #f9fafb;
+  color: #374151;
+  border: 0.0625rem solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clients-register-btn-add-admin:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+/* Contenedor de administrador */
+.clients-register-admin-container {
+  background: #f9fafb;
+  border-radius: 0.75rem;
   padding: 1.5rem;
   border: 0.0625rem solid #e5e7eb;
   margin-bottom: 1.5rem;
 }
 
-.admin-header {
+/* Cabecera del administrador */
+.clients-register-admin-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -231,168 +244,208 @@ select {
   border-bottom: 0.0625rem solid #e5e7eb;
 }
 
-.admin-header h4 {
+.clients-register-admin-header h4 {
   color: #1f2937;
   font-size: 1.125rem;
   font-weight: 600;
   margin: 0;
 }
 
-/* MENSAJES */
-.info-message {
-  background: #d1fae5;
-  color: #065f46;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  border-left: 0.25rem solid #10b981;
-  margin-bottom: 1.5rem;
-  font-weight: 500;
-}
-
-.relationship-details {
-  background: #f9fafb;
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  margin-top: 1rem;
-}
-
-.relationship-info {
-  background: #dbeafe;
-  color: #1e40af;
-  padding: 0.75rem;
+/* Botón eliminar administrador */
+.clients-register-btn-remove {
+  background: #ef4444;
+  color: white;
+  border: none;
   border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
   font-size: 0.875rem;
-  margin-top: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-/* NAVEGACIÓN Y BOTONES */
-.step-navigation {
+.clients-register-btn-remove:hover {
+  background: #dc2626;
+}
+
+/* Formulario del administrador */
+.clients-register-admin-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1.5rem;
+}
+
+/* Contenedor de botones principales */
+.clients-register-buttons {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
   gap: 1rem;
+  justify-content: center;
   margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid #e5e7eb;
 }
 
-/* BOTONES */
-button {
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
+/* Botón principal (crear) */
+.clients-register-btn-primary {
+  background: linear-gradient(135deg, #22c55e, #3b82f6);
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.875rem 1.5rem;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  border: none;
+  transition: transform 0.2s ease;
 }
 
-button:not(.btn-secondary):not(.btn-success):not(.btn-remove) {
-  background: #3b82f6;
-  color: white;
+/* Efecto hover para botón principal */
+.clients-register-btn-primary:hover {
+  transform: translateY(-1px);
 }
 
-button:not(.btn-secondary):not(.btn-success):not(.btn-remove):hover {
-  background: #2563eb;
+/* Efecto active para botón principal */
+.clients-register-btn-primary:active {
+  transform: translateY(0);
 }
 
-.btn-secondary {
+/* Botón secundario (cancelar) */
+.clients-register-btn-secondary {
   background: #f9fafb;
   color: #374151;
   border: 0.0625rem solid #d1d5db;
+  border-radius: 0.375rem;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.btn-secondary:hover {
+/* Efecto hover para botón secundario */
+.clients-register-btn-secondary:hover {
   background: #f3f4f6;
   border-color: #9ca3af;
 }
 
-.btn-success {
-  background: #10b981;
-  color: white;
-}
-
-.btn-success:hover {
-  background: #059669;
-}
-
-.btn-remove {
-  background: #ef4444;
-  color: white;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-}
-
-.btn-remove:hover {
-  background: #dc2626;
-}
-
-/* RESPONSIVE TABLET */
+/* Responsive para tablet */
 @media (max-width: 48rem) {
-  .form-wrapper {
-    padding: 1.5rem;
-    margin: 1rem auto;
+  /* Ajustes del contenedor principal */
+  .clients-register-wrapper {
+    padding: 2rem;
+    margin: 1.5rem auto;
+    width: 95%;
   }
 
-  .progress-indicator {
-    gap: 1rem;
-  }
-
-  .step-indicator {
-    min-width: 6rem;
-    padding: 0.75rem;
-  }
-
-  .client-type-selection {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .step-container {
-    padding: 1.5rem;
-  }
-
-  form > div > div:not(.client-type-selection):not(.company-section):not(.company-relationship-section),
-  .company-section,
-  .admin-form {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-}
-
-/* RESPONSIVE MÓVIL */
-@media (max-width: 30rem) {
-  .form-wrapper {
-    padding: 1rem;
-    margin: 0.5rem auto;
-    width: 98%;
-  }
-
-  h2 {
-    font-size: 1.5rem;
+  /* Ajustes del título */
+  .clients-register-title {
+    font-size: 1.75rem;
     margin-bottom: 1.5rem;
   }
 
-  .progress-indicator {
+  /* Ajustes del contenedor */
+  .clients-register-container {
+    padding: 1.5rem;
+  }
+
+  /* Cards de tipo en una columna */
+  .clients-register-type-selection {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Grid de campos en una columna */
+  .clients-register-fields-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Campo de ancho completo en una columna */
+  .clients-register-field-full {
+    grid-column: 1;
+  }
+
+  /* Formulario de administrador en una columna */
+  .clients-register-admin-form {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Ajustes de inputs */
+  .clients-register-input {
+    padding: 0.6875rem;
+  }
+
+  /* Botones en columna */
+  .clients-register-buttons {
     flex-direction: column;
     gap: 0.75rem;
   }
 
-  .step-container {
+  /* Header de administrador responsive */
+  .clients-register-admin-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+}
+
+/* Responsive para móvil */
+@media (max-width: 30rem) {
+  /* Ajustes del contenedor principal */
+  .clients-register-wrapper {
+    padding: 1.5rem;
+    margin: 1rem auto;
+    width: 95%;
+  }
+
+  /* Ajustes del título */
+  .clients-register-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  /* Ajustes del contenedor */
+  .clients-register-container {
     padding: 1rem;
     min-height: 15rem;
   }
 
-  .step-navigation {
-    flex-direction: column;
+  /* Ajustes de campos */
+  .clients-register-fields-grid {
     gap: 1rem;
   }
 
-  input, select {
+  /* Ajustes de inputs */
+  .clients-register-input {
     padding: 0.625rem;
     font-size: 0.875rem;
   }
 
-  button {
-    padding: 0.625rem 1.25rem;
+  /* Ajustes de botones */
+  .clients-register-btn-primary,
+  .clients-register-btn-secondary {
+    padding: 0.75rem 1.25rem;
     font-size: 0.875rem;
+    width: 100%;
+  }
+
+  /* Cards de tipo más compactas */
+  .clients-register-type-card {
+    padding: 1.5rem;
+  }
+
+  .clients-register-type-card h3 {
+    font-size: 1.125rem;
+  }
+
+  /* Administradores más compactos */
+  .clients-register-admin-container {
+    padding: 1rem;
+  }
+
+  /* Botones de ancho completo */
+  .clients-register-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
   }
 }
