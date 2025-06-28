@@ -19,11 +19,23 @@ export class BillsValidatorService {
       estates_id: bill.estates_id,
       clients_id: bill.clients_id,
       owners_id: bill.owners_id,
+      ownership_percent: bill.ownership_percent,
       date: bill.date,
       tax_base: bill.tax_base,
       iva: bill.iva,
       irpf: bill.irpf,
-      total: bill.total
+      total: bill.total,
+      is_refund: bill.is_refund,
+      original_bill_id: bill.original_bill_id,
+
+      //NUEVOS CAMPOS DE PAGO INCLUIDOS
+      payment_status: bill.payment_status || 'pending',
+      payment_method: bill.payment_method || 'transfer',
+      payment_date: bill.payment_date,
+      payment_notes: bill.payment_notes || '',
+
+      date_create: bill.date_create,
+      date_update: bill.date_update
     } as Bill;
   }
 
@@ -35,12 +47,19 @@ export class BillsValidatorService {
       !bill.owners_id ||
       !bill.date ||
       !bill.tax_base ||
-      !bill.iva ||
-      !bill.irpf
+      bill.iva === null || bill.iva === undefined ||
+      bill.irpf === null || bill.irpf === undefined
     ) {
       return {
         isValid: false,
         message: 'Todos los campos son obligatorios.'
+      }
+    }
+    //VALIDACIÓN ADICIONAL: Si está marcado como pagado, debe tener fecha
+    if (bill.payment_status === 'paid' && !bill.payment_date) {
+      return {
+        isValid: false,
+        message: 'Las facturas marcadas como pagadas deben tener una fecha de pago.'
       }
     }
 
@@ -54,7 +73,7 @@ export class BillsValidatorService {
     const cleanData = this.cleanBillsData(bill);
 
     const requiredValidation = this.validateRequiredFields(cleanData);
-    if(!requiredValidation.isValid) return requiredValidation;
+    if (!requiredValidation.isValid) return requiredValidation;
 
 
     return {isValid: true}

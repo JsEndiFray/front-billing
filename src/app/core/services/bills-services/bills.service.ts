@@ -20,6 +20,11 @@ export class BillsService {
     return this.api.get<Bill[]>('bills')
   }
 
+  //búsqueda por ID
+  getBillById(id: number): Observable<Bill>{
+    return this.api.get<Bill>(`bills/${id}`)
+  }
+
   //DESCARGA DE PDF
   downloadPDF(id: number): Observable<Blob> {
     return this.http.get(`${this.api.baseUrl}/bills/${id}/pdf`, {
@@ -40,6 +45,11 @@ export class BillsService {
   //DELETE
   deleteBills(id: number): Observable<Bill> {
     return this.api.delete<Bill>(`bills/${id}`)
+  }
+
+  //NUEVO MÉTODO PARA ACTUALIZAR ESTADO DE PAGO
+  updatePaymentStatus(id: number, paymentData: Bill): Observable<Bill> {
+    return this.api.put<Bill>(`bills/${id}/payment`, paymentData);
   }
 
 }

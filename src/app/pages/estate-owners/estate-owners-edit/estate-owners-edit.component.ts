@@ -118,7 +118,7 @@ export class EstateOwnersEditComponent implements OnInit {
         }
       },
       error: (e: HttpErrorResponse) => {
-        console.error('Error cargando estates:', e);
+        // Error manejado por interceptor
       }
     });
 
@@ -135,7 +135,7 @@ export class EstateOwnersEditComponent implements OnInit {
         }
       },
       error: (e: HttpErrorResponse) => {
-        console.error('Error cargando owners:', e);
+        // Error manejado por interceptor
       }
     });
   }

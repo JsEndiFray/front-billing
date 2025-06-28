@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {Router, RouterLink} from '@angular/router';
+import {Router} from '@angular/router';
 import {AuthService} from '../../../core/services/auth-service/auth.service';
 import Swal from 'sweetalert2';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -14,7 +14,6 @@ import {UsersLogin} from '../../../interface/users-interface';
 @Component({
   selector: 'app-login',
   imports: [
-    RouterLink,
     FormsModule
   ],
   templateUrl: './login.component.html',

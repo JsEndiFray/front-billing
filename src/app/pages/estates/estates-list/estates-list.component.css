@@ -173,7 +173,7 @@ th:nth-child(8) { width: auto }/*país*/
 th:nth-child(9) { width: 5% }/*m2*/
 th:nth-child(10) { width: auto }/*creado*/
 th:nth-child(11) { width: auto }/*actualizado*/
-th:nth-child(12) { width: 10% }/*acciones*/
+th:nth-child(12) { width: 15% }/*acciones*/
 
 /* Cuerpo de la tabla */
 .estates-table-body {

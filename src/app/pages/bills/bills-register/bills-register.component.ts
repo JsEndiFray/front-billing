@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {Bill} from '../../../interface/bills-interface';
+import {Bill, PAYMENT_METHOD_LABELS, PAYMENT_STATUS_LABELS} from '../../../interface/bills-interface';
 import {BillsValidatorService} from '../../../core/services/validator-services/bills-validator.service';
 import {Estates} from '../../../interface/estates.interface';
 import {Clients} from '../../../interface/clientes-interface';
@@ -12,6 +12,7 @@ import {BillsService} from '../../../core/services/bills-services/bills.service'
 import Swal from 'sweetalert2';
 import {OwnersService} from '../../../core/services/owners-services/owners.service';
 import {Router} from '@angular/router';
+import {PaymentUtilService} from '../../../core/services/payment-util-services/payment-util.service';
 
 /**
  * Componente para registrar nuevas facturas
@@ -32,6 +33,10 @@ export class BillsRegisterComponent implements OnInit {
   clients: Clients[] = [];     // Lista de clientes disponibles
   owners: Owners[] = [];       // Lista de propietarios disponibles
 
+  //LABELS PARA LOS NUEVOS CAMPOS DE PAGO
+  paymentStatusLabels = PAYMENT_STATUS_LABELS;
+  paymentMethodLabels = PAYMENT_METHOD_LABELS;
+
   // Objeto que guarda los datos de la nueva factura
   bill: Bill = {
     id: null,
@@ -47,6 +52,12 @@ export class BillsRegisterComponent implements OnInit {
     total: null,              // Total calculado automáticamente
     is_refund: null,          // Si es una devolución
     original_bill_id: null,   // ID de factura original (para devoluciones)
+    //NUEVOS CAMPOS DE PAGO CON VALORES POR DEFECTO
+    payment_status: 'pending',        // Por defecto: Pendiente
+    payment_method: 'transfer',       // Por defecto: Transferencia
+    payment_date: null,               // Opcional: Se puede dejar vacío
+    payment_notes: '',                // Opcional: Notas sobre el pago
+
     date_create: '',
     date_update: '',
   }
@@ -57,7 +68,8 @@ export class BillsRegisterComponent implements OnInit {
     private clientsServices: ClientsService,
     private ownerServices: OwnersService,
     private billsServices: BillsService,
-    private router: Router
+    private router: Router,
+    private paymentUtilServices: PaymentUtilService,
   ) {
   }
 
@@ -69,6 +81,22 @@ export class BillsRegisterComponent implements OnInit {
     this.getListEstate();
     this.getListClients();
     this.getListOwners();
+  }
+
+  /**
+   *NUEVO: Inicializa valores por defecto para los campos de pago
+   */
+  initializePaymentDefaults() {
+    // Si el usuario marca como "pagado", establecer fecha de hoy
+    this.paymentUtilServices.initializePaymentDefaults(this.bill);
+  }
+
+  /**
+   *NUEVO: Se ejecuta cuando cambia el estado de pago
+   * Si marca como "pagado", pone la fecha de hoy automáticamente
+   */
+  onPaymentStatusChange() {
+    this.paymentUtilServices.handlePaymentStatusChange(this.bill);
   }
 
   /**
@@ -161,8 +189,7 @@ export class BillsRegisterComponent implements OnInit {
    */
   registerBills() {
     // Limpiar espacios y preparar datos
-    const cleanData = this.billsValidatorServices.cleanBillsData(this.bill)
-
+    const cleanData = this.billsValidatorServices.cleanBillsData(this.bill);
     // Validar que todos los campos requeridos estén completos
     const validation = this.billsValidatorServices.validateRequiredFields(cleanData);
     if (!validation.isValid) {
@@ -180,6 +207,7 @@ export class BillsRegisterComponent implements OnInit {
       next: () => {
         Swal.fire({
           title: "Se ha registrado correctamente.",
+          text: `Factura creada con estado: ${this.paymentStatusLabels[this.bill.payment_status || 'pending']}`,
           icon: "success",
           draggable: true
         });
@@ -191,7 +219,7 @@ export class BillsRegisterComponent implements OnInit {
     });
   };
 
-  goBack(){
+  goBack() {
     this.router.navigate(['/dashboard/bills/list'])
   }
 }

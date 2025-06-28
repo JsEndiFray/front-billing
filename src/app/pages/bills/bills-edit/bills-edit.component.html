@@ -1,12 +1,9 @@
-<h3>hola editador</h3>
-
-<!--
 <div class="form-wrapper">
   <h2>Editar Factura</h2>
 
   <form (ngSubmit)="updateBill()">
 
-    &lt;!&ndash; Información Básica de la Factura &ndash;&gt;
+    <!--Información Básica de la Factura-->
     <div class="form-section">
       <h3>📄 Información Básica</h3>
       <div class="form-grid">
@@ -53,7 +50,7 @@
               @if (originalBills && originalBills.length > 0) {
                 @for (originalBill of originalBills; track originalBill.id) {
                   <option [value]="originalBill.id">
-                    {{ originalBill.bill_number }} - {{ originalBill.date }}
+                    {{ originalBill.bill_number }} - {{ originalBill.date | dataFormat}}
                   </option>
                 }
               }
@@ -63,14 +60,14 @@
       </div>
     </div>
 
-    &lt;!&ndash; Relaciones &ndash;&gt;
+    <!--Relaciones -->
     <div class="form-section">
       <h3>🔗 Relaciones</h3>
       <div class="form-grid">
         <div>
           <label for="estate_id">Inmueble *</label>
           <select
-            [(ngModel)]="bill.estate_id"
+            [(ngModel)]="bill.estates_id"
             name="estate_id"
             id="estate_id"
             required>
@@ -136,7 +133,7 @@
       </div>
     </div>
 
-    &lt;!&ndash; Información Financiera &ndash;&gt;
+    <!--Información Financiera-->
     <div class="form-section">
       <h3>💰 Información Financiera</h3>
       <div class="form-grid">
@@ -197,7 +194,92 @@
       </div>
     </div>
 
-    &lt;!&ndash; Información de Cálculo &ndash;&gt;
+    <!--💳 NUEVA SECCIÓN: Información de Pago-->
+    <div class="form-section">
+      <h3>💳 Información de Pago</h3>
+      <div class="form-grid">
+        <div>
+          <label for="payment_status">Estado de Pago *</label>
+          <select
+            [(ngModel)]="bill.payment_status"
+            name="payment_status"
+            id="payment_status"
+            (change)="onPaymentStatusChange()"
+            required>
+            <option value="pending">{{ paymentStatusLabels.pending }}</option>
+            <option value="paid">{{ paymentStatusLabels.paid }}</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="payment_method">Método de Pago *</label>
+          <select
+            [(ngModel)]="bill.payment_method"
+            name="payment_method"
+            id="payment_method"
+            required>
+            <option value="transfer">{{ paymentMethodLabels.transfer }}</option>
+            <option value="direct_debit">{{ paymentMethodLabels.direct_debit }}</option>
+            <option value="cash">{{ paymentMethodLabels.cash }}</option>
+            <option value="card">{{ paymentMethodLabels.card }}</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="payment_date">
+            Fecha de Pago
+            @if (bill.payment_status === 'paid') {
+              <span style="color: red;">*</span>
+            }
+          </label>
+          <input
+            type="date"
+            [(ngModel)]="bill.payment_date"
+            name="payment_date"
+            id="payment_date"
+            [required]="bill.payment_status === 'paid'"
+            [disabled]="bill.payment_status === 'pending'">
+          @if (bill.payment_status === 'pending') {
+            <small style="color: #666; font-size: 0.8em;">
+              Se habilitará al marcar como "Pagado"
+            </small>
+          }
+        </div>
+
+        <div>
+          <label for="payment_notes">Notas del Pago</label>
+          <textarea
+            [(ngModel)]="bill.payment_notes"
+            name="payment_notes"
+            id="payment_notes"
+            rows="3"
+            placeholder="Ej: Número de transferencia, referencia del pago, observaciones..."></textarea>
+        </div>
+      </div>
+
+      <!-- ✅ INFORMACIÓN VISUAL DEL ESTADO -->
+      <div class="info-section" style="margin-top: 1rem;">
+        <div class="calc-card">
+          <h4>📊 Estado de Pago</h4>
+          <div class="calc-details">
+            <div>Estado:
+              <span [style.color]="bill.payment_status === 'paid' ? '#28a745' : '#ffc107'">
+                {{ paymentStatusLabels[bill.payment_status || 'pending'] }}
+              </span>
+            </div>
+            <div>Método: {{ paymentMethodLabels[bill.payment_method || 'transfer'] }}</div>
+            @if (bill.payment_date) {
+              <div>Fecha de Pago: {{ bill.payment_date }}</div>
+            }
+            @if (bill.payment_notes) {
+              <div>Notas: {{ bill.payment_notes }}</div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--Información de Cálculo-->
     <div class="info-section">
       <div class="calc-card">
         <h4>🧮 Cálculo Automático</h4>
@@ -210,7 +292,7 @@
       </div>
     </div>
 
-    &lt;!&ndash; Botones de acción &ndash;&gt;
+    <!-- Botones de acción -->
     <div class="button-group">
       <button type="button" class="btn-secondary" (click)="goBack()">
         ← Cancelar
@@ -221,4 +303,4 @@
     </div>
 
   </form>
-</div>-->
+</div>

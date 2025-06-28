@@ -168,7 +168,7 @@ th:nth-child(3) { width: auto }  /* Propietario */
 th:nth-child(4) { width: auto }  /* Porcentaje (%) */
 th:nth-child(5) { width: auto }  /* Fecha de creación */
 th:nth-child(6) { width: auto}  /* fecha de actualización */
-th:nth-child(7) { width: auto }  /* Acciones */
+th:nth-child(7) { width: 15% }  /* Acciones */
 /* Cuerpo de la tabla */
 .estate-owners-table-body {
   background: #ffffff;

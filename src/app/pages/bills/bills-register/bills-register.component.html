@@ -1,4 +1,4 @@
-<!-- Formulario de creación de facturas -->
+<!-- Formulario de creación de facturas CON GESTIÓN DE PAGOS -->
 <div class="bills-register-wrapper">
 
   <!-- Título del formulario -->
@@ -155,6 +155,106 @@
         class="bills-register-input bills-register-total"
         placeholder="Calculado automáticamente"
       />
+    </div>
+
+    <!--NUEVA SECCIÓN: Información de Pago -->
+
+    <!-- Título de sección de pago -->
+    <div class="bills-register-field bills-register-field-full">
+      <h3 class="bills-register-section-title">💳 Información de Pago</h3>
+    </div>
+
+    <!-- Campo estado de pago -->
+    <div class="bills-register-field">
+      <label for="payment_status" class="bills-register-label">Estado de Pago</label>
+      <select
+        [(ngModel)]="bill.payment_status"
+        name="payment_status"
+        id="payment_status"
+        (change)="onPaymentStatusChange()"
+        class="bills-register-select bills-register-payment-status">
+        <option value="pending">{{ paymentStatusLabels.pending }}</option>
+        <option value="paid">{{ paymentStatusLabels.paid }}</option>
+      </select>
+    </div>
+
+    <!-- Campo método de pago -->
+    <div class="bills-register-field">
+      <label for="payment_method" class="bills-register-label">Método de Pago</label>
+      <select
+        [(ngModel)]="bill.payment_method"
+        name="payment_method"
+        id="payment_method"
+        class="bills-register-select bills-register-payment-method">
+        <option value="transfer">{{ paymentMethodLabels.transfer }}</option>
+        <option value="direct_debit">{{ paymentMethodLabels.direct_debit }}</option>
+        <option value="cash">{{ paymentMethodLabels.cash }}</option>
+        <option value="card">{{ paymentMethodLabels.card }}</option>
+      </select>
+    </div>
+
+    <!-- Campo fecha de pago (solo si está marcado como pagado) -->
+    <div class="bills-register-field">
+      <label for="payment_date" class="bills-register-label">
+        Fecha de Pago
+        @if (bill.payment_status === 'paid') {
+          <span class="bills-register-required">*</span>
+        }
+      </label>
+      <input
+        type="date"
+        [(ngModel)]="bill.payment_date"
+        name="payment_date"
+        id="payment_date"
+        class="bills-register-input bills-register-payment-date"
+        [required]="bill.payment_status === 'paid'"
+        [disabled]="bill.payment_status === 'pending'"
+        placeholder="Fecha en que se realizó el pago"
+      />
+      @if (bill.payment_status === 'pending') {
+        <small class="bills-register-help-text">
+          Se habilitará al marcar como "Pagado"
+        </small>
+      }
+    </div>
+
+    <!-- Campo notas de pago -->
+    <div class="bills-register-field">
+      <label for="payment_notes" class="bills-register-label">Notas del Pago (opcional)</label>
+      <textarea
+        [(ngModel)]="bill.payment_notes"
+        name="payment_notes"
+        id="payment_notes"
+        rows="3"
+        class="bills-register-textarea bills-register-payment-notes"
+        placeholder="Ej: Número de transferencia, referencia del pago, observaciones..."
+      ></textarea>
+    </div>
+
+    <!-- ✅ INFORMACIÓN VISUAL DEL ESTADO -->
+    <div class="bills-register-field bills-register-field-full">
+      <div class="bills-register-payment-summary">
+        <div class="payment-summary-item">
+          <span class="payment-summary-label">Estado:</span>
+          <span class="payment-summary-value"
+                [class.status-pending]="bill.payment_status === 'pending'"
+                [class.status-paid]="bill.payment_status === 'paid'">
+            {{ paymentStatusLabels[bill.payment_status || 'pending'] }}
+          </span>
+        </div>
+        <div class="payment-summary-item">
+          <span class="payment-summary-label">Método:</span>
+          <span class="payment-summary-value">
+            {{ paymentMethodLabels[bill.payment_method || 'transfer'] }}
+          </span>
+        </div>
+        @if (bill.payment_date) {
+          <div class="payment-summary-item">
+            <span class="payment-summary-label">Fecha de Pago:</span>
+            <span class="payment-summary-value">{{ bill.payment_date }}</span>
+          </div>
+        }
+      </div>
     </div>
 
     <!-- Botones de acción -->

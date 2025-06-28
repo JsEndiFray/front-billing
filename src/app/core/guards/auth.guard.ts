@@ -1,6 +1,6 @@
-import { CanActivateFn, Router } from '@angular/router';
-import { inject } from '@angular/core';
-import { AuthService } from '../services/auth-service/auth.service';
+import {CanActivateFn, Router} from '@angular/router';
+import {inject} from '@angular/core';
+import {AuthService} from '../services/auth-service/auth.service';
 
 /**
  * Guard de autenticación para proteger rutas
@@ -17,17 +17,17 @@ export const authGuard: CanActivateFn = (route, state) => {
     // Token existe - verificar validez
     try {
       // TODO: Validación de expiración JWT (opcional)
-      // const payload = JSON.parse(atob(token.split('.')[1]));
-      // const tokenExpired = payload.exp < Date.now() / 1000;
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const tokenExpired = payload.exp < Date.now() / 1000;
 
-      // if (tokenExpired) {
-      //   // Token expirado, limpiar y redirigir
-      //   localStorage.removeItem('token');
-      //   localStorage.removeItem('refreshToken');
-      //   authService.deactivateSession();
-      //   router.navigate(['/login']);
-      //   return false;
-      // }
+      if (tokenExpired) {
+        // Token expirado, limpiar y redirigir
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        authService.deactivateSession();
+        router.navigate(['/login']);
+        return false;
+      }
 
       return true; // Token válido
     } catch (error) {

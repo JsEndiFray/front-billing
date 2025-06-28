@@ -18,6 +18,17 @@
   margin-bottom: 2rem;
 }
 
+/*NUEVO: Título de sección */
+.bills-register-section-title {
+  color: #1f2937;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e5e7eb;
+  text-align: center;
+}
+
 /* Formulario con diseño grid */
 .bills-register-form {
   display: grid;
@@ -46,6 +57,21 @@
   display: block;
 }
 
+/*NUEVO: Indicador de campo requerido */
+.bills-register-required {
+  color: #ef4444;
+  font-weight: 700;
+  margin-left: 0.25rem;
+}
+
+/*NUEVO: Texto de ayuda */
+.bills-register-help-text {
+  color: #6b7280;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  font-style: italic;
+}
+
 /* Estilos base para inputs */
 .bills-register-input {
   padding: 0.75rem;
@@ -59,21 +85,49 @@
   box-sizing: border-box;
 }
 
-/* Placeholder de los inputs */
-.bills-register-input::placeholder {
+/*NUEVO: Estilos para textarea */
+.bills-register-textarea {
+  padding: 0.75rem;
+  border: 0.0625rem solid #d1d5db;
+  border-radius: 0.5rem;
+  background: #ffffff;
+  color: #374151;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 4rem;
+}
+
+/* Placeholder de los inputs y textarea */
+.bills-register-input::placeholder,
+.bills-register-textarea::placeholder {
   color: #9ca3af;
 }
 
-/* Estado focus de los inputs */
-.bills-register-input:focus {
+/* Estado focus de los inputs y textarea */
+.bills-register-input:focus,
+.bills-register-textarea:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Estado hover de los inputs */
-.bills-register-input:hover:not(:focus) {
+/* Estado hover de los inputs y textarea */
+.bills-register-input:hover:not(:focus),
+.bills-register-textarea:hover:not(:focus) {
   border-color: #9ca3af;
+}
+
+/* Estados disabled para inputs y textarea */
+.bills-register-input:disabled,
+.bills-register-textarea:disabled {
+  background: #f9fafb;
+  color: #6b7280;
+  cursor: not-allowed;
+  border-color: #e5e7eb;
 }
 
 /* Estilos base para selects */
@@ -113,6 +167,10 @@
   padding: 0.5rem;
   color: #374151;
 }
+
+/* ========================================
+   ESTILOS ESPECÍFICOS POR TIPO DE CAMPO
+   ======================================== */
 
 /* Campo número de factura deshabilitado */
 .bills-register-bill-number {
@@ -172,26 +230,111 @@
   cursor: not-allowed;
 }
 
-/* Estados disabled para inputs */
-.bills-register-input:disabled {
-  background: #f9fafb;
-  color: #6b7280;
-  cursor: not-allowed;
-  border-color: #e5e7eb;
+/* ========================================
+   ESTILOS ESPECÍFICOS PARA CAMPOS DE PAGO
+   ======================================== */
+
+/* Select estado de pago */
+.bills-register-payment-status {
+  font-weight: 600;
 }
+
+.bills-register-payment-status option[value="pending"] {
+  color: #f59e0b;
+}
+
+.bills-register-payment-status option[value="paid"] {
+  color: #10b981;
+}
+
+/* Select método de pago */
+.bills-register-payment-method {
+  color: #6366f1;
+  font-weight: 500;
+}
+
+/* Campo fecha de pago */
+.bills-register-payment-date {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Textarea notas de pago */
+.bills-register-payment-notes {
+  color: #6b7280;
+}
+
+/* ✅ RESUMEN DE PAGO - NUEVO */
+.bills-register-payment-summary {
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-around;
+  margin-top: 0.5rem;
+}
+
+.payment-summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.payment-summary-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.payment-summary-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  background: white;
+}
+
+/* Estados específicos del resumen */
+.payment-summary-value.status-pending {
+  color: #f59e0b;
+  background: #fffbeb;
+  border: 1px solid #fed7aa;
+}
+
+.payment-summary-value.status-paid {
+  color: #10b981;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+/* ========================================
+   VALIDACIONES VISUALES
+   ======================================== */
 
 /* Validación visual para campos inválidos */
 .bills-register-input:invalid:not(:placeholder-shown):not(:disabled),
-.bills-register-select:invalid {
+.bills-register-select:invalid,
+.bills-register-textarea:invalid {
   border-color: #ef4444;
   background: #fef2f2;
 }
 
 /* Validación visual para campos válidos */
 .bills-register-input:valid:not(:placeholder-shown):not(:disabled),
-.bills-register-select:valid {
+.bills-register-select:valid,
+.bills-register-textarea:valid {
   border-color: #10b981;
 }
+
+/* ========================================
+   BOTONES
+   ======================================== */
 
 /* Contenedor de botones */
 .bills-register-buttons {
@@ -244,6 +387,10 @@
   border-color: #9ca3af;
 }
 
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
 /* Responsive para tablet grande */
 @media (max-width: 64rem) {
   .bills-register-wrapper {
@@ -252,6 +399,17 @@
 
   .bills-register-form {
     grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  }
+
+  .bills-register-payment-summary {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .payment-summary-item {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
   }
 }
 
@@ -270,6 +428,11 @@
     margin-bottom: 1.5rem;
   }
 
+  /* Ajustes del título de sección */
+  .bills-register-section-title {
+    font-size: 1.125rem;
+  }
+
   /* Formulario en una sola columna */
   .bills-register-form {
     grid-template-columns: 1fr;
@@ -281,9 +444,10 @@
     grid-column: 1;
   }
 
-  /* Ajustes de inputs y selects */
+  /* Ajustes de inputs, selects y textarea */
   .bills-register-input,
-  .bills-register-select {
+  .bills-register-select,
+  .bills-register-textarea {
     padding: 0.6875rem;
   }
 
@@ -304,6 +468,17 @@
     flex-direction: column;
     gap: 0.75rem;
   }
+
+  /* Resumen de pago responsive */
+  .bills-register-payment-summary {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .payment-summary-item {
+    flex-direction: row;
+    justify-content: space-between;
+  }
 }
 
 /* Responsive para móvil */
@@ -321,14 +496,20 @@
     margin-bottom: 1.25rem;
   }
 
+  /* Ajustes del título de sección */
+  .bills-register-section-title {
+    font-size: 1rem;
+  }
+
   /* Ajustes del formulario */
   .bills-register-form {
     gap: 1rem;
   }
 
-  /* Ajustes de inputs y selects */
+  /* Ajustes de inputs, selects y textarea */
   .bills-register-input,
-  .bills-register-select {
+  .bills-register-select,
+  .bills-register-textarea {
     padding: 0.625rem;
     font-size: 0.875rem;
   }
@@ -350,5 +531,15 @@
   .bills-register-buttons {
     flex-direction: column;
     gap: 0.75rem;
+  }
+
+  /* Resumen de pago móvil */
+  .bills-register-payment-summary {
+    padding: 0.75rem;
+  }
+
+  .payment-summary-value {
+    font-size: 0.75rem;
+    padding: 0.1875rem 0.375rem;
   }
 }

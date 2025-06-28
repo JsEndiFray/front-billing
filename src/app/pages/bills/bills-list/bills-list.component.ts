@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Bill} from '../../../interface/bills-interface';
+import {Bill, PAYMENT_METHOD_LABELS, PAYMENT_STATUS_LABELS, Refunds} from '../../../interface/bills-interface';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
 import {BillsService} from '../../../core/services/bills-services/bills.service';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -8,7 +8,8 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {NgClass} from '@angular/common';
 import {SearchService} from '../../../core/services/search-services/search.service';
 import Swal from 'sweetalert2';
-import { CommonModule } from '@angular/common';
+import {CommonModule} from '@angular/common';
+import {RefundsService} from '../../../core/services/refunds-services/refunds.service';
 
 /**
  * Componente para mostrar y gestionar la lista de facturas
@@ -37,10 +38,34 @@ export class BillsListComponent implements OnInit {
   // Texto que escribe el usuario para buscar
   searchTerm: string = '';
 
+  // Variables para el modal de abonos
+  showPaymentModal: boolean = false;
+  selectedBill: Bill | null = null;
+
+  // Datos del nuevo abono
+  newPayment: Refunds = {
+    originalBillId: 0,
+    amount: 0,
+    bill_date: '',
+    payment_method: 'transfer',
+    notes: ''
+  };
+
+  //NUEVAS VARIABLES PARA GESTIÓN DE PAGOS
+
+  // Labels para mostrar en la UI
+  paymentStatusLabels = PAYMENT_STATUS_LABELS;
+  paymentMethodLabels = PAYMENT_METHOD_LABELS;
+
+  //Datos temporales para edición rápida - AHORA USA BILL
+  editingPayment: { [billId: number]: Bill } = {};
+
+
   constructor(
     private billsServices: BillsService,
     private router: Router,
     private searchService: SearchService,
+    private refundsService: RefundsService,
   ) {
   }
 
@@ -106,6 +131,177 @@ export class BillsListComponent implements OnInit {
    */
   editBill(id: number) {
     this.router.navigate(['/dashboard/bills/edit', id]);
+  }
+
+  //NUEVOS MÉTODOS PARA GESTIÓN DE PAGOS
+  /**
+   * Prepara los datos para editar el pago de una factura
+   */
+  startEditingPayment(bill: Bill) {
+    this.editingPayment[bill.id!] = {
+      payment_status: bill.payment_status || 'pending',
+      payment_method: bill.payment_method || 'transfer',
+      payment_date: bill.payment_date || '',
+      payment_notes: bill.payment_notes || ''
+    };
+  }
+
+  /**
+   * Cancela la edición del pago
+   */
+  cancelEditingPayment(billID: number) {
+    delete this.editingPayment[billID];
+  }
+
+  /**
+   * Verifica si una factura está en modo edición
+   */
+  isEditingPayment(billId: number): boolean {
+    return !!this.editingPayment[billId];
+  }
+
+  /**
+   * Guarda los cambios del estado de pago
+   */
+  savePaymentChanges(billId: number) {
+    const paymentData = this.editingPayment[billId];
+
+    if (!paymentData) {
+      return;
+    }
+    // Validación: Si se marca como pagado, debe tener fecha
+    if (paymentData.payment_status === 'paid' && !paymentData.payment_date) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Las facturas pagadas deben tener una fecha de pago',
+        icon: 'error'
+      });
+      return;
+    }
+    // Llamar al servicio para actualizar
+    this.billsServices.updatePaymentStatus(billId, paymentData).subscribe({
+      next: (updatedBill) => {
+        Swal.fire({
+          title: '¡Éxito!',
+          text: 'Estado de pago actualizado correctamente',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false
+        });
+
+        // Limpiar edición y recargar lista
+        delete this.editingPayment[billId];
+        this.getListBills();
+      }, error: (e: HttpErrorResponse) => {
+      }
+    });
+  };
+
+  /**
+   * Cambio rápido de estado pendiente/pagado
+   */
+  togglePaymentStatus(bill: Bill) {
+    const newStatus = bill.payment_status === 'paid' ? 'pending' : 'paid';
+
+    const paymentData: Partial<Bill> = {
+      payment_status: newStatus,
+      payment_method: bill.payment_method || 'transfer',
+      payment_date: newStatus === 'paid' ? new Date().toISOString().split('T')[0] : null,
+      payment_notes: bill.payment_notes || ''
+    };
+    this.billsServices.updatePaymentStatus(bill.id!, paymentData).subscribe({
+      next: (updatedBill) => {
+        // Actualizar localmente para respuesta inmediata
+        bill.payment_status = newStatus;
+        bill.payment_date = paymentData.payment_date;
+
+        const statusText = newStatus === 'paid' ? 'pagada' : 'pendiente';
+        Swal.fire({
+          title: '¡Actualizado!',
+          text: `Factura marcada como ${statusText}`,
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false
+        });
+      },
+      error: (e: HttpErrorResponse) => {
+      }
+    });
+  };
+
+  //NUEVOS MÉTODOS PARA ABONOS
+  /**
+   * Abre el modal para registrar un abono
+   */
+  openPaymentModal(bill: Bill) {
+    this.selectedBill = bill;
+    this.showPaymentModal = true;
+
+    // Preparar datos del nuevo abono CON LOS CAMPOS CORRECTOS
+    this.newPayment = {
+      originalBillId: bill.id!,
+      bill_date: new Date().toISOString().split('T')[0],
+      amount: 0,
+      concept: '',
+      payment_method: 'transfer',     // Solo para frontend
+      notes: ''                       // Solo para frontend
+    };
+  };
+
+  /**
+   * Cierra el modal de abonos
+   */
+  closePaymentModal() {
+    this.showPaymentModal = false;
+    this.selectedBill = null;
+  }
+
+  /**
+   * Guarda el nuevo abono
+   */
+  savePayment() {
+    // Validaciones básicas
+    if (!this.newPayment.amount || this.newPayment.amount <= 0) {
+      Swal.fire({
+        title: 'Error',
+        text: 'El monto debe ser mayor a cero',
+        icon: 'error'
+      });
+      return;
+    }
+
+    if (!this.newPayment.bill_date) {
+      Swal.fire({
+        title: 'Error',
+        text: 'La fecha es obligatoria',
+        icon: 'error'
+      });
+      return;
+    }
+
+    // CREAR OBJETO LIMPIO CON SOLO LOS CAMPOS QUE NECESITA EL BACKEND
+    const refundData = {
+      originalBillId: this.newPayment.originalBillId,
+      bill_date: this.newPayment.bill_date,
+      amount: this.newPayment.amount,
+      concept: this.newPayment.concept || `Abono para factura ${this.selectedBill!.bill_number}`
+    };
+
+    // Crear el abono con datos limpios
+    this.refundsService.createPayment(refundData).subscribe({
+      next: (data) => {
+        Swal.fire({
+          title: 'Éxito!',
+          text: 'Abono registrado correctamente',
+          icon: 'success'
+        });
+        this.closePaymentModal();
+        this.getListBills();
+      },
+      error: (e: HttpErrorResponse) => {
+        // Error manejado por interceptor
+      }
+    });
   }
 
   /**
@@ -197,7 +393,6 @@ export class BillsListComponent implements OnInit {
 
       }, error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
-        Swal.close();
       }
     })
   }
