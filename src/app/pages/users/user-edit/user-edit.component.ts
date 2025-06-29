@@ -50,8 +50,11 @@ export class UserEditComponent implements OnInit {
       if (id) {
         // Buscar los datos del usuario por su ID
         this.userService.getById(id).subscribe({
-          next: (user) => {
-            this.user = user; // Cargar los datos en el formulario
+          next: (data) => {
+            if (data && data.length > 0) {
+              this.user = data[0];
+            }
+            this.router.navigate(['/dashboard/users/list']);
           },
           error: (e: HttpErrorResponse) => {
             // Error manejado por interceptor
@@ -93,15 +96,17 @@ export class UserEditComponent implements OnInit {
     }
 
     // Enviar datos actualizados al servidor
-    this.userService.updateUser(this.user.id, this.user).subscribe({
+    this.userService.updateUser(this.user.id, cleanUser).subscribe({
       next: (data) => {
-        this.user = data;
-        Swal.fire({
-          title: '¡Éxito!',
-          text: 'Usuario actualizado correctamente.',
-          icon: 'success',
-          confirmButtonText: 'Ok'
-        });
+        if (data && data.length > 0) {
+          this.user = data[0];
+          Swal.fire({
+            title: '¡Éxito!',
+            text: 'Usuario actualizado correctamente.',
+            icon: 'success',
+            confirmButtonText: 'Ok'
+          });
+        }
         // Regresar a la lista de usuarios
         this.router.navigate(['/dashboard/users/list']);
       }, error: (e: HttpErrorResponse) => {

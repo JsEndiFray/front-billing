@@ -56,7 +56,9 @@ export class OwnersEditComponent implements OnInit {
         // Buscar los datos del propietario por su ID
         this.ownersService.getOwnerById(id).subscribe({
           next: (data) => {
-            this.owner = data; // Cargar los datos en el formulario
+            if (data && data.length > 0) {
+              this.owner = data[0];
+            }
           }, error: (e: HttpErrorResponse) => {
             // Error manejado por interceptor
           }
@@ -99,15 +101,18 @@ export class OwnersEditComponent implements OnInit {
     // Enviar datos actualizados al servidor
     this.ownersService.updateOwners(this.owner.id, cleanOwners).subscribe({
       next: (data) => {
-        this.owner = data;
-        Swal.fire({
-          title: '¡Éxito!',
-          text: 'Propietario actualizado correctamente.',
-          icon: 'success',
-          confirmButtonText: 'Ok'
-        });
-        // Regresar a la lista de propietarios
-        this.router.navigate(['/dashboard/owners/list'])
+        if (data && data.length) {
+          this.owner = data[0];
+          Swal.fire({
+            title: '¡Éxito!',
+            text: 'Propietario actualizado correctamente.',
+            icon: 'success',
+            confirmButtonText: 'Ok'
+          });
+          // Regresar a la lista de propietarios
+          this.router.navigate(['/dashboard/owners/list'])
+        }
+
       }, error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
       }

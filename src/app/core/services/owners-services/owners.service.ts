@@ -19,17 +19,17 @@ export class OwnersService {
     return this.api.get<Owners[]>('owners');
   }
 
-  getOwnerById(id: number): Observable<Owners> {
-    return this.api.get<Owners>(`owners/${id}`);
+  getOwnerById(id: number): Observable<Owners[]> {
+    return this.api.get<Owners[]>(`owners/${id}`);
   }
 
   // Métodos CRUD
-  createOwners(owners: Owners): Observable<Owners> {
-    return this.api.post<Owners>('owners', owners);
+  createOwners(owners: Owners): Observable<Owners[]> {
+    return this.api.post('owners', owners);
   }
 
-  updateOwners(id: number, data: Owners): Observable<Owners> {
-    return this.api.put<Owners>(`owners/${id}`, data)
+  updateOwners(id: number, data: Owners): Observable<Owners[]> {
+    return this.api.put(`owners/${id}`, data)
   }
 
   deleteOwner(id: number): Observable<Owners> {

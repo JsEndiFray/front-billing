@@ -39,7 +39,8 @@ export class EstatesEditComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private estateValidatorServices: EstatesValidatorService,
-  ) {}
+  ) {
+  }
 
   /**
    * Se ejecuta al cargar el componente
@@ -52,8 +53,10 @@ export class EstatesEditComponent implements OnInit {
       if (id) {
         // Buscar los datos de la propiedad por su ID
         this.estateService.getById(id).subscribe({
-          next: (estates) => {
-            this.estate = estates; // Cargar los datos en el formulario
+          next: (data) => {
+            if (data && data.length > 0) {
+              this.estate = data[0];
+            }
           },
           error: (e: HttpErrorResponse) => {
             // Error manejado por interceptor
@@ -96,16 +99,19 @@ export class EstatesEditComponent implements OnInit {
 
     // Enviar datos actualizados al servidor
     this.estateService.updateEstate(this.estate.id, cleanEstate).subscribe({
-      next: (data: Estates) => {
-        this.estate = data;
-        Swal.fire({
-          title: '¡Éxito!',
-          text: 'Inmueble actualizado correctamente.',
-          icon: 'success',
-          confirmButtonText: 'Ok'
-        });
-        // Regresar a la lista de propiedades
-        this.router.navigate(['/dashboard/estates/list']);
+      next: (data) => {
+        if (data && data.length > 0) {
+          this.estate = data[0];
+          Swal.fire({
+            title: '¡Éxito!',
+            text: 'Inmueble actualizado correctamente.',
+            icon: 'success',
+            confirmButtonText: 'Ok'
+          });
+          // Regresar a la lista de propiedades
+          this.router.navigate(['/dashboard/estates/list']);
+        }
+
       },
       error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
@@ -116,7 +122,7 @@ export class EstatesEditComponent implements OnInit {
   /**
    * Cancelar edición y regresar a la lista
    */
-  goBack(){
+  goBack() {
     this.router.navigate(['/dashboard/estates/list']);
   }
 }

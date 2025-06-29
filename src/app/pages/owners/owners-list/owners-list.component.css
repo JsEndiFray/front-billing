@@ -165,7 +165,7 @@ th:nth-child(1) { width: auto; }  /* ID */
 th:nth-child(2) { width: auto; }  /* Nombre */
 th:nth-child(3) { width: auto; }  /* Apellidos */
 th:nth-child(4) { width: 10%; }  /* Email */
-th:nth-child(5) { width: 6%; }  /* NIF */
+th:nth-child(5) { width: 8%; }  /* NIF */
 th:nth-child(6) { width: auto; }  /*Teléfono*/
 th:nth-child(7) { width: auto; }  /* Dirección */
 th:nth-child(8) { width: auto; }   /* C.P */

@@ -54,9 +54,7 @@ export class LoginComponent {
     // Autenticar usuario
     this.authService.login(user).subscribe({
       next: (login) => {
-        // TODO: El AuthService ya maneja tokens automáticamente
-        // Este código duplica funcionalidad del servicio
-        localStorage.setItem('token', login.accessToken);
+        /*localStorage.setItem('token', login.accessToken);
         localStorage.setItem('refreshToken', login.refreshToken);
 
         localStorage.setItem('userData', JSON.stringify({
@@ -65,7 +63,7 @@ export class LoginComponent {
           role: login.user.role
         }));
 
-        this.authService.activateSession();
+        this.authService.activateSession();*/
         this.router.navigate(['/dashboard']);
       },
       error: (e: HttpErrorResponse) => {

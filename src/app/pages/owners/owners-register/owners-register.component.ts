@@ -66,20 +66,22 @@ export class OwnersRegisterComponent {
     // Enviar datos al servidor para crear propietario
     this.ownersServices.createOwners(cleanOwners).subscribe({
       next: (data) => {
-        Swal.fire({
-          title: "Propietario registrado correctamente",
-          icon: "success",
-          draggable: true
-        });
-        // Redirigir a la lista después del registro exitoso
-        this.router.navigate(['/dashboard/owners/list']);
-
+        if (data && data.length > 0) {
+          Swal.fire({
+            title: "Propietario registrado correctamente",
+            icon: "success",
+            draggable: true
+          });
+          // Redirigir a la lista después del registro exitoso
+          this.router.navigate(['/dashboard/owners/list']);
+        }
       }, error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
       }
     })
   }
-  goBack(){
+
+  goBack() {
     this.router.navigate(['/dashboard/owners/list'])
   }
 }

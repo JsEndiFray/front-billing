@@ -75,9 +75,10 @@ export class EstateOwnersEditComponent implements OnInit {
         // Buscar los datos de la relación a editar
         this.estateOwnersService.getEstatesOwnersById(id).subscribe({
           next: (data) => {
-            this.estateOwners = data;
-            this.originalPercentage = data.ownership_percentage || 0;
-
+            if (data && data.length > 0) {
+              this.estateOwners = data[0];
+              this.originalPercentage = data[0].ownership_percentage || 0;
+            }
             // Cargar las listas y después buscar las relaciones
             this.loadDataAndFindRelations();
 
@@ -202,16 +203,16 @@ export class EstateOwnersEditComponent implements OnInit {
     // Enviar datos actualizados al servidor
     this.estateOwnersService.updateEstateOwners(this.estateOwners.id, cleanData).subscribe({
       next: (data) => {
-        this.estateOwners = data;
-        Swal.fire({
-          title: '¡Éxito!',
-          text: 'Relación inmueble-propietario actualizada correctamente.',
-          icon: 'success',
-          confirmButtonText: 'Ok'
-        });
-        // Regresar a la lista de relaciones
-        this.router.navigate(['/dashboard/estates-owners/list']);
-
+        if (data && data.length > 0) {
+          Swal.fire({
+            title: '¡Éxito!',
+            text: 'Relación inmueble-propietario actualizada correctamente.',
+            icon: 'success',
+            confirmButtonText: 'Ok'
+          });
+          // Regresar a la lista de relaciones
+          this.router.navigate(['/dashboard/estates-owners/list']);
+        }
       }, error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
       }

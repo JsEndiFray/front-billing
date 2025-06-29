@@ -19,17 +19,17 @@ export class EstateOwnersService {
     return this.api.get<EstatesOwners[]>('estate-owners')
   }
 
-  getEstatesOwnersById(id: number): Observable<EstatesOwners> {
-    return this.api.get<EstatesOwners>(`estate-owners/${id}`)
+  getEstatesOwnersById(id: number): Observable<EstatesOwners[]> {
+    return this.api.get<EstatesOwners[]>(`estate-owners/${id}`)
   }
 
   // Métodos CRUD
-  createEstateOwners(data: EstatesOwners): Observable<EstatesOwners> {
-    return this.api.post<EstatesOwners>('estate-owners', data)
+  createEstateOwners(data: EstatesOwners): Observable<EstatesOwners[]> {
+    return this.api.post('estate-owners', data)
   }
 
-  updateEstateOwners(id: number, data: EstatesOwners): Observable<EstatesOwners> {
-    return this.api.put<EstatesOwners>(`estate-owners/${id}`, data)
+  updateEstateOwners(id: number, data: EstatesOwners): Observable<EstatesOwners[]> {
+    return this.api.put(`estate-owners/${id}`, data)
   }
 
   deleteEstateOwners(id: number): Observable<EstatesOwners> {

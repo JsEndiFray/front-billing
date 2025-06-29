@@ -65,21 +65,23 @@ export class EstatesRegisterComponent {
 
     // Enviar datos al servidor para crear la propiedad
     this.estateService.createEstate(cleanEstate).subscribe({
-      next: (data: Estates) => {
-        Swal.fire({
-          title: "Se ha registrado correctamente.",
-          icon: "success",
-          draggable: true
-        });
-        // Redirigir a la lista después del registro exitoso
-        this.router.navigate(['/dashboard/estates/list']);
+      next: (data) => {
+        if (data && data.length > 0) {
+          Swal.fire({
+            title: "Se ha registrado correctamente.",
+            icon: "success",
+            draggable: true
+          });
+          // Redirigir a la lista después del registro exitoso
+          this.router.navigate(['/dashboard/estates/list']);
+        }
       }, error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
       }
     })
   }
 
-  goBack(){
+  goBack() {
     this.router.navigate(['/dashboard/estates/list'])
   }
 }

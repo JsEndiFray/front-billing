@@ -12,15 +12,16 @@ import {Estates} from '../../../interface/estates.interface';
 })
 export class EstatesService {
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService) {
+  }
 
   // Métodos de consulta
   getAllEstate(): Observable<Estates[]> {
     return this.api.get<Estates[]>('estates');
   }
 
-  getById(id: number): Observable<Estates> {
-    return this.api.get<Estates>(`estates/${id}`);
+  getById(id: number): Observable<Estates[]> {
+    return this.api.get<Estates[]>(`estates/${id}`);
   }
 
   getByCadastralReference(cadastral: string): Observable<Estates> {
@@ -28,15 +29,15 @@ export class EstatesService {
   }
 
   // Métodos CRUD
-  createEstate(data: Estates): Observable<Estates> {
-    return this.api.post<Estates>(`estates`, data)
+  createEstate(data: Estates): Observable<Estates[]> {
+    return this.api.post(`estates`, data)
   }
 
-  updateEstate(id: number, data: Estates): Observable<Estates> {
-    return this.api.put<Estates>(`estates/${id}`, data);
+  updateEstate(id: number, data: Estates): Observable<Estates[]> {
+    return this.api.put(`estates/${id}`, data);
   }
 
   deleteEstate(id: number): Observable<Estates> {
-    return this.api.delete<Estates>('estates/' + id)
+    return this.api.delete<Estates>(`estates/${id}`)
   }
 }

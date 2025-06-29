@@ -121,13 +121,15 @@ export class EstateOwnersRegisterComponent implements OnInit {
     // Enviar datos al servidor para crear la relación
     this.estateOwnerService.createEstateOwners(newOwnersEstate).subscribe({
       next: (data) => {
-        Swal.fire({
-          title: '¡Éxito!',
-          text: 'Relación registrada correctamente',
-          icon: 'success'
-        });
-        // Regresar a la lista después del registro exitoso
-        this.router.navigate(['/dashboard/estates-owners/list']);
+        if (data && data.length > 0) {
+          Swal.fire({
+            title: '¡Éxito!',
+            text: 'Relación registrada correctamente',
+            icon: 'success'
+          });
+          // Regresar a la lista después del registro exitoso
+          this.router.navigate(['/dashboard/estates-owners/list']);
+        }
       },
       error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor

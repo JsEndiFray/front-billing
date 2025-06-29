@@ -75,13 +75,14 @@ export class UsersRegisterComponent {
     // Enviar datos al servidor para crear usuario
     this.authService.registerUser(newUser).subscribe({
       next: (data) => {
-        Swal.fire({
-          title: "Se ha registrado correctamente.",
-          icon: "success",
-          draggable: true
-        });
-        // Redirigir al login después del registro exitoso
-        this.router.navigate(['/dashboard/users/lits']);
+        if (data && data.length) {
+          Swal.fire({
+            title: "Se ha registrado correctamente.",
+            icon: "success",
+            draggable: true
+          });
+          this.router.navigate(['/dashboard/users/list'])
+        }
       },
       error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
@@ -89,7 +90,7 @@ export class UsersRegisterComponent {
     });
   };
 
-  goBack(){
+  goBack() {
     this.router.navigate(['/dashboard/users/list'])
   }
 }

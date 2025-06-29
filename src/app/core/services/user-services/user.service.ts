@@ -20,13 +20,13 @@ export class UserService {
     return this.api.get<User[]>('users');
   }
 
-  getById(id: number): Observable<User> {
-    return this.api.get<User>(`users/${id}`);
+  getById(id: number): Observable<User[]> {
+    return this.api.get<User[]>(`users/${id}`);
   }
 
   // Métodos de modificación
-  updateUser(id: number, data: User): Observable<User> {
-    return this.api.put<User>(`users/${id}`, data)
+  updateUser(id: number, data: User): Observable<User[]> {
+    return this.api.put(`users/${id}`, data)
   }
 
   deleteUser(id: number): Observable<User> {
