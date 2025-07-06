@@ -1,0 +1,180 @@
+<!-- Formulario de registro de nuevos empleados -->
+<div class="employee-register-wrapper">
+
+  <!-- Título del formulario -->
+  <h2 class="employee-register-title">Registrar Empleados</h2>
+
+  <!-- Formulario principal -->
+  <form (ngSubmit)="createEmployee()" class="employee-register-form">
+
+    <!-- Sección: Datos personales -->
+
+    <!-- Campo nombre -->
+    <div class="employee-register-field">
+      <label for="name" class="employee-register-label">Nombre</label>
+      <input
+        type="text"
+        [(ngModel)]="employee.name"
+        name="name"
+        id="name"
+        placeholder="Ingresa el nombre"
+        class="employee-register-input"
+        autocomplete="given-name"
+        required
+      />
+    </div>
+
+    <!-- Campo apellidos -->
+    <div class="employee-register-field">
+      <label for="lastname" class="employee-register-label">Apellidos</label>
+      <input
+        type="text"
+        [(ngModel)]="employee.lastname"
+        name="lastname"
+        id="lastname"
+        placeholder="Ingresa los apellidos"
+        class="employee-register-input"
+        autocomplete="family-name"
+        required
+      />
+    </div>
+
+    <!-- Sección: Datos de contacto -->
+
+    <!-- Campo email -->
+    <div class="employee-register-field">
+      <label for="email" class="employee-register-label">Email</label>
+      <input
+        type="email"
+        [(ngModel)]="employee.email"
+        name="email"
+        id="email"
+        placeholder="ejemplo@correo.com"
+        class="employee-register-input employee-register-email"
+        autocomplete="email"
+        required
+      />
+    </div>
+
+    <!-- Campo identificación -->
+    <div class="employee-register-field">
+      <label for="identification" class="employee-register-label">NIF</label>
+      <input
+        type="text"
+        [(ngModel)]="employee.identification"
+        name="identification"
+        id="identification"
+        placeholder="12345678A"
+        class="employee-register-input employee-register-nif"
+        required
+      />
+    </div>
+
+    <!-- Campo teléfono -->
+    <div class="employee-register-field">
+      <label for="phone" class="employee-register-label">Teléfono</label>
+      <input
+        type="tel"
+        [(ngModel)]="employee.phone"
+        name="phone"
+        id="phone"
+        placeholder="+34 123 456 789"
+        class="employee-register-input"
+        autocomplete="tel"
+        required
+      />
+    </div>
+
+    <!-- Sección: Dirección -->
+
+    <!-- Campo dirección completa -->
+    <div class="employee-register-field employee-register-field-full">
+      <label for="address" class="employee-register-label">Dirección</label>
+      <input
+        type="text"
+        [(ngModel)]="employee.address"
+        name="address"
+        id="address"
+        placeholder="Calle, número, piso, puerta"
+        class="employee-register-input"
+        autocomplete="street-address"
+        required
+      />
+    </div>
+
+    <!-- Campo código postal -->
+    <div class="employee-register-field">
+      <label for="postal_code" class="employee-register-label">Código Postal</label>
+      <input
+        type="text"
+        [(ngModel)]="employee.postal_code"
+        name="postal_code"
+        id="postal_code"
+        placeholder="28001"
+        class="employee-register-input employee-register-postal"
+        autocomplete="postal-code"
+        pattern="[0-9]{5}"
+        maxlength="5"
+        required
+      />
+    </div>
+
+    <!-- Campo localidad -->
+    <div class="employee-register-field">
+      <label for="location" class="employee-register-label">Localidad</label>
+      <input
+        type="text"
+        [(ngModel)]="employee.location"
+        name="location"
+        id="location"
+        placeholder="Madrid"
+        class="employee-register-input"
+        autocomplete="address-level2"
+        required
+      />
+    </div>
+
+    <!-- Campo provincia -->
+    <div class="employee-register-field">
+      <label for="province" class="employee-register-label">Provincia</label>
+      <input
+        type="text"
+        [(ngModel)]="employee.province"
+        name="province"
+        id="province"
+        placeholder="Madrid"
+        class="employee-register-input"
+        autocomplete="address-level1"
+        required
+      />
+    </div>
+
+    <!-- Campo país -->
+    <div class="employee-register-field">
+      <label for="country" class="employee-register-label">País</label>
+      <input
+        type="text"
+        [(ngModel)]="employee.country"
+        name="country"
+        id="country"
+        placeholder="España"
+        class="employee-register-input"
+        autocomplete="country-name"
+        required
+      />
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="employee-register-buttons">
+      <button type="submit" class="employee-register-btn-primary">
+        Registrar Empleado
+      </button>
+      <button type="button" class="employee-register-btn-secondary" (click)="goBack()">
+        ← Cancelar
+      </button>
+    </div>
+
+  </form>
+
+
+</div>

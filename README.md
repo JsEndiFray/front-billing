@@ -5,7 +5,7 @@ Este es un sistema de facturación desarrollado con **Angular 19+** para el fron
 
 ## Características principales
 
-- Gestión de usuarios, clientes, propietarios, inmuebles y facturas.
+- Gestión de empleados, usuarios, clientes, propietarios, inmuebles y facturas.
 - Seguridad con interceptor de tokens.
 - Manejo de errores centralizado con interceptor.
 - Interfaces claras para cada entidad.
@@ -44,7 +44,7 @@ Este frontend Angular forma parte de un sistema **dockerizado completo** que inc
 
 ### ✅ Para lanzar todo con un solo comando:
 ```bash
-docker-compose -f docker-compose.fullstack.yml up -d
+docker-compose => docker-compose up -d
 ```
 
 Esto levantará:
@@ -98,11 +98,4 @@ Navega a `http://localhost:4200/`. La aplicación se recargará automáticamente
 - **Tests unitarios**: `ng test`
 - **Generar componentes**: `ng generate component nombre`
 
-## Pendientes
-
-- Completar lógica y componentes para:
-  - `owners`
-  - `clients`
-  - `users`
-  - `estates-owners`
 

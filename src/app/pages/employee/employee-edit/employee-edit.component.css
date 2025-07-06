@@ -1,0 +1,194 @@
+/* OWNERS EDIT MINIMALISTA - Solo 1.8KB */
+
+/* CONTENEDOR PRINCIPAL */
+.form-wrapper {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 1rem;
+  padding: 2.5rem;
+  margin: 2rem auto;
+  max-width: 50rem;
+  width: 90%;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+/* TÍTULO PRINCIPAL */
+h2 {
+  color: #1f2937;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* FORMULARIO */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* SECCIONES DEL FORMULARIO */
+.form-section {
+  background: #f9fafb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 0.0625rem solid #e5e7eb;
+}
+
+.form-section h3 {
+  color: #1f2937;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  border-bottom: 0.0625rem solid #e5e7eb;
+  padding-bottom: 0.75rem;
+}
+
+/* GRID PARA FORMULARIOS */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1.5rem;
+}
+
+/* CAMPO QUE OCUPA TODO EL ANCHO */
+.full-width {
+  grid-column: 1 / -1;
+}
+
+/* LABELS */
+label {
+  color: #374151;
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+/* INPUTS */
+input {
+  padding: 0.75rem;
+  border: 0.0625rem solid #d1d5db;
+  border-radius: 0.5rem;
+  background: #ffffff;
+  color: #374151;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+/* PLACEHOLDER */
+input::placeholder {
+  color: #9ca3af;
+}
+
+/* ESTADOS FOCUS */
+input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* ESTADOS HOVER */
+input:hover:not(:focus) {
+  border-color: #9ca3af;
+}
+
+/* CONTENEDOR DE BOTONES */
+.button-group {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+/* BOTONES */
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+  transform: translateY(-0.0625rem);
+}
+
+.btn-secondary {
+  background: #f9fafb;
+  color: #374151;
+  border: 0.0625rem solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+/* RESPONSIVE TABLET */
+@media (max-width: 48rem) {
+  .form-wrapper {
+    padding: 2rem;
+    margin: 1.5rem auto;
+    width: 95%;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-section {
+    padding: 1.25rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .button-group {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* RESPONSIVE MÓVIL */
+@media (max-width: 30rem) {
+  .form-wrapper {
+    padding: 1.5rem;
+    margin: 1rem auto;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .form-section {
+    padding: 1rem;
+  }
+
+  input {
+    padding: 0.625rem;
+    font-size: 0.875rem;
+  }
+
+  .btn-primary, .btn-secondary {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+    width: 100%;
+  }
+}

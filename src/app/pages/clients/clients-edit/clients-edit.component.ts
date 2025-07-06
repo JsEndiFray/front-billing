@@ -83,8 +83,10 @@ export class ClientsEditComponent implements OnInit {
       if (id) {
         // Buscar los datos del cliente por su ID
         this.clientesServices.getClientById(id).subscribe({
-          next: (client: Clients) => {
-            this.client = client;
+          next: (data) => {
+            if (data && data.length > 0) {
+              this.client = data[0];
+            }
             // Si es autónomo con empresa, cargar el nombre de la empresa
             if (this.client.type_client === 'autonomo' && this.client.parent_company_id) {
               this.loadCompanyName(this.client.parent_company_id);
@@ -124,9 +126,9 @@ export class ClientsEditComponent implements OnInit {
    */
   private loadCompanyName(companyId: number): void {
     this.clientesServices.getClientById(companyId).subscribe({
-      next: (company: Clients) => {
+      next: (company) => {
         // Si es empresa usar company_name, si no usar name
-        this.client.parent_company_name = company.company_name || company.name;
+        this.client.parent_company_name = company[0]?.company_name || company[0]?.name;
       },
       error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
@@ -143,10 +145,10 @@ export class ClientsEditComponent implements OnInit {
 
     // Obtener los datos completos del administrador
     this.clientesServices.getClientById(this.selectedAdminId).subscribe({
-      next: (adminData: Clients) => {
+      next: (adminData) => {
         // Actualizar con todos sus datos + la nueva relación
         const updateData: Partial<Clients> = {
-          ...adminData,  // Conservar todos sus datos existentes
+          ...adminData[0],  // Conservar todos sus datos existentes
           parent_company_id: this.client.id,
           relationship_type: 'administrator'
         };
@@ -185,12 +187,12 @@ export class ClientsEditComponent implements OnInit {
     // Limpiar y crear el nuevo administrador
     const cleanAdmin = this.clientsValidatorServices.cleanClientData(this.newAdmin);
     this.clientesServices.createClientes(cleanAdmin).subscribe({
-      next: (newAdmin: Clients) => {
+      next: (newAdmin) => {
         // Vincular el nuevo administrador con la empresa
-        this.clientesServices.associateClientToCompany(this.client.id!, newAdmin.id!).subscribe({
-          next: (adminActualizado: Clients) => {
-            this.clientesServices.getClientById(newAdmin.id!).subscribe({
-              next: (verificacion: Clients) => {
+        this.clientesServices.associateClientToCompany(this.client.id!, newAdmin[0].id!).subscribe({
+          next: (adminActualizado) => {
+            this.clientesServices.getClientById(newAdmin[0].id!).subscribe({
+              next: (verificacion) => {
                 this.performClientUpdate();
               }
             });
@@ -214,16 +216,18 @@ export class ClientsEditComponent implements OnInit {
     const cleanClient = this.clientsValidatorServices.cleanClientData(this.client);
 
     this.clientesServices.updateClient(this.client.id!, cleanClient).subscribe({
-      next: (data: Clients) => {
-        this.client = data;
-        Swal.fire({
-          title: '¡Éxito!',
-          text: 'Cliente actualizado correctamente.',
-          icon: 'success',
-          confirmButtonText: 'Ok'
-        });
-        // Regresar a la lista de clientes
-        this.router.navigate(['/dashboard/clients/list']);
+      next: (data) => {
+        if (data && data.length > 0) {
+          this.client = data[0];
+          Swal.fire({
+            title: '¡Éxito!',
+            text: 'Cliente actualizado correctamente.',
+            icon: 'success',
+            confirmButtonText: 'Ok'
+          });
+          // Regresar a la lista de clientes
+          this.router.navigate(['/dashboard/clients/list']);
+        }
       },
       error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor

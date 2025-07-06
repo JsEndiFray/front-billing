@@ -21,8 +21,8 @@ export class BillsService {
   }
 
   //búsqueda por ID
-  getBillById(id: number): Observable<Bill>{
-    return this.api.get<Bill>(`bills/${id}`)
+  getBillById(id: number): Observable<Bill[]>{
+    return this.api.get<Bill[]>(`bills/${id}`)
   }
 
   //DESCARGA DE PDF
@@ -33,23 +33,23 @@ export class BillsService {
   }
 
   //CREATE
-  createBills(data: Bill): Observable<Bill> {
-    return this.api.post<Bill>('bills', data)
+  createBills(data: Bill): Observable<Bill[]> {
+    return this.api.post('bills', data)
   }
 
   //UPDATE
-  updateBills(id: number, data: Bill): Observable<Bill> {
-    return this.api.put<Bill>(`bills/${id}`, data)
+  updateBills(id: number, data: Bill): Observable<Bill[]> {
+    return this.api.put(`bills/${id}`, data)
   }
 
   //DELETE
-  deleteBills(id: number): Observable<Bill> {
-    return this.api.delete<Bill>(`bills/${id}`)
+  deleteBills(id: number): Observable<Bill[]> {
+    return this.api.delete<Bill[]>(`bills/${id}`)
   }
 
   //NUEVO MÉTODO PARA ACTUALIZAR ESTADO DE PAGO
-  updatePaymentStatus(id: number, paymentData: Bill): Observable<Bill> {
-    return this.api.put<Bill>(`bills/${id}/payment`, paymentData);
+  updatePaymentStatus(id: number, paymentData: Bill): Observable<Bill[]> {
+    return this.api.put(`bills/${id}/payment`, paymentData);
   }
 
 }

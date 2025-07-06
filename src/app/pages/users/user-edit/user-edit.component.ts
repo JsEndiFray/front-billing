@@ -54,7 +54,6 @@ export class UserEditComponent implements OnInit {
             if (data && data.length > 0) {
               this.user = data[0];
             }
-            this.router.navigate(['/dashboard/users/list']);
           },
           error: (e: HttpErrorResponse) => {
             // Error manejado por interceptor

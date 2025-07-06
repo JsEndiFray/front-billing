@@ -58,7 +58,8 @@ export class ClientsRegisterComponent implements OnInit {
     private clientsValidatorService: ClientsValidatorService,
     private router: Router,
     private clientsService: ClientsService
-  ) {}
+  ) {
+  }
 
   /**
    * Se ejecuta al cargar el componente
@@ -197,8 +198,8 @@ export class ClientsRegisterComponent implements OnInit {
 
     // Crear el cliente principal
     this.clientsService.createClientes(cleanClient).subscribe({
-      next: (data: Clients) => {
-        this.createdCompanyId = data.id;
+      next: (data) => {
+        this.createdCompanyId = data[0].id;
 
         // Si es empresa con administradores, crearlos después
         if (this.client.type_client === 'empresa' && this.administrators.length > 0) {
@@ -238,7 +239,7 @@ export class ClientsRegisterComponent implements OnInit {
 
     // Ejecutar todas las creaciones en paralelo
     Promise.all(adminPromises).then(
-      () => {
+      (results: (Clients[] | undefined)[]) => {
         // Todos los administradores creados correctamente
         Swal.fire({
           title: 'Éxito!',
@@ -273,7 +274,7 @@ export class ClientsRegisterComponent implements OnInit {
     this.router.navigate(['/dashboard/clients/list']);
   }
 
-  goBack(){
+  goBack() {
     this.router.navigate(['/dashboard/clients/list'])
   }
 }

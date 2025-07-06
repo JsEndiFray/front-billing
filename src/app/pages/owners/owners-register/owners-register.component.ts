@@ -67,6 +67,7 @@ export class OwnersRegisterComponent {
     this.ownersServices.createOwners(cleanOwners).subscribe({
       next: (data) => {
         if (data && data.length > 0) {
+          this.owner = data[0];
           Swal.fire({
             title: "Propietario registrado correctamente",
             icon: "success",

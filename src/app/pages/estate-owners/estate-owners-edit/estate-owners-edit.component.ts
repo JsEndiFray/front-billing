@@ -204,6 +204,7 @@ export class EstateOwnersEditComponent implements OnInit {
     this.estateOwnersService.updateEstateOwners(this.estateOwners.id, cleanData).subscribe({
       next: (data) => {
         if (data && data.length > 0) {
+          this.estateOwners = data[0];
           Swal.fire({
             title: '¡Éxito!',
             text: 'Relación inmueble-propietario actualizada correctamente.',

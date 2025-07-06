@@ -1,0 +1,125 @@
+<!-- Listado y gestión de empleados -->
+<div class="employee-wrapper">
+
+  <!-- Título principal -->
+  <h2 class="employee-title">Listado de Empleados</h2>
+
+  <!-- Sección de búsqueda -->
+  <div class="employee-search-container">
+
+    <!-- Campo de búsqueda con filtro en tiempo real -->
+    <div class="employee-search-wrapper">
+      <input
+        class="employee-search-input"
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()"
+        placeholder="Búsqueda por nombre, identificación, teléfono o NIF..."
+        autocomplete="off"
+      >
+      <!-- Iconos de búsqueda y limpiar -->
+      <div class="employee-search-actions">
+        <span class="employee-search-icon">🔍</span>
+        @if (searchTerm && searchTerm.trim() !== '') {
+          <button
+            class="employee-clear-button"
+            type="button"
+            (click)="clearSearch()"
+            title="Limpiar búsqueda"
+          >
+            ✕
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Contador de resultados de búsqueda -->
+    @if (searchTerm && searchTerm.trim() !== '') {
+      <div class="employee-search-results">
+        <span>Mostrado{{ employees.length }} de {{ allEmployees.length }} empleados</span>
+      </div>
+    }
+  </div>
+
+  <!-- Botón para nuevo registro -->
+  <button type="button" class="employee-btn-new" (click)="newEmployee()">
+    + Nuevo registro
+  </button>
+
+  <!-- Tabla de empleados -->
+  <div class="employee-table-container">
+    <table class="employee-table">
+      <!-- Encabezados de la tabla -->
+      <thead class="employee-table-head">
+      <tr>
+        <th class="employee-th">ID</th>
+        <th class="employee-th">Nombre</th>
+        <th class="employee-th">Apellidos</th>
+        <th class="employee-th">Email</th>
+        <th class="employee-th">NIF/NIE</th>
+        <th class="employee-th">Teléfono</th>
+        <th class="employee-th">Dirección</th>
+        <th class="employee-th">C.P</th>
+        <th class="employee-th">Localidad</th>
+        <th class="employee-th">Provincia</th>
+        <th class="employee-th">País</th>
+        <th class="employee-th">Creado</th>
+        <th class="employee-th">Actualizado</th>
+        <th class="employee-th">Acciones</th>
+      </tr>
+      </thead>
+
+      <!-- Contenido de la tabla -->
+      <tbody class="employee-table-body">
+      <!-- Lista de empleados existentes -->
+        @if (employees && employees.length > 0) {
+          @for (employee of employees; track employee.id) {
+            <tr class="employee-table-row">
+              <td class="employee-td">{{ employee.id }}</td>
+              <td class="employee-td">{{ employee.name }}</td>
+              <td class="employee-td">{{ employee.lastname }}</td>
+              <td class="employee-td employee-email">{{ employee.email }}</td>
+              <td class="employee-td employee-nif">{{ employee.identification }}</td>
+              <td class="employee-td">{{ employee.phone }}</td>
+              <td class="employee-td">{{ employee.address }}</td>
+              <td class="employee-td">{{ employee.postal_code }}</td>
+              <td class="employee-td">{{ employee.location }}</td>
+              <td class="employee-td">{{ employee.province }}</td>
+              <td class="employee-td">{{ employee.country }}</td>
+              <td class="employee-td">{{ employee.date_create | dataFormat}}</td>
+              <td class="employee-td">{{ employee.date_update | dataFormat}}</td>
+
+              <!-- Botones de acción por propietario -->
+              <td class="employee-td">
+                <button class="employee-btn-edit" (click)="editEmployee(employee.id!)">Editar</button>
+                <button class="employee-btn-delete" (click)="deleteEmployee(employee.id!)">Eliminar</button>
+              </td>
+            </tr>
+          }
+        } @else {
+          <!-- Estado cuando no hay empleados -->
+          <tr>
+            <td colspan="14" class="employee-no-data">
+              <div class="employee-empty-state">
+
+                <!-- Icono visual -->
+                <div class="employee-empty-icon">📄</div>
+
+                <!-- Mensaje -->
+                <h3 class="employee-empty-title">No hay registros</h3>
+                <p class="employee-empty-text">
+                  No hay empleados disponibles en este momento.
+                </p>
+
+                <!-- Botón para crear nuevo registro -->
+                <button class="employee-btn-create" (click)="newEmployee()" type="button">
+                  + Nuevo registro
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

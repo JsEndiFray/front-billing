@@ -85,7 +85,7 @@ export class BillsEditComponent implements OnInit {
         this.isEditMode = true;
         this.billsService.getBillById(id).subscribe({
           next: (data) => {
-            this.bill = data;
+            this.bill = data[0];
             // Formatear la fecha para el input HTML
             if (this.bill.date) {
               // Convertir de ISO a YYYY-MM-DD
@@ -181,7 +181,7 @@ export class BillsEditComponent implements OnInit {
     }
     this.billsService.updateBills(this.bill.id, cleanData).subscribe({
         next: (data) => {
-          this.bill = data;
+          this.bill = data[0];
           Swal.fire({
             title: 'Éxito!',
             text: `Factura actualizada con estado: ${this.paymentStatusLabels[this.bill.payment_status || 'pending']}`,

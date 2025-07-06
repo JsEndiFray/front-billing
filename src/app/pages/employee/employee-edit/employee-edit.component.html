@@ -1,0 +1,157 @@
+<!-- Formulario de edición de empleados -->
+<div class="form-wrapper">
+  <h2>Editar Empleados</h2>
+
+  <form (ngSubmit)="updateEmployee()">
+
+    <!-- Sección información personal -->
+    <div class="form-section">
+      <h3>👤 Información Personal</h3>
+      <div class="form-grid">
+        <!-- Campo nombre -->
+        <div>
+          <label for="name">Nombre *</label>
+          <input
+            type="text"
+            [(ngModel)]="employee.name"
+            name="name"
+            id="name"
+            placeholder="Nombre del empleado"
+            required>
+        </div>
+
+        <!-- Campo apellidos -->
+        <div>
+          <label for="lastname">Apellidos *</label>
+          <input
+            type="text"
+            [(ngModel)]="employee.lastname"
+            name="lastname"
+            id="lastname"
+            placeholder="Apellidos del empleado"
+            required>
+        </div>
+
+        <!-- Campo identificación -->
+        <div>
+          <label for="identification">Identificación *</label>
+          <input
+            type="text"
+            [(ngModel)]="employee.identification"
+            name="identification"
+            id="identification"
+            placeholder="DNI/NIE/PASS"
+            required>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección información de contacto -->
+    <div class="form-section">
+      <h3>📞 Información de Contacto</h3>
+      <div class="form-grid">
+        <!-- Campo email -->
+        <div>
+          <label for="email">Email *</label>
+          <input
+            type="email"
+            [(ngModel)]="employee.email"
+            name="email"
+            id="email"
+            placeholder="empleado@email.com"
+            required>
+        </div>
+
+        <!-- Campo teléfono -->
+        <div>
+          <label for="phone">Teléfono *</label>
+          <input
+            type="tel"
+            [(ngModel)]="employee.phone"
+            name="phone"
+            id="phone"
+            placeholder="123 456 789"
+            required>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección dirección -->
+    <div class="form-section">
+      <h3>🏠 Dirección</h3>
+      <div class="form-grid">
+        <!-- Campo dirección completa -->
+        <div class="full-width">
+          <label for="address">Dirección *</label>
+          <input
+            type="text"
+            [(ngModel)]="employee.address"
+            name="address"
+            id="address"
+            placeholder="Calle Principal 123, 2º A"
+            required>
+        </div>
+
+        <!-- Campo código postal -->
+        <div>
+          <label for="postal_code">Código Postal</label>
+          <input
+            type="text"
+            [(ngModel)]="employee.postal_code"
+            name="postal_code"
+            id="postal_code"
+            placeholder="28001"
+            pattern="[0-9]{5}">
+        </div>
+
+        <!-- Campo localidad -->
+        <div>
+          <label for="location">Localidad *</label>
+          <input
+            type="text"
+            [(ngModel)]="employee.location"
+            name="location"
+            id="location"
+            placeholder="Madrid"
+            required>
+        </div>
+
+        <!-- Campo provincia -->
+        <div>
+          <label for="province">Provincia *</label>
+          <input
+            type="text"
+            [(ngModel)]="employee.province"
+            name="province"
+            id="province"
+            placeholder="Madrid"
+            required>
+        </div>
+
+        <!-- Campo país -->
+        <div>
+          <label for="country">País</label>
+          <input
+            type="text"
+            [(ngModel)]="employee.country"
+            name="country"
+            id="country"
+            placeholder="España"
+            value="España">
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="button-group">
+      <button type="button" class="btn-secondary" (click)="goBack()">
+        ← Cancelar
+      </button>
+      <button type="submit" class="btn-primary">
+        ✓ Actualizar Empleado
+      </button>
+    </div>
+
+  </form>
+</div>
+

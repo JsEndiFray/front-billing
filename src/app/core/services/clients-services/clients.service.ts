@@ -19,8 +19,8 @@ export class ClientsService {
     return this.api.get<Clients[]>('clients');
   }
 
-  getByIdentification(identification: string): Observable<Clients> {
-    return this.api.get<Clients>(`search/identification/${identification}`);
+  getByIdentification(identification: string): Observable<Clients[]> {
+    return this.api.get<Clients[]>(`search/identification/${identification}`);
   }
 
   getCompanies(): Observable<Clients[]> {
@@ -31,17 +31,17 @@ export class ClientsService {
     return this.api.get<Clients[]>('clients/autonoms-with-companies')
   }
 
-  getClientById(id: number): Observable<Clients> {
-    return this.api.get<Clients>(`clients/${id}`);
+  getClientById(id: number): Observable<Clients[]> {
+    return this.api.get<Clients[]>(`clients/${id}`);
   }
 
   /**
    * Asocia cliente existente a empresa como administrador
    * Obtiene datos completos del cliente y los actualiza con la relación
    */
-  associateClientToCompany(companyId: number, clientId: number): Observable<Clients> {
+  associateClientToCompany(companyId: number, clientId: number): Observable<Clients[]> {
     return this.getClientById(clientId).pipe(
-      switchMap((clientData: Clients) => {
+      switchMap((clientData: Clients[]) => {
         const updateData: Partial<Clients> = {
           ...clientData,
           parent_company_id: companyId,
@@ -53,15 +53,15 @@ export class ClientsService {
   }
 
   // Métodos CRUD
-  createClientes(client: Clients): Observable<Clients> {
-    return this.api.post<Clients, Clients>('clients', client);
+  createClientes(client: Clients): Observable<Clients[]> {
+    return this.api.post('clients', client);
   }
 
-  updateClient(id: number, data: Partial<Clients>): Observable<Clients> {
-    return this.api.put<Clients>(`clients/${id}`, data as Clients);
+  updateClient(id: number, data: Partial<Clients>): Observable<Clients[]> {
+    return this.api.put(`clients/${id}`, data as Clients);
   }
 
-  deleleteUser(id: number): Observable<Clients> {
-    return this.api.delete<Clients>(`clients/${id}`)
+  deleleteUser(id: number): Observable<Clients[]> {
+    return this.api.delete<Clients[]>(`clients/${id}`)
   }
 }

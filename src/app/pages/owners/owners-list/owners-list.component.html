@@ -13,7 +13,7 @@
         type="text"
         [(ngModel)]="searchTerm"
         (input)="onSearchChange()"
-        placeholder="Busqueda por nombre, identificación, teléfono o NIF..."
+        placeholder="Búsqueda por nombre, identificación, teléfono o NIF..."
         class="owners-search-input"
         autocomplete="off"
       >
@@ -58,7 +58,7 @@
         <th class="owners-th">Nombre</th>
         <th class="owners-th">Apellidos</th>
         <th class="owners-th">Email</th>
-        <th class="owners-th">NIF</th>
+        <th class="owners-th">NIF/NIE</th>
         <th class="owners-th">Teléfono</th>
         <th class="owners-th">Dirección</th>
         <th class="owners-th">C.P</th>
@@ -73,7 +73,6 @@
 
       <!-- Contenido de la tabla -->
       <tbody class="owners-table-body">
-
       <!-- Lista de propietarios existentes -->
         @if(owners && owners.length > 0){
           @for (owner of owners; track owner.id) {
