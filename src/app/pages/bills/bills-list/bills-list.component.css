@@ -189,16 +189,19 @@ th:nth-child(4) { width: auto; }      /* Cliente */
 th:nth-child(5) { width: auto; }      /* Propietario */
 th:nth-child(6) { width: 3%; }      /* % */
 th:nth-child(7) { width: auto; }      /* Fecha */
-th:nth-child(8) { width: auto; }      /* Base Imponible */
-th:nth-child(9) { width: auto; }      /* IVA */
-th:nth-child(10) { width: auto; }     /* IRPF */
+th:nth-child(8) { width: 4%; }      /* Base Imponible */
+th:nth-child(9) { width: 4%; }      /* IVA */
+th:nth-child(10) { width: 4%; }     /* IRPF */
 th:nth-child(11) { width: 5%; }     /* Total */
-th:nth-child(12) { width: auto; }     /* Estado Pago */
-th:nth-child(13) { width: auto; }     /* Método Pago */
-th:nth-child(14) { width: auto; }     /* Fecha Pago */
-th:nth-child(15) { width: auto; }     /* Abonos */
-th:nth-child(16) { width: auto; }     /* F. Abonada */
-th:nth-child(17) { width: 15%; }    /* Acciones */
+th:nth-child(12) { width: 10%; }     /*Tipo de Factura*/
+th:nth-child(13) { width: 8%; }     /*Perido*/
+th:nth-child(14) { width: auto; }     /*Mes Correspondiente*/
+th:nth-child(15) { width: auto; }     /* Estado Pago */
+th:nth-child(16) { width: auto; }     /* Método Pago */
+th:nth-child(17) { width: auto; }     /* Fecha Pago */
+th:nth-child(18) { width: auto; }     /* Abonos */
+th:nth-child(19) { width: auto; }     /* F. Abonada */
+th:nth-child(20) { width: 12%; }    /* Acciones */
 
 /* ========================================
    FILAS Y CELDAS DE DATOS
@@ -808,6 +811,110 @@ th:nth-child(17) { width: 15%; }    /* Acciones */
 .btn-save:hover {
   background: #218838;
 }
+/* ========================================
+   🆕 ESTILOS PARA FACTURAS PROPORCIONALES
+   ======================================== */
+
+/* Badges de tipo de facturación */
+.bills-proportional-badge {
+  background: linear-gradient(135deg, #ddd6fe, #c4b5fd);
+  color: #6b21a8;
+  font-weight: 700;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  border: 1px solid #a855f7;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
+
+.bills-normal-badge {
+  background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+  color: #0c4a6e;
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  border: 1px solid #0284c7;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
+
+/* Período de facturación */
+.bills-proportional-period {
+  color: #dc2626;
+  font-weight: 700;
+  font-size: 0.75rem;
+  background: linear-gradient(45deg, #fef2f2, #fee2e2);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #fca5a5;
+  font-family: 'Courier New', monospace;
+  cursor: help;
+}
+
+.bills-normal-period {
+  color: #059669;
+  font-weight: 600;
+  font-size: 0.75rem;
+  background: linear-gradient(45deg, #f0fdf4, #dcfce7);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #86efac;
+  font-family: 'Courier New', monospace;
+}
+
+/* Mes de correspondencia */
+.bills-corresponding-month {
+  color: #6366f1;
+  font-weight: 600;
+  font-size: 0.75rem;
+  background: linear-gradient(45deg, #eef2ff, #e0e7ff);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #a5b4fc;
+  font-family: 'Courier New', monospace;
+}
+
+/* Hover effects */
+.bills-proportional-badge:hover {
+  background: linear-gradient(135deg, #c4b5fd, #a78bfa);
+  transform: translateY(-1px);
+}
+
+.bills-normal-badge:hover {
+  background: linear-gradient(135deg, #bae6fd, #93c5fd);
+  transform: translateY(-1px);
+}
+
+.bills-proportional-period:hover {
+  background: linear-gradient(45deg, #fee2e2, #fecaca);
+  transform: translateY(-1px);
+}
+
+/* ========================================
+   🆕 RESPONSIVE PARA NUEVAS COLUMNAS
+   ======================================== */
+
+/* Tablet */
+@media (max-width: 64rem) {
+  .bills-proportional-badge,
+  .bills-normal-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .bills-proportional-period,
+  .bills-normal-period,
+  .bills-corresponding-month {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+  }
+}
 
 /* RESPONSIVE DESIGN */
 
@@ -852,102 +959,6 @@ th:nth-child(17) { width: 15%; }    /* Acciones */
     min-width: 50px;
   }
 }
-
-/* Responsive para tablet */
-@media (max-width: 48rem) {
-  .bills-wrapper {
-    padding: 1rem;
-    margin: 1rem auto;
-  }
-
-  .bills-title {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .bills-search-container {
-    margin-bottom: 1.25rem;
-  }
-
-  .bills-search-wrapper {
-    max-width: 100%;
-  }
-
-  .bills-search-input {
-    padding: 0.5rem 2.5rem 0.5rem 0.75rem;
-    font-size: 0.75rem;
-  }
-
-  .bills-search-actions {
-    right: 0.625rem;
-  }
-
-  .bills-clear-button {
-    width: 1.125rem;
-    height: 1.125rem;
-    font-size: 0.6875rem;
-  }
-
-  .bills-table {
-    min-width: 100rem;
-  }
-
-  .bills-th,
-  .bills-td {
-    padding: 0.5rem 0.25rem;
-    font-size: 0.625rem;
-  }
-
-  .bills-btn-pdf,
-  .bills-btn-edit,
-  .bills-btn-delete,
-  .bills-btn-pay {
-    display: block;
-    width: 100%;
-    margin: 0.0625rem 0;
-    padding: 0.25rem;
-    font-size: 0.625rem;
-  }
-
-  .payment-status-container {
-    flex-direction: column;
-    gap: 0.125rem;
-  }
-
-  .bills-btn-edit-payment {
-    font-size: 0.625rem;
-  }
-
-  .bills-btn-save,
-  .bills-btn-cancel {
-    font-size: 0.625rem;
-    padding: 0.1875rem 0.25rem;
-  }
-
-  /* Modal responsive */
-  .modal-content {
-    width: 95%;
-    margin: 1rem;
-  }
-
-  .modal-header {
-    padding: 1rem 1.25rem;
-  }
-
-  .modal-body {
-    padding: 1.25rem;
-  }
-
-  .modal-buttons {
-    flex-direction: column;
-  }
-
-  .btn-cancel,
-  .btn-save {
-    width: 100%;
-  }
-}
-
 /* Responsive para móvil */
 @media (max-width: 30rem) {
   .bills-wrapper {

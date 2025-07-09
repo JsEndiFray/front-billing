@@ -59,7 +59,11 @@
         <th class="bills-th">IVA</th>
         <th class="bills-th">IRPF</th>
         <th class="bills-th">Total</th>
-        <!-- ✅ NUEVAS COLUMNAS DE PAGO -->
+        <!-- COLUMNAS NUEVAS -->
+        <th class="bills-th">Tipo Facturación</th>
+        <th class="bills-th">Período</th>
+        <th class="bills-th">Mes Correspondencia</th>
+        <!-- COLUMNAS DE PAGO -->
         <th class="bills-th">Estado Pago</th>
         <th class="bills-th">Método Pago</th>
         <th class="bills-th">Fecha Pago</th>
@@ -87,7 +91,37 @@
               <td class="bills-td bills-tax">{{ bill.irpf }}%</td>
               <td class="bills-td bills-total">{{ bill.total | currency:'EUR':'symbol':'1.2-2' }}</td>
 
-              <!-- ✅ NUEVA COLUMNA: ESTADO DE PAGO -->
+                <!-- NUEVA COLUMNA: TIPO DE FACTURACIÓN -->
+              <td class="bills-td">
+                <span
+                  [ngClass]="isBillProportional(bill) ? 'bills-proportional-badge' : 'bills-normal-badge'">
+                  @if (isBillProportional(bill)) {
+                    📊 {{ billingTypeLabels[1] }}
+                  } @else {
+                    📄 {{ billingTypeLabels[0] }}
+                  }
+                </span>
+              </td>
+
+              <!-- NUEVA COLUMNA: PERÍODO -->
+              <td class="bills-td">
+                @if (isBillProportional(bill)) {
+                  <span class="bills-proportional-period" [title]="getProportionalDays(bill)">
+                    {{ getProportionalPeriod(bill) }}
+                  </span>
+                } @else {
+                  <span class="bills-normal-period">Mes completo</span>
+                }
+              </td>
+
+              <!-- NUEVA COLUMNA: MES CORRESPONDENCIA -->
+              <td class="bills-td">
+                <span class="bills-corresponding-month">
+                  {{ getCorrespondingMonthDisplay(bill) }}
+                </span>
+              </td>
+
+              <!--COLUMNA: ESTADO DE PAGO -->
               <td class="bills-td">
                 @if (!isEditingPayment(bill.id!)) {
                   <!-- Modo visualización -->
@@ -116,7 +150,7 @@
                 }
               </td>
 
-              <!-- ✅ NUEVA COLUMNA: MÉTODO DE PAGO -->
+              <!--NUEVA COLUMNA: MÉTODO DE PAGO -->
               <td class="bills-td">
                 @if (!isEditingPayment(bill.id!)) {
                   <!-- Modo visualización -->
@@ -136,12 +170,12 @@
                 }
               </td>
 
-              <!-- ✅ NUEVA COLUMNA: FECHA DE PAGO -->
+              <!--  COLUMNA: FECHA DE PAGO -->
               <td class="bills-td">
                 @if (!isEditingPayment(bill.id!)) {
                   <!-- Modo visualización -->
                   <span class="payment-date-display">
-                    {{ bill.payment_date ? (bill.payment_date | dataFormat) : '-' }}
+                    {{ bill.payment_date ? (bill.payment_date! | dataFormat) : '-' }}
                   </span>
                 } @else {
                   <!-- Modo edición -->
@@ -169,7 +203,7 @@
                   <button class="bills-btn-pdf" (click)="downloadPDF(bill.id!)">📄 PDF</button>
                   <button class="bills-btn-pay" (click)="openPaymentModal(bill)">💰 Abonar</button>
                   <button class="bills-btn-edit" (click)="editBill(bill.id!)">Editar</button>
-                  <button class="bills-btn-delete" (click)="deleteBill(bill.id!)">Eliminar</button>
+                  <!--<button class="bills-btn-delete" (click)="deleteBill(bill.id!)">Eliminar</button>-->
                 } @else {
                   <!-- Botones de guardar/cancelar -->
                   <button
@@ -191,7 +225,7 @@
         } @else {
           <!-- Estado cuando no hay facturas -->
           <tr>
-            <td colspan="17" class="bills-no-data">
+            <td colspan="20" class="bills-no-data">
               <div class="bills-empty-state">
                 <div class="bills-empty-icon">📄</div>
                 <h3 class="bills-empty-title">Sin facturas</h3>

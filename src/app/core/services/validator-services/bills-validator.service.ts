@@ -34,6 +34,13 @@ export class BillsValidatorService {
       payment_date: bill.payment_date,
       payment_notes: bill.payment_notes || '',
 
+      //🆕 NUEVOS CAMPOS PROPORCIONALES INCLUIDOS
+      start_date: bill.start_date,
+      end_date: bill.end_date,
+      corresponding_month: bill.corresponding_month,
+      is_proportional: bill.is_proportional,
+
+
       date_create: bill.date_create,
       date_update: bill.date_update
     } as Bill;

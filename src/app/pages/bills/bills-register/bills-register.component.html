@@ -157,8 +157,124 @@
       />
     </div>
 
-    <!--NUEVA SECCIÓN: Información de Pago -->
+    <!--🆕 NUEVA SECCIÓN: Tipo de Facturación-->
+    <div class="bills-register-field bills-register-field-full">
+      <h3 class="bills-register-section-title">📊 Tipo de Facturación</h3>
+    </div>
 
+    <!-- Campo tipo de facturación -->
+    <div class="bills-register-field">
+      <label for="is_proportional" class="bills-register-label">Tipo de Facturación</label>
+      <select
+        [(ngModel)]="bill.is_proportional"
+        name="is_proportional"
+        id="is_proportional"
+        (change)="onBillingTypeChange()"
+        class="bills-register-select bills-register-billing-type">
+        <option value="0">{{ billingTypeLabels[0] }}</option>
+        <option value="1">{{ billingTypeLabels[1] }}</option>
+      </select>
+    </div>
+
+    <!-- Campo mes de correspondencia -->
+    <div class="bills-register-field">
+      <label for="corresponding_month" class="bills-register-label">Mes de Correspondencia</label>
+      <input
+        type="month"
+        [(ngModel)]="bill.corresponding_month"
+        name="corresponding_month"
+        id="corresponding_month"
+        class="bills-register-input bills-register-month"
+        placeholder="Ej: 2025-06 para Junio 2025"
+      />
+      <small class="bills-register-help-text">
+        Opcional: Para indicar a qué mes corresponde esta factura
+      </small>
+    </div>
+
+    <!-- Campos proporcionales (solo si está seleccionado) -->
+    @if (bill.is_proportional == 1) {
+      <div class="bills-register-field">
+        <label for="start_date" class="bills-register-label">
+          Fecha de Inicio *
+          <span class="bills-register-required">*</span>
+        </label>
+        <input
+          type="date"
+          [(ngModel)]="bill.start_date"
+          name="start_date"
+          id="start_date"
+          (change)="onProportionalDatesChange()"
+          class="bills-register-input bills-register-proportional-date"
+          required
+        />
+      </div>
+
+      <div class="bills-register-field">
+        <label for="end_date" class="bills-register-label">
+          Fecha de Fin *
+          <span class="bills-register-required">*</span>
+        </label>
+        <input
+          type="date"
+          [(ngModel)]="bill.end_date"
+          name="end_date"
+          id="end_date"
+          (change)="onProportionalDatesChange()"
+          class="bills-register-input bills-register-proportional-date"
+          required
+        />
+      </div>
+
+      <!-- Información de simulación proporcional -->
+      @if (simulationResult) {
+        <div class="bills-register-field bills-register-field-full">
+          <div class="bills-register-proportional-summary">
+            <h4>🧮 Cálculo Proporcional</h4>
+            <div class="proportional-details">
+              <div class="detail-item">
+                <span class="detail-label">Período:</span>
+                <span class="detail-value">{{ simulationResult.periodDescription }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Días facturados:</span>
+                <span class="detail-value">{{ simulationResult.details.days_billed }}
+                  de {{ simulationResult.details.days_in_month }} días</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Porcentaje:</span>
+                <span class="detail-value">{{ simulationResult.details.proportion_percentage }}%</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Base original:</span>
+                <span
+                  class="detail-value">{{ simulationResult.details.original_base | currency:'EUR':'symbol':'1.2-2' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Base proporcional:</span>
+                <span
+                  class="detail-value">{{ simulationResult.details.proportional_base | currency:'EUR':'symbol':'1.2-2' }}</span>
+              </div>
+              <div class="detail-item total-line">
+                <span class="detail-label">Total proporcional:</span>
+                <span class="detail-value">{{ simulationResult.total | currency:'EUR':'symbol':'1.2-2' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Estado de carga durante simulación -->
+      @if (isSimulating) {
+        <div class="bills-register-field bills-register-field-full">
+          <div class="bills-register-loading">
+            <span>🔄 Calculando facturación proporcional...</span>
+          </div>
+        </div>
+      }
+    }
+
+    <!--NUEVA SECCIÓN: Información de Pago -->
     <!-- Título de sección de pago -->
     <div class="bills-register-field bills-register-field-full">
       <h3 class="bills-register-section-title">💳 Información de Pago</h3>
@@ -231,7 +347,7 @@
       ></textarea>
     </div>
 
-    <!-- ✅ INFORMACIÓN VISUAL DEL ESTADO -->
+    <!--INFORMACIÓN VISUAL DEL ESTADO -->
     <div class="bills-register-field bills-register-field-full">
       <div class="bills-register-payment-summary">
         <div class="payment-summary-item">

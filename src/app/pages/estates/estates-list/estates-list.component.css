@@ -163,7 +163,7 @@
 
 /* DISTRIBUCIÓN DE COLUMNAS PARA PROPIEDADES (12 COLUMNAS) */
 th:nth-child(1) { width: auto }/*id*/
-th:nth-child(2) { width: auto }/*ref catastral*/
+th:nth-child(2) { width: 18% }/*ref catastral*/
 th:nth-child(3) { width: auto }/*precio*/
 th:nth-child(4) { width: auto }/*direción*/
 th:nth-child(5) { width: auto }/*cp*/

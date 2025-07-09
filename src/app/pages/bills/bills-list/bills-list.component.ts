@@ -1,5 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {Bill, PAYMENT_METHOD_LABELS, PAYMENT_STATUS_LABELS, Refunds} from '../../../interface/bills-interface';
+import {
+  Bill,
+  BILLING_TYPE_LABELS,
+  PAYMENT_METHOD_LABELS,
+  PAYMENT_STATUS_LABELS,
+  Refunds
+} from '../../../interface/bills-interface';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
 import {BillsService} from '../../../core/services/bills-services/bills.service';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -56,6 +62,7 @@ export class BillsListComponent implements OnInit {
   // Labels para mostrar en la UI
   paymentStatusLabels = PAYMENT_STATUS_LABELS;
   paymentMethodLabels = PAYMENT_METHOD_LABELS;
+  billingTypeLabels = BILLING_TYPE_LABELS;
 
   //Datos temporales para edición rápida - AHORA USA BILL
   editingPayment: { [billId: number]: Bill } = {};
@@ -76,6 +83,70 @@ export class BillsListComponent implements OnInit {
   ngOnInit(): void {
     this.getListBills();
   }
+
+
+  /**
+   * Determina si una factura es proporcional
+   */
+  isBillProportional(bill: Bill): boolean {
+    return bill.is_proportional === 1;
+  }
+
+  /**
+   * Genera la descripción del período para facturas proporcionales
+   */
+  getProportionalPeriod(bill: Bill): string {
+    if (!this.isBillProportional(bill)) {
+      return '-';
+    }
+
+    if (bill.start_date && bill.end_date) {
+      const startDate = new Date(bill.start_date);
+      const endDate = new Date(bill.end_date);
+
+      const startFormatted = `${startDate.getDate().toString().padStart(2, '0')}/${(startDate.getMonth() + 1).toString().padStart(2, '0')}`;
+      const endFormatted = `${endDate.getDate().toString().padStart(2, '0')}/${(endDate.getMonth() + 1).toString().padStart(2, '0')}`;
+
+      return `${startFormatted} al ${endFormatted}`;
+    }
+
+    return 'Sin período';
+  }
+
+  /**
+   * Formatea el mes de correspondencia para mostrar
+   */
+  getCorrespondingMonthDisplay(bill: Bill): string {
+    if (!bill.corresponding_month) {
+      return '-';
+    }
+
+    const [year, month] = bill.corresponding_month.split('-');
+    const monthNames = [
+      'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+      'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+    ];
+
+    const monthName = monthNames[parseInt(month, 10) - 1];
+    return `${monthName} ${year}`;
+  }
+
+  /**
+   * Calcula los días facturados para facturas proporcionales
+   */
+  getProportionalDays(bill: Bill): string {
+    if (!this.isBillProportional(bill) || !bill.start_date || !bill.end_date) {
+      return '-';
+    }
+
+    const startDate = new Date(bill.start_date);
+    const endDate = new Date(bill.end_date);
+    const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+    return `${diffDays} días`;
+  }
+
 
   /**
    * Obtiene todas las facturas del servidor
@@ -100,7 +171,7 @@ export class BillsListComponent implements OnInit {
     this.bills = this.searchService.filterData(
       this.allBills,
       this.searchTerm,
-      ['bill_number', 'estates_id', 'clients_id', 'owners_id']
+      ['bill_number', 'estates_id', 'clients_id', 'owners_id', 'corresponding_month']
     )
   }
 
@@ -342,6 +413,10 @@ export class BillsListComponent implements OnInit {
    * Muestra indicador de carga y maneja la descarga automática del archivo
    */
   downloadPDF(billId: number) {
+    // 🆕 DETECTAR SI ES UN ABONO
+    const bill = this.bills.find(b => b.id === billId);
+    const isRefund = bill?.is_refund === 1;
+
     // Mostrar indicador de carga mientras se genera el PDF
     Swal.fire({
       title: 'Generando PDF...',
@@ -352,8 +427,16 @@ export class BillsListComponent implements OnInit {
       }
     });
 
+    // 🆕 ELEGIR EL MÉTODO CORRECTO
+    let downloadMethod;
+    if (isRefund) {
+      downloadMethod = this.billsServices.downloadRefundPDF(billId);
+    } else {
+      downloadMethod = this.billsServices.downloadPDF(billId);
+    }
+
     // Solicitar el PDF al servidor
-    this.billsServices.downloadPDF(billId).subscribe({
+    downloadMethod.subscribe({
       next: (pdfBlob) => {
         Swal.close();
 
@@ -371,9 +454,12 @@ export class BillsListComponent implements OnInit {
         const url = window.URL.createObjectURL(pdfBlob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `factura-${billId}.pdf`;
 
-        // Descargar el archivo de forma invisible (sin agregar al DOM)
+        // 🆕 NOMBRE CORRECTO SEGÚN EL TIPO
+        const fileName = isRefund ? `abono-${billId}.pdf` : `factura-${billId}.pdf`;
+        link.download = fileName;
+
+        // Descargar el archivo de forma invisible
         link.style.display = 'none';
         link.click();
 
@@ -386,7 +472,7 @@ export class BillsListComponent implements OnInit {
         Swal.fire({
           icon: 'success',
           title: '¡Descarga exitosa!',
-          text: `Factura ${billId} descargada`,
+          text: `${isRefund ? 'Abono' : 'Factura'} ${billId} descargada`,
           timer: 2000,
           showConfirmButton: false
         });
@@ -394,6 +480,6 @@ export class BillsListComponent implements OnInit {
       }, error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
       }
-    })
+    });
   }
 }

@@ -194,7 +194,108 @@
       </div>
     </div>
 
-    <!--💳 NUEVA SECCIÓN: Información de Pago-->
+    <!--🆕 NUEVA SECCIÓN: Tipo de Facturación-->
+    <div class="form-section">
+      <h3>📊 Tipo de Facturación</h3>
+      <div class="form-grid">
+        <div>
+          <label for="is_proportional">Tipo de Facturación</label>
+          <select
+            [(ngModel)]="bill.is_proportional"
+            name="is_proportional"
+            id="is_proportional"
+            (change)="onBillingTypeChange()">
+            <option value="0">{{ billingTypeLabels[0] }}</option>
+            <option value="1">{{ billingTypeLabels[1] }}</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="corresponding_month">Mes de Correspondencia</label>
+          <input
+            type="month"
+            [(ngModel)]="bill.corresponding_month"
+            name="corresponding_month"
+            id="corresponding_month"
+            placeholder="Ej: 2025-06 para Junio 2025">
+          <small>Opcional: Para indicar a qué mes corresponde esta factura</small>
+        </div>
+
+        <!-- Campos proporcionales (solo si está seleccionado) -->
+        @if (bill.is_proportional == 1) {
+          <div>
+            <label for="start_date">
+              Fecha de Inicio *
+              <span style="color: red;">*</span>
+            </label>
+            <input
+              type="date"
+              [(ngModel)]="bill.start_date"
+              name="start_date"
+              id="start_date"
+              (change)="onProportionalDatesChange()"
+              required>
+          </div>
+
+          <div>
+            <label for="end_date">
+              Fecha de Fin *
+              <span style="color: red;">*</span>
+            </label>
+            <input
+              type="date"
+              [(ngModel)]="bill.end_date"
+              name="end_date"
+              id="end_date"
+              (change)="onProportionalDatesChange()"
+              required>
+          </div>
+        }
+      </div>
+
+      <!-- Información de simulación proporcional -->
+      @if (simulationResult) {
+        <div class="proportional-summary">
+          <h4>🧮 Cálculo Proporcional</h4>
+          <div class="proportional-details">
+            <div class="detail-item">
+              <span class="detail-label">Período:</span>
+              <span class="detail-value">{{ simulationResult.periodDescription }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Días facturados:</span>
+              <span class="detail-value">{{ simulationResult.details.days_billed }}
+                de {{ simulationResult.details.days_in_month }} días</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Porcentaje:</span>
+              <span class="detail-value">{{ simulationResult.details.proportion_percentage }}%</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Base original:</span>
+              <span class="detail-value">{{ simulationResult.details.original_base | currency:'EUR':'symbol':'1.2-2' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Base proporcional:</span>
+              <span class="detail-value">{{ simulationResult.details.proportional_base | currency:'EUR':'symbol':'1.2-2' }}</span>
+            </div>
+            <div class="detail-item total-line">
+              <span class="detail-label">Total proporcional:</span>
+              <span class="detail-value">{{ simulationResult.total | currency:'EUR':'symbol':'1.2-2' }}</span>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Estado de carga durante simulación -->
+      @if (isSimulating) {
+        <div class="loading-state">
+          <span>🔄 Calculando facturación proporcional...</span>
+        </div>
+      }
+    </div>
+
+    <!--Información de Pago-->
     <div class="form-section">
       <h3>💳 Información de Pago</h3>
       <div class="form-grid">
@@ -278,6 +379,8 @@
         </div>
       </div>
     </div>
+
+
 
     <!--Información de Cálculo-->
     <div class="info-section">

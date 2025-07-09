@@ -2,7 +2,12 @@ import {Component, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {CurrencyPipe} from '@angular/common';
-import {Bill, PAYMENT_METHOD_LABELS, PAYMENT_STATUS_LABELS} from '../../../interface/bills-interface';
+import {
+  Bill,
+  BILLING_TYPE_LABELS,
+  PAYMENT_METHOD_LABELS,
+  PAYMENT_STATUS_LABELS, ProportionalSimulation
+} from '../../../interface/bills-interface';
 import {Owners} from '../../../interface/owners-interface';
 import {Clients} from '../../../interface/clientes-interface';
 import {Estates} from '../../../interface/estates.interface';
@@ -59,7 +64,11 @@ export class BillsEditComponent implements OnInit {
   //LABELS PARA LOS NUEVOS CAMPOS DE PAGO
   paymentStatusLabels = PAYMENT_STATUS_LABELS;
   paymentMethodLabels = PAYMENT_METHOD_LABELS;
+  billingTypeLabels = BILLING_TYPE_LABELS;
 
+  //VARIABLES PARA FACTURACIÓN PROPORCIONAL
+  isSimulating: boolean = false;
+  simulationResult: any = null;
 
   constructor(
     private router: Router,
@@ -110,6 +119,60 @@ export class BillsEditComponent implements OnInit {
     this.paymentUtilServices.handlePaymentStatusChange(this.bill);
   }
 
+  /**
+   * Se ejecuta cuando cambia el tipo de facturación (normal/proporcional)
+   */
+  onBillingTypeChange(): void {
+    if (this.bill.is_proportional === 0) {
+      // Si cambia a normal, limpiar campos proporcionales
+      this.bill.start_date = null;
+      this.bill.end_date = null;
+      this.simulationResult = null;
+    }
+    this.calculateTotal();
+  }
+
+  /**
+   * Se ejecuta cuando cambian las fechas proporcionales
+   */
+  onProportionalDatesChange(): void {
+    if (this.bill.is_proportional == 1 && this.bill.start_date && this.bill.end_date) {
+      this.simulateProportionalBilling();
+    } else {
+      this.calculateTotal();
+    }
+  }
+
+  /**
+   * Simula facturación proporcional
+   */
+  simulateProportionalBilling(): void {
+    if (!this.bill.start_date || !this.bill.end_date || !this.bill.tax_base) {
+      return;
+    }
+
+    this.isSimulating = true;
+    const simulation: ProportionalSimulation = {
+      tax_base: this.bill.tax_base,
+      iva: this.bill.iva || 0,
+      irpf: this.bill.irpf || 0,
+      start_date: this.bill.start_date,
+      end_date: this.bill.end_date
+    };
+
+    this.billsService.simulateProportionalBilling(simulation).subscribe({
+      next: (result) => {
+        this.simulationResult = result;
+        this.bill.total = result.total;
+        this.isSimulating = false;
+      },
+      error: (e: HttpErrorResponse) => {
+        this.isSimulating = false;
+        this.simulationResult = null;
+      }
+    });
+  }
+
   loadOwners() {
     this.ownersServices.getOwners().subscribe({
       next: (data) => {
@@ -148,11 +211,17 @@ export class BillsEditComponent implements OnInit {
   }
 
   calculateTotal() {
-    const taxBase = this.bill.tax_base || 0;
-    const iva = this.bill.iva || 0;
-    const irpf = this.bill.irpf || 0;
+    if (this.bill.is_proportional === 1) {
+      // Si es proporcional, usar simulación
+      this.onProportionalDatesChange();
+    } else {
+      // Si es normal, usar cálculo estándar
+      const taxBase = this.bill.tax_base || 0;
+      const iva = this.bill.iva || 0;
+      const irpf = this.bill.irpf || 0;
 
-    this.bill.total = taxBase + iva - irpf;
+      this.bill.total = taxBase + iva - irpf;
+    }
   }
 
   updateBill() {

@@ -1,6 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {Bill, PAYMENT_METHOD_LABELS, PAYMENT_STATUS_LABELS} from '../../../interface/bills-interface';
+import {
+  Bill,
+  BILLING_TYPE_LABELS,
+  PAYMENT_METHOD_LABELS,
+  PAYMENT_STATUS_LABELS, ProportionalSimulation
+} from '../../../interface/bills-interface';
 import {BillsValidatorService} from '../../../core/services/validator-services/bills-validator.service';
 import {Estates} from '../../../interface/estates.interface';
 import {Clients} from '../../../interface/clientes-interface';
@@ -13,6 +18,7 @@ import Swal from 'sweetalert2';
 import {OwnersService} from '../../../core/services/owners-services/owners.service';
 import {Router} from '@angular/router';
 import {PaymentUtilService} from '../../../core/services/payment-util-services/payment-util.service';
+import {CurrencyPipe} from '@angular/common';
 
 /**
  * Componente para registrar nuevas facturas
@@ -21,7 +27,8 @@ import {PaymentUtilService} from '../../../core/services/payment-util-services/p
 @Component({
   selector: 'app-bills',
   imports: [
-    FormsModule
+    FormsModule,
+    CurrencyPipe
   ],
   templateUrl: './bills-register.component.html',
   styleUrl: './bills-register.component.css'
@@ -33,9 +40,14 @@ export class BillsRegisterComponent implements OnInit {
   clients: Clients[] = [];     // Lista de clientes disponibles
   owners: Owners[] = [];       // Lista de propietarios disponibles
 
-  //LABELS PARA LOS NUEVOS CAMPOS DE PAGO
+  //LABELS PARA LOS NUEVOS CAMPOS DE PAGO Y PARA FACTURACIÓN PROPORCIONAL
   paymentStatusLabels = PAYMENT_STATUS_LABELS;
   paymentMethodLabels = PAYMENT_METHOD_LABELS;
+  billingTypeLabels = BILLING_TYPE_LABELS;
+
+  //VARIABLES PARA FACTURACIÓN PROPORCIONAL
+  isSimulating: boolean = false;
+  simulationResult: any = null;
 
   // Objeto que guarda los datos de la nueva factura
   bill: Bill = {
@@ -57,6 +69,11 @@ export class BillsRegisterComponent implements OnInit {
     payment_method: 'transfer',       // Por defecto: Transferencia
     payment_date: null,               // Opcional: Se puede dejar vacío
     payment_notes: '',                // Opcional: Notas sobre el pago
+    //🆕 NUEVOS CAMPOS PROPORCIONALES
+    start_date: null,
+    end_date: null,
+    corresponding_month: null,
+    is_proportional: 0,
 
     date_create: '',
     date_update: '',
@@ -102,22 +119,24 @@ export class BillsRegisterComponent implements OnInit {
   /**
    * Calcula automáticamente el total basado en base imponible, IVA e IRPF
    * Fórmula fiscal: Total = Base + (Base × IVA%) - (Base × IRPF%)
+   * Calcula automáticamente el total basado en tipo de facturación
    *
    * @example
    * Base: 1000€, IVA: 21%, IRPF: 15%
    * Total = 1000 + (1000 × 0.21) - (1000 × 0.15) = 1000 + 210 - 150 = 1060€
    */
   calculateTotal(): void {
-    // Convertir valores a números, usar 0 si están vacíos
-    const base = parseFloat(this.bill.tax_base?.toString() || '0') || 0;
-    const ivaPercent = parseFloat(this.bill.iva?.toString() || '0') || 0;
-    const irpfPercent = parseFloat(this.bill.irpf?.toString() || '0') || 0;
-
-    // Aplicar la fórmula fiscal española
-    const total = base + (base * ivaPercent / 100) - (base * irpfPercent / 100);
-
-    // Redondear a 2 decimales para evitar problemas de precisión
-    this.bill.total = parseFloat(total.toFixed(2));
+    if (this.bill.is_proportional === 1) {
+      // Si es proporcional, usar simulación
+      this.onProportionalDatesChange();
+    } else {
+      // Si es normal, usar cálculo estándar
+      const base = parseFloat(this.bill.tax_base?.toString() || '0') || 0;
+      const ivaPercent = parseFloat(this.bill.iva?.toString() || '0') || 0;
+      const irpfPercent = parseFloat(this.bill.irpf?.toString() || '0') || 0;
+      const total = base + (base * ivaPercent / 100) - (base * irpfPercent / 100);
+      this.bill.total = parseFloat(total.toFixed(2));
+    }
   }
 
   /**
@@ -142,6 +161,61 @@ export class BillsRegisterComponent implements OnInit {
    */
   onIrpfChange(): void {
     this.calculateTotal();
+  }
+
+  /**
+   *Se ejecuta cuando cambia el tipo de facturación (normal/proporcional)
+   */
+  onBillingTypeChange(): void {
+    if (this.bill.is_proportional === 0) {
+      // Si cambia a normal, limpiar campos proporcionales
+      this.bill.start_date = null;
+      this.bill.end_date = null;
+      this.simulationResult = null;
+    }
+    this.calculateTotal();
+  }
+
+  /**
+   *🆕 Se ejecuta cuando cambian las fechas proporcionales
+   */
+  onProportionalDatesChange(): void {
+    //if (this.bill.is_proportional === 1 && this.bill.start_date && this.bill.end_date) {
+    if (this.bill.is_proportional == 1 && this.bill.start_date && this.bill.end_date) {
+      this.simulateProportionalBilling();
+    } else {
+      this.calculateTotal();
+    }
+  }
+
+  /**
+   *🆕 Simula facturación proporcional
+   */
+  simulateProportionalBilling(): void {
+    if (!this.bill.start_date || !this.bill.end_date || !this.bill.tax_base) {
+      return;
+    }
+
+    this.isSimulating = true;
+    const simulation: ProportionalSimulation = {
+      tax_base: this.bill.tax_base,
+      iva: this.bill.iva || 0,
+      irpf: this.bill.irpf || 0,
+      start_date: this.bill.start_date,
+      end_date: this.bill.end_date
+    };
+
+    this.billsServices.simulateProportionalBilling(simulation).subscribe({
+      next: (result) => {
+        this.simulationResult = result;
+        this.bill.total = result.total;
+        this.isSimulating = false;
+      },
+      error: (e: HttpErrorResponse) => {
+        this.isSimulating = false;
+        this.simulationResult = null;
+      }
+    });
   }
 
   /**
@@ -190,6 +264,7 @@ export class BillsRegisterComponent implements OnInit {
   registerBills() {
     // Limpiar espacios y preparar datos
     const cleanData = this.billsValidatorServices.cleanBillsData(this.bill);
+
     // Validar que todos los campos requeridos estén completos
     const validation = this.billsValidatorServices.validateRequiredFields(cleanData);
     if (!validation.isValid) {
