@@ -90,9 +90,6 @@ export class UserListComponent implements OnInit {
     this.filterUser();
   }
 
-  newUser(){
-    this.router.navigate(['/dashboard/users/register'])
-  }
 
   /**
    * Navega a la página de edición de usuario
@@ -134,4 +131,8 @@ export class UserListComponent implements OnInit {
       }
     })
   };
+
+  newUser() {
+    this.router.navigate(['/dashboard/users/register'])
+  }
 }

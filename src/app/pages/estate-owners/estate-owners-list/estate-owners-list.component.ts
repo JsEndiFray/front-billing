@@ -55,18 +55,14 @@ export class EstateOwnersListComponent implements OnInit {
     this.estateOwnersService.getAllEstateOwners().subscribe({
       next: (data) => {
         this.estateOwners = data;
+        this.allEstateOwners = data;
       }, error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
       }
     })
   }
 
-  /**
-   * Navega a la página de edición de la relación
-   */
-  editEstateOwners(id: number) {
-    this.router.navigate(['/dashboard/estates-owners/edit', id])
-  }
+
 
   /**
    * Filtra la lista de porcentajes según el texto de búsqueda
@@ -76,7 +72,7 @@ export class EstateOwnersListComponent implements OnInit {
     this.estateOwners = this.searchService.filterData(
       this.allEstateOwners,
       this.searchTerm,
-      ['owners_id', 'estate_id']
+      ['owner_name', 'estate_name', 'ownership_percentage']
     )
   }
 
@@ -87,11 +83,19 @@ export class EstateOwnersListComponent implements OnInit {
     this.searchTerm = '';
     this.filterOwners();
   }
+
   /**
    * Se ejecuta cada vez que el usuario escribe en el buscador
    */
   onSearchChange() {
     this.filterOwners();
+  }
+
+  /**
+   * Navega a la página de edición de la relación
+   */
+  editEstateOwners(id: number) {
+    this.router.navigate(['/dashboard/estates-owners/edit', id])
   }
 
   /**
@@ -129,6 +133,6 @@ export class EstateOwnersListComponent implements OnInit {
   }
 
   newEstateOwner() {
-    this.router.navigate(['/dashboard/estates-owners/register'])
+    this.router.navigate(['/dashboard/estates/register'])
   }
 }

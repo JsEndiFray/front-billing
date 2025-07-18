@@ -6,7 +6,7 @@ import {
   Bill,
   BILLING_TYPE_LABELS,
   PAYMENT_METHOD_LABELS,
-  PAYMENT_STATUS_LABELS, ProportionalSimulation
+  PAYMENT_STATUS_LABELS, ProportionalSimulation, ProportionalSimulationResponse
 } from '../../../interface/bills-interface';
 import {Owners} from '../../../interface/owners-interface';
 import {Clients} from '../../../interface/clientes-interface';
@@ -19,7 +19,7 @@ import {EstatesService} from '../../../core/services/estates-services/estates.se
 import Swal from 'sweetalert2';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
 import {BillsValidatorService} from '../../../core/services/validator-services/bills-validator.service';
-import {PaymentUtilService} from '../../../core/services/payment-util-services/payment-util.service';
+import {BillsUtilService} from '../../../core/services/bills-util-services/Bills-Util-Service';
 
 @Component({
   selector: 'app-bills-edit',
@@ -32,6 +32,24 @@ import {PaymentUtilService} from '../../../core/services/payment-util-services/p
   styleUrl: './bills-edit.component.css'
 })
 export class BillsEditComponent implements OnInit {
+
+  //variables
+  owners: Owners[] = [];
+  clients: Clients[] = [];
+  estates: Estates[] = [];
+  originalBills: Bill[] = [];
+  isEditMode: boolean = false;
+
+  //LABELS PARA LOS NUEVOS CAMPOS DE PAGO
+  paymentStatusLabels = PAYMENT_STATUS_LABELS;
+  paymentMethodLabels = PAYMENT_METHOD_LABELS;
+  billingTypeLabels = BILLING_TYPE_LABELS;
+
+  //VARIABLES PARA FACTURACIÓN PROPORCIONAL
+  isSimulating: boolean = false;
+  simulationResult: ProportionalSimulationResponse | null = null;
+
+
   bill: Bill = {
     bill_number: '',
     estates_id: null,
@@ -54,21 +72,7 @@ export class BillsEditComponent implements OnInit {
     date_create: '',
     date_update: ''
   };
-  //variables
-  owners: Owners[] = [];
-  clients: Clients[] = [];
-  estates: Estates[] = [];
-  originalBills: Bill[] = [];
-  isEditMode: boolean = false;
 
-  //LABELS PARA LOS NUEVOS CAMPOS DE PAGO
-  paymentStatusLabels = PAYMENT_STATUS_LABELS;
-  paymentMethodLabels = PAYMENT_METHOD_LABELS;
-  billingTypeLabels = BILLING_TYPE_LABELS;
-
-  //VARIABLES PARA FACTURACIÓN PROPORCIONAL
-  isSimulating: boolean = false;
-  simulationResult: any = null;
 
   constructor(
     private router: Router,
@@ -78,14 +82,14 @@ export class BillsEditComponent implements OnInit {
     private clientsServices: ClientsService,
     private estatesServices: EstatesService,
     private billsValidatorService: BillsValidatorService,
-    private paymentUtilServices: PaymentUtilService,
+    private billsUtilService: BillsUtilService,
   ) {
   }
 
   ngOnInit(): void {
-    this.loadOwners();
-    this.loadClients();
-    this.loadEstates();
+    this.getListOwners();
+    this.getListClients();
+    this.getListEstate();
     this.loadOriginalBills();
 
     this.route.params.subscribe(params => {
@@ -95,18 +99,10 @@ export class BillsEditComponent implements OnInit {
         this.billsService.getBillById(id).subscribe({
           next: (data) => {
             this.bill = data[0];
-            // Formatear la fecha para el input HTML
-            if (this.bill.date) {
-              // Convertir de ISO a YYYY-MM-DD
-              const date = new Date(this.bill.date);
-              this.bill.date = date.toISOString().split('T')[0];
-            }
+            // Formatear la fecha para el input HTML - Convertir de ISO a YYYY-MM-DD
             //FORMATEAR FECHA DE PAGO SI EXISTE
-            if (this.bill.payment_date) {
-              const paymentDate = new Date(this.bill.payment_date);
-              this.bill.payment_date = paymentDate.toISOString().split('T')[0];
-            }
-
+            this.bill.date = this.billsUtilService.formatDateForInput(this.bill.date);
+            this.bill.payment_date = this.billsUtilService.formatDateForInput(this.bill.payment_date);
           }, error: (e: HttpErrorResponse) => {
           }
         })
@@ -116,7 +112,7 @@ export class BillsEditComponent implements OnInit {
 
   //NUEVO: Manejo del cambio de estado de pago
   onPaymentStatusChange() {
-    this.paymentUtilServices.handlePaymentStatusChange(this.bill);
+    this.billsUtilService.handlePaymentStatusChange(this.bill);
   }
 
   /**
@@ -173,7 +169,7 @@ export class BillsEditComponent implements OnInit {
     });
   }
 
-  loadOwners() {
+  getListOwners() {
     this.ownersServices.getOwners().subscribe({
       next: (data) => {
         this.owners = data;
@@ -182,7 +178,7 @@ export class BillsEditComponent implements OnInit {
     })
   }
 
-  loadClients() {
+  getListClients() {
     this.clientsServices.getClients().subscribe({
       next: (data) => {
         this.clients = data;
@@ -191,7 +187,7 @@ export class BillsEditComponent implements OnInit {
     })
   }
 
-  loadEstates() {
+  getListEstate() {
     this.estatesServices.getAllEstate().subscribe({
       next: (data) => {
         this.estates = data;
@@ -211,17 +207,7 @@ export class BillsEditComponent implements OnInit {
   }
 
   calculateTotal() {
-    if (this.bill.is_proportional === 1) {
-      // Si es proporcional, usar simulación
-      this.onProportionalDatesChange();
-    } else {
-      // Si es normal, usar cálculo estándar
-      const taxBase = this.bill.tax_base || 0;
-      const iva = this.bill.iva || 0;
-      const irpf = this.bill.irpf || 0;
-
-      this.bill.total = taxBase + iva - irpf;
-    }
+    this.billsUtilService.calculateTotal(this.bill, () => this.onProportionalDatesChange())
   }
 
   updateBill() {
@@ -233,9 +219,13 @@ export class BillsEditComponent implements OnInit {
         confirmButtonText: 'Ok'
       });
       return;
-    }
+    };
+
+    //Formatear las fechas antes de enviar al backend
+    const billWithFormattedDates = this.billsUtilService.formatBillDatesForBackend(this.bill);
+
     //validaciones
-    const cleanData = this.billsValidatorService.cleanBillsData(this.bill);
+    const cleanData = this.billsValidatorService.cleanBillsData(billWithFormattedDates);
 
     //VALIDAR CAMPOS REQUERIDOS
     const validation = this.billsValidatorService.validateRequiredFields(cleanData);

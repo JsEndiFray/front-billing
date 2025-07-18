@@ -66,7 +66,7 @@
         <th class="owners-th">Provincia</th>
         <th class="owners-th">País</th>
         <th class="owners-th">Creado</th>
-        <th class="owners-th">Actualizado</th>
+        <!--<th class="owners-th">Actualizado</th>-->
         <th class="owners-th">Acciones</th>
       </tr>
       </thead>
@@ -89,16 +89,16 @@
               <td class="owners-td">{{ owner.province }}</td>
               <td class="owners-td">{{ owner.country }}</td>
               <td class="owners-td">{{ owner.date_create | dataFormat }}</td>
-              <td class="owners-td">{{ owner.date_update | dataFormat }}</td>
+              <!--<td class="owners-td">{{ owner.date_update | dataFormat }}</td>-->
 
               <!-- Botones de acción por propietario -->
               <td class="owners-td">
                 <button class="owners-btn-edit" (click)="editOwner(owner.id!)">
                   Editar
                 </button>
-                <button class="owners-btn-delete" (click)="deleteOwner(owner.id!)">
+                <!--<button class="owners-btn-delete" (click)="deleteOwner(owner.id!)">
                   Eliminar
-                </button>
+                </button>-->
               </td>
             </tr>
           }

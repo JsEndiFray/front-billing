@@ -170,7 +170,7 @@
 .users-list-th:nth-child(6) { width: auto }   /* Rol */
 .users-list-th:nth-child(7) { width: auto }    /* Creado */
 .users-list-th:nth-child(8) { width: auto }    /* Actualizado */
-.users-list-th:nth-child(9) { width: 15% }   /* Acciones */
+.users-list-th:nth-child(9) { width: auto}   /* Acciones */
 
 /* Cuerpo de la tabla */
 .users-list-table-body {

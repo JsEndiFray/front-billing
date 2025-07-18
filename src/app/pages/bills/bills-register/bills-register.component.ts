@@ -4,7 +4,7 @@ import {
   Bill,
   BILLING_TYPE_LABELS,
   PAYMENT_METHOD_LABELS,
-  PAYMENT_STATUS_LABELS, ProportionalSimulation
+  PAYMENT_STATUS_LABELS, ProportionalSimulation, ProportionalSimulationResponse
 } from '../../../interface/bills-interface';
 import {BillsValidatorService} from '../../../core/services/validator-services/bills-validator.service';
 import {Estates} from '../../../interface/estates.interface';
@@ -17,7 +17,7 @@ import {BillsService} from '../../../core/services/bills-services/bills.service'
 import Swal from 'sweetalert2';
 import {OwnersService} from '../../../core/services/owners-services/owners.service';
 import {Router} from '@angular/router';
-import {PaymentUtilService} from '../../../core/services/payment-util-services/payment-util.service';
+import {BillsUtilService} from '../../../core/services/bills-util-services/Bills-Util-Service';
 import {CurrencyPipe} from '@angular/common';
 
 /**
@@ -47,7 +47,7 @@ export class BillsRegisterComponent implements OnInit {
 
   //VARIABLES PARA FACTURACIÓN PROPORCIONAL
   isSimulating: boolean = false;
-  simulationResult: any = null;
+  simulationResult: ProportionalSimulationResponse | null = null;
 
   // Objeto que guarda los datos de la nueva factura
   bill: Bill = {
@@ -86,7 +86,7 @@ export class BillsRegisterComponent implements OnInit {
     private ownerServices: OwnersService,
     private billsServices: BillsService,
     private router: Router,
-    private paymentUtilServices: PaymentUtilService,
+    private billsUtilService: BillsUtilService,
   ) {
   }
 
@@ -101,66 +101,11 @@ export class BillsRegisterComponent implements OnInit {
   }
 
   /**
-   *NUEVO: Inicializa valores por defecto para los campos de pago
-   */
-  initializePaymentDefaults() {
-    // Si el usuario marca como "pagado", establecer fecha de hoy
-    this.paymentUtilServices.initializePaymentDefaults(this.bill);
-  }
-
-  /**
    *NUEVO: Se ejecuta cuando cambia el estado de pago
    * Si marca como "pagado", pone la fecha de hoy automáticamente
    */
   onPaymentStatusChange() {
-    this.paymentUtilServices.handlePaymentStatusChange(this.bill);
-  }
-
-  /**
-   * Calcula automáticamente el total basado en base imponible, IVA e IRPF
-   * Fórmula fiscal: Total = Base + (Base × IVA%) - (Base × IRPF%)
-   * Calcula automáticamente el total basado en tipo de facturación
-   *
-   * @example
-   * Base: 1000€, IVA: 21%, IRPF: 15%
-   * Total = 1000 + (1000 × 0.21) - (1000 × 0.15) = 1000 + 210 - 150 = 1060€
-   */
-  calculateTotal(): void {
-    if (this.bill.is_proportional === 1) {
-      // Si es proporcional, usar simulación
-      this.onProportionalDatesChange();
-    } else {
-      // Si es normal, usar cálculo estándar
-      const base = parseFloat(this.bill.tax_base?.toString() || '0') || 0;
-      const ivaPercent = parseFloat(this.bill.iva?.toString() || '0') || 0;
-      const irpfPercent = parseFloat(this.bill.irpf?.toString() || '0') || 0;
-      const total = base + (base * ivaPercent / 100) - (base * irpfPercent / 100);
-      this.bill.total = parseFloat(total.toFixed(2));
-    }
-  }
-
-  /**
-   * Se ejecuta cuando cambia la base imponible
-   * Recalcula el total automáticamente
-   */
-  onTaxBaseChange(): void {
-    this.calculateTotal();
-  }
-
-  /**
-   * Se ejecuta cuando cambia el porcentaje de IVA
-   * Recalcula el total automáticamente
-   */
-  onIvaChange(): void {
-    this.calculateTotal();
-  }
-
-  /**
-   * Se ejecuta cuando cambia el porcentaje de IRPF
-   * Recalcula el total automáticamente
-   */
-  onIrpfChange(): void {
-    this.calculateTotal();
+    this.billsUtilService.handlePaymentStatusChange(this.bill);
   }
 
   /**
@@ -216,15 +161,16 @@ export class BillsRegisterComponent implements OnInit {
         this.simulationResult = null;
       }
     });
-  }
+  };
+
 
   /**
-   * Obtiene la lista de propiedades para el selector
+   * Obtiene la lista de propietarios para el selector
    */
-  getListEstate() {
-    this.estateServices.getAllEstate().subscribe({
+  getListOwners() {
+    this.ownerServices.getOwners().subscribe({
       next: (data) => {
-        this.estates = data;
+        this.owners = data;
       }, error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
       }
@@ -244,18 +190,67 @@ export class BillsRegisterComponent implements OnInit {
     })
   };
 
+
   /**
-   * Obtiene la lista de propietarios para el selector
+   * Obtiene la lista de propiedades para el selector
    */
-  getListOwners() {
-    this.ownerServices.getOwners().subscribe({
+  getListEstate() {
+    this.estateServices.getAllEstate().subscribe({
       next: (data) => {
-        this.owners = data;
+        this.estates = data;
       }, error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
       }
     })
   };
+
+  /**
+   * Calcula automáticamente el total basado en base imponible, IVA e IRPF
+   * Fórmula fiscal: Total = Base + (Base × IVA%) - (Base × IRPF%)
+   * Calcula automáticamente el total basado en tipo de facturación
+   *
+   * @example
+   * Base: 1000€, IVA: 21%, IRPF: 15%
+   * Total = 1000 + (1000 × 0.21) - (1000 × 0.15) = 1000 + 210 - 150 = 1060€
+   */
+  calculateTotal(): void {
+    this.billsUtilService.calculateTotal(this.bill, () => this.onProportionalDatesChange())
+  }
+
+
+  /**
+   *NUEVO: Inicializa valores por defecto para los campos de pago
+   */
+  initializePaymentDefaults() {
+    // Si el usuario marca como "pagado", establecer fecha de hoy
+    this.billsUtilService.initializePaymentDefaults(this.bill);
+  }
+
+
+  /**
+   * Se ejecuta cuando cambia la base imponible
+   * Recalcula el total automáticamente
+   */
+  onTaxBaseChange(): void {
+    this.calculateTotal();
+  }
+
+  /**
+   * Se ejecuta cuando cambia el porcentaje de IVA
+   * Recalcula el total automáticamente
+   */
+  onIvaChange(): void {
+    this.calculateTotal();
+  }
+
+  /**
+   * Se ejecuta cuando cambia el porcentaje de IRPF
+   * Recalcula el total automáticamente
+   */
+  onIrpfChange(): void {
+    this.calculateTotal();
+  }
+
 
   /**
    * Registra una nueva factura en el sistema

@@ -163,17 +163,17 @@
 
 /* DISTRIBUCIÓN DE COLUMNAS PARA PROPIEDADES (12 COLUMNAS) */
 th:nth-child(1) { width: auto }/*id*/
-th:nth-child(2) { width: 18% }/*ref catastral*/
-th:nth-child(3) { width: auto }/*precio*/
+th:nth-child(2) { width: 12% }/*ref catastral*/
+th:nth-child(3) { width: 8% }/*precio*/
 th:nth-child(4) { width: auto }/*direción*/
 th:nth-child(5) { width: auto }/*cp*/
 th:nth-child(6) { width: auto }/*localidad*/
-th:nth-child(7) { width: 6% }/*provincia*/
+th:nth-child(7) { width: auto }/*provincia*/
 th:nth-child(8) { width: auto }/*país*/
-th:nth-child(9) { width: 5% }/*m2*/
+th:nth-child(9) { width: auto }/*m2*/
 th:nth-child(10) { width: auto }/*creado*/
 th:nth-child(11) { width: auto }/*actualizado*/
-th:nth-child(12) { width: 15% }/*acciones*/
+th:nth-child(12) { width: auto}/*acciones*/
 
 /* Cuerpo de la tabla */
 .estates-table-body {

@@ -59,8 +59,8 @@
         <th class="estate-owners-th">Propietario</th>
         <th class="estate-owners-th">Porcentaje (%)</th>
         <th class="estate-owners-th">Creación</th>
-        <th class="estate-owners-th">Actualizado</th>
-        <th class="estate-owners-th">Acciones</th>
+        <!--<th class="estate-owners-th">Actualizado</th>-->
+        <!--<th class="estate-owners-th">Acciones</th>-->
       </tr>
       </thead>
 
@@ -76,17 +76,20 @@
               <td class="estate-owners-td estate-owners-owner">{{ item.owner_name }}</td>
               <td class="estate-owners-td estate-owners-percentage">{{ item.ownership_percentage }}%</td>
               <td class="estate-owners-td">{{ item.date_create | dataFormat }}</td>
-              <td class="estate-owners-td">{{ item.date_update | dataFormat }}</td>
+             <!-- <td class="estate-owners-td">{{ item.date_update | dataFormat }}</td>-->
 
               <!-- Botones de acción por relación -->
-              <td class="estate-owners-td">
+
+              <!--<td class="estate-owners-td">
                 <button class="estate-owners-btn-edit" (click)="editEstateOwners(item.id!)">
                   Editar
                 </button>
                 <button class="estate-owners-btn-delete" (click)="deleteEstateOwners(item.id!)">
                   Eliminar
                 </button>
-              </td>
+              </td>-->
+
+
             </tr>
           }
         } @else {

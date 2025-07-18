@@ -69,7 +69,7 @@
         <th class="clients-th">Provincia</th>
         <th class="clients-th">País</th>
         <th class="clients-th">Creado</th>
-        <th class="clients-th">Actualizado</th>
+        <!--<th class="clients-th">Actualizado</th>-->
         <th class="clients-th">Acciones</th>
       </tr>
       </thead>
@@ -109,16 +109,16 @@
               <td class="clients-td">{{ client.province }}</td>
               <td class="clients-td">{{ client.country }}</td>
               <td class="clients-td">{{ client.date_create | dataFormat }}</td>
-              <td class="clients-td">{{ client.date_update | dataFormat }}</td>
+              <!--<td class="clients-td">{{ client.date_update | dataFormat }}</td>-->
 
               <!-- Botones de acción por cliente -->
               <td class="clients-td">
                 <button class="clients-btn-edit" (click)="editClient(client.id!)">
                   Editar
                 </button>
-                <button class="clients-btn-delete" (click)="deleteClient(client.id!)">
+                <!--<button class="clients-btn-delete" (click)="deleteClient(client.id!)">
                   Eliminar
-                </button>
+                </button>-->
               </td>
             </tr>
           }

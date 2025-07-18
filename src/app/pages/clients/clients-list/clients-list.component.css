@@ -167,18 +167,18 @@ th:nth-child(2) { width: 5%; }/*tipo*/
 th:nth-child(3) { width: auto; }/*nombre*/
 th:nth-child(4) { width: auto; }/*apellidos*/
 th:nth-child(5) { width: auto; }/*empresa*/
-th:nth-child(6) { width: 28%; }/*relacion*/
+th:nth-child(6) { width: 12%; }/*relacion*/
 th:nth-child(7) { width: auto; }/*identificación*/
 th:nth-child(8) { width: auto; }/*teléfono*/
 th:nth-child(9) { width: 10%; }/*email*/
 th:nth-child(10) { width: auto; }/*direcion*/
-th:nth-child(11) { width: auto; }/*cp*/
+th:nth-child(11) { width: 5%; }/*cp*/
 th:nth-child(12) { width: auto; }/*localidad*/
 th:nth-child(13) { width: auto; }/*provincia*/
 th:nth-child(14) { width: auto; }/*país*/
 th:nth-child(15) { width: auto; }/*creado*/
-th:nth-child(16) { width: auto; }/*actualizado*/
-th:nth-child(17) { width: 15%; }/*acciones*/
+/*th:nth-child(16) { width: auto; }!*actualizado*!*/
+th:nth-child(16) { width: auto; }/*acciones*/
 
 /* Cuerpo de la tabla */
 .clients-table-body {

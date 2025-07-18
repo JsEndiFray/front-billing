@@ -187,21 +187,21 @@ th:nth-child(2) { width: auto; }      /* Nº Factura */
 th:nth-child(3) { width: auto; }     /* Propiedad */
 th:nth-child(4) { width: auto; }      /* Cliente */
 th:nth-child(5) { width: auto; }      /* Propietario */
-th:nth-child(6) { width: 3%; }      /* % */
-th:nth-child(7) { width: auto; }      /* Fecha */
-th:nth-child(8) { width: 4%; }      /* Base Imponible */
-th:nth-child(9) { width: 4%; }      /* IVA */
-th:nth-child(10) { width: 4%; }     /* IRPF */
-th:nth-child(11) { width: 5%; }     /* Total */
-th:nth-child(12) { width: 10%; }     /*Tipo de Factura*/
-th:nth-child(13) { width: 8%; }     /*Perido*/
-th:nth-child(14) { width: auto; }     /*Mes Correspondiente*/
-th:nth-child(15) { width: auto; }     /* Estado Pago */
-th:nth-child(16) { width: auto; }     /* Método Pago */
-th:nth-child(17) { width: auto; }     /* Fecha Pago */
-th:nth-child(18) { width: auto; }     /* Abonos */
-th:nth-child(19) { width: auto; }     /* F. Abonada */
-th:nth-child(20) { width: 12%; }    /* Acciones */
+/*th:nth-child(6) { width: 3%; }      !* % *!*/
+th:nth-child(6) { width: auto; }      /* Fecha */
+th:nth-child(7) { width: 4%; }      /* Base Imponible */
+th:nth-child(8) { width: 4%; }      /* IVA */
+th:nth-child(9) { width: 4%; }     /* IRPF */
+th:nth-child(10) { width: 5%; }     /* Total */
+th:nth-child(11) { width: 10%; }     /*Tipo de Factura*/
+th:nth-child(12) { width: 8%; }     /*Perido*/
+th:nth-child(13) { width: auto; }     /*Mes Correspondiente*/
+th:nth-child(14) { width: auto; }     /* Estado Pago */
+th:nth-child(15) { width: auto; }     /* Método Pago */
+th:nth-child(16) { width: auto; }     /* Fecha Pago */
+th:nth-child(17) { width: auto; }     /* Abonos */
+th:nth-child(18) { width: auto; }     /* F. Abonada */
+th:nth-child(19) { width: 12%; }    /* Acciones */
 
 /* ========================================
    FILAS Y CELDAS DE DATOS

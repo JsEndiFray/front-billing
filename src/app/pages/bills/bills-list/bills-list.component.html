@@ -53,7 +53,7 @@
         <th class="bills-th">Propiedad</th>
         <th class="bills-th">Cliente</th>
         <th class="bills-th">Propietario</th>
-        <th class="bills-th">%</th>
+        <!--<th class="bills-th">%</th>-->
         <th class="bills-th">Fecha</th>
         <th class="bills-th">Base</th>
         <th class="bills-th">IVA</th>
@@ -62,7 +62,7 @@
         <!-- COLUMNAS NUEVAS -->
         <th class="bills-th">Tipo Facturación</th>
         <th class="bills-th">Período</th>
-        <th class="bills-th">Mes Correspondencia</th>
+        <th class="bills-th">Mes Correspondiente</th>
         <!-- COLUMNAS DE PAGO -->
         <th class="bills-th">Estado Pago</th>
         <th class="bills-th">Método Pago</th>
@@ -84,7 +84,7 @@
               <td class="bills-td">{{ bill.estates_id }}</td>
               <td class="bills-td bills-client">{{ bill.clients_id }}</td>
               <td class="bills-td bills-owner">{{ bill.owners_id }}</td>
-              <td class="bills-td bills-percentage">{{ bill.ownership_percent }}%</td>
+             <!-- <td class="bills-td bills-percentage">{{ bill.ownership_percent }}%</td>-->
               <td class="bills-td">{{ bill.date | dataFormat }}</td>
               <td class="bills-td bills-currency">{{ bill.tax_base | currency:'EUR':'symbol':'1.2-2' }}</td>
               <td class="bills-td bills-tax">{{ bill.iva }}%</td>
@@ -202,7 +202,7 @@
                   <!-- Botones normales -->
                   <button class="bills-btn-pdf" (click)="downloadPDF(bill.id!)">📄 PDF</button>
                   <button class="bills-btn-pay" (click)="openPaymentModal(bill)">💰 Abonar</button>
-                  <button class="bills-btn-edit" (click)="editBill(bill.id!)">Editar</button>
+                  <button class="bills-btn-edit" (click)="editBill(bill.id!)">✏️ Editar</button>
                   <!--<button class="bills-btn-delete" (click)="deleteBill(bill.id!)">Eliminar</button>-->
                 } @else {
                   <!-- Botones de guardar/cancelar -->
