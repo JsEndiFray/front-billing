@@ -92,7 +92,7 @@ export class EstatesListComponent implements OnInit {
    * Navega a la página de edición de propiedad
    */
   editEstate(id: number) {
-    this.router.navigate(['/dashboard/estates/edit', id]);
+    this.router.navigate(['/dashboards/estates/edit', id]);
   }
 
   /**
@@ -130,6 +130,6 @@ export class EstatesListComponent implements OnInit {
   }
 
   newEstate(){
-    this.router.navigate(['/dashboard/estates/register'])
+    this.router.navigate(['/dashboards/estates/register'])
   }
 }

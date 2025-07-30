@@ -81,7 +81,7 @@ export class UsersRegisterComponent {
             icon: "success",
             draggable: true
           });
-          this.router.navigate(['/dashboard/users/list'])
+          this.router.navigate(['/dashboards/users/list'])
         }
       },
       error: (e: HttpErrorResponse) => {
@@ -91,6 +91,6 @@ export class UsersRegisterComponent {
   };
 
   goBack() {
-    this.router.navigate(['/dashboard/users/list'])
+    this.router.navigate(['/dashboards/users/list'])
   }
 }

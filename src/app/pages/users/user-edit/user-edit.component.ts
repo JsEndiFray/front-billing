@@ -107,7 +107,7 @@ export class UserEditComponent implements OnInit {
           });
         }
         // Regresar a la lista de usuarios
-        this.router.navigate(['/dashboard/users/list']);
+        this.router.navigate(['/dashboards/users/list']);
       }, error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
       }
@@ -118,6 +118,6 @@ export class UserEditComponent implements OnInit {
    * Cancelar edición y regresar a la lista
    */
   goBack() {
-    this.router.navigate(['/dashboard/users/list']);
+    this.router.navigate(['/dashboards/users/list']);
   };
 }

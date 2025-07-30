@@ -1,0 +1,410 @@
+<div class="form-wrapper">
+  <h2>Editar Factura</h2>
+
+  <form (ngSubmit)="updateInvoice()">
+
+    <!--Información Básica de la Factura-->
+    <div class="form-section">
+      <h3>📄 Información Básica</h3>
+      <div class="form-grid">
+        <div>
+          <label for="bill_number">Número de Factura *</label>
+          <input
+            type="text"
+            [(ngModel)]="invoice.invoice_number"
+            name="bill_number"
+            id="bill_number"
+            placeholder="FAC-2025-0001"
+            required>
+        </div>
+
+        <div>
+          <label for="date">Fecha de Emisión *</label>
+          <input
+            type="date"
+            [(ngModel)]="invoice.invoice_date"
+            name="date"
+            id="date"
+            required>
+        </div>
+
+        <div>
+          <label for="is_refund">Tipo de Factura</label>
+          <select
+            [(ngModel)]="invoice.is_refund"
+            name="is_refund"
+            id="is_refund">
+            <option [value]="0">Factura Normal</option>
+            <option [value]="1">Factura de Devolución</option>
+          </select>
+        </div>
+
+        @if (invoice.is_refund === 1) {
+          <div>
+            <label for="original_bill_id">Factura Original</label>
+            <select
+              [(ngModel)]="invoice.original_invoice_id"
+              name="original_bill_id"
+              id="original_bill_id">
+              <option value="">Seleccionar factura original</option>
+              @if (originalInvoices && originalInvoices.length > 0) {
+                @for (originalInvoice of originalInvoices; track originalInvoice.id) {
+                  <option [value]="originalInvoice.id">
+                    {{ originalInvoice.invoice_number }} - {{ originalInvoice.invoice_date | dataFormat }}
+                  </option>
+                }
+              }
+            </select>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!--Relaciones -->
+    <div class="form-section">
+      <h3>🔗 Relaciones</h3>
+      <div class="form-grid">
+        <div>
+          <label for="estate_id">Inmueble *</label>
+          <select
+            [(ngModel)]="invoice.estates_id"
+            name="estate_id"
+            id="estate_id"
+            required>
+            <option value="">Seleccionar inmueble</option>
+            @if (estates && estates.length > 0) {
+              @for (estate of estates; track estate.id) {
+                <option [value]="estate.id">
+                  {{ estate.address }} - {{ estate.cadastral_reference }}
+                </option>
+              }
+            }
+          </select>
+        </div>
+
+        <div>
+          <label for="clients_id">Cliente *</label>
+          <select
+            [(ngModel)]="invoice.clients_id"
+            name="clients_id"
+            id="clients_id"
+            required>
+            <option value="">Seleccionar cliente</option>
+            @if (clients && clients.length > 0) {
+              @for (client of clients; track client.id) {
+                <option [value]="client.id">
+                  {{ client.name }} {{ client.lastname }} ({{ client.identification }})
+                </option>
+              }
+            }
+          </select>
+        </div>
+
+        <div>
+          <label for="owners_id">Propietario *</label>
+          <select
+            [(ngModel)]="invoice.owners_id"
+            name="owners_id"
+            id="owners_id"
+            required>
+            <option value="">Seleccionar propietario</option>
+            @if (owners && owners.length > 0) {
+              @for (owner of owners; track owner.id) {
+                <option [value]="owner.id">
+                  {{ owner.name }} {{ owner.lastname }} ({{ owner.identification }})
+                </option>
+              }
+            }
+          </select>
+        </div>
+
+        <div>
+          <label for="ownership_percent">Porcentaje de Propiedad (%)</label>
+          <input
+            type="number"
+            [(ngModel)]="invoice.ownership_percent"
+            name="ownership_percent"
+            id="ownership_percent"
+            placeholder="50.00"
+            min="0.01"
+            max="100"
+            step="0.01">
+        </div>
+      </div>
+    </div>
+
+    <!--Información Financiera-->
+    <div class="form-section">
+      <h3>💰 Información Financiera</h3>
+      <div class="form-grid">
+        <div>
+          <label for="tax_base">Base Imponible (€) *</label>
+          <input
+            type="number"
+            [(ngModel)]="invoice.tax_base"
+            name="tax_base"
+            id="tax_base"
+            placeholder="1000.00"
+            min="0"
+            step="0.01"
+            (ngModelChange)="calculateTotal()"
+            required>
+        </div>
+
+        <div>
+          <label for="iva">IVA (€)</label>
+          <input
+            type="number"
+            [(ngModel)]="invoice.iva"
+            name="iva"
+            id="iva"
+            placeholder="210.00"
+            min="0"
+            step="0.01"
+            (ngModelChange)="calculateTotal()">
+        </div>
+
+        <div>
+          <label for="irpf">IRPF (€)</label>
+          <input
+            type="number"
+            [(ngModel)]="invoice.irpf"
+            name="irpf"
+            id="irpf"
+            placeholder="150.00"
+            min="0"
+            step="0.01"
+            (ngModelChange)="calculateTotal()">
+        </div>
+
+        <div>
+          <label for="total">Total Final (€) *</label>
+          <input
+            type="number"
+            [(ngModel)]="invoice.total"
+            name="total"
+            id="total"
+            placeholder="1060.00"
+            min="0"
+            step="0.01"
+            readonly
+            class="readonly-field">
+          <small>Calculado automáticamente: Base + IVA - IRPF</small>
+        </div>
+      </div>
+    </div>
+
+    <!--🆕 NUEVA SECCIÓN: Tipo de Facturación-->
+    <div class="form-section">
+      <h3>📊 Tipo de Facturación</h3>
+      <div class="form-grid">
+        <div>
+          <label for="is_proportional">Tipo de Facturación</label>
+          <select
+            [(ngModel)]="invoice.is_proportional"
+            name="is_proportional"
+            id="is_proportional"
+            (change)="onBillingTypeChange()">
+            <option value="0">{{ billingTypeLabels[0] }}</option>
+            <option value="1">{{ billingTypeLabels[1] }}</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="corresponding_month">Mes de Correspondencia</label>
+          <input
+            type="month"
+            [(ngModel)]="invoice.corresponding_month"
+            name="corresponding_month"
+            id="corresponding_month"
+            placeholder="Ej: 2025-06 para Junio 2025">
+          <small>Opcional: Para indicar a qué mes corresponde esta factura</small>
+        </div>
+
+        <!-- Campos proporcionales (solo si está seleccionado) -->
+        @if (invoice.is_proportional == 1) {
+          <div>
+            <label for="start_date">
+              Fecha de Inicio *
+              <span style="color: red;">*</span>
+            </label>
+            <input
+              type="date"
+              [(ngModel)]="invoice.start_date"
+              name="start_date"
+              id="start_date"
+              (change)="onProportionalDatesChange()"
+              required>
+          </div>
+
+          <div>
+            <label for="end_date">
+              Fecha de Fin *
+              <span style="color: red;">*</span>
+            </label>
+            <input
+              type="date"
+              [(ngModel)]="invoice.end_date"
+              name="end_date"
+              id="end_date"
+              (change)="onProportionalDatesChange()"
+              required>
+          </div>
+        }
+      </div>
+
+      <!-- Información de simulación proporcional -->
+      @if (simulationResult) {
+        <div class="proportional-summary">
+          <h4>🧮 Cálculo Proporcional</h4>
+          <div class="proportional-details">
+            <div class="detail-item">
+              <span class="detail-label">Período:</span>
+              <span class="detail-value">{{ simulationResult.periodDescription }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Días facturados:</span>
+              <span class="detail-value">{{ simulationResult.details.days_billed }}
+                de {{ simulationResult.details.days_in_month }} días</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Porcentaje:</span>
+              <span class="detail-value">{{ simulationResult.details.proportion_percentage }}%</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Base original:</span>
+              <span
+                class="detail-value">{{ simulationResult.details.original_base | currency:'EUR':'symbol':'1.2-2' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Base proporcional:</span>
+              <span
+                class="detail-value">{{ simulationResult.details.proportional_base | currency:'EUR':'symbol':'1.2-2' }}</span>
+            </div>
+            <div class="detail-item total-line">
+              <span class="detail-label">Total proporcional:</span>
+              <span class="detail-value">{{ simulationResult.total | currency:'EUR':'symbol':'1.2-2' }}</span>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Estado de carga durante simulación -->
+      @if (isSimulating) {
+        <div class="loading-state">
+          <span>🔄 Calculando facturación proporcional...</span>
+        </div>
+      }
+    </div>
+
+    <!--Información de Pago-->
+    <div class="form-section">
+      <h3>💳 Información de Pago</h3>
+      <div class="form-grid">
+        <div>
+          <label for="payment_status">Estado de Pago *</label>
+          <select
+            [(ngModel)]="invoice.collection_status"
+            name="payment_status"
+            id="payment_status"
+            (change)="onCollectionStatusChange()"
+            required>
+            <option value="pending">{{ collectionStatusLabels.pending }}</option>
+            <option value="paid">{{ collectionStatusLabels.collected }}</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="payment_method">Método de Pago *</label>
+          <select
+            [(ngModel)]="invoice.collection_method"
+            name="payment_method"
+            id="payment_method"
+            required>
+            <option value="transfer">{{ collectionMethodLabels.transfer }}</option>
+            <option value="direct_debit">{{ collectionMethodLabels.direct_debit }}</option>
+            <option value="cash">{{ collectionMethodLabels.cash }}</option>
+            <option value="card">{{ collectionMethodLabels.card }}</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="payment_date">
+            Fecha de Pago
+            @if (invoice.collection_status === 'collected') {
+              <span style="color: red;">*</span>
+            }
+          </label>
+          <input
+            type="date"
+            [(ngModel)]="invoice.collection_date"
+            name="payment_date"
+            id="payment_date"
+            [required]="invoice.collection_status === 'collected'"
+            [disabled]="invoice.collection_status === 'pending'">
+          @if (invoice.collection_status === 'pending') {
+            <small style="color: #666; font-size: 0.8em;">
+              Se habilitará al marcar como "Pagado"
+            </small>
+          }
+        </div>
+
+        <div>
+          <label for="payment_notes">Notas del Pago</label>
+          <textarea
+            [(ngModel)]="invoice.collection_notes"
+            name="payment_notes"
+            id="payment_notes"
+            rows="3"
+            placeholder="Ej: Número de transferencia, referencia del pago, observaciones..."></textarea>
+        </div>
+      </div>
+
+      <!-- ✅ INFORMACIÓN VISUAL DEL ESTADO -->
+      <div class="info-section" style="margin-top: 1rem;">
+        <div class="calc-card">
+          <h4>📊 Estado de Pago</h4>
+          <div class="calc-details">
+            <div>Estado:
+              <span [style.color]="invoice.collection_status === 'collected' ? '#28a745' : '#ffc107'">
+                {{ collectionStatusLabels[invoice.collection_status || 'pending'] }}
+              </span>
+            </div>
+            <div>Método: {{ collectionMethodLabels[invoice.collection_method || 'transfer'] }}</div>
+            @if (invoice.collection_date) {
+              <div>Fecha de Pago: {{ invoice.collection_date }}</div>
+            }
+            @if (invoice.collection_notes) {
+              <div>Notas: {{ invoice.collection_notes }}</div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!--Información de Cálculo-->
+    <div class="info-section">
+      <div class="calc-card">
+        <h4>🧮 Cálculo Automático</h4>
+        <div class="calc-details">
+          <div>Base Imponible: {{ invoice.tax_base || 0 | currency:'EUR':'symbol':'1.2-2' }}</div>
+          <div>+ IVA: {{ invoice.iva || 0 | currency:'EUR':'symbol':'1.2-2' }}</div>
+          <div>- IRPF: {{ invoice.irpf || 0 | currency:'EUR':'symbol':'1.2-2' }}</div>
+          <div class="total-line">= Total: {{ invoice.total || 0 | currency:'EUR':'symbol':'1.2-2' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="button-group">
+      <button type="button" class="btn-secondary" (click)="goBack()">
+        ← Cancelar
+      </button>
+      <button type="submit" class="btn-primary">
+        ✓ Actualizar Factura
+      </button>
+    </div>
+
+  </form>
+</div>

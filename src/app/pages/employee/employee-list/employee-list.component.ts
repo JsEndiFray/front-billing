@@ -86,7 +86,7 @@ export class EmployeeListComponent implements OnInit {
    * Navega a la página de edición del empleado
    */
   editEmployee(id: number) {
-    this.router.navigate(['/dashboard/employee/edit', id])
+    this.router.navigate(['/dashboards/employee/edit', id])
   }
 
   /**
@@ -123,7 +123,7 @@ export class EmployeeListComponent implements OnInit {
   }
 
   newEmployee() {
-    this.router.navigate(['/dashboard/employee/register'])
+    this.router.navigate(['/dashboards/employee/register'])
   }
 
 }

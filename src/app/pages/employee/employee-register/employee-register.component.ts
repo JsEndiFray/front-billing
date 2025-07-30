@@ -67,7 +67,7 @@ export class EmployeeRegisterComponent {
           draggable: true
         });
         // Redirigir a la lista después del registro exitoso
-        this.router.navigate(['/dashboard/employee/list']);
+        this.router.navigate(['/dashboards/employee/list']);
       }, error: (e: HttpErrorResponse) => {
       }
     })
@@ -76,7 +76,7 @@ export class EmployeeRegisterComponent {
 
 
   goBack() {
-    this.router.navigate(['/dashboard/employee/list'])
+    this.router.navigate(['/dashboards/employee/list'])
   };
 
 }

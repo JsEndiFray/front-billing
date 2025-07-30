@@ -246,7 +246,7 @@ export class ClientsRegisterComponent implements OnInit {
           text: `Empresa y ${this.administrators.length} administrador(es) creados`,
           icon: 'success'
         });
-        this.router.navigate(['/dashboard/clients/list']);
+        this.router.navigate(['/dashboards/clients/list']);
       }
     ).catch(
       () => {
@@ -256,7 +256,7 @@ export class ClientsRegisterComponent implements OnInit {
           text: 'Empresa creada pero error al crear algunos administradores',
           icon: 'warning'
         });
-        this.router.navigate(['/dashboard/clients/list']);
+        this.router.navigate(['/dashboards/clients/list']);
       }
     );
   }
@@ -271,10 +271,10 @@ export class ClientsRegisterComponent implements OnInit {
       icon: "success",
       draggable: true
     });
-    this.router.navigate(['/dashboard/clients/list']);
+    this.router.navigate(['/dashboards/clients/list']);
   }
 
   goBack() {
-    this.router.navigate(['/dashboard/clients/list'])
+    this.router.navigate(['/dashboards/clients/list'])
   }
 }

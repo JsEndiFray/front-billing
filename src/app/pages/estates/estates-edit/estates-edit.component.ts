@@ -109,7 +109,7 @@ export class EstatesEditComponent implements OnInit {
             confirmButtonText: 'Ok'
           });
           // Regresar a la lista de propiedades
-          this.router.navigate(['/dashboard/estates/list']);
+          this.router.navigate(['/dashboards/estates/list']);
         }
 
       },
@@ -123,6 +123,6 @@ export class EstatesEditComponent implements OnInit {
    * Cancelar edición y regresar a la lista
    */
   goBack() {
-    this.router.navigate(['/dashboard/estates/list']);
+    this.router.navigate(['/dashboards/estates/list']);
   }
 }

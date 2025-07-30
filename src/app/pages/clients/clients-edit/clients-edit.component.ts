@@ -226,7 +226,7 @@ export class ClientsEditComponent implements OnInit {
             confirmButtonText: 'Ok'
           });
           // Regresar a la lista de clientes
-          this.router.navigate(['/dashboard/clients/list']);
+          this.router.navigate(['/dashboards/clients/list']);
         }
       },
       error: (e: HttpErrorResponse) => {
@@ -287,6 +287,6 @@ export class ClientsEditComponent implements OnInit {
    * Cancelar edición y regresar a la lista
    */
   goBack() {
-    this.router.navigate(['/dashboard/clients/list']);
+    this.router.navigate(['/dashboards/clients/list']);
   }
 }

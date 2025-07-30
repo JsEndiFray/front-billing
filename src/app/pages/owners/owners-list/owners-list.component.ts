@@ -96,7 +96,7 @@ export class OwnersListComponent implements OnInit {
    * Navega a la página de edición de propietario
    */
   editOwner(id: number) {
-    this.router.navigate(['/dashboard/owners/edit', id]);
+    this.router.navigate(['/dashboards/owners/edit', id]);
   }
 
   /**
@@ -133,6 +133,6 @@ export class OwnersListComponent implements OnInit {
   }
 
   newOwners(){
-    this.router.navigate(['/dashboard/owners/register'])
+    this.router.navigate(['/dashboards/owners/register'])
   }
 }

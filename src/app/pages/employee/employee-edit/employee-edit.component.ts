@@ -96,7 +96,7 @@ export class EmployeeEditComponent implements OnInit {
             confirmButtonText: 'Ok'
           });
           // Regresar a la lista de propietarios
-          this.router.navigate(['/dashboard/employee/list'])
+          this.router.navigate(['/dashboards/employee/list'])
         }
 
       }, error: (e: HttpErrorResponse) => {
@@ -105,6 +105,6 @@ export class EmployeeEditComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/dashboard/employee/list'])
+    this.router.navigate(['/dashboards/employee/list'])
   }
 }

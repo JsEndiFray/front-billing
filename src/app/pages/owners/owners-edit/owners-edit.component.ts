@@ -110,7 +110,7 @@ export class OwnersEditComponent implements OnInit {
             confirmButtonText: 'Ok'
           });
           // Regresar a la lista de propietarios
-          this.router.navigate(['/dashboard/owners/list'])
+          this.router.navigate(['/dashboards/owners/list'])
         }
 
       }, error: (e: HttpErrorResponse) => {
@@ -123,6 +123,6 @@ export class OwnersEditComponent implements OnInit {
    * Cancelar edición y regresar a la lista
    */
   goBack() {
-    this.router.navigate(['/dashboard/owners/list'])
+    this.router.navigate(['/dashboards/owners/list'])
   }
 }

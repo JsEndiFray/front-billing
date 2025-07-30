@@ -95,7 +95,7 @@ export class ClientsListComponent implements OnInit {
    * Navega a la página de edición de cliente
    */
   editClient(id: number) {
-    this.router.navigate(['/dashboard/clients/edit', id])
+    this.router.navigate(['/dashboards/clients/edit', id])
   }
 
   /**
@@ -131,7 +131,7 @@ export class ClientsListComponent implements OnInit {
     })
   }
   newClient(){
-    this.router.navigate(['/dashboard/clients/register'])
+    this.router.navigate(['/dashboards/clients/register'])
   }
 
 }

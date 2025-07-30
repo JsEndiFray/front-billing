@@ -73,7 +73,7 @@ export class EstatesRegisterComponent {
             draggable: true
           });
           // Redirigir a la lista después del registro exitoso
-          this.router.navigate(['/dashboard/estates/list']);
+          this.router.navigate(['/dashboards/estates/list']);
         }
       }, error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
@@ -82,6 +82,6 @@ export class EstatesRegisterComponent {
   }
 
   goBack() {
-    this.router.navigate(['/dashboard/estates/list'])
+    this.router.navigate(['/dashboards/estates/list'])
   }
 }

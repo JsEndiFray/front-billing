@@ -12,7 +12,8 @@ import {UserListComponent} from './pages/users/user-list/user-list.component';
 import {UserEditComponent} from './pages/users/user-edit/user-edit.component';
 
 // Dashboard principal
-import {DashboardComponent} from './pages/dashboard/dashboard.component';
+import {DashboardComponent} from './pages/dashboards/dashboard/dashboard.component';
+import {DashboardHomeComponent} from './pages/dashboards/dashboard-home/dashboard-home.component';
 import {authGuard} from './core/guards/auth.guard';
 
 // Clientes - Gestión de clientes del negocio
@@ -42,10 +43,10 @@ import {EstateOwnersListComponent} from './pages/estate-owners/estate-owners-lis
 import {EstateOwnersEditComponent} from './pages/estate-owners/estate-owners-edit/estate-owners-edit.component';
 
 // Facturas (Bills) - Sistema de facturación
-import {BillsHomeComponent} from './pages/bills/bills-home/bills-home.component';
-import {BillsRegisterComponent} from './pages/bills/bills-register/bills-register.component';
-import {BillsListComponent} from './pages/bills/bills-list/bills-list.component';
-import {BillsEditComponent} from './pages/bills/bills-edit/bills-edit.component';
+//import { InvoicesIssuedHomeComponent } from './pages/invoices/invoices-issued/invoices-issued-home/invoices-issued-home.component'; // ASUMO que bills-home se renombra a invoices-issued-home
+import { InvoicesIssuedRegisterComponent} from './pages/invoices/invoices-issued/invoices-issued-register/invoices-issued-register.component';
+import { InvoicesIssuedListComponent} from './pages/invoices/invoices-issued/invoices-issued-list/invoices-issued-list.component';
+import { InvoicesIssuedEditComponent} from './pages/invoices/invoices-issued/invoices-issued-edit/Invoices-Issued-Edit.Component';
 
 // Empleados (Employee) - Sistema de empleados
 import {EmployeeHomeComponent} from './pages/employee/employee-home/employee-home.component';
@@ -53,17 +54,18 @@ import {EmployeeListComponent} from './pages/employee/employee-list/employee-lis
 import {EmployeeEditComponent} from './pages/employee/employee-edit/employee-edit.component';
 import {EmployeeRegisterComponent} from './pages/employee/employee-register/employee-register.component';
 
+
 /**
  * Configuración de rutas para aplicación de gestión inmobiliaria
  *
  * ESTRUCTURA:
  * - Rutas públicas: login, register
- * - Rutas protegidas: dashboard/** (requiere autenticación)
+ * - Rutas protegidas: dashboards/** (requiere autenticación)
  * - Módulos: usuarios, clientes, propietarios, propiedades, relaciones, facturas
  *
  * PATRONES:
  * - Cada módulo tiene: home, register/user, list, edit/:id
- * - Todas las rutas protegidas bajo /dashboard con authGuard
+ * - Todas las rutas protegidas bajo /dashboards con authGuard
  * - Rutas anidadas con children para organización modular
  */
 export const routes: Routes = [
@@ -83,11 +85,18 @@ export const routes: Routes = [
   // ========================================
 
   {
-    path: 'dashboard',
+    path: 'dashboards',
     component: DashboardComponent,
     canActivate: [authGuard], // 🔒 Protege todas las rutas hijas
     title: 'Panel de Control',
     children: [
+
+      //dashboard principal
+      {
+        path: '',
+        component: DashboardHomeComponent,
+        title: 'Dashboard Home'
+      },
 
       // Módulo: Usuarios del sistema
       {
@@ -143,17 +152,16 @@ export const routes: Routes = [
         ]
       },
 
-      // Módulo: Sistema de facturación
+      // Módulo: Sistema de Facturación Emitida
       {
-        path: 'bills',
+        path: 'invoices-issued',
         children: [
-          {path: '', component: BillsHomeComponent, title: 'Facturas'},
-          {path: 'register', component: BillsRegisterComponent, title: 'Registrar Factura'},
-          {path: 'list', component: BillsListComponent, title: 'Listado Facturas'},
-          {path: 'edit/:id', component: BillsEditComponent, title: 'Editar Factura'}
+          //{path: '', component: InvoicesIssuedHomeComponent, title: 'Facturas Emitidas'},
+          {path: 'register', component: InvoicesIssuedRegisterComponent, title: 'Registrar Factura Emitida'},
+          {path: 'list', component: InvoicesIssuedListComponent, title: 'Listado Facturas Emitidas'},
+          {path: 'edit/:id', component: InvoicesIssuedEditComponent, title: 'Editar Factura Emitida'}
         ]
       },
-
       // Módulo: Empleados
       {
         path: 'employee',
@@ -184,13 +192,13 @@ export const routes: Routes = [
  *
  * ✅ BUENA ESTRUCTURA:
  * - Rutas organizadas por módulos
- * - Protección con authGuard en dashboard
+ * - Protección con authGuard en dashboards
  * - Títulos descriptivos para cada ruta
  * - Patrón consistente: home > register > list > edit
  *
  * ⚠️ INCONSISTENCIAS MENORES:
  * - users usa 'list' y 'edit/:id', otros usan 'user' para registro
- * - estates-owners y bills usan 'register', otros usan 'user'
+ * - estates-owners y invoices usan 'register', otros usan 'user'
  *
  * 🔧 POSIBLES MEJORAS:
  * - Lazy loading para optimizar carga inicial

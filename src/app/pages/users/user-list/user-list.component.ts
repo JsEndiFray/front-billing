@@ -95,7 +95,7 @@ export class UserListComponent implements OnInit {
    * Navega a la página de edición de usuario
    */
   editUser(id: number) {
-    this.router.navigate(['/dashboard/users/edit', id]);
+    this.router.navigate(['/dashboards/users/edit', id]);
   };
 
   /**
@@ -133,6 +133,6 @@ export class UserListComponent implements OnInit {
   };
 
   newUser() {
-    this.router.navigate(['/dashboard/users/register'])
+    this.router.navigate(['/dashboards/users/register'])
   }
 }

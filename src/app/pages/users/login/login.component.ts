@@ -8,7 +8,7 @@ import {UsersLogin} from '../../../interface/users-interface';
 
 /**
  * Componente de autenticación
- * Maneja login de usuarios y redirección a dashboard
+ * Maneja login de usuarios y redirección a dashboards
  */
 
 @Component({
@@ -64,7 +64,7 @@ export class LoginComponent {
         }));
 
         this.authService.activateSession();*/
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/dashboards']);
       },
       error: (e: HttpErrorResponse) => {
         // Manejo de errores por interceptor

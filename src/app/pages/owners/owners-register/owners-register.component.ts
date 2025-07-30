@@ -74,7 +74,7 @@ export class OwnersRegisterComponent {
             draggable: true
           });
           // Redirigir a la lista después del registro exitoso
-          this.router.navigate(['/dashboard/owners/list']);
+          this.router.navigate(['/dashboards/owners/list']);
         }
       }, error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
@@ -83,6 +83,6 @@ export class OwnersRegisterComponent {
   }
 
   goBack() {
-    this.router.navigate(['/dashboard/owners/list'])
+    this.router.navigate(['/dashboards/owners/list'])
   }
 }

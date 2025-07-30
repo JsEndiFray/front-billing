@@ -128,7 +128,7 @@ export class EstateOwnersRegisterComponent implements OnInit {
             icon: 'success'
           });
           // Regresar a la lista después del registro exitoso
-          this.router.navigate(['/dashboard/estates-owners/list']);
+          this.router.navigate(['/dashboards/estates-owners/list']);
         }
       },
       error: (e: HttpErrorResponse) => {
@@ -142,6 +142,6 @@ export class EstateOwnersRegisterComponent implements OnInit {
    * Cancela el registro y regresa a la lista
    */
   goBack() {
-    this.router.navigate(['/dashboard/estates-owners/list']);
+    this.router.navigate(['/dashboards/estates-owners/list']);
   }
 }

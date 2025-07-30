@@ -95,7 +95,7 @@ export class EstateOwnersListComponent implements OnInit {
    * Navega a la página de edición de la relación
    */
   editEstateOwners(id: number) {
-    this.router.navigate(['/dashboard/estates-owners/edit', id])
+    this.router.navigate(['/dashboards/estates-owners/edit', id])
   }
 
   /**
@@ -133,6 +133,6 @@ export class EstateOwnersListComponent implements OnInit {
   }
 
   newEstateOwner() {
-    this.router.navigate(['/dashboard/estates/register'])
+    this.router.navigate(['/dashboards/estates/register'])
   }
 }

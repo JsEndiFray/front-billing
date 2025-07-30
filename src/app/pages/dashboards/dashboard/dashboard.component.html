@@ -1,0 +1,138 @@
+<!-- Dashboard Layout Principal -->
+<div class="dashboard-layout">
+
+  <!-- Header Superior -->
+  <header class="dashboard-header">
+    <div class="header-left">
+      <button class="sidebar-toggle" (click)="toggleSidebar()">
+        <span class="toggle-icon"></span>
+      </button>
+      <div class="breadcrumb">
+        <span class="breadcrumb-item">Dashboard</span>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-current">{{ currentPageTitle }}</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="search-box">
+        <input type="text" placeholder="Buscar..." class="search-input">
+      </div>
+      <button class="header-btn">⚙️</button>
+      <button class="header-btn">🔔</button>
+      <button class="logout-btn" (click)="logout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <!-- Sidebar Navegación -->
+  <aside class="sidebar" [class.collapsed]="sidebarCollapsed">
+
+
+    <div class="sidebar-brand">
+      <h2>Sistema Facturación</h2>
+    </div>
+
+    <nav class="sidebar-nav">
+
+
+      <!-- Dashboard Principal -->
+      <div class="nav-group">
+        <a [routerLink]="['/dashboards']"
+           routerLinkActive="active"
+           [routerLinkActiveOptions]="{exact: true}"
+           class="nav-item dashboard-main">
+          <span class="nav-icon">📊</span>
+          <span class="nav-text">Panel de Control</span>
+        </a>
+      </div>
+
+
+      <!-- Gestión de Clientes -->
+      <div class="nav-group">
+        <div class="nav-group-title">💼 Gestión de Clientes</div>
+        <a [routerLink]="['clients/list']" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">🤝</span>
+          <span class="nav-text">Clientes</span>
+        </a>
+      </div>
+
+
+      <!-- Gestión de Propietarios -->
+      <div class="nav-group">
+
+        <div class="nav-group-title">🏠 Gestión de Propietarios</div>
+        <a [routerLink]="['owners/list']" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">👨‍💼</span>
+          <span class="nav-text">Propietarios</span>
+        </a>
+
+        <a [routerLink]="['estates/list']" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">🏢</span>
+          <span class="nav-text">Propiedades</span>
+        </a>
+
+        <a [routerLink]="['estates-owners/list']" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span class="nav-text">Porcentajes</span>
+        </a>
+
+        <!-- Libro de IVA con submenús -->
+        <a [routerLink]="['vat-book']" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">📚</span>
+          <span class="nav-text">Libro de IVA</span>
+        </a>
+
+      </div>
+
+
+      <!-- Gestión de Facturas-->
+      <div class="nav-group">
+        <div class="nav-group-title">🧾 Gestión de Facturas</div>
+
+        <a [routerLink]="['invoices-issued/list']" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">🧾</span>
+          <span class="nav-text">Facturas Emitidas</span>
+        </a>
+
+        <a [routerLink]="['invoices-received/list']" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">📥</span>
+          <span class="nav-text">Facturas Recibidas</span>
+        </a>
+
+        <a [routerLink]="['suppliers/list']" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">🏪</span>
+          <span class="nav-text">Proveedores</span>
+        </a>
+
+        <a [routerLink]="['internal-expenses/list']" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">💸</span>
+          <span class="nav-text">Gastos Internos</span>
+        </a>
+      </div>
+
+      <!-- Gestión de Usuarios -->
+      <div class="nav-group">
+        <div class="nav-group-title">👥 Gestión de Usuarios</div>
+        <a [routerLink]="['users/list']" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">👤</span>
+          <span class="nav-text">Usuarios</span>
+        </a>
+
+        <a [routerLink]="['employee/list']" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">👔</span>
+          <span class="nav-text">Empleados</span>
+        </a>
+      </div>
+
+
+    </nav>
+
+
+  </aside>
+
+  <!-- Área de Contenido Principal -->
+  <main class="main-content" [class.sidebar-collapsed]="sidebarCollapsed">
+    <router-outlet></router-outlet>
+  </main>
+
+</div>

@@ -1,31 +1,32 @@
-/* Layout principal de la aplicación */
+/*
+!* Layout principal de la aplicación *!
 .app-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 
-  /* Fondo degradado azul oscuro */
+  !* Fondo degradado azul oscuro *!
   background:
     linear-gradient(to top, rgb(4, 8, 53) 40%, transparent 70%),
     #0b2163;
 }
 
-/* Espaciador para compensar header fijo */
+!* Espaciador para compensar header fijo *!
 .header-spacer {
   height: 5.5rem;
   display: block;
 }
 
-/* Contenido principal expansible */
+!* Contenido principal expansible *!
 .content {
-  flex: 1; /* Ocupa espacio restante */
+  flex: 1; !* Ocupa espacio restante *!
   padding: 0;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden; /* Evita scroll horizontal */
+  overflow-x: hidden; !* Evita scroll horizontal *!
 }
 
-/* Responsive - mantiene padding 0 en móviles */
+!* Responsive - mantiene padding 0 en móviles *!
 @media (max-width: 768px) {
   .content {
     padding: 0;
@@ -37,3 +38,4 @@
     padding: 0;
   }
 }
+*/

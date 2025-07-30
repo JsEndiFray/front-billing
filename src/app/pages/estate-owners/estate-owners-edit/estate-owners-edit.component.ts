@@ -212,7 +212,7 @@ export class EstateOwnersEditComponent implements OnInit {
             confirmButtonText: 'Ok'
           });
           // Regresar a la lista de relaciones
-          this.router.navigate(['/dashboard/estates-owners/list']);
+          this.router.navigate(['/dashboards/estates-owners/list']);
         }
       }, error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
@@ -240,6 +240,6 @@ export class EstateOwnersEditComponent implements OnInit {
    * Cancela la edición y regresa a la lista
    */
   goBack() {
-    this.router.navigate(['/dashboard/estates-owners/list']);
+    this.router.navigate(['/dashboards/estates-owners/list']);
   }
 }
