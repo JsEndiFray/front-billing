@@ -1,17 +1,26 @@
-<!-- Formulario de edición de clientes con gestión de tipos y administradores -->
-<div class="form-wrapper">
-  <h2>Editar Cliente</h2>
+<div class="container">
+  <!-- Título y descripción -->
+  <div class="header">
+    <h1 class="title">Editar Cliente</h1>
+    <p class="subtitle">Modificar información del cliente existente</p>
+  </div>
 
+  <!-- Formulario principal -->
   <form (ngSubmit)="updateClient()">
 
-    <!-- Sección información básica -->
-    <div class="form-section">
-      <h3>📋 Información Básica</h3>
+    <!-- Sección: Información básica -->
+    <div class="section">
+      <h2 class="section-title">📋 Información Básica</h2>
       <div class="form-grid">
-        <!-- Campo tipo de cliente -->
-        <div>
-          <label for="type_client">Tipo de Cliente</label>
-          <select [(ngModel)]="client.type_client" name="type_client" id="type_client" required>
+
+        <div class="form-field">
+          <label for="type_client" class="form-label">Tipo de Cliente *</label>
+          <select
+            [(ngModel)]="client.type_client"
+            name="type_client"
+            id="type_client"
+            class="form-select"
+            required>
             <option value="">Seleccionar tipo</option>
             <option value="particular">Particular</option>
             <option value="autonomo">Autónomo</option>
@@ -19,203 +28,221 @@
           </select>
         </div>
 
-        <!-- Campo nombre -->
-        <div>
-          <label for="name">Nombre *</label>
+        <div class="form-field">
+          <label for="name" class="form-label">Nombre *</label>
           <input
             type="text"
             [(ngModel)]="client.name"
             name="name"
             id="name"
             placeholder="Nombre del cliente"
+            class="form-input"
             required>
         </div>
 
-        <!-- Campo apellidos -->
-        <div>
-          <label for="lastname">Apellidos</label>
+        <div class="form-field">
+          <label for="lastname" class="form-label">Apellidos *</label>
           <input
             type="text"
             [(ngModel)]="client.lastname"
             name="lastname"
             id="lastname"
-            placeholder="Apellidos del cliente">
+            placeholder="Apellidos del cliente"
+            class="form-input"
+            required>
         </div>
 
-        <!-- Campo identificación -->
-        <div>
-          <label for="identification">Identificación *</label>
+        <div class="form-field">
+          <label for="identification" class="form-label">Identificación *</label>
           <input
             type="text"
             [(ngModel)]="client.identification"
             name="identification"
             id="identification"
             placeholder="DNI/NIE/CIF"
+            class="form-input identification-input"
             required>
         </div>
+
       </div>
     </div>
 
-    <!-- Sección información de contacto -->
-    <div class="form-section">
-      <h3>📞 Información de Contacto</h3>
+    <!-- Sección: Información de contacto -->
+    <div class="section">
+      <h2 class="section-title">📞 Información de Contacto</h2>
       <div class="form-grid">
-        <!-- Campo email -->
-        <div>
-          <label for="email">Email *</label>
+
+        <div class="form-field">
+          <label for="email" class="form-label">Email *</label>
           <input
             type="email"
             [(ngModel)]="client.email"
             name="email"
             id="email"
             placeholder="cliente@email.com"
+            class="form-input"
             required>
         </div>
 
-        <!-- Campo teléfono -->
-        <div>
-          <label for="phone">Teléfono *</label>
+        <div class="form-field">
+          <label for="phone" class="form-label">Teléfono *</label>
           <input
             type="tel"
             [(ngModel)]="client.phone"
             name="phone"
             id="phone"
             placeholder="123 456 789"
+            class="form-input"
             required>
         </div>
+
       </div>
     </div>
 
-    <!-- Sección dirección -->
-    <div class="form-section">
-      <h3>🏠 Dirección</h3>
+    <!-- Sección: Dirección -->
+    <div class="section">
+      <h2 class="section-title">🏠 Dirección</h2>
       <div class="form-grid">
-        <!-- Campo dirección -->
-        <div>
-          <label for="address">Dirección</label>
+
+        <div class="form-field form-field-full">
+          <label for="address" class="form-label">Dirección</label>
           <input
             type="text"
             [(ngModel)]="client.address"
             name="address"
             id="address"
-            placeholder="Calle Principal 123">
+            placeholder="Calle Principal 123"
+            class="form-input">
         </div>
 
-        <!-- Campo código postal -->
-        <div>
-          <label for="postal_code">Código Postal</label>
+        <div class="form-field">
+          <label for="postal_code" class="form-label">Código Postal</label>
           <input
             type="text"
             [(ngModel)]="client.postal_code"
             name="postal_code"
             id="postal_code"
             placeholder="28001"
-            pattern="[0-9]{5}">
+            class="form-input postal-input"
+            pattern="[0-9]{5}"
+            maxlength="5">
         </div>
 
-        <!-- Campo localidad -->
-        <div>
-          <label for="location">Localidad</label>
+        <div class="form-field">
+          <label for="location" class="form-label">Localidad</label>
           <input
             type="text"
             [(ngModel)]="client.location"
             name="location"
             id="location"
-            placeholder="Madrid">
+            placeholder="Madrid"
+            class="form-input">
         </div>
 
-        <!-- Campo provincia -->
-        <div>
-          <label for="province">Provincia</label>
+        <div class="form-field">
+          <label for="province" class="form-label">Provincia</label>
           <input
             type="text"
             [(ngModel)]="client.province"
             name="province"
             id="province"
-            placeholder="Madrid">
+            placeholder="Madrid"
+            class="form-input">
         </div>
 
-        <!-- Campo país -->
-        <div>
-          <label for="country">País</label>
+        <div class="form-field">
+          <label for="country" class="form-label">País</label>
           <input
             type="text"
             [(ngModel)]="client.country"
             name="country"
             id="country"
             placeholder="España"
+            class="form-input"
             value="España">
         </div>
+
       </div>
     </div>
 
-    <!-- Sección información empresarial (solo para empresa/autónomo) -->
+    <!-- Sección: Información empresarial -->
     @if (client.type_client === 'empresa' || client.type_client === 'autonomo') {
-      <div class="form-section">
-        <h3>🏢 Información Empresarial</h3>
+      <div class="section">
+        <h2 class="section-title">🏢 Información Empresarial</h2>
         <div class="form-grid">
-          <!-- Campo nombre de empresa -->
-          <div>
-            <label for="company_name">Nombre de Empresa</label>
+
+          <div class="form-field">
+            <label for="company_name" class="form-label">Nombre de Empresa</label>
             <input
               type="text"
               [(ngModel)]="client.company_name"
               name="company_name"
               id="company_name"
-              placeholder="Empresa S.L.">
+              placeholder="Empresa S.L."
+              class="form-input company-input">
           </div>
 
-          <!-- Campos específicos para autónomos -->
           @if (client.type_client === 'autonomo') {
-            <div>
-              <label for="parent_company_name">Empresa Relacionada</label>
+            <div class="form-field">
+              <label for="parent_company_name" class="form-label">Empresa Relacionada</label>
               <input
                 type="text"
                 [(ngModel)]="client.parent_company_name"
                 name="parent_company_name"
                 id="parent_company_name"
                 placeholder="Empresa relacionada"
+                class="form-input"
                 readonly>
             </div>
 
-            <div>
-              <label for="relationship_type">Tipo de Relación</label>
-              <select [(ngModel)]="client.relationship_type" name="relationship_type" id="relationship_type">
+            <div class="form-field">
+              <label for="relationship_type" class="form-label">Tipo de Relación</label>
+              <select
+                [(ngModel)]="client.relationship_type"
+                name="relationship_type"
+                id="relationship_type"
+                class="form-select">
                 <option value="">Sin relación</option>
                 <option value="administrator">Administrador</option>
               </select>
             </div>
           }
+
         </div>
       </div>
     }
 
-    <!-- Sección administrador para empresas -->
+    <!-- Sección: Administrador para empresas -->
     @if (client.type_client === 'empresa') {
-      <div class="form-section">
-        <h3>👨‍💼 Administrador de la Empresa</h3>
+      <div class="section">
+        <h2 class="section-title">👨‍💼 Administrador de la Empresa</h2>
+
+        <!-- Tipo de administrador -->
+        <div class="admin-type-selection">
+          <label class="form-label">¿Cómo quieres asignar el administrador?</label>
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="radio" [(ngModel)]="adminType" name="adminType" value="existing">
+              <span>Seleccionar administrador existente</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" [(ngModel)]="adminType" name="adminType" value="new">
+              <span>Crear nuevo administrador</span>
+            </label>
+          </div>
+        </div>
 
         <div class="form-grid">
-          <!-- Selector de tipo de administrador -->
-          <div style="grid-column: 1 / -1;">
-            <label>¿Cómo quieres asignar el administrador?</label>
-            <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
-              <label style="display: flex; align-items: center; gap: 0.5rem;">
-                <input type="radio" [(ngModel)]="adminType" name="adminType" value="existing">
-                Seleccionar administrador existente
-              </label>
-              <label style="display: flex; align-items: center; gap: 0.5rem;">
-                <input type="radio" [(ngModel)]="adminType" name="adminType" value="new">
-                Crear nuevo administrador
-              </label>
-            </div>
-          </div>
 
           <!-- Selector de administrador existente -->
           @if (adminType === 'existing') {
-            <div>
-              <label for="existing_admin">Administrador</label>
-              <select [(ngModel)]="selectedAdminId" name="existing_admin" id="existing_admin">
+            <div class="form-field form-field-full">
+              <label for="existing_admin" class="form-label">Administrador</label>
+              <select
+                [(ngModel)]="selectedAdminId"
+                name="existing_admin"
+                id="existing_admin"
+                class="form-select">
                 <option value="">Seleccionar administrador</option>
                 @for (admin of availableAdmins; track admin.id) {
                   <option [value]="admin.id">{{admin.name}} {{admin.lastname}} - {{admin.identification}}</option>
@@ -226,67 +253,140 @@
 
           <!-- Formulario para nuevo administrador -->
           @if (adminType === 'new') {
-            <div>
-              <label for="admin_name">Nombre del Administrador *</label>
-              <input type="text" [(ngModel)]="newAdmin.name" name="admin_name" id="admin_name" placeholder="Nombre" required>
+            <div class="form-field">
+              <label for="admin_name" class="form-label">Nombre del Administrador *</label>
+              <input
+                type="text"
+                [(ngModel)]="newAdmin.name"
+                name="admin_name"
+                id="admin_name"
+                placeholder="Nombre"
+                class="form-input"
+                required>
             </div>
 
-            <div>
-              <label for="admin_lastname">Apellidos *</label>
-              <input type="text" [(ngModel)]="newAdmin.lastname" name="admin_lastname" id="admin_lastname" placeholder="Apellidos" required>
+            <div class="form-field">
+              <label for="admin_lastname" class="form-label">Apellidos *</label>
+              <input
+                type="text"
+                [(ngModel)]="newAdmin.lastname"
+                name="admin_lastname"
+                id="admin_lastname"
+                placeholder="Apellidos"
+                class="form-input"
+                required>
             </div>
 
-            <div>
-              <label for="admin_identification">Identificación *</label>
-              <input type="text" [(ngModel)]="newAdmin.identification" name="admin_identification" id="admin_identification" placeholder="DNI/NIE" required>
+            <div class="form-field">
+              <label for="admin_identification" class="form-label">Identificación *</label>
+              <input
+                type="text"
+                [(ngModel)]="newAdmin.identification"
+                name="admin_identification"
+                id="admin_identification"
+                placeholder="DNI/NIE"
+                class="form-input identification-input"
+                required>
             </div>
 
-            <div>
-              <label for="admin_email">Email *</label>
-              <input type="email" [(ngModel)]="newAdmin.email" name="admin_email" id="admin_email" placeholder="admin@email.com" required>
+            <div class="form-field">
+              <label for="admin_email" class="form-label">Email *</label>
+              <input
+                type="email"
+                [(ngModel)]="newAdmin.email"
+                name="admin_email"
+                id="admin_email"
+                placeholder="admin@email.com"
+                class="form-input"
+                required>
             </div>
 
-            <div>
-              <label for="admin_phone">Teléfono *</label>
-              <input type="tel" [(ngModel)]="newAdmin.phone" name="admin_phone" id="admin_phone" placeholder="123 456 789" required>
+            <div class="form-field">
+              <label for="admin_phone" class="form-label">Teléfono *</label>
+              <input
+                type="tel"
+                [(ngModel)]="newAdmin.phone"
+                name="admin_phone"
+                id="admin_phone"
+                placeholder="123 456 789"
+                class="form-input"
+                required>
             </div>
 
-            <div>
-              <label for="admin_address">Dirección *</label>
-              <input type="text" [(ngModel)]="newAdmin.address" name="admin_address" id="admin_address" placeholder="Calle Principal 123" required>
+            <div class="form-field form-field-full">
+              <label for="admin_address" class="form-label">Dirección *</label>
+              <input
+                type="text"
+                [(ngModel)]="newAdmin.address"
+                name="admin_address"
+                id="admin_address"
+                placeholder="Calle Principal 123"
+                class="form-input"
+                required>
             </div>
 
-            <div>
-              <label for="admin_postal_code">Código Postal *</label>
-              <input type="text" [(ngModel)]="newAdmin.postal_code" name="admin_postal_code" id="admin_postal_code" placeholder="28001" pattern="[0-9]{5}" required>
+            <div class="form-field">
+              <label for="admin_postal_code" class="form-label">Código Postal *</label>
+              <input
+                type="text"
+                [(ngModel)]="newAdmin.postal_code"
+                name="admin_postal_code"
+                id="admin_postal_code"
+                placeholder="28001"
+                class="form-input postal-input"
+                pattern="[0-9]{5}"
+                maxlength="5"
+                required>
             </div>
 
-            <div>
-              <label for="admin_location">Localidad *</label>
-              <input type="text" [(ngModel)]="newAdmin.location" name="admin_location" id="admin_location" placeholder="Madrid" required>
+            <div class="form-field">
+              <label for="admin_location" class="form-label">Localidad *</label>
+              <input
+                type="text"
+                [(ngModel)]="newAdmin.location"
+                name="admin_location"
+                id="admin_location"
+                placeholder="Madrid"
+                class="form-input"
+                required>
             </div>
 
-            <div>
-              <label for="admin_province">Provincia *</label>
-              <input type="text" [(ngModel)]="newAdmin.province" name="admin_province" id="admin_province" placeholder="Madrid" required>
+            <div class="form-field">
+              <label for="admin_province" class="form-label">Provincia *</label>
+              <input
+                type="text"
+                [(ngModel)]="newAdmin.province"
+                name="admin_province"
+                id="admin_province"
+                placeholder="Madrid"
+                class="form-input"
+                required>
             </div>
 
-            <div>
-              <label for="admin_country">País</label>
-              <input type="text" [(ngModel)]="newAdmin.country" name="admin_country" id="admin_country" placeholder="España" value="España">
+            <div class="form-field">
+              <label for="admin_country" class="form-label">País</label>
+              <input
+                type="text"
+                [(ngModel)]="newAdmin.country"
+                name="admin_country"
+                id="admin_country"
+                placeholder="España"
+                class="form-input"
+                value="España">
             </div>
           }
+
         </div>
       </div>
     }
 
     <!-- Botones de acción -->
-    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
-      <button type="button" class="btn-secondary" (click)="goBack()">
-        ← Cancelar
-      </button>
-      <button type="submit" class="btn-primary">
+    <div class="actions-section">
+      <button type="submit" class="primary-btn">
         ✓ Actualizar Cliente
+      </button>
+      <button type="button" class="secondary-btn" (click)="goBack()">
+        ← Cancelar
       </button>
     </div>
 

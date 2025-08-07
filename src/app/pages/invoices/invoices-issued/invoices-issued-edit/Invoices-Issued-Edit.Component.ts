@@ -190,9 +190,15 @@ export class InvoicesIssuedEditComponent implements OnInit {
 
   getListOwners() {
     this.ownersServices.getOwners().subscribe({
-      next: (data) => {
+      next: (data: Owners[]) => {
+        console.log('Datos recibidos:', data);
+        console.log('Tipo de datos:', typeof data);
+        console.log('Es array?:', Array.isArray(data));
         this.owners = data;
+        console.log('this.owners después de asignar:', this.owners);
       }, error: (e: HttpErrorResponse) => {
+        console.log('Error en getOwners:', e);
+        this.owners = [];
       }
     })
   }

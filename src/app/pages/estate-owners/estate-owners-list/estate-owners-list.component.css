@@ -1,426 +1,246 @@
-/* Contenedor principal */
-.estate-owners-wrapper {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  margin: 2rem auto;
-  width: 100%;
-  max-width: 105rem;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-  overflow-x: auto;
-}
-
-/* Título principal */
-.estate-owners-title {
-  color: #1f2937;
-  font-size: 2rem;
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-/* Contenedor de búsqueda */
-.estate-owners-search-container {
-  margin-bottom: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-/* Wrapper del campo de búsqueda */
-.estate-owners-search-wrapper {
-  position: relative;
-  max-width: 32rem;
-  margin: 0 auto;
-  width: 100%;
-}
-
-/* Campo de búsqueda */
-.estate-owners-search-input {
-  width: 100%;
-  padding: 0.75rem 3rem 0.75rem 1rem;
-  border: 0.125rem solid #e5e7eb;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  color: #374151;
-  background: #ffffff;
-  transition: all 0.2s ease;
+/* Reset y estilos base */
+* {
   box-sizing: border-box;
 }
 
-/* Estado focus del campo de búsqueda */
-.estate-owners-search-input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 0.1875rem rgba(59, 130, 246, 0.1);
+/* Contenedor principal (igual que otros componentes) */
+.container {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin: 0 auto;
+  width: 100%;
+  max-width: auto;
+  box-shadow: 0 0.25rem 0.375rem -0.0625rem rgba(0, 0, 0, 0.1);
 }
 
-/* Placeholder del campo de búsqueda */
-.estate-owners-search-input::placeholder {
+/* Título y descripción (igual que otros componentes) */
+.header {
+  margin-bottom: 2rem;
+}
+
+.title {
+  color: #1f2937;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.subtitle {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* Sección de filtros (igual que otros componentes) */
+.filters-section {
+  background: #f9fafb;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* Buscador (igual que otros componentes) */
+.search-container {
+  flex: 1;
+  min-width: 18.75rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.625rem 1rem;
+  border: 0.125rem solid #e5e7eb;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  color: #374151;
+  background: #ffffff;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.search-input::placeholder {
   color: #9ca3af;
 }
 
-/* Contenedor de acciones de búsqueda */
-.estate-owners-search-actions {
-  position: absolute;
-  right: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
+/* Botones de acción (igual que otros componentes) */
+.actions-container {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  margin-left: auto;
 }
 
-/* Icono de búsqueda */
-.estate-owners-search-icon {
-  color: #6b7280;
-  font-size: 0.875rem;
-  pointer-events: none;
-}
-
-/* Botón limpiar búsqueda */
-.estate-owners-clear-button {
-  background: #f3f4f6;
-  border: none;
-  border-radius: 50%;
-  width: 1.25rem;
-  height: 1.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #6b7280;
-  font-size: 0.75rem;
-  transition: all 0.2s ease;
-}
-
-/* Hover del botón limpiar */
-.estate-owners-clear-button:hover {
-  background: #e5e7eb;
-  color: #374151;
-}
-
-/* Información de resultados de búsqueda */
-.estate-owners-search-results {
-  text-align: center;
-  color: #6b7280;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-/* Botón nuevo registro */
-.estate-owners-btn-new {
-  background: #3b82f6;
-  color: white;
+.export-btn,
+.new-client-btn {
+  padding: 0.625rem 1rem;
   border: none;
   border-radius: 0.375rem;
-  padding: 0.5rem 1rem;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  margin: 0.75rem auto 1.5rem auto;
-  display: block;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
 }
 
-/* Hover del botón nuevo */
-.estate-owners-btn-new:hover {
-  background: #2563eb;
-}
-
-/* Contenedor de la tabla */
-.estate-owners-table-container {
-  overflow-x: auto;
-}
-
-/* Tabla principal */
-.estate-owners-table {
-  width: 100%;
-  min-width: 40rem;
-  border-collapse: separate;
-  border-spacing: 0;
+.export-btn {
   background: #ffffff;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  border: 0.0625rem solid #e5e7eb;
+  color: #374151;
+  border: 0.125rem solid #e5e7eb;
 }
 
-/* Cabecera de la tabla */
-.estate-owners-table-head {
+.export-btn:hover {
   background: #f9fafb;
 }
 
-/* Celdas de encabezado */
-.estate-owners-th {
-  padding: 1rem 0.75rem;
-  color: #374151;
-  font-weight: 600;
-  text-align: left;
+.new-client-btn {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+.new-client-btn:hover {
+  background: #2563eb;
+}
+
+/* Contenedor de tabla (igual que otros componentes) */
+.table-container {
+  background: #ffffff;
+  border: 0.0625rem solid #e5e7eb;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+/* Tabla (igual que otros componentes) */
+.clients-table {
+  width: 100%;
+  border-collapse: collapse;
   font-size: 0.875rem;
+}
+
+/* Cabecera de la tabla */
+.clients-table thead {
+  background: #f9fafb;
+}
+
+.clients-table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   border-bottom: 0.0625rem solid #e5e7eb;
   white-space: nowrap;
 }
 
-/* DISTRIBUCIÓN DE COLUMNAS PARA OWNERSHIP (4 COLUMNAS) */
-th:nth-child(1) { width: auto }  /* ID */
-th:nth-child(2) { width: auto }  /* Propiedad */
-th:nth-child(3) { width: auto }  /* Propietario */
-th:nth-child(4) { width: auto }  /* Porcentaje (%) */
-th:nth-child(5) { width: auto }  /* Fecha de creación */
-th:nth-child(6) { width: auto}  /* fecha de actualización */
-th:nth-child(7) { width: 15% }  /* Acciones */
-/* Cuerpo de la tabla */
-.estate-owners-table-body {
-  background: #ffffff;
+/* Celdas de datos */
+.clients-table td {
+  padding: 0.75rem 1rem;
+  color: #374151;
+  border-bottom: 0.0625rem solid #f3f4f6;
+  font-size: 0.875rem;
 }
 
-/* Filas de datos */
-.estate-owners-table-row:hover .estate-owners-td {
+/* Hover de filas */
+.clients-table tbody tr:hover {
   background: #f9fafb;
 }
 
-.estate-owners-table-row:last-child .estate-owners-td {
+/* Última fila sin borde */
+.clients-table tbody tr:last-child td {
   border-bottom: none;
 }
 
-/* Celdas de datos */
-.estate-owners-td {
-  padding: 1rem 0.75rem;
-  border-bottom: 0.0625rem solid #f3f4f6;
-  color: #374151;
-  font-size: 0.875rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 0;
-}
-
-/* Estilo especial para propiedad */
-.estate-owners-property {
+/* Celdas especiales */
+.property-cell {
   color: #6366f1;
   font-weight: 500;
 }
 
-/* Estilo especial para propietario */
-.estate-owners-owner {
+.owner-cell {
   color: #0891b2;
   font-weight: 500;
 }
 
-/* Estilo especial para porcentaje */
-.estate-owners-percentage {
+.percentage-cell {
   color: #059669;
   font-weight: 700;
-  font-size: 1rem;
   text-align: center;
   background: linear-gradient(135deg, #d1fae5, #ecfdf5);
   border-radius: 0.25rem;
+  font-size: 1rem;
 }
 
-/* Botones de acción en tabla */
-.estate-owners-btn-edit,
-.estate-owners-btn-delete {
-  padding: 0.375rem 0.75rem;
-  margin: 0 0.25rem;
-  border: none;
-  border-radius: 0.25rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-/* Botón editar */
-.estate-owners-btn-edit {
-  background: #3b82f6;
-  color: white;
-}
-
-.estate-owners-btn-edit:hover {
-  background: #2563eb;
-}
-
-/* Botón eliminar */
-.estate-owners-btn-delete {
-  background: #ef4444;
-  color: white;
-}
-
-.estate-owners-btn-delete:hover {
-  background: #dc2626;
-}
-
-/* Estado sin datos */
-.estate-owners-no-data {
+/* Estado vacío */
+.no-data {
   text-align: center;
-  padding: 3rem;
+  padding: 3rem 1.5rem;
 }
 
-/* Tarjeta de estado vacío */
-.estate-owners-empty-state {
-  background: #f9fafb;
-  border: 0.0625rem solid #e5e7eb;
-  border-radius: 0.5rem;
-  padding: 2rem;
-  max-width: 25rem;
-  margin: 0 auto;
+.empty-state {
+  color: #6b7280;
 }
 
-/* Icono de estado vacío */
-.estate-owners-empty-icon {
-  font-size: 2rem;
-  margin-bottom: 1rem;
+.empty-state p {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
 }
 
-/* Título de estado vacío */
-.estate-owners-empty-title {
-  color: #1f2937;
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-}
-
-/* Texto de estado vacío */
-.estate-owners-empty-text {
+/* Información de resultados de búsqueda */
+.search-results-info {
+  text-align: center;
   color: #6b7280;
   font-size: 0.875rem;
-  line-height: 1.5;
-  margin: 0 0 1.5rem 0;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 0.0625rem solid #e5e7eb;
 }
 
-/* Botón crear en estado vacío */
-.estate-owners-btn-create {
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 0.375rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.estate-owners-btn-create:hover {
-  background: #2563eb;
-}
-
-/* Responsive para tablet grande */
-@media (max-width: 64rem) {
-  .estate-owners-wrapper {
-    padding: 1.25rem;
-    margin: 1.5rem auto;
-    width: 99%;
-  }
-
-  .estate-owners-search-wrapper {
-    max-width: 28rem;
-  }
-
-  .estate-owners-search-input {
-    padding: 0.625rem 2.75rem 0.625rem 0.875rem;
-    font-size: 0.8125rem;
-  }
-
-  .estate-owners-table {
-    min-width: 35rem;
-  }
-
-  .estate-owners-th,
-  .estate-owners-td {
-    padding: 0.75rem 0.5rem;
-    font-size: 0.8125rem;
-  }
-}
-
-/* Responsive para tablet */
+/* Responsive */
 @media (max-width: 48rem) {
-  .estate-owners-wrapper {
-    padding: 1rem;
-    margin: 1rem auto;
+  .filters-section {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .estate-owners-title {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
+  .actions-container {
+    margin-left: 0;
   }
 
-  .estate-owners-search-container {
-    margin-bottom: 1.25rem;
-  }
-
-  .estate-owners-search-wrapper {
-    max-width: 100%;
-  }
-
-  .estate-owners-search-input {
-    padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+  .clients-table {
     font-size: 0.75rem;
   }
 
-  .estate-owners-search-actions {
-    right: 0.625rem;
-  }
-
-  .estate-owners-clear-button {
-    width: 1.125rem;
-    height: 1.125rem;
-    font-size: 0.6875rem;
-  }
-
-  .estate-owners-table {
-    min-width: 30rem;
-  }
-
-  .estate-owners-th,
-  .estate-owners-td {
-    padding: 0.5rem 0.25rem;
-    font-size: 0.75rem;
-  }
-
-  .estate-owners-btn-edit,
-  .estate-owners-btn-delete {
-    display: block;
-    width: 100%;
-    margin: 0.125rem 0;
-    padding: 0.25rem;
-    font-size: 0.6875rem;
+  .clients-table th,
+  .clients-table td {
+    padding: 0.5rem 0.75rem;
   }
 }
 
-/* Responsive para móvil */
 @media (max-width: 30rem) {
-  .estate-owners-wrapper {
+  .container {
     padding: 0.75rem;
     margin: 0.5rem auto;
   }
 
-  .estate-owners-title {
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
+  .title {
+    font-size: 1.5rem;
   }
 
-  .estate-owners-search-container {
-    margin-bottom: 1rem;
-  }
-
-  .estate-owners-search-input {
-    padding: 0.5rem 2.25rem 0.5rem 0.625rem;
+  .clients-table th,
+  .clients-table td {
+    padding: 0.375rem 0.5rem;
     font-size: 0.6875rem;
   }
 
-  .estate-owners-search-input::placeholder {
-    font-size: 0.6875rem;
-  }
-
-  .estate-owners-search-results {
-    font-size: 0.6875rem;
-  }
-
-  .estate-owners-table {
-    min-width: 25rem;
-  }
-
-  .estate-owners-empty-state {
-    padding: 1.5rem;
+  .percentage-cell {
+    font-size: 0.875rem;
   }
 }

@@ -12,9 +12,15 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import {NgClass} from '@angular/common';
-import {SearchService} from '../../../../core/services/search-services/search.service';
+import {SearchService} from '../../../../core/services/shared-services/search.service';
 import Swal from 'sweetalert2';
 import {CommonModule} from '@angular/common';
+import {PaginationConfig, PaginationResult} from '../../../../interface/pagination';
+import {PaginationService} from '../../../../core/services/shared-services/pagination.service';
+import {
+  InvoicesIssuedUtilService
+} from '../../../../core/services/invoices-issued-util-services/invoices-issued-util.service';
+
 
 /**
  * Componente para mostrar y gestionar la lista de facturas
@@ -43,6 +49,40 @@ export class InvoicesIssuedListComponent implements OnInit {
   // Texto que escribe el usuario para buscar
   searchTerm: string = '';
 
+  // Lista de clientes filtrados (antes de paginar)
+  filteredInvoices: Invoice[] = [];
+
+  //pago pendientes filtros
+  selectedCollectionStatus: string = '';
+  selectedTypeBilling: string = '';
+  selectedOwners: string = '';
+  selectedClients: string = '';
+  selectedRefundStatus: string = '';
+
+  // Opciones para filtros
+  collectionStatusOptions: Array<'pending' | 'collected' | 'overdue' | 'disputed'> = [];
+  billingTypeOptions: Array<0 | 1> = [];
+  ownersOptions: string[] = [];
+  clientsOptions: string[] = [];
+  refundStatusOptions: { value: string, label:string }[] = [];
+
+  // Configuración de paginación
+  paginationConfig: PaginationConfig = {
+    currentPage: 1,
+    itemsPerPage: 5,
+    totalItems: 0
+  };
+
+// Resultado de paginación
+  paginationResult: PaginationResult<Invoice> = {
+    items: [],
+    totalPages: 0,
+    hasNext: false,
+    hasPrevious: false,
+    startIndex: 0,
+    endIndex: 0
+  };
+
   // Variables para el modal de abonos
   showRefundModal: boolean = false;
   selectedInvoice: Invoice | null = null;
@@ -69,8 +109,10 @@ export class InvoicesIssuedListComponent implements OnInit {
 
   constructor(
     private invoicesIssuedService: InvoicesIssuedService,
+    private invoicesIssuedUtilService: InvoicesIssuedUtilService,
     private router: Router,
     private searchService: SearchService,
+    private paginationService: PaginationService,
   ) {
   }
 
@@ -82,69 +124,9 @@ export class InvoicesIssuedListComponent implements OnInit {
     this.getListInvoices();
   }
 
-
-  /**
-   * Determina si una factura es proporcional
-   */
-  isInvoiceProportional(invoice: Invoice): boolean {
-    return invoice.is_proportional === 1;
-  }
-
-
-  /**
-   * Genera la descripción del período para facturas proporcionales
-   */
-  getProportionalPeriod(invoice: Invoice): string {
-    if (!this.isInvoiceProportional(invoice)) {
-      return '-';
-    }
-
-    if (invoice.start_date && invoice.end_date) {
-      const startDate = new Date(invoice.start_date);
-      const endDate = new Date(invoice.end_date);
-
-      const startFormatted = `${startDate.getDate().toString().padStart(2, '0')}/${(startDate.getMonth() + 1).toString().padStart(2, '0')}`;
-      const endFormatted = `${endDate.getDate().toString().padStart(2, '0')}/${(endDate.getMonth() + 1).toString().padStart(2, '0')}`;
-
-      return `${startFormatted} al ${endFormatted}`;
-    }
-
-    return 'Sin período';
-  }
-
-  /**
-   * Formatea el mes de correspondencia para mostrar
-   */
-  getCorrespondingMonthDisplay(invoice: Invoice): string {
-    if (!invoice.corresponding_month) {
-      return '-';
-    }
-
-    const [year, month] = invoice.corresponding_month.split('-');
-    const monthNames = [
-      'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
-      'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
-    ];
-
-    const monthName = monthNames[parseInt(month, 10) - 1];
-    return `${monthName} ${year}`;
-  }
-
-
-  /**
-   * Calcula los días facturados para facturas proporcionales
-   */
-  getProportionalDays(invoice: Invoice): string {
-    if (!this.isInvoiceProportional(invoice) || !invoice.start_date || !invoice.end_date) {
-      return '-';
-    }
-
-    const startDate = new Date(invoice.start_date);
-    const endDate = new Date(invoice.end_date);
-    const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-
-    return `${diffDays} días`;
+  // GETTER; se pasa para los metodos en el html
+  get invoiceUtilsService() {
+    return this.invoicesIssuedUtilService;
   }
 
   /**
@@ -153,45 +135,178 @@ export class InvoicesIssuedListComponent implements OnInit {
    */
   getListInvoices() {
     this.invoicesIssuedService.getAllInvoicesIssued().subscribe({
-      next: (data) => {
-        this.invoices = data;        // Lista que se muestra
-        this.allInvoices = data;     // Copia original para filtros
-        console.log(data)
+      next: (invoicesList) => {
+        this.allInvoices = invoicesList;
+        this.extractFilterOptions();
+        this.applyFilters();
       }, error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
-        this.invoices = [];
-        this.allInvoices = [];
       }
     })
   }
 
-  /**
-   * Filtra la lista de facturas según el texto de búsqueda
-   * Busca en: número de factura, ID de propiedad, ID de cliente, ID de propietario, mes correspondencia
-   */
-  filterInvoices() {
-    this.invoices = this.searchService.filterData(
-      this.allInvoices,
-      this.searchTerm,
-      ['invoice_number', 'estates_id', 'clients_id', 'owners_id', 'corresponding_month', 'estate_name', 'client_name', 'owner_name']
-    )
-  }
-
+  //==========================
+  // PROCESO DE LOS FILTROS
+  //==========================
 
   /**
    * Limpia el filtro de búsqueda y muestra todas las facturas
    */
-  clearSearch() {
+  clearFilters() {
     this.searchTerm = '';
-    this.filterInvoices();
+    this.applyFilters();
   }
 
   /**
-   * Se ejecuta cada vez que el usuario escribe en el buscador
+   * Se ejecuta cada vez que cambia algún filtro o el término de búsqueda.
+   * Aplica todos los filtros disponibles para actualizar la lista de facturas.
    */
-  onSearchChange() {
-    this.filterInvoices();
+  onFilterCharger() {
+    this.applyFilters();
   }
+
+  /**
+   * Extrae todos los filtos
+   */
+  extractFilterOptions() {
+    //Extrae los estados de cobro únicos
+    this.collectionStatusOptions = ['pending', 'collected', 'overdue', 'disputed'];
+
+    //Extrae los meses o porporcionales unicos
+    this.billingTypeOptions = [0, 1];
+
+    //Extrae propietarios unicos
+    const owners = this.allInvoices
+      .map(invoice => invoice.owner_name)
+      .filter((owner): owner is string => !!owner)
+      .filter((owner, index, array) => owner && array.indexOf(owner) === index)
+      .sort();
+    this.ownersOptions = owners;
+
+    //Extrae clientes unicos
+    const clients = this.allInvoices
+      .map(invoice => invoice.client_name)
+      .filter((client): client is string => !!client)
+      .filter((client, index, array) => client && array.indexOf(client) === index)
+      .sort();
+    this.clientsOptions = clients;
+
+    //Extrae facturas de abono unicos
+    this.refundStatusOptions = [
+      { value: '1', label: 'Abono' },
+      { value: '0', label: 'Factura' }
+    ];
+  }
+  /**
+   * Filtra la lista de facturas según el texto de búsqueda
+   * Busca en: número de factura, ID de propiedad, ID de cliente, ID de propietario, mes correspondencia
+   */
+  applyFilters() {
+    let filtered = [...this.allInvoices];
+    // Filtro por búsqueda de texto
+    if (this.searchTerm.trim()) {
+      filtered = this.searchService.filterData(
+        filtered,
+        this.searchTerm,
+        ['invoice_number', 'estates_id', 'clients_id', 'owners_id', 'corresponding_month', 'estate_name', 'client_name', 'owner_name']
+      )
+    }
+    //filtro por estado de pagos
+    if (this.selectedCollectionStatus) {
+      filtered = filtered.filter(envoice => envoice.collection_status === this.selectedCollectionStatus);
+    }
+    //filtro por mes o porporcional
+    if (this.selectedTypeBilling !== '') {
+      filtered = filtered.filter(envoice => envoice.is_proportional === Number(this.selectedTypeBilling));
+    }
+    //filtro facturas por propietarios
+    if (this.selectedOwners) {
+      filtered = filtered.filter(envoice => envoice.owner_name === this.selectedOwners);
+    }
+    //filtro facturas por clientes
+    if (this.selectedClients) {
+      filtered = filtered.filter(envoice => envoice.client_name === this.selectedClients);
+    }
+    // Filtro solo facturas de abono
+    if(this.selectedRefundStatus !== ''){
+      filtered = filtered.filter(envoice => envoice.is_refund === Number(this.selectedRefundStatus));
+    }
+
+
+    this.filteredInvoices = filtered;
+    this.paginationConfig.totalItems = filtered.length;
+    this.paginationConfig.currentPage = 1;
+    this.updatePagination();
+  }
+
+
+  //==============
+  // PAGINACION
+  //=============
+  /**
+   * Actualiza la paginación con los datos filtrados
+   */
+  updatePagination() {
+    this.paginationResult = this.paginationService.paginate(
+      this.filteredInvoices,
+      this.paginationConfig
+    );
+    this.invoices = this.paginationResult.items;
+  }
+
+  /**
+   * Navega a una página específica
+   */
+  goToPage(page: number) {
+    if (this.paginationService.isValidPage(page, this.paginationResult.totalPages)) {
+      this.paginationConfig.currentPage = page;
+      this.updatePagination();
+    }
+  }
+
+  /**
+   * Navega a la página anterior
+   */
+  previousPage() {
+    if (this.paginationResult.hasPrevious) {
+      this.goToPage(this.paginationConfig.currentPage - 1);
+    }
+  };
+
+  /**
+   * Navega a la página siguiente
+   */
+  nextPage() {
+    if (this.paginationResult.hasNext) {
+      this.goToPage(this.paginationConfig.currentPage + 1);
+    }
+  }
+
+  /**
+   * Obtiene las páginas visibles para la navegación
+   */
+  getVisiblePages(): number[] {
+    return this.paginationService.getVisiblePages(
+      this.paginationConfig.currentPage,
+      this.paginationResult.totalPages,
+      5
+    );
+  }
+
+  /**
+   * Obtiene el texto informativo de paginación
+   */
+  getPaginationText(): string {
+    return this.paginationService.getPaginationText(
+      this.paginationConfig,
+      this.invoices.length
+    );
+  }
+
+
+  //===========
+  // CRUD
+  //===========
 
   /**
    * Navega a la página de registro de nueva factura
@@ -206,6 +321,38 @@ export class InvoicesIssuedListComponent implements OnInit {
   editInvoice(id: number) {
     this.router.navigate(['/dashboards/invoices-issued/edit', id]);
   }
+
+
+  /**
+   * Elimina una factura después de confirmar la acción
+   */
+  deleteInvoice(id: number) {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción no se puede deshacer',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.invoicesIssuedService.deleteInvoice(id).subscribe({
+          next: () => {
+            Swal.fire({
+              title: 'Eliminado.',
+              text: 'La factura fue eliminada correctamente',
+              icon: 'success',
+              confirmButtonText: 'Ok'
+            });
+            this.getListInvoices();
+          }, error: (e: HttpErrorResponse) => {
+            // Error manejado por interceptor
+          }
+        })
+      }
+    })
+  }
+
 
   // ==========================================
   // GESTIÓN DE COBROS (antes pagos)
@@ -375,36 +522,6 @@ export class InvoicesIssuedListComponent implements OnInit {
         // Error manejado por interceptor
       }
     });
-  }
-
-  /**
-   * Elimina una factura después de confirmar la acción
-   */
-  deleteInvoice(id: number) {
-    Swal.fire({
-      title: '¿Estás seguro?',
-      text: 'Esta acción no se puede deshacer',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.invoicesIssuedService.deleteInvoice(id).subscribe({
-          next: () => {
-            Swal.fire({
-              title: 'Eliminado.',
-              text: 'La factura fue eliminada correctamente',
-              icon: 'success',
-              confirmButtonText: 'Ok'
-            });
-            this.getListInvoices();
-          }, error: (e: HttpErrorResponse) => {
-            // Error manejado por interceptor
-          }
-        })
-      }
-    })
   }
 
   /**

@@ -6,7 +6,7 @@ import {Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
 import {FormsModule} from '@angular/forms';
-import {SearchService} from '../../../core/services/search-services/search.service';
+import {SearchService} from '../../../core/services/shared-services/search.service';
 
 /**
  * Componente para mostrar la lista de relaciones inmueble-propietario

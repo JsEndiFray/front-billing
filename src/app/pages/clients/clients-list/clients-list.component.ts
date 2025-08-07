@@ -1,12 +1,14 @@
 import {Component, OnInit} from '@angular/core';
-import {Clients} from '../../../interface/clientes-interface';
+import {CLIENT_TYPE_LABELS, Clients} from '../../../interface/clientes-interface';
 import {ClientsService} from '../../../core/services/clients-services/clients.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
 import Swal from 'sweetalert2';
 import {Router} from '@angular/router';
 import {FormsModule} from '@angular/forms';
-import {SearchService} from '../../../core/services/search-services/search.service';
+import {SearchService} from '../../../core/services/shared-services/search.service';
+import {PaginationConfig, PaginationResult} from '../../../interface/pagination';
+import {PaginationService} from '../../../core/services/shared-services/pagination.service';
 
 /**
  * Componente para mostrar y gestionar la lista de clientes
@@ -23,19 +25,52 @@ import {SearchService} from '../../../core/services/search-services/search.servi
 })
 export class ClientsListComponent implements OnInit {
 
-  // Lista completa de clientes (datos originales sin filtrar)
-  allClients: Clients[] = [];
-
   // Lista de clientes que se muestra en la tabla
   clients: Clients[] = [];
 
+  // Lista completa de clientes (datos originales sin filtrar)
+  allClients: Clients[] = [];
+
   // Texto que escribe el usuario para buscar
   searchTerm: string = '';
+
+  // Lista de clientes filtrados (antes de paginar)
+  filteredClients: Clients[] = [];
+
+// Filtros
+  selectedType: string = '';
+  selectedProvince: string = '';
+
+// Opciones para filtros
+  provinceOptions: string[] = [];
+  clientTypeOptions: Array<'particular' | 'autonomo' | 'empresa'> = [];
+
+  // LABEL PARA MONSTRAR
+  clientTypeLabels = CLIENT_TYPE_LABELS;
+
+// Configuración de paginación
+  paginationConfig: PaginationConfig = {
+    currentPage: 1,
+    itemsPerPage: 5,
+    totalItems: 0
+  };
+
+// Resultado de paginación
+  paginationResult: PaginationResult<Clients> = {
+    items: [],
+    totalPages: 0,
+    hasNext: false,
+    hasPrevious: false,
+    startIndex: 0,
+    endIndex: 0
+  };
+
 
   constructor(
     private clientsService: ClientsService,
     private router: Router,
     private searchService: SearchService,
+    private paginationService: PaginationService,
   ) {
   }
 
@@ -53,9 +88,11 @@ export class ClientsListComponent implements OnInit {
    */
   getListClients() {
     this.clientsService.getClients().subscribe({
-      next: (client) => {
-        this.clients = client;        // Lista que se muestra
-        this.allClients = client;     // Copia original para filtros
+      next: (clientList) => {
+        this.allClients = clientList;
+        this.extractProvinceOptions();
+        this.extractTypeOptions();
+        this.applyFilters();
       }, error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
       }
@@ -63,33 +100,160 @@ export class ClientsListComponent implements OnInit {
   }
 
   /**
-   * Filtra la lista de clientes según el texto de búsqueda
-   * Busca en: nombre completo, identificación, teléfono y nombre de empresa
+   * Extrae las provincias únicas de los clientes para el filtro
    */
-  filterClientes() {
-    this.clients = this.searchService.filterWithFullName(
-      this.allClients,
-      this.searchTerm,
-      'name',
-      'lastname',
-      ['identification', 'phone', 'company_name']
+  extractProvinceOptions() {
+    // Toma todos los clientes y extrae solo las provincias
+    const provinces = this.allClients
+      .map(client => client.province)
+      // Elimina duplicados y valores vacíos
+      .filter((province, index, array) => province && array.indexOf(province) === index)
+      // Ordena alfabéticamente
+      .sort();
+
+    this.provinceOptions = provinces;
+  }
+
+  /**
+   * Extrae los tipos unicos
+   */
+  extractTypeOptions() {
+    this.clientTypeOptions = ['particular', 'autonomo', 'empresa'];
+  }
+
+
+  /**
+   * Aplica todos los filtros y actualiza la paginación
+   */
+  applyFilters() {
+    let filtered = [...this.allClients];
+
+    // Filtro por búsqueda de texto (tu lógica actual)
+    if (this.searchTerm.trim()) {
+      filtered = this.searchService.filterWithFullName(
+        filtered,
+        this.searchTerm,
+        'name',
+        'lastname',
+        ['identification', 'phone', 'company_name', 'email']
+      );
+    }
+
+    // Filtro por tipo de cliente
+    if (this.selectedType) {
+      filtered = filtered.filter(client => client.type_client === this.selectedType);
+    }
+
+    // Filtro por provincia
+    if (this.selectedProvince) {
+      filtered = filtered.filter(client => client.province === this.selectedProvince);
+    }
+
+    this.filteredClients = filtered;
+    this.paginationConfig.totalItems = filtered.length;
+    this.paginationConfig.currentPage = 1; // Resetear a primera página
+    this.updatePagination();
+  }
+
+  /**
+   * Actualiza la paginación con los datos filtrados
+   */
+  updatePagination() {
+    this.paginationResult = this.paginationService.paginate(
+      this.filteredClients,
+      this.paginationConfig
+    );
+    this.clients = this.paginationResult.items;
+  }
+
+  /**
+   * Se ejecuta cuando cambia el filtro de tipo
+   */
+  onTypeFilterChange() {
+    this.applyFilters();
+  }
+
+  /**
+   * Se ejecuta cuando cambia el filtro de provincia
+   */
+  onProvinceFilterChange() {
+    this.applyFilters();
+  }
+
+  /**
+   * Limpia todos los filtros
+   */
+  clearFilters() {
+    this.searchTerm = '';
+    this.selectedType = '';
+    this.selectedProvince = '';
+    this.applyFilters();
+  }
+
+  /**
+   * Limpia el filtro de búsqueda y muestra todos los propietarios
+   */
+  clearSearch() {
+    this.searchTerm = '';
+    this.applyFilters()
+  }
+
+  /**
+   * Navega a una página específica
+   */
+  goToPage(page: number) {
+    if (this.paginationService.isValidPage(page, this.paginationResult.totalPages)) {
+      this.paginationConfig.currentPage = page;
+      this.updatePagination();
+    }
+  }
+
+  /**
+   * Navega a la página anterior
+   */
+  previousPage() {
+    if (this.paginationResult.hasPrevious) {
+      this.goToPage(this.paginationConfig.currentPage - 1);
+    }
+  }
+
+  /**
+   * Navega a la página siguiente
+   */
+  nextPage() {
+    if (this.paginationResult.hasNext) {
+      this.goToPage(this.paginationConfig.currentPage + 1);
+    }
+  }
+
+  /**
+   * Obtiene las páginas visibles para la navegación
+   */
+  getVisiblePages(): number[] {
+    return this.paginationService.getVisiblePages(
+      this.paginationConfig.currentPage,
+      this.paginationResult.totalPages,
+      5
     );
   }
 
   /**
-   * Limpia el filtro de búsqueda y muestra todos los clientes
+   * Obtiene el texto informativo de paginación
    */
-  clearSearch() {
-    this.searchTerm = '';
-    this.filterClientes();
-  };
+  getPaginationText(): string {
+    return this.paginationService.getPaginationText(
+      this.paginationConfig,
+      this.clients.length
+    );
+  }
 
   /**
    * Se ejecuta cada vez que el usuario escribe en el buscador
    */
   onSearchChange() {
-    this.filterClientes();
-  };
+    this.applyFilters();
+  }
+
 
   /**
    * Navega a la página de edición de cliente
@@ -130,8 +294,8 @@ export class ClientsListComponent implements OnInit {
       }
     })
   }
-  newClient(){
+
+  newClient() {
     this.router.navigate(['/dashboards/clients/register'])
   }
-
 }

@@ -1,133 +1,173 @@
-<!-- Listado y gestión de propietarios -->
-<div class="owners-wrapper">
+<div class="container">
+  <!-- Título y descripción -->
+  <div class="header">
+    <h1 class="title">Gestión de Propietarios</h1>
+    <p class="subtitle">Administra la información de los propietarios de inmuebles</p>
+  </div>
 
-  <!-- Título principal -->
-  <h2 class="owners-title">Listado de Propietarios</h2>
 
-  <!-- Sección de búsqueda -->
-  <div class="owners-search-container">
+  <!-- Sección de filtros y búsqueda -->
+  <div class="filters-section">
+    <!-- Buscador CON ICONOS -->
+    <div class="search-container">
+      <div class="search-wrapper">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="onSearchChange()"
+          placeholder="Buscar propietarios..."
+          class="search-input"
+          autocomplete="off">
+        <!-- Iconos de búsqueda y limpiar -->
+        <div class="search-actions">
+          <span class="search-icon">🔍</span>
+          @if (searchTerm && searchTerm.trim() !== '') {
+            <button
+              type="button"
+              (click)="clearFilters()"
+              class="clear-button"
+              title="Limpiar búsqueda">
+              ✕
+            </button>
+          }
+        </div>
 
-    <!-- Campo de búsqueda con filtro en tiempo real -->
-    <div class="owners-search-wrapper">
-      <input
-        type="text"
-        [(ngModel)]="searchTerm"
-        (input)="onSearchChange()"
-        placeholder="Búsqueda por nombre, identificación, teléfono o NIF..."
-        class="owners-search-input"
-        autocomplete="off"
-      >
-
-      <!-- Iconos de búsqueda y limpiar -->
-      <div class="owners-search-actions">
-        <span class="owners-search-icon">🔍</span>
-        @if (searchTerm && searchTerm.trim() !== '') {
-          <button
-            type="button"
-            (click)="clearSearch()"
-            class="owners-clear-button"
-            title="Limpiar búsqueda"
-          >
-            ✕
-          </button>
-        }
       </div>
     </div>
 
-    <!-- Contador de resultados de búsqueda -->
-    @if (searchTerm && searchTerm.trim() !== '') {
-      <div class="owners-search-results">
-        <span>Mostrando {{ owners.length }} de {{ allOwners.length }} propietarios</span>
-      </div>
-    }
+    <!-- Botón exportar y nuevo propietario -->
+    <div class="actions-container">
+      <button class="export-btn">Exportar</button>
+      <button class="new-client-btn" (click)="newOwners()">+ Nuevo Propietario</button>
+    </div>
   </div>
 
-  <!-- Botón para nuevo registro -->
-  <button type="button" class="owners-btn-new" (click)="newOwners()">
-    + Nuevo registro
-  </button>
-
   <!-- Tabla de propietarios -->
-  <div class="owners-table-container">
-    <table class="owners-table">
+  <div class="table-container">
+    <table class="clients-table">
 
-      <!-- Encabezados de la tabla -->
-      <thead class="owners-table-head">
+      <!-- Cabecera -->
+      <thead>
       <tr>
-        <th class="owners-th">ID</th>
-        <th class="owners-th">Nombre</th>
-        <th class="owners-th">Apellidos</th>
-        <th class="owners-th">Email</th>
-        <th class="owners-th">NIF/NIE</th>
-        <th class="owners-th">Teléfono</th>
-        <th class="owners-th">Dirección</th>
-        <th class="owners-th">C.P</th>
-        <th class="owners-th">Localidad</th>
-        <th class="owners-th">Provincia</th>
-        <th class="owners-th">País</th>
-        <th class="owners-th">Creado</th>
-        <!--<th class="owners-th">Actualizado</th>-->
-        <th class="owners-th">Acciones</th>
+        <th>ID</th>
+        <th>NOMBRE</th>
+        <th>APELLIDOS</th>
+        <th>EMAIL</th>
+        <th>IDENTIFICACIÓN</th>
+        <th>TELÉFONO</th>
+        <th>DIRECCIÓN</th>
+        <th>C.P.</th>
+        <th>LOCALIDAD</th>
+        <th>PROVINCIA</th>
+        <th>PAÍS</th>
+        <th>CREADO</th>
+        <th>ACCIONES</th>
       </tr>
       </thead>
 
-      <!-- Contenido de la tabla -->
-      <tbody class="owners-table-body">
-      <!-- Lista de propietarios existentes -->
-        @if(owners && owners.length > 0){
+      <!-- Cuerpo de la tabla -->
+      <tbody>
+        @if (owners && owners.length > 0) {
           @for (owner of owners; track owner.id) {
-            <tr class="owners-table-row">
-              <td class="owners-td">{{ owner.id }}</td>
-              <td class="owners-td">{{ owner.name }}</td>
-              <td class="owners-td">{{ owner.lastname }}</td>
-              <td class="owners-td owners-email">{{ owner.email }}</td>
-              <td class="owners-td owners-nif">{{ owner.identification }}</td>
-              <td class="owners-td">{{ owner.phone }}</td>
-              <td class="owners-td">{{ owner.address }}</td>
-              <td class="owners-td">{{ owner.postal_code }}</td>
-              <td class="owners-td">{{ owner.location }}</td>
-              <td class="owners-td">{{ owner.province }}</td>
-              <td class="owners-td">{{ owner.country }}</td>
-              <td class="owners-td">{{ owner.date_create | dataFormat }}</td>
-              <!--<td class="owners-td">{{ owner.date_update | dataFormat }}</td>-->
-
-              <!-- Botones de acción por propietario -->
-              <td class="owners-td">
-                <button class="owners-btn-edit" (click)="editOwner(owner.id!)">
+            <tr>
+              <td>#{{ owner.id }}</td>
+              <td>{{ owner.name }}</td>
+              <td>{{ owner.lastname }}</td>
+              <td class="email-cell">{{ owner.email }}</td>
+              <td class="identification-cell">{{ owner.identification }}</td>
+              <td>{{ owner.phone }}</td>
+              <td>{{ owner.address }}</td>
+              <td class="postal-cell">{{ owner.postal_code }}</td>
+              <td>{{ owner.location }}</td>
+              <td>{{ owner.province }}</td>
+              <td>{{ owner.country }}</td>
+              <td>{{ owner.date_create | dataFormat }}</td>
+              <td>
+                <button class="action-btn edit-btn" (click)="editOwner(owner.id!)">
                   Editar
                 </button>
-                <!--<button class="owners-btn-delete" (click)="deleteOwner(owner.id!)">
-                  Eliminar
-                </button>-->
               </td>
             </tr>
           }
-        }@else {
-
-          <!-- Estado cuando no hay propietarios -->
+        } @else {
           <tr>
-            <td colspan="14" class="owners-no-data">
-              <div class="owners-empty-state">
-
-                <!-- Icono visual -->
-                <div class="owners-empty-icon">📄</div>
-
-                <!-- Mensaje -->
-                <h3 class="owners-empty-title">No hay registros</h3>
-                <p class="owners-empty-text">
-                  No hay propietarios disponibles en este momento.
-                </p>
-
-                <!-- Botón para crear nuevo registro -->
-                <button class="owners-btn-create" (click)="newOwners()" type="button">
-                  + Nuevo registro
+            <td colspan="13" class="no-data">
+              <div class="empty-state">
+                <p>No se encontraron propietarios</p>
+                <button class="new-client-btn" (click)="newOwners()">
+                  + Nuevo Propietario
                 </button>
               </div>
             </td>
           </tr>
         }
-
       </tbody>
+
     </table>
   </div>
+
+
+  <!-- Paginación -->
+  @if (paginationResult.totalPages > 1) {
+    <div class="pagination-container">
+
+      <!-- Información de resultados -->
+      <div class="pagination-info">
+        {{ getPaginationText() }}
+      </div>
+
+      <!-- Controles de paginación -->
+      <div class="pagination-controls">
+
+        <!-- Botón anterior -->
+        <button
+          class="pagination-btn"
+          [class.disabled]="!paginationResult.hasPrevious"
+          (click)="previousPage()"
+          [disabled]="!paginationResult.hasPrevious"
+        >
+          ‹ Anterior
+        </button>
+
+        <!-- Números de página -->
+        @for (page of getVisiblePages(); track page) {
+          <button
+            class="pagination-btn"
+            [class.active]="page === paginationConfig.currentPage"
+            (click)="goToPage(page)"
+          >
+            {{ page }}
+          </button>
+        }
+
+        <!-- Puntos suspensivos si hay más páginas -->
+        @if (paginationResult.totalPages > 5 && paginationConfig.currentPage < paginationResult.totalPages - 2) {
+          <span class="pagination-dots">...</span>
+        }
+
+        <!-- Última página -->
+        @if (paginationResult.totalPages > 5 && paginationConfig.currentPage < paginationResult.totalPages - 2) {
+          <button
+            class="pagination-btn"
+            (click)="goToPage(paginationResult.totalPages)"
+          >
+            {{ paginationResult.totalPages }}
+          </button>
+        }
+
+        <!-- Botón siguiente -->
+        <button
+          class="pagination-btn"
+          [class.disabled]="!paginationResult.hasNext"
+          (click)="nextPage()"
+          [disabled]="!paginationResult.hasNext"
+        >
+          Siguiente ›
+        </button>
+
+      </div>
+    </div>
+  }
+
+
 </div>

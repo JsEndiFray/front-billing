@@ -1,8 +1,9 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, tap, throwError} from 'rxjs';
+import {inject, Injectable} from '@angular/core';
+import {Observable, tap, throwError} from 'rxjs';
 import {LoginResponse, User, UsersLogin} from '../../../interface/users-interface';
 import {ApiService} from '../api-service/api.service';
 import {Router} from '@angular/router';
+import {UserActivityService} from '../user-services/user-activity.service';
 
 /**
  * Servicio de autenticación con renovación automática de tokens
@@ -12,18 +13,29 @@ import {Router} from '@angular/router';
   providedIn: 'root'
 })
 export class AuthService {
-  // Estado de sesión observable
-  private loggedIn = new BehaviorSubject<boolean>(this.hasValidSession());
-  isLoggedIn$ = this.loggedIn.asObservable();
-
   // Timer para renovación automática cada 13 minutos
   private refreshTimer: number | null = null;
 
   constructor(
     private api: ApiService,
     private router: Router,
+    private userActivityService: UserActivityService
   ) {
     this.initializeSession();
+  }
+
+  /**
+   * Obtiene UserActivityService de forma lazy para evitar dependencia circular
+   */
+  private getUserActivityService() {
+    if (!this.userActivityService) {
+      // Importación dinámica para evitar dependencia circular
+      import('../user-services/user-activity.service').then(module => {
+        const UserActivityService = module.UserActivityService;
+        this.userActivityService = inject(UserActivityService);
+      });
+    }
+    return this.userActivityService;
   }
 
   /**
@@ -56,36 +68,47 @@ export class AuthService {
     const hasSession = this.hasValidSession();
 
     if (hasSession) {
-      this.activateSession();
+      this.startActivityMonitoring()
       this.startTokenRefreshTimer();
-    } else {
-      this.deactivateSession();
     }
   }
 
   /**
-   * Activa/desactiva estado de sesión
+   * Inicia monitoreo de actividad del usuario
    */
-  activateSession(): void {
-    this.loggedIn.next(true);
-  }
-
-  deactivateSession(): void {
-    this.loggedIn.next(false);
-    this.clearRefreshTimer();
+  private startActivityMonitoring(): void {
+    // Lazy loading para evitar dependencia circular
+    setTimeout(() => {
+      const activityService = this.getUserActivityService();
+      if (activityService) {
+        activityService.startMonitoring();
+      }
+    }, 100);
   }
 
   /**
-   * Inicia renovación automática cada 13 minutos
+   * Detiene monitoreo de actividad del usuario
+   */
+  private stopActivityMonitoring(): void {
+    if (this.userActivityService) {
+      this.userActivityService.stopMonitoring();
+    }
+  }
+
+  /**
+   * Inicia renovación automática cada 5 minutos
    */
   private startTokenRefreshTimer(): void {
     this.clearRefreshTimer();
-    const refreshInterval = 13 * 60 * 1000; // 13 minutos
+    const refreshInterval = 5 * 60 * 1000; // 5 minutos
 
     this.refreshTimer = window.setInterval(() => {
       this.refreshAccessToken().subscribe({
-        next: () => {},
+        next: () => {
+          console.log('Token renovado automáticamente');
+        },
         error: (error) => {
+          console.error('Error al renovar token:', error);
           this.logout();
         }
       });
@@ -150,8 +173,8 @@ export class AuthService {
         localStorage.setItem('userData', JSON.stringify(response.user));
 
         // Activar sesión completa
-        this.activateSession();
         this.startTokenRefreshTimer();
+        this.startActivityMonitoring();
       })
     );
   }
@@ -161,7 +184,8 @@ export class AuthService {
    */
   logout(): void {
     this.clearTokens();
-    this.deactivateSession();
+    this.clearRefreshTimer();
+    this.stopActivityMonitoring();
     this.router.navigate(['/login']);
   }
 
@@ -169,10 +193,6 @@ export class AuthService {
   getUserData(): User | null {
     const userData = localStorage.getItem('userData');
     return userData ? JSON.parse(userData) : null;
-  }
-
-  isAuthenticated(): boolean {
-    return this.loggedIn.value;
   }
 
   getToken(): string | null {

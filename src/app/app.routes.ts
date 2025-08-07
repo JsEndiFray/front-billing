@@ -7,7 +7,6 @@ import {Routes} from '@angular/router';
 // Usuarios - Autenticación y gestión
 import {LoginComponent} from './pages/users/login/login.component';
 import {UsersRegisterComponent} from './pages/users/users-register/users-register.component';
-import {UsersHomeComponent} from './pages/users/users-home/users-home.component';
 import {UserListComponent} from './pages/users/user-list/user-list.component';
 import {UserEditComponent} from './pages/users/user-edit/user-edit.component';
 
@@ -17,39 +16,34 @@ import {DashboardHomeComponent} from './pages/dashboards/dashboard-home/dashboar
 import {authGuard} from './core/guards/auth.guard';
 
 // Clientes - Gestión de clientes del negocio
-import {ClientsHomeComponent} from './pages/clients/clients-home/clients-home.component';
 import {ClientsRegisterComponent} from './pages/clients/clients-register/clients-register.component';
 import {ClientsListComponent} from './pages/clients/clients-list/clients-list.component';
 import {ClientsEditComponent} from './pages/clients/clients-edit/clients-edit.component';
 
 // Propietarios (Owners) - Gestión de propietarios de inmuebles
-import {OwnersHomeComponent} from './pages/owners/owners-home/owners-home.component';
 import {OwnersRegisterComponent} from './pages/owners/owners-register/owners-register.component';
 import {OwnersListComponent} from './pages/owners/owners-list/owners-list.component';
 import {OwnersEditComponent} from './pages/owners/owners-edit/owners-edit.component';
 
 // Propiedades (Estates) - Gestión de inmuebles
-import {EstatesHomeComponent} from './pages/estates/estates-home/estates-home.component';
 import {EstatesRegisterComponent} from './pages/estates/estates-register/estates-register.component';
 import {EstatesListComponent} from './pages/estates/estates-list/estates-list.component';
 import {EstatesEditComponent} from './pages/estates/estates-edit/estates-edit.component';
 
 // Porcentajes de propiedades (Estates-Owners) - Relaciones propiedad-propietario
-import {EstateOwnersHomeComponent} from './pages/estate-owners/estate-owners-home/estate-owners-home.component';
 import {
   EstateOwnersRegisterComponent
 } from './pages/estate-owners/estate-owners-register/estate-owners-register.component';
 import {EstateOwnersListComponent} from './pages/estate-owners/estate-owners-list/estate-owners-list.component';
 import {EstateOwnersEditComponent} from './pages/estate-owners/estate-owners-edit/estate-owners-edit.component';
 
-// Facturas (Bills) - Sistema de facturación
+// Facturas (invoice) - Sistema de facturación
 //import { InvoicesIssuedHomeComponent } from './pages/invoices/invoices-issued/invoices-issued-home/invoices-issued-home.component'; // ASUMO que bills-home se renombra a invoices-issued-home
 import { InvoicesIssuedRegisterComponent} from './pages/invoices/invoices-issued/invoices-issued-register/invoices-issued-register.component';
 import { InvoicesIssuedListComponent} from './pages/invoices/invoices-issued/invoices-issued-list/invoices-issued-list.component';
 import { InvoicesIssuedEditComponent} from './pages/invoices/invoices-issued/invoices-issued-edit/Invoices-Issued-Edit.Component';
 
 // Empleados (Employee) - Sistema de empleados
-import {EmployeeHomeComponent} from './pages/employee/employee-home/employee-home.component';
 import {EmployeeListComponent} from './pages/employee/employee-list/employee-list.component';
 import {EmployeeEditComponent} from './pages/employee/employee-edit/employee-edit.component';
 import {EmployeeRegisterComponent} from './pages/employee/employee-register/employee-register.component';
@@ -102,7 +96,6 @@ export const routes: Routes = [
       {
         path: 'users',
         children: [
-          {path: '', component: UsersHomeComponent, title: 'Usuarios'},
           {path: 'list', component: UserListComponent, title: 'Listado'},
           {path: 'edit/:id', component: UserEditComponent, title: 'Editar'},
           {path: 'register', component: UsersRegisterComponent, title: 'Registro de Usuarios'},
@@ -112,7 +105,6 @@ export const routes: Routes = [
       {
         path: 'clients',
         children: [
-          {path: '', component: ClientsHomeComponent, title: 'Clientes'},
           {path: 'register', component: ClientsRegisterComponent, title: 'Registrar Cliente'},
           {path: 'list', component: ClientsListComponent, title: 'Listado Clientes'},
           {path: 'edit/:id', component: ClientsEditComponent, title: 'Editar Cliente'},
@@ -123,7 +115,6 @@ export const routes: Routes = [
       {
         path: 'owners',
         children: [
-          {path: '', component: OwnersHomeComponent, title: 'Propietarios'},
           {path: 'register', component: OwnersRegisterComponent, title: 'Registrar Propietario'},
           {path: 'list', component: OwnersListComponent, title: 'Listado Propietarios'},
           {path: 'edit/:id', component: OwnersEditComponent, title: 'Editar Propietario'}
@@ -134,7 +125,6 @@ export const routes: Routes = [
       {
         path: 'estates',
         children: [
-          {path: '', component: EstatesHomeComponent, title: 'Propiedades'},
           {path: 'register', component: EstatesRegisterComponent, title: 'Registrar Propiedad'},
           {path: 'list', component: EstatesListComponent, title: 'Listado Propiedades'},
           {path: 'edit/:id', component: EstatesEditComponent, title: 'Editar Propiedad'}
@@ -145,7 +135,6 @@ export const routes: Routes = [
       {
         path: 'estates-owners',
         children: [
-          {path: '', component: EstateOwnersHomeComponent, title: 'Propiedades - Propietarios'},
           {path: 'register', component: EstateOwnersRegisterComponent, title: 'Registrar Porcentaje'},
           {path: 'list', component: EstateOwnersListComponent, title: 'Listado Porcentajes'},
           {path: 'edit/:id', component: EstateOwnersEditComponent, title: 'Editar Porcentaje'}
@@ -166,7 +155,6 @@ export const routes: Routes = [
       {
         path: 'employee',
         children: [
-          {path: '', component: EmployeeHomeComponent, title: 'Empleados'},
           {path: 'list', component: EmployeeListComponent, title: 'Listado'},
           {path: 'edit/:id', component: EmployeeEditComponent, title: 'Editar'},
           {path: 'register', component: EmployeeRegisterComponent, title: 'Registro de Empleados'},

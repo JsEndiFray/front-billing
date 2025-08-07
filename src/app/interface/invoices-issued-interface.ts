@@ -103,7 +103,7 @@ export enum CollectionMethod { // CAMBIO: PaymentMethod a CollectionMethod
  */
 export const COLLECTION_STATUS_LABELS = { // CAMBIO: PAYMENT_STATUS_LABELS a COLLECTION_STATUS_LABELS
   pending: 'Pendiente',
-  collected: 'Cobrado', // CAMBIO: paid a collected
+  collected: 'Cobrado',
   overdue: 'Vencida',
   disputed: 'Disputada'
 };

@@ -1,115 +1,118 @@
-<!-- Formulario de registro de usuarios -->
-<div class="users-register-wrapper">
-  <div class="users-register-container">
-
-    <!-- Título del formulario -->
-    <h1 class="users-register-title">Registrar nuevo usuario</h1>
-
-    <!-- Formulario principal -->
-    <form (ngSubmit)="registerUser()" class="users-register-form">
-
-      <!-- Sección: Datos de acceso -->
-
-      <!-- Campo: Nombre de usuario -->
-      <div class="users-register-field">
-        <label for="username" class="users-register-label">Usuario</label>
-        <input
-          type="text"
-          id="username"
-          [(ngModel)]="user.username"
-          name="username"
-          placeholder="Ingresa el nombre de usuario"
-          class="users-register-input"
-          autocomplete="username"
-          required>
-      </div>
-
-      <!-- Campo: Correo electrónico -->
-      <div class="users-register-field">
-        <label for="email" class="users-register-label">Correo electrónico</label>
-        <input
-          type="email"
-          id="email"
-          [(ngModel)]="user.email"
-          name="email"
-          placeholder="ejemplo@correo.com"
-          class="users-register-input"
-          autocomplete="email"
-          required>
-      </div>
-
-      <!-- Sección: Contraseñas -->
-
-      <!-- Campo: Contraseña principal -->
-      <div class="users-register-field">
-        <label for="password" class="users-register-label">Contraseña</label>
-        <input
-          type="password"
-          id="password"
-          [(ngModel)]="user.password"
-          name="password"
-          placeholder="Mínimo 6 caracteres"
-          class="users-register-input"
-          autocomplete="new-password"
-          minlength="6"
-          required>
-      </div>
-
-      <!-- Campo: Confirmación de contraseña -->
-      <div class="users-register-field">
-        <label for="confirm_password" class="users-register-label">Confirmar Contraseña</label>
-        <input
-          type="password"
-          id="confirm_password"
-          [(ngModel)]="user.confirm_password"
-          name="confirm_password"
-          placeholder="Repite la contraseña"
-          class="users-register-input"
-          autocomplete="new-password"
-          minlength="6"
-          required>
-      </div>
-
-      <!-- Sección: Información adicional -->
-
-      <!-- Campo: Número de teléfono -->
-      <div class="users-register-field">
-        <label for="phone" class="users-register-label">Teléfono</label>
-        <input
-          type="tel"
-          id="phone"
-          [(ngModel)]="user.phone"
-          name="phone"
-          placeholder="+34 123 456 789"
-          class="users-register-input"
-          autocomplete="tel"
-          required>
-      </div>
-
-      <!-- Campo: Rol del usuario -->
-      <div class="users-register-field">
-        <label for="role" class="users-register-label">Rol</label>
-        <select
-          id="role"
-          [(ngModel)]="user.role"
-          name="role"
-          class="users-register-select"
-          required>
-          <option value="">Selecciona un rol</option>
-          <option value="empleado">Empleado</option>
-        </select>
-      </div>
-
-      <!-- Botones de acción -->
-      <div class="users-register-buttons">
-        <button type="submit" class="users-register-btn-primary">
-          Registrar Usuario
-        </button>
-        <button type="button" class="users-register-btn-secondary" (click)="goBack()">
-          ← Cancelar
-        </button>
-      </div>
-
-    </form>
+<div class="container">
+  <!-- Título y descripción -->
+  <div class="header">
+    <h1 class="title">Registrar Usuario</h1>
+    <p class="subtitle">Crear nuevo usuario en el sistema</p>
   </div>
+
+  <!-- Formulario principal -->
+  <form (ngSubmit)="registerUser()">
+
+    <!-- Sección: Datos de acceso -->
+    <div class="section">
+      <h2 class="section-title">👤 Datos de Acceso</h2>
+      <div class="form-grid">
+
+        <div class="form-field">
+          <label for="username" class="form-label">Usuario *</label>
+          <input
+            type="text"
+            id="username"
+            [(ngModel)]="user.username"
+            name="username"
+            placeholder="Ingresa el nombre de usuario"
+            class="form-input"
+            autocomplete="username"
+            required>
+        </div>
+
+        <div class="form-field">
+          <label for="email" class="form-label">Correo electrónico *</label>
+          <input
+            type="email"
+            id="email"
+            [(ngModel)]="user.email"
+            name="email"
+            placeholder="ejemplo@correo.com"
+            class="form-input"
+            autocomplete="email"
+            required>
+        </div>
+
+        <div class="form-field">
+          <label for="password" class="form-label">Contraseña *</label>
+          <input
+            type="password"
+            id="password"
+            [(ngModel)]="user.password"
+            name="password"
+            placeholder="Mínimo 6 caracteres"
+            class="form-input"
+            autocomplete="new-password"
+            minlength="6"
+            required>
+        </div>
+
+        <div class="form-field">
+          <label for="confirm_password" class="form-label">Confirmar Contraseña *</label>
+          <input
+            type="password"
+            id="confirm_password"
+            [(ngModel)]="user.confirm_password"
+            name="confirm_password"
+            placeholder="Repite la contraseña"
+            class="form-input"
+            autocomplete="new-password"
+            minlength="6"
+            required>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Sección: Información adicional -->
+    <div class="section">
+      <h2 class="section-title">📋 Información Adicional</h2>
+      <div class="form-grid">
+
+        <div class="form-field">
+          <label for="phone" class="form-label">Teléfono *</label>
+          <input
+            type="tel"
+            id="phone"
+            [(ngModel)]="user.phone"
+            name="phone"
+            placeholder="+34 123 456 789"
+            class="form-input"
+            autocomplete="tel"
+            required>
+        </div>
+
+        <div class="form-field">
+          <label for="role" class="form-label">Rol *</label>
+          <select
+            id="role"
+            [(ngModel)]="user.role"
+            name="role"
+            class="form-input"
+            required>
+            <option value="">Selecciona un rol</option>
+            <option value="empleado">Empleado</option>
+          </select>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="actions-section">
+      <button type="submit" class="primary-btn">
+        👤 Registrar Usuario
+      </button>
+      <button type="button" class="secondary-btn" (click)="goBack()">
+        ← Cancelar
+      </button>
+    </div>
+
+  </form>
 </div>

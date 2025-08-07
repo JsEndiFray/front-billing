@@ -4,9 +4,11 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {OwnersService} from '../../../core/services/owners-services/owners.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
-import {SearchService} from '../../../core/services/search-services/search.service';
+import {SearchService} from '../../../core/services/shared-services/search.service';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
 import {Router} from '@angular/router';
+import {PaginationConfig, PaginationResult} from '../../../interface/pagination';
+import {PaginationService} from '../../../core/services/shared-services/pagination.service';
 
 /**
  * Componente para mostrar y gestionar la lista de propietarios
@@ -33,10 +35,31 @@ export class OwnersListComponent implements OnInit {
   // Texto que escribe el usuario para buscar
   searchTerm: string = '';
 
+  // Lista de clientes filtrados (antes de paginar)
+  filteredOwners: Owners[] = [];
+
+  // Configuración de paginación
+  paginationConfig: PaginationConfig = {
+    currentPage: 1,
+    itemsPerPage: 3,
+    totalItems: 0
+  };
+
+  // Resultado de paginación
+  paginationResult: PaginationResult<Owners> = {
+    items: [],
+    totalPages: 0,
+    hasNext: false,
+    hasPrevious: false,
+    startIndex: 0,
+    endIndex: 0
+  };
+
   constructor(
     private ownersService: OwnersService,
     private searchService: SearchService,
     private router: Router,
+    private paginationService: PaginationService,
   ) {
   }
 
@@ -54,9 +77,9 @@ export class OwnersListComponent implements OnInit {
    */
   getListOwner() {
     this.ownersService.getOwners().subscribe({
-      next: (data) => {
-        this.owners = data;        // Lista que se muestra
-        this.allOwners = data;     // Copia original para filtros
+      next: (ownersList) => {
+        this.allOwners = ownersList;
+        this.applyFilters();
       }, error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
       }
@@ -67,32 +90,100 @@ export class OwnersListComponent implements OnInit {
    * Filtra la lista de propietarios según el texto de búsqueda
    * Busca en: nombre completo, identificación y teléfono
    */
-  filterOwners() {
-    this.owners = this.searchService.filterWithFullName(
-      this.allOwners,
-      this.searchTerm,
-      'name',
-      'lastname',
-      ['identification', 'phone']
+  applyFilters() {
+    let filtered = [...this.allOwners];
+    // Filtro por búsqueda de texto
+    if (this.searchTerm.trim()) {
+      filtered = this.searchService.filterWithFullName(
+        filtered,
+        this.searchTerm,
+        'name',
+        'lastname',
+        ['identification', 'phone']
+      );
+    }
+    this.filteredOwners = filtered;
+    this.paginationConfig.totalItems = filtered.length;
+    this.paginationConfig.currentPage = 1;
+
+    this.updatePagination();
+  }
+
+  /**
+   * Actualiza la paginación con los datos filtrados
+   */
+  updatePagination() {
+    this.paginationResult = this.paginationService.paginate(
+      this.filteredOwners,
+      this.paginationConfig
+    );
+    this.owners = this.paginationResult.items;
+  }
+
+  /**
+   * Limpia todos los filtros
+   */
+  clearFilters() {
+    this.searchTerm = '';
+    this.applyFilters();
+  }
+  /**
+   * Navega a una página específica
+   */
+  goToPage(page: number) {
+    if (this.paginationService.isValidPage(page, this.paginationResult.totalPages)) {
+      this.paginationConfig.currentPage = page;
+      this.updatePagination();
+    }
+  }
+
+  /**
+   * Navega a la página anterior
+   */
+  previousPage() {
+    if (this.paginationResult.hasPrevious) {
+      this.goToPage(this.paginationConfig.currentPage - 1);
+    }
+  };
+
+  /**
+   * Navega a la página siguiente
+   */
+  nextPage() {
+    if (this.paginationResult.hasNext) {
+      this.goToPage(this.paginationConfig.currentPage + 1);
+    }
+  }
+
+  /**
+   * Obtiene las páginas visibles para la navegación
+   */
+  getVisiblePages(): number[] {
+    return this.paginationService.getVisiblePages(
+      this.paginationConfig.currentPage,
+      this.paginationResult.totalPages,
+      5
     );
   }
 
   /**
-   * Limpia el filtro de búsqueda y muestra todos los propietarios
+   * Obtiene el texto informativo de paginación
    */
-  clearSearch() {
-    this.searchTerm = '';
-    this.filterOwners();
+  getPaginationText(): string {
+    return this.paginationService.getPaginationText(
+      this.paginationConfig,
+      this.owners.length
+    );
   }
 
   /**
    * Se ejecuta cada vez que el usuario escribe en el buscador
    */
   onSearchChange() {
-    this.filterOwners();
+    this.applyFilters();
   }
 
-  /**
+  /**a
    * Navega a la página de edición de propietario
    */
   editOwner(id: number) {
@@ -132,7 +223,7 @@ export class OwnersListComponent implements OnInit {
     })
   }
 
-  newOwners(){
+  newOwners() {
     this.router.navigate(['/dashboards/owners/register'])
   }
 }

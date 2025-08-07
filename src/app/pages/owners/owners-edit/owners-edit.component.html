@@ -1,154 +1,162 @@
-<!-- Formulario de edición de propietarios -->
-<div class="form-wrapper">
-  <h2>Editar Propietario</h2>
+<div class="container">
+  <!-- Título y descripción -->
+  <div class="header">
+    <h1 class="title">Editar Propietario</h1>
+    <p class="subtitle">Modificar la información del propietario en el sistema</p>
+  </div>
 
+  <!-- Formulario principal -->
   <form (ngSubmit)="updateOwner()">
 
-    <!-- Sección información personal -->
-    <div class="form-section">
-      <h3>👤 Información Personal</h3>
+    <!-- Sección: Identificación de la propiedad -->
+    <div class="section">
+      <h2 class="section-title">👤 Información Personal</h2>
       <div class="form-grid">
-        <!-- Campo nombre -->
-        <div>
-          <label for="name">Nombre *</label>
+
+        <div class="form-field">
+          <label for="name" class="form-label">Nombre *</label>
           <input
             type="text"
             [(ngModel)]="owner.name"
             name="name"
             id="name"
             placeholder="Nombre del propietario"
+            class="form-input"
             required>
         </div>
 
-        <!-- Campo apellidos -->
-        <div>
-          <label for="lastname">Apellidos *</label>
+        <div class="form-field">
+          <label for="lastname" class="form-label">Apellidos *</label>
           <input
             type="text"
             [(ngModel)]="owner.lastname"
             name="lastname"
             id="lastname"
             placeholder="Apellidos del propietario"
+            class="form-input"
             required>
         </div>
 
-        <!-- Campo identificación -->
-        <div>
-          <label for="identification">Identificación *</label>
+        <div class="form-field">
+          <label for="identification" class="form-label">Identificación (DNI/NIE) *</label>
           <input
             type="text"
             [(ngModel)]="owner.identification"
             name="identification"
             id="identification"
-            placeholder="DNI/NIE/CIF"
+            placeholder="12345678A"
+            class="form-input reference-input"
             required>
         </div>
       </div>
     </div>
 
-    <!-- Sección información de contacto -->
-    <div class="form-section">
-      <h3>📞 Información de Contacto</h3>
+
+    <div class="section">
+      <h2 class="section-title">📞 Información de Contacto</h2>
       <div class="form-grid">
-        <!-- Campo email -->
-        <div>
-          <label for="email">Email *</label>
+
+        <div class="form-field">
+          <label for="email" class="form-label">Email *</label>
           <input
             type="email"
             [(ngModel)]="owner.email"
             name="email"
             id="email"
             placeholder="propietario@email.com"
+            class="form-input"
             required>
         </div>
 
-        <!-- Campo teléfono -->
-        <div>
-          <label for="phone">Teléfono *</label>
+        <div class="form-field">
+          <label for="phone" class="form-label">Teléfono *</label>
           <input
             type="tel"
             [(ngModel)]="owner.phone"
             name="phone"
             id="phone"
-            placeholder="123 456 789"
+            placeholder="+34 123 456 789"
+            class="form-input"
             required>
         </div>
       </div>
     </div>
 
-    <!-- Sección dirección -->
-    <div class="form-section">
-      <h3>🏠 Dirección</h3>
+    <div class="section">
+      <h2 class="section-title">🏠 Dirección</h2>
       <div class="form-grid">
-        <!-- Campo dirección completa -->
-        <div class="full-width">
-          <label for="address">Dirección *</label>
+
+        <div class="form-field form-field-full">
+          <label for="address" class="form-label">Dirección Completa *</label>
           <input
             type="text"
             [(ngModel)]="owner.address"
             name="address"
             id="address"
             placeholder="Calle Principal 123, 2º A"
+            class="form-input"
             required>
         </div>
 
-        <!-- Campo código postal -->
-        <div>
-          <label for="postal_code">Código Postal</label>
+        <div class="form-field">
+          <label for="postal_code" class="form-label">Código Postal *</label>
           <input
             type="text"
             [(ngModel)]="owner.postal_code"
             name="postal_code"
             id="postal_code"
             placeholder="28001"
-            pattern="[0-9]{5}">
+            class="form-input postal-input"
+            pattern="[0-9]{5}"
+            maxlength="5"
+            required>
         </div>
 
-        <!-- Campo localidad -->
-        <div>
-          <label for="location">Localidad *</label>
+        <div class="form-field">
+          <label for="location" class="form-label">Localidad *</label>
           <input
             type="text"
             [(ngModel)]="owner.location"
             name="location"
             id="location"
             placeholder="Madrid"
+            class="form-input"
             required>
         </div>
 
-        <!-- Campo provincia -->
-        <div>
-          <label for="province">Provincia *</label>
+        <div class="form-field">
+          <label for="province" class="form-label">Provincia *</label>
           <input
             type="text"
             [(ngModel)]="owner.province"
             name="province"
             id="province"
             placeholder="Madrid"
+            class="form-input"
             required>
         </div>
 
-        <!-- Campo país -->
-        <div>
-          <label for="country">País</label>
+        <div class="form-field">
+          <label for="country" class="form-label">País *</label>
           <input
             type="text"
             [(ngModel)]="owner.country"
             name="country"
             id="country"
             placeholder="España"
-            value="España">
+            class="form-input"
+            required>
         </div>
       </div>
     </div>
 
     <!-- Botones de acción -->
-    <div class="button-group">
-      <button type="button" class="btn-secondary" (click)="goBack()">
-        ← Cancelar
-      </button>
-      <button type="submit" class="btn-primary">
+    <div class="actions-section">
+      <button type="submit" class="primary-btn">
         ✓ Actualizar Propietario
+      </button>
+      <button type="button" class="secondary-btn" (click)="goBack()">
+        ← Cancelar
       </button>
     </div>
 

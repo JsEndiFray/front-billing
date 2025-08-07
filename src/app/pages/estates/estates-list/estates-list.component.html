@@ -1,130 +1,190 @@
-<!-- Listado y gestión de propiedades inmobiliarias -->
-<div class="estates-wrapper">
+<div class="container">
+  <!-- Título y descripción -->
+  <div class="header">
+    <h1 class="title">Gestión de Propiedades</h1>
+    <p class="subtitle">Administra el catáleo de propiedades inmobiliarias</p>
+  </div>
 
-  <!-- Título principal -->
-  <h2 class="estates-title">Listado de Propiedades</h2>
+  <!-- Sección de filtros y búsqueda -->
+  <div class="filters-section">
 
-  <!-- Sección de búsqueda -->
-  <div class="estates-search-container">
+    <!-- Buscador CON ICONOS -->
+    <div class="search-container">
+      <div class="search-wrapper">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="onSearchChange()"
+          placeholder="Buscar propiedades..."
+          class="search-input"
+          autocomplete="off"z>
 
-    <!-- Campo de búsqueda con filtro en tiempo real -->
-    <div class="estates-search-wrapper">
-      <input
-        type="text"
-        [(ngModel)]="searchTerm"
-        (input)="onSearchChange()"
-        placeholder="Buscar por referencia catastral, dirección, localidad y provincia..."
-        class="estates-search-input"
-        autocomplete="off"
-      >
-
-      <!-- Iconos de búsqueda y limpiar -->
-      <div class="estates-search-actions">
-        <span class="estates-search-icon">🔍</span>
-        @if (searchTerm && searchTerm.trim() !== '') {
-          <button
-            type="button"
-            (click)="clearSearch()"
-            class="estates-clear-button"
-            title="Limpiar búsqueda"
-          >
-            ✕
-          </button>
-        }
+        <!-- Iconos de búsqueda y limpiar -->
+        <div class="search-actions">
+          <span class="search-icon">🔍</span>
+          @if (searchTerm && searchTerm.trim() !== '') {
+            <button
+              type="button"
+              (click)="clearFilters()"
+              class="clear-button"
+              title="Limpiar búsqueda"
+            >
+              ✕
+            </button>
+          }
+        </div>
       </div>
     </div>
 
-    <!-- Contador de resultados de búsqueda -->
-    @if (searchTerm && searchTerm.trim() !== '') {
-      <div class="estates-search-results">
-        <span>Mostrando {{ estates.length }} de {{ allStates.length }} inmuebles</span>
-      </div>
-    }
+    <!-- Filtros -->
+    <div class="filters-container">
+      <!-- Filtro por provincia --><select
+      [(ngModel)]="selectedProvince"
+      (change)="onProvinceFilterChange()"
+      class="filter-select">
+      <option value="">Todas las provincias</option>
+      @for (province of provinceOptions; track province) {
+        <option [value]="province">{{ province }}</option>
+      }
+    </select>
+
+
+    </div>
+
+
+
+    <!-- Botón exportar y nueva propiedad -->
+    <div class="actions-container">
+      <button class="export-btn">Exportar</button>
+      <button class="new-client-btn" (click)="newEstate()">+ Nueva Propiedad</button>
+    </div>
+
   </div>
 
-  <!-- Botón para nuevo registro -->
-  <button type="button" class="estates-btn-new" (click)="newEstate()">
-    + Nuevo registro
-  </button>
-
   <!-- Tabla de propiedades -->
-  <div class="estates-table-container">
-    <table class="estates-table">
+  <div class="table-container">
+    <table class="clients-table">
 
-      <!-- Encabezados de la tabla -->
-      <thead class="estates-table-head">
+      <!-- Cabecera -->
+      <thead>
       <tr>
-        <th class="estates-th">ID</th>
-        <th class="estates-th">Ref. Catastral</th>
-        <th class="estates-th">Precio</th>
-        <th class="estates-th">Dirección</th>
-        <th class="estates-th">C.P</th>
-        <th class="estates-th">Localidad</th>
-        <th class="estates-th">Provincia</th>
-        <th class="estates-th">País</th>
-        <th class="estates-th">Superficie</th>
-        <th class="estates-th">Creado</th>
-        <th class="estates-th">Actualizado</th>
-        <th class="estates-th">Acciones</th>
+        <th>ID</th>
+        <th>REF. CATASTRAL</th>
+        <th>PRECIO</th>
+        <th>DIRECCIÓN</th>
+        <th>C.P.</th>
+        <th>LOCALIDAD</th>
+        <th>PROVINCIA</th>
+        <th>PAÍS</th>
+        <th>SUPERFICIE</th>
+        <th>CREADO</th>
+        <th>ACTUALIZADO</th>
+        <th>ACCIONES</th>
       </tr>
       </thead>
 
-      <!-- Contenido de la tabla -->
-      <tbody class="estates-table-body">
-
-      <!-- Lista de propiedades existentes -->
+      <!-- Cuerpo de la tabla -->
+      <tbody>
         @if (estates && estates.length > 0) {
           @for (estate of estates; track estate.id) {
-            <tr class="estates-table-row">
-              <td class="estates-td">{{ estate.id }}</td>
-              <td class="estates-td estates-reference">{{ estate.cadastral_reference }}</td>
-              <td class="estates-td estates-price">{{ estate.price }} €</td>
-              <td class="estates-td">{{ estate.address }}</td>
-              <td class="estates-td">{{ estate.postal_code }}</td>
-              <td class="estates-td">{{ estate.location }}</td>
-              <td class="estates-td">{{ estate.province }}</td>
-              <td class="estates-td">{{ estate.country }}</td>
-              <td class="estates-td estates-surface">{{ estate.surface }}</td>
-              <td class="estates-td">{{ estate.date_create | dataFormat }}</td>
-              <td class="estates-td">{{ estate.date_update | dataFormat }}</td>
-
-              <!-- Botones de acción por propiedad -->
-              <td class="estates-td">
-                <button class="estates-btn-edit" (click)="editEstate(estate.id!)">
+            <tr>
+              <td>#{{ estate.id }}</td>
+              <td class="reference-cell">{{ estate.cadastral_reference }}</td>
+              <td class="price-cell">{{ estate.price }} €</td>
+              <td>{{ estate.address }}</td>
+              <td class="postal-cell">{{ estate.postal_code }}</td>
+              <td>{{ estate.location }}</td>
+              <td>{{ estate.province }}</td>
+              <td>{{ estate.country }}</td>
+              <td class="surface-cell">{{ estate.surface }} m²</td>
+              <td>{{ estate.date_create | dataFormat }}</td>
+              <td>{{ estate.date_update | dataFormat }}</td>
+              <td>
+                <button class="action-btn edit-btn" (click)="editEstate(estate.id!)">
                   Editar
                 </button>
-               <!--<button class="estates-btn-delete" (click)="deleteEstate(estate.id!)">
-                 Eliminar
-                </button>-->
               </td>
             </tr>
           }
         } @else {
-
-          <!-- Estado cuando no hay propiedades -->
           <tr>
-            <td colspan="12" class="estates-no-data">
-              <div class="estates-empty-state">
-
-                <!-- Icono visual -->
-                <div class="estates-empty-icon">🏠</div>
-
-                <!-- Mensaje -->
-                <h3 class="estates-empty-title">Sin propiedades</h3>
-                <p class="estates-empty-text">
-                  No hay propiedades disponibles en este momento.
-                </p>
-
-                <!-- Botón para crear nueva propiedad -->
-                <button class="estates-btn-create" (click)="newEstate()" type="button">
-                  + Nuevo registro
+            <td colspan="12" class="no-data">
+              <div class="empty-state">
+                <p>No se encontraron propiedades</p>
+                <button class="new-client-btn" (click)="newEstate()">
+                  + Nueva Propiedad
                 </button>
               </div>
             </td>
           </tr>
         }
-
       </tbody>
+
     </table>
   </div>
+
+  <!-- Paginación -->
+  @if (paginationResult.totalPages > 1) {
+    <div class="pagination-container">
+
+      <!-- Información de resultados -->
+      <div class="pagination-info">
+        {{ getPaginationText() }}
+      </div>
+
+      <!-- Controles de paginación -->
+      <div class="pagination-controls">
+
+        <!-- Botón anterior -->
+        <button
+          class="pagination-btn"
+          [class.disabled]="!paginationResult.hasPrevious"
+          (click)="previousPage()"
+          [disabled]="!paginationResult.hasPrevious"
+        >
+          ‹ Anterior
+        </button>
+
+        <!-- Números de página -->
+        @for (page of getVisiblePages(); track page) {
+          <button
+            class="pagination-btn"
+            [class.active]="page === paginationConfig.currentPage"
+            (click)="goToPage(page)"
+          >
+            {{ page }}
+          </button>
+        }
+
+        <!-- Puntos suspensivos si hay más páginas -->
+        @if (paginationResult.totalPages > 5 && paginationConfig.currentPage < paginationResult.totalPages - 2) {
+          <span class="pagination-dots">...</span>
+        }
+
+        <!-- Última página -->
+        @if (paginationResult.totalPages > 5 && paginationConfig.currentPage < paginationResult.totalPages - 2) {
+          <button
+            class="pagination-btn"
+            (click)="goToPage(paginationResult.totalPages)"
+          >
+            {{ paginationResult.totalPages }}
+          </button>
+        }
+
+        <!-- Botón siguiente -->
+        <button
+          class="pagination-btn"
+          [class.disabled]="!paginationResult.hasNext"
+          (click)="nextPage()"
+          [disabled]="!paginationResult.hasNext"
+        >
+          Siguiente ›
+        </button>
+
+      </div>
+    </div>
+  }
+
+
+
 </div>

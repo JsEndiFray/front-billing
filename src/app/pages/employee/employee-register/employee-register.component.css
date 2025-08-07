@@ -1,235 +1,192 @@
-/* Contenedor principal del formulario */
-.employee-register-wrapper{
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 1rem;
-  padding: 2.5rem;
-  margin: 2rem auto;
-  max-width: 50rem;
-  width: 90%;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+/* Reset y estilos base */
+* {
+  box-sizing: border-box;
 }
-/* Título del formulario */
-.employee-register-title{
-  color: #1f2937;
-  font-size: 2rem;
-  font-weight: 700;
-  text-align: center;
+
+/* Contenedor principal (igual que otros componentes) */
+.container {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 87.5rem;
+  box-shadow: 0 0.25rem 0.375rem -0.0625rem rgba(0, 0, 0, 0.1);
+}
+
+/* Título y descripción (igual que otros componentes) */
+.header {
   margin-bottom: 2rem;
 }
-/* Formulario con diseño grid */
-.employee-register-form{
+
+.title {
+  color: #1f2937;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.subtitle {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* Secciones del formulario */
+.section {
+  background: #f9fafb;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 0.0625rem solid #e5e7eb;
+}
+
+.section-title {
+  color: #1f2937;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 1.25rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 0.125rem solid #e5e7eb;
+}
+
+/* Grid de formulario */
+.form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
-  gap: 1.5rem;
-  align-items: start;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1rem;
 }
-/* Campo que ocupa todo el ancho (dirección) */
-.employee-register-field-full {
-  grid-column: 1 / -1;
-}
-/* Contenedor de cada campo */
-.employee-register-field{
+
+.form-field {
   display: flex;
   flex-direction: column;
 }
-/* Etiquetas de los campos */
-.employee-register-label{
+
+.form-field-full {
+  grid-column: 1 / -1;
+}
+
+/* Etiquetas */
+.form-label {
   color: #374151;
-  font-weight: 600;
   font-size: 0.875rem;
-  margin-bottom: 0.5rem;
-  display: block;
+  font-weight: 600;
+  margin-bottom: 0.375rem;
 }
-/* Estilos base para inputs */
-.employee-register-input{
-  padding: 0.75rem;
-  border: 0.0625rem solid #d1d5db;
-  border-radius: 0.5rem;
-  background: #ffffff;
+
+/* Inputs (estilo igual a otros componentes) */
+.form-input {
+  padding: 0.625rem 0.75rem;
+  border: 0.125rem solid #e5e7eb;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
   color: #374151;
-  font-size: 1rem;
-  transition: all 0.2s ease;
-  width: 100%;
-  box-sizing: border-box;
+  background: #ffffff;
+  transition: border-color 0.2s;
 }
-/* Placeholder de los inputs */
-.employee-register-input::placeholder{
-  color: #9ca3af;
-}
-/* Estado focus de los inputs */
-.employee-register-input:focus{
+
+.form-input:focus {
   outline: none;
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
-/* Estado hover de los inputs */
-.employee-register-input:hover:not(:focus) {
-  border-color: #9ca3af;
+
+.form-input::placeholder {
+  color: #9ca3af;
 }
-/* Estilo especial para campo email */
-.employee-register-email {
+
+/* Inputs especiales */
+.email-input {
   color: #3b82f6;
   font-weight: 500;
 }
-/* Estilo especial para campo NIF */
-.employee-register-nif {
-  color: #059669;
-  font-weight: 600;
+
+.identification-input {
   font-family: 'Courier New', monospace;
+  color: #059669;
+  font-weight: 500;
   text-transform: uppercase;
 }
 
-/* Estilo especial para código postal */
-.employee-register-postal {
-  color: #6b7280;
-  font-weight: 600;
+.postal-input {
   font-family: 'Courier New', monospace;
+  color: #6b7280;
+  font-weight: 500;
   text-align: center;
 }
-/* Validación visual para campos inválidos */
-.employee-register-input:invalid:not(:placeholder-shown) {
-  border-color: #ef4444;
-}
 
-/* Validación visual para campos válidos */
-.employee-register-input:valid:not(:placeholder-shown) {
-  border-color: #10b981;
-}
-
-/* Contenedor de botones */
-.employee-register-buttons {
+/* Sección de acciones */
+.actions-section {
   display: flex;
-  gap: 1rem;
   justify-content: center;
+  gap: 1rem;
   margin-top: 2rem;
-  grid-column: 1 / -1;
+  padding-top: 1.5rem;
+  border-top: 0.0625rem solid #e5e7eb;
 }
-/* Botón principal (registrar) */
-.employee-register-btn-primary {
-  background: linear-gradient(135deg, #22c55e, #3b82f6);
-  color: white;
+
+/* Botones principales (estilo igual a otros componentes) */
+.primary-btn {
+  background: #3b82f6;
+  color: #ffffff;
   border: none;
   border-radius: 0.375rem;
-  padding: 0.875rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-/* Efecto hover para botón principal */
-.employee-register-btn-primary:hover {
-  transform: translateY(-1px);
-}
-
-/* Efecto active para botón principal */
-.employee-register-btn-primary:active {
-  transform: translateY(0);
-}
-
-/* Botón secundario (cancelar) */
-.employee-register-btn-secondary {
-  background: #f9fafb;
-  color: #374151;
-  border: 0.0625rem solid #d1d5db;
-  border-radius: 0.375rem;
-  padding: 0.875rem 1.5rem;
-  font-size: 1rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
 }
 
-/* Efecto hover para botón secundario */
-.employee-register-btn-secondary:hover {
-  background: #f3f4f6;
-  border-color: #9ca3af;
+.primary-btn:hover {
+  background: #2563eb;
 }
 
-/* Responsive para tablet */
+.secondary-btn {
+  background: #ffffff;
+  color: #374151;
+  border: 0.125rem solid #e5e7eb;
+  border-radius: 0.375rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.secondary-btn:hover {
+  background: #f9fafb;
+}
+
+/* Responsive */
 @media (max-width: 48rem) {
-  /* Ajustes del contenedor principal */
-  .employee-register-wrapper {
-    padding: 2rem;
-    margin: 1.5rem auto;
-    width: 95%;
+  .container {
+    padding: 1rem;
   }
 
-  /* Ajustes del título */
-  .employee-register-title {
-    font-size: 1.75rem;
-    margin-bottom: 1.5rem;
+  .section {
+    padding: 1rem;
   }
 
-  /* Formulario en una sola columna */
-  .employee-register-form {
+  .form-grid {
     grid-template-columns: 1fr;
-    gap: 1.25rem;
   }
 
-  /* Campo de dirección en una sola columna */
-  .employee-register-field-full {
-    grid-column: 1;
-  }
-
-  /* Ajustes de inputs */
-  .employee-register-input {
-    padding: 0.6875rem;
-  }
-
-  /* Ajustes de botones */
-  .employee-register-btn-primary,
-  .employee-register-btn-secondary {
-    padding: 0.875rem 1.5rem;
-    font-size: 0.875rem;
-  }
-
-  /* Botones en columna en pantallas pequeñas */
-  .employee-register-buttons {
+  .actions-section {
     flex-direction: column;
-    gap: 0.75rem;
   }
 }
 
-/* Responsive para móvil */
 @media (max-width: 30rem) {
-  /* Ajustes del contenedor principal */
-  .employee-register-wrapper {
-    padding: 1.5rem;
-    margin: 1rem auto;
-    width: 95%;
+  .container {
+    padding: 0.75rem;
+    margin: 0.5rem auto;
   }
 
-  /* Ajustes del título */
-  .employee-register-title {
+  .title {
     font-size: 1.5rem;
-    margin-bottom: 1.25rem;
   }
 
-  /* Ajustes del formulario */
-  .employee-register-form {
-    gap: 1rem;
-  }
-
-  /* Ajustes de inputs */
-  .employee-register-input {
-    padding: 0.625rem;
-    font-size: 0.875rem;
-  }
-
-  /* Ajustes de botones */
-  .employee-register-btn-primary,
-  .employee-register-btn-secondary {
-    padding: 0.75rem 1.25rem;
-    font-size: 0.875rem;
-    width: 100%;
-  }
-
-  /* Botones de ancho completo */
-  .employee-register-buttons {
-    flex-direction: column;
-    gap: 0.75rem;
+  .section {
+    padding: 0.75rem;
   }
 }
-
-

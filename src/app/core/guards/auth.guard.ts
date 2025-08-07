@@ -24,7 +24,6 @@ export const authGuard: CanActivateFn = (route, state) => {
         // Token expirado, limpiar y redirigir
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
-        authService.deactivateSession();
         router.navigate(['/login']);
         return false;
       }
@@ -34,7 +33,6 @@ export const authGuard: CanActivateFn = (route, state) => {
       // Token inválido - limpiar sesión
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
-      authService.deactivateSession();
       router.navigate(['/login']);
       return false;
     }

@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {Employee} from '../../../interface/employee-interface';
 import {ActivatedRoute, Router} from '@angular/router';
-import {EmployeeService} from '../../../core/services/employee-services/employee-service';
+import {EmployeeService} from '../../../core/services/employee-services/employee.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
 import {EmployeeValidatorServices} from '../../../core/services/validator-services/employee-validator.service';

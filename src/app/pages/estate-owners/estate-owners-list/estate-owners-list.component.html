@@ -1,123 +1,81 @@
-<!-- Lista de relaciones inmueble-propietario con porcentajes -->
-<div class="estate-owners-wrapper">
+<div class="container">
+  <!-- Título y descripción -->
+  <div class="header">
+    <h1 class="title">Gestión de Porcentajes</h1>
+    <p class="subtitle">Administra los porcentajes de propiedad de inmuebles</p>
+  </div>
 
-  <!-- Título principal -->
-  <h2 class="estate-owners-title">Listado de Porcentajes de Propiedades</h2>
+  <!-- Sección de filtros y búsqueda -->
+  <div class="filters-section">
 
-  <!-- Sección de búsqueda -->
-  <div class="estate-owners-search-container">
-
-    <!-- Campo de búsqueda con filtro en tiempo real -->
-    <div class="estate-owners-search-wrapper">
+    <!-- Buscador -->
+    <div class="search-container">
       <input
         type="text"
         [(ngModel)]="searchTerm"
         (input)="onSearchChange()"
         placeholder="Buscar por propiedad, propietario o porcentaje..."
-        class="estate-owners-search-input"
-        autocomplete="off"
+        class="search-input"
       >
-
-      <!-- Iconos de búsqueda y limpiar -->
-      <div class="estate-owners-search-actions">
-        <span class="estate-owners-search-icon">🔍</span>
-        @if (searchTerm && searchTerm.trim() !== '') {
-          <button
-            type="button"
-            (click)="clearSearch()"
-            class="estate-owners-clear-button"
-            title="Limpiar búsqueda"
-          >
-            ✕
-          </button>
-        }
-      </div>
     </div>
 
-    <!-- Contador de resultados de búsqueda -->
-    @if (searchTerm && searchTerm.trim() !== '') {
-      <div class="estate-owners-search-results">
-        <span>Mostrando {{ estateOwners.length }} de {{ allEstateOwners.length }} relaciones</span>
-      </div>
-    }
+    <!-- Botón exportar y nuevo registro -->
+    <div class="actions-container">
+      <button class="export-btn">Exportar</button>
+      <button class="new-client-btn" (click)="newEstateOwner()">+ Nuevo Porcentaje</button>
+    </div>
+
   </div>
 
-  <!-- Botón para nuevo registro -->
-  <button type="button" class="estate-owners-btn-new" (click)="newEstateOwner()">
-    + Nuevo registro
-  </button>
+  <!-- Tabla de porcentajes -->
+  <div class="table-container">
+    <table class="clients-table">
 
-  <!-- Tabla de relaciones inmueble-propietario -->
-  <div class="estate-owners-table-container">
-    <table class="estate-owners-table">
-
-      <!-- Encabezados de la tabla -->
-      <thead class="estate-owners-table-head">
+      <!-- Cabecera -->
+      <thead>
       <tr>
-        <th class="estate-owners-th">ID</th>
-        <th class="estate-owners-th">Propiedad</th>
-        <th class="estate-owners-th">Propietario</th>
-        <th class="estate-owners-th">Porcentaje (%)</th>
-        <th class="estate-owners-th">Creación</th>
-        <!--<th class="estate-owners-th">Actualizado</th>-->
-        <!--<th class="estate-owners-th">Acciones</th>-->
+        <th>ID</th>
+        <th>PROPIEDAD</th>
+        <th>PROPIETARIO</th>
+        <th>PORCENTAJE (%)</th>
+        <th>CREADO</th>
       </tr>
       </thead>
 
-      <!-- Contenido de la tabla -->
-      <tbody class="estate-owners-table-body">
-
-      <!-- Lista de relaciones existentes -->
+      <!-- Cuerpo de la tabla -->
+      <tbody>
         @if (estateOwners && estateOwners.length > 0) {
           @for (item of estateOwners; track item.id) {
-            <tr class="estate-owners-table-row">
-              <td class="estate-owners-td">{{ item.id }}</td>
-              <td class="estate-owners-td estate-owners-property">{{ item.estate_name }}</td>
-              <td class="estate-owners-td estate-owners-owner">{{ item.owner_name }}</td>
-              <td class="estate-owners-td estate-owners-percentage">{{ item.ownership_percentage }}%</td>
-              <td class="estate-owners-td">{{ item.date_create | dataFormat }}</td>
-             <!-- <td class="estate-owners-td">{{ item.date_update | dataFormat }}</td>-->
-
-              <!-- Botones de acción por relación -->
-
-              <!--<td class="estate-owners-td">
-                <button class="estate-owners-btn-edit" (click)="editEstateOwners(item.id!)">
-                  Editar
-                </button>
-                <button class="estate-owners-btn-delete" (click)="deleteEstateOwners(item.id!)">
-                  Eliminar
-                </button>
-              </td>-->
-
-
+            <tr>
+              <td>#{{ item.id }}</td>
+              <td class="property-cell">{{ item.estate_name }}</td>
+              <td class="owner-cell">{{ item.owner_name }}</td>
+              <td class="percentage-cell">{{ item.ownership_percentage }}%</td>
+              <td>{{ item.date_create | dataFormat }}</td>
             </tr>
           }
         } @else {
-
-          <!-- Estado cuando no hay relaciones -->
           <tr>
-            <td colspan="7" class="estate-owners-no-data">
-              <div class="estate-owners-empty-state">
-
-                <!-- Icono visual -->
-                <div class="estate-owners-empty-icon">📊</div>
-
-                <!-- Mensaje -->
-                <h3 class="estate-owners-empty-title">No hay relaciones registradas</h3>
-                <p class="estate-owners-empty-text">
-                  No hay porcentajes de propiedades asignados en este momento.
-                </p>
-
-                <!-- Botón para crear nueva relación -->
-                <button class="estate-owners-btn-create" (click)="newEstateOwner()" type="button">
-                  + Nuevo registro
+            <td colspan="5" class="no-data">
+              <div class="empty-state">
+                <p>No se encontraron porcentajes de propiedades</p>
+                <button class="new-client-btn" (click)="newEstateOwner()">
+                  + Nuevo Porcentaje
                 </button>
               </div>
             </td>
           </tr>
         }
-
       </tbody>
+
     </table>
   </div>
+
+  <!-- Información de resultados de búsqueda -->
+  @if (searchTerm && searchTerm.trim() !== '') {
+    <div class="search-results-info">
+      Mostrando {{ estateOwners.length }} de {{ allEstateOwners.length }} relaciones
+    </div>
+  }
+
 </div>

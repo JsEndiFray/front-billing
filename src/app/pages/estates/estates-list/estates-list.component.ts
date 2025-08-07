@@ -6,7 +6,9 @@ import {FormsModule} from '@angular/forms';
 import {Router} from '@angular/router';
 import Swal from 'sweetalert2';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
-import {SearchService} from '../../../core/services/search-services/search.service';
+import {SearchService} from '../../../core/services/shared-services/search.service';
+import {PaginationConfig, PaginationResult} from '../../../interface/pagination';
+import {PaginationService} from '../../../core/services/shared-services/pagination.service';
 
 /**
  * Componente para mostrar y gestionar la lista de propiedades inmobiliarias
@@ -31,10 +33,37 @@ export class EstatesListComponent implements OnInit {
   // Texto que escribe el usuario para buscar
   searchTerm: string = '';
 
+  // Lista de clientes filtrados (antes de paginar)
+  filteredEstates: Estates[] = [];
+
+// Filtros
+  selectedProvince: string = '';
+
+  // Opciones para filtros
+  provinceOptions: string[] = [];
+
+  // Configuración de paginación
+  paginationConfig: PaginationConfig = {
+    currentPage: 1,
+    itemsPerPage: 5,
+    totalItems: 0
+  };
+
+// Resultado de paginación
+  paginationResult: PaginationResult<Estates> = {
+    items: [],
+    totalPages: 0,
+    hasNext: false,
+    hasPrevious: false,
+    startIndex: 0,
+    endIndex: 0
+  };
+
   constructor(
     private estateService: EstatesService,
     private router: Router,
     private searchService: SearchService,
+    private paginationService: PaginationService,
   ) {
   }
 
@@ -52,9 +81,10 @@ export class EstatesListComponent implements OnInit {
    */
   getListEstate() {
     this.estateService.getAllEstate().subscribe({
-      next: (estates) => {
-        this.estates = estates;        // Lista que se muestra
-        this.allStates = estates;      // Copia original para filtros
+      next: (estatesList) => {
+        this.allStates = estatesList;
+        this.extractProvinceOptions();
+        this.applyFilters();
       }, error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
       }
@@ -62,30 +92,126 @@ export class EstatesListComponent implements OnInit {
   }
 
   /**
+   * Extrae las provincias únicas de los clientes para el filtro
+   */
+  extractProvinceOptions() {
+    // Toma todos los clientes y extrae solo las provincias
+    const provinces = this.allStates
+      .map(estates => estates.province)
+      // Elimina duplicados y valores vacíos
+      .filter((province, index, array) => province && array.indexOf(province) === index)
+      // Ordena alfabéticamente
+      .sort();
+    this.provinceOptions = provinces;
+  }
+
+  /**
    * Filtra la lista de propiedades según el texto de búsqueda
    * Busca en: referencia catastral, dirección, localidad y provincia
    */
-  filterEstates() {
-    this.estates = this.searchService.filterData(
-      this.allStates,
-      this.searchTerm,
-      ['cadastral_reference', 'address', 'location', 'province']
+  applyFilters() {
+    let filtered = [...this.allStates];
+
+    // Filtro por búsqueda de texto
+    if (this.searchTerm.trim()) {
+      filtered = this.searchService.filterData(
+        filtered,
+        this.searchTerm,
+        ['cadastral_reference', 'address', 'location', 'province']
+      );
+    }
+    // Filtro por provincia
+    if (this.selectedProvince) {
+      filtered = filtered.filter(employee => employee.province === this.selectedProvince);
+    }
+    this.filteredEstates = filtered;
+    this.paginationConfig.totalItems = filtered.length;
+    this.paginationConfig.currentPage = 1; // Resetear a primera página
+    this.updatePagination();
+  }
+
+  /**
+   * Actualiza la paginación con los datos filtrados
+   */
+  updatePagination() {
+    this.paginationResult = this.paginationService.paginate(
+      this.filteredEstates,
+      this.paginationConfig
+    );
+    this.estates = this.paginationResult.items;
+  }
+
+  /**
+   * Se ejecuta cuando cambia el filtro de provincia
+   */
+  onProvinceFilterChange() {
+    this.applyFilters();
+  }
+
+
+  /**
+   * Limpia todos los filtros
+   */
+  clearFilters() {
+    this.searchTerm = '';
+    this.selectedProvince = '';
+    this.applyFilters();
+  }
+  /**
+   * Navega a una página específica
+   */
+  goToPage(page: number) {
+    if (this.paginationService.isValidPage(page, this.paginationResult.totalPages)) {
+      this.paginationConfig.currentPage = page;
+      this.updatePagination();
+    }
+  }
+
+  /**
+   * Navega a la página anterior
+   */
+  previousPage() {
+    if (this.paginationResult.hasPrevious) {
+      this.goToPage(this.paginationConfig.currentPage - 1);
+    }
+  };
+
+  /**
+   * Navega a la página siguiente
+   */
+  nextPage() {
+    if (this.paginationResult.hasNext) {
+      this.goToPage(this.paginationConfig.currentPage + 1);
+    }
+  }
+
+  /**
+   * Obtiene las páginas visibles para la navegación
+   */
+  getVisiblePages(): number[] {
+    return this.paginationService.getVisiblePages(
+      this.paginationConfig.currentPage,
+      this.paginationResult.totalPages,
+      5
     );
   }
 
   /**
-   * Limpia el filtro de búsqueda y muestra todas las propiedades
+   * Obtiene el texto informativo de paginación
    */
-  clearSearch() {
-    this.searchTerm = '';
-    this.filterEstates();
-  };
+  getPaginationText(): string {
+    return this.paginationService.getPaginationText(
+      this.paginationConfig,
+      this.estates.length
+    );
+  }
+
 
   /**
    * Se ejecuta cada vez que el usuario escribe en el buscador
    */
   onSearchChange() {
-    this.filterEstates();
+    this.applyFilters();
   };
 
   /**
@@ -129,7 +255,7 @@ export class EstatesListComponent implements OnInit {
     })
   }
 
-  newEstate(){
+  newEstate() {
     this.router.navigate(['/dashboards/estates/register'])
   }
 }

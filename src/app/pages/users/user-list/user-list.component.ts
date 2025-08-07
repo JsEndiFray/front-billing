@@ -5,7 +5,7 @@ import {Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
 import Swal from 'sweetalert2';
-import {SearchService} from '../../../core/services/search-services/search.service';
+import {SearchService} from '../../../core/services/shared-services/search.service';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 /**

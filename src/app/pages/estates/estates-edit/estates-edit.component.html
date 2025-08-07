@@ -1,116 +1,138 @@
-<!-- Formulario de edición de propiedades inmobiliarias -->
-<div class="form-wrapper">
-  <h2>Editar Propiedad</h2>
+<div class="container">
+  <!-- Título y descripción -->
+  <div class="header">
+    <h1 class="title">Editar Propiedad</h1>
+    <p class="subtitle">Modificar información de la propiedad inmobiliaria</p>
+  </div>
 
+  <!-- Formulario principal -->
   <form (ngSubmit)="updateEstate()">
-    <!-- Campo referencia catastral -->
-    <div>
-      <label for="referencia">Referencia Catastral</label>
-      <input
-        type="text"
-        [(ngModel)]="estate.cadastral_reference"
-        name="referencia"
-        id="referencia"
-        placeholder="Ej: 1234567AB0001XX"
-        required>
+
+    <!-- Sección: Identificación de la propiedad -->
+    <div class="section">
+      <h2 class="section-title">🏠 Identificación de la Propiedad</h2>
+      <div class="form-grid">
+
+        <div class="form-field form-field-full">
+          <label for="referencia" class="form-label">Referencia Catastral *</label>
+          <input
+            type="text"
+            [(ngModel)]="estate.cadastral_reference"
+            name="referencia"
+            id="referencia"
+            placeholder="Ej: 1234567AB0001XX"
+            class="form-input reference-input"
+            required>
+        </div>
+
+        <div class="form-field">
+          <label for="price" class="form-label">Precio (€) *</label>
+          <input
+            type="number"
+            [(ngModel)]="estate.price"
+            name="precio"
+            id="price"
+            placeholder="250000"
+            class="form-input price-input"
+            min="0"
+            step="1000"
+            required>
+        </div>
+
+        <div class="form-field">
+          <label for="surface" class="form-label">Superficie (m²) *</label>
+          <input
+            type="number"
+            [(ngModel)]="estate.surface"
+            name="superficie"
+            id="surface"
+            placeholder="120"
+            class="form-input surface-input"
+            min="1"
+            step="1"
+            required>
+        </div>
+
+      </div>
     </div>
 
-    <!-- Campo precio -->
-    <div>
-      <label for="price">Precio (€)</label>
-      <input
-        type="number"
-        [(ngModel)]="estate.price"
-        name="precio"
-        id="price"
-        placeholder="250000"
-        min="0"
-        step="1000"
-        required>
-    </div>
+    <!-- Sección: Dirección -->
+    <div class="section">
+      <h2 class="section-title">📍 Ubicación</h2>
+      <div class="form-grid">
 
-    <!-- Campo dirección -->
-    <div>
-      <label for="address">Dirección</label>
-      <input
-        type="text"
-        [(ngModel)]="estate.address"
-        name="direccion"
-        id="address"
-        placeholder="Calle Principal 123, 2º A"
-        required>
-    </div>
+        <div class="form-field form-field-full">
+          <label for="address" class="form-label">Dirección *</label>
+          <input
+            type="text"
+            [(ngModel)]="estate.address"
+            name="direccion"
+            id="address"
+            placeholder="Calle Principal 123, 2º A"
+            class="form-input"
+            required>
+        </div>
 
-    <!-- Campo código postal -->
-    <div>
-      <label for="postal_code">Código Postal</label>
-      <input
-        type="text"
-        [(ngModel)]="estate.postal_code"
-        name="codigoPostal"
-        id="postal_code"
-        placeholder="28001"
-        pattern="[0-9]{5}"
-        required>
-    </div>
+        <div class="form-field">
+          <label for="postal_code" class="form-label">Código Postal *</label>
+          <input
+            type="text"
+            [(ngModel)]="estate.postal_code"
+            name="codigoPostal"
+            id="postal_code"
+            placeholder="28001"
+            class="form-input postal-input"
+            pattern="[0-9]{5}"
+            maxlength="5"
+            required>
+        </div>
 
-    <!-- Campo localidad -->
-    <div>
-      <label for="location">Localidad</label>
-      <input
-        type="text"
-        [(ngModel)]="estate.location"
-        name="localidad"
-        id="location"
-        placeholder="Madrid"
-        required>
-    </div>
+        <div class="form-field">
+          <label for="location" class="form-label">Localidad *</label>
+          <input
+            type="text"
+            [(ngModel)]="estate.location"
+            name="localidad"
+            id="location"
+            placeholder="Madrid"
+            class="form-input"
+            required>
+        </div>
 
-    <!-- Campo provincia -->
-    <div>
-      <label for="province">Provincia</label>
-      <input
-        type="text"
-        [(ngModel)]="estate.province"
-        name="provincia"
-        id="province"
-        placeholder="Madrid"
-        required>
-    </div>
+        <div class="form-field">
+          <label for="province" class="form-label">Provincia *</label>
+          <input
+            type="text"
+            [(ngModel)]="estate.province"
+            name="provincia"
+            id="province"
+            placeholder="Madrid"
+            class="form-input"
+            required>
+        </div>
 
-    <!-- Campo país -->
-    <div>
-      <label for="country">País</label>
-      <input
-        type="text"
-        [(ngModel)]="estate.country"
-        name="pais"
-        id="country"
-        placeholder="España"
-        required>
-    </div>
+        <div class="form-field">
+          <label for="country" class="form-label">País *</label>
+          <input
+            type="text"
+            [(ngModel)]="estate.country"
+            name="pais"
+            id="country"
+            placeholder="España"
+            class="form-input"
+            required>
+        </div>
 
-    <!-- Campo superficie -->
-    <div>
-      <label for="surface">Superficie (m²)</label>
-      <input
-        type="number"
-        [(ngModel)]="estate.surface"
-        name="superficie"
-        id="surface"
-        placeholder="120"
-        min="1"
-        step="1"
-        required>
+      </div>
     </div>
 
     <!-- Botones de acción -->
-    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
-      <button type="button" class="btn-secondary" (click)="goBack()">
-        ← Cancelar
-      </button>
-      <button type="submit" class="btn-primary">
+    <div class="actions-section">
+      <button type="submit" class="primary-btn">
         ✓ Actualizar Propiedad
+      </button>
+      <button type="button" class="secondary-btn" (click)="goBack()">
+        ← Cancelar
       </button>
     </div>
 

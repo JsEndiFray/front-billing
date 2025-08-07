@@ -1,101 +1,160 @@
-<!-- Listado y gestión de facturas CON GESTIÓN DE PAGOS -->
-<div class="invoices-wrapper">
+<div class="container">
+  <!-- Título y descripción -->
+  <div class="header">
+    <h1 class="title">Gestión de Facturas</h1>
+    <p class="subtitle">Administra el listado completo de facturas emitidas</p>
+  </div>
 
-  <!-- Título principal -->
-  <h2 class="invoices-title">Listado de Facturas</h2>
+  <!-- Sección de filtros y búsqueda -->
+  <div class="filters-section">
 
-  <!-- Sección de búsqueda (igual que antes) -->
-  <div class="invoices-search-container">
-    <div class="invoices-search-wrapper">
-      <input
-        type="text"
-        [(ngModel)]="searchTerm"
-        (input)="onSearchChange()"
-        placeholder="Buscar por número de factura, cliente, propietario..."
-        class="invoices-search-input"
-        autocomplete="off">
+    <!-- Buscador CON ICONOS -->
+    <div class="search-container">
+      <div class="search-wrapper">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="onFilterCharger()"
+          placeholder="Buscar por número de factura, cliente, propietario..."
+          class="search-input"
+          autocomplete="off">
 
-      <div class="invoices-search-actions">
-        <span class="invoices-search-icon">🔍</span>
-        @if (searchTerm && searchTerm.trim() !== '') {
-          <button
-            type="button"
-            (click)="clearSearch()"
-            class="invoices-clear-button"
-            title="Limpiar búsqueda">
-            ✕
-          </button>
-        }
+        <!-- Iconos de búsqueda y limpiar -->
+        <div class="search-actions">
+          <span class="search-icon">🔍</span>
+          @if (searchTerm && searchTerm.trim() !== '') {
+            <button
+              type="button"
+              (click)="clearFilters()"
+              class="clear-button"
+              title="Limpiar búsqueda">
+              ✕
+            </button>
+          }
+        </div>
+
       </div>
     </div>
 
-    @if (searchTerm && searchTerm.trim() !== '') {
-      <div class="invoices-search-results">
-        <span>Mostrando {{ invoices.length }} de {{ allInvoices.length }} facturas</span>
+    <!-- Filtro estado de facturas-->
+    <div class="filters-container">
+      <select [(ngModel)]="selectedCollectionStatus"
+              (change)="onFilterCharger()" class="filter-select">
+        <option value="">Tipos de Factura</option>
+        @for (status of collectionStatusOptions; track status) {
+          <option [value]="status">{{ collectionStatusLabels[status] }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Filtro de facturas de abono-->
+    <div class="filters-container">
+      <select [(ngModel)]="selectedRefundStatus"
+              (change)="onFilterCharger()" class="filter-select">
+        <option value="">Por Factura</option>
+        @for ( refunds of refundStatusOptions; track refunds.value) {
+          <option [value]="refunds.value">{{refunds.label}}</option>
+
+        }
+      </select>
+    </div>
+
+
+
+    <!-- Filtro de facturas por mes o proporcional-->
+    <div class="filters-container">
+      <select [(ngModel)]="selectedTypeBilling"
+              (change)="onFilterCharger()" class="filter-select">
+        <option value="">Por Facturación</option>
+        @for (typesBill of billingTypeOptions; track typesBill){
+          <option [value]="typesBill">{{billingTypeLabels[typesBill]}}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Filtro de factura por propietarios-->
+    <div class="filters-container">
+      <select [(ngModel)]="selectedOwners"
+              (change)="onFilterCharger()" class="filter-select">
+        <option value="">Por Propietarios</option>
+        @for (owner of ownersOptions; track owner){
+          <option [value]="owner">{{owner}}</option>
+        }
+      </select>
+
+      <!-- Filtro de facturas por cliente-->
+      <div class="filters-container">
+        <select [(ngModel)]="selectedClients"
+                (change)="onFilterCharger()" class="filter-select">
+          <option value="">Por Cliente</option>
+          @for (client of clientsOptions; track client){
+            <option [value]="client">{{client}}</option>
+          }
+        </select>
       </div>
-    }
+
+    </div>
+
+
+
+    <!-- Botón nueva factura -->
+    <div class="actions-container">
+      <button class="export-btn">Exportar</button>
+      <button class="new-invoice-btn" (click)="createNewInvoice()">+ Nueva Factura</button>
+    </div>
+
   </div>
 
-  <!-- Botón para nueva factura -->
-  <button type="button" class="invoices-btn-new" (click)="createNewInvoice()">
-    + Nueva Factura
-  </button>
+  <!-- Tabla de facturas -->
+  <div class="table-container">
+    <table class="clients-table">
 
-  <!-- Tabla de facturas CON NUEVAS COLUMNAS DE PAGO -->
-  <div class="invoices-table-container">
-    <table class="invoices-table">
-
-      <!-- Encabezados de la tabla ACTUALIZADOS -->
-      <thead class="invoices-table-head">
+      <!-- Cabecera -->
+      <thead>
       <tr>
-        <th class="invoices-th">ID</th>
-        <th class="invoices-th">Nº Factura</th>
-        <th class="invoices-th">Propiedad</th>
-        <th class="invoices-th">Cliente</th>
-        <th class="invoices-th">Propietario</th>
-        <!--<th class="bills-th">%</th>-->
-        <th class="invoices-th">Fecha</th>
-        <th class="invoices-th">Base</th>
-        <th class="invoices-th">IVA</th>
-        <th class="invoices-th">IRPF</th>
-        <th class="invoices-th">Total</th>
-        <!-- COLUMNAS NUEVAS -->
-        <th class="invoices-th">Tipo Facturación</th>
-        <th class="invoices-th">Período</th>
-        <th class="invoices-th">Mes Correspondiente</th>
-        <!-- COLUMNAS DE PAGO -->
-        <th class="invoices-th">Estado Pago</th>
-        <th class="invoices-th">Método Pago</th>
-        <th class="invoices-th">Fecha Pago</th>
-        <th class="invoices-th">Abonos</th>
-        <th class="invoices-th">F. Abonada</th>
-        <th class="invoices-th">Acciones</th>
+        <th>ID</th>
+        <th>Nº FACTURA</th>
+        <th>PROPIEDAD</th>
+        <th>CLIENTE</th>
+        <th>PROPIETARIO</th>
+        <th>FECHA</th>
+        <th>BASE</th>
+        <th>IVA</th>
+        <th>IRPF</th>
+        <th>TOTAL</th>
+        <th>TIPO FACTURACIÓN</th>
+        <th>PERÍODO</th>
+        <th>MES CORRESPONDIENTE</th>
+        <th>ESTADO PAGO</th>
+        <th>MÉTODO PAGO</th>
+        <th>FECHA PAGO</th>
+        <th>ABONOS</th>
+        <th>FACTURA DE ABONADA</th>
+        <th>ACCIONES</th>
       </tr>
       </thead>
 
-      <!-- Contenido de la tabla -->
-      <tbody class="invoices-table-body">
-
+      <!-- Cuerpo de la tabla -->
+      <tbody>
         @if (invoices && invoices.length > 0) {
           @for (invoice of invoices; track invoice.id) {
-            <tr class="invoices-table-row">
-              <td class="invoices-td">{{ invoice.id }}</td>
-              <td class="invoices-td invoices-invoices-number">{{ invoice.invoice_number }}</td>
-              <td class="invoices-td">{{ invoice.estates_id }}</td>
-              <td class="invoices-td invoices-client">{{ invoice.clients_id }}</td>
-              <td class="invoices-td invoices-owner">{{ invoice.owners_id }}</td>
-              <!-- <td class="bills-td bills-percentage">{{ bill.ownership_percent }}%</td>-->
-              <td class="invoices-td">{{ invoice.invoice_date | dataFormat }}</td>
-              <td class="invoices-td invoices-currency">{{ invoice.tax_base | currency:'EUR':'symbol':'1.2-2' }}</td>
-              <td class="invoices-td invoices-tax">{{ invoice.iva }}%</td>
-              <td class="invoices-td invoices-tax">{{ invoice.irpf }}%</td>
-              <td class="invoices-td invoices-total">{{ invoice.total | currency:'EUR':'symbol':'1.2-2' }}</td>
+            <tr>
+              <td>#{{ invoice.id }}</td>
+              <td class="invoice-number-cell">{{ invoice.invoice_number }}</td>
+              <td title="ID: {{ invoice.estates_id }}">{{ invoice.estate_name }}</td>
+              <td class="client-cell" title="ID: {{invoice.clients_id}}">{{ invoice.client_name }}</td>
+              <td class="owner-cell" title="ID: {{invoice.owners_id}}">{{ invoice.owner_name }}</td>
+              <td>{{ invoice.invoice_date | dataFormat }}</td>
+              <td class="currency-cell">{{ invoice.tax_base | currency:'EUR':'symbol':'1.2-2' }}</td>
+              <td class="tax-cell">{{ invoice.iva }}%</td>
+              <td class="tax-cell">{{ invoice.irpf }}%</td>
+              <td class="total-cell">{{ invoice.total | currency:'EUR':'symbol':'1.2-2' }}</td>
 
-              <!-- NUEVA COLUMNA: TIPO DE FACTURACIÓN -->
-              <td class="invoices-td">
+              <!-- TIPO DE FACTURACIÓN -->
+              <td>
                 <span
-                  [ngClass]="isInvoiceProportional(invoice) ? 'invoices-proportional-badge' : 'invoices-normal-badge'">
-                  @if (isInvoiceProportional(invoice)) {
+                  [ngClass]="invoiceUtilsService.isInvoiceProportional(invoice) ? 'proportional-badge' : 'normal-badge'">
+                  @if (invoiceUtilsService.isInvoiceProportional(invoice)) {
                     📊 {{ billingTypeLabels[1] }}
                   } @else {
                     📄 {{ billingTypeLabels[0] }}
@@ -103,65 +162,61 @@
                 </span>
               </td>
 
-              <!-- NUEVA COLUMNA: PERÍODO -->
-              <td class="invoices-td">
-                @if (isInvoiceProportional(invoice)) {
-                  <span class="invoices-proportional-period" [title]="getProportionalDays(invoice)">
-                    {{ getProportionalPeriod(invoice) }}
+              <!-- PERÍODO -->
+              <td>
+                @if (invoiceUtilsService.isInvoiceProportional(invoice)) {
+                  <span class="proportional-period" [title]="invoiceUtilsService.getProportionalDays(invoice)">
+                    {{ invoiceUtilsService.getProportionalPeriod(invoice) }}
                   </span>
                 } @else {
-                  <span class="invoices-normal-period">Mes completo</span>
+                  <span class="normal-period">Mes completo</span>
                 }
               </td>
 
-              <!-- NUEVA COLUMNA: MES CORRESPONDENCIA -->
-              <td class="invoices-td">
-                <span class="invoices-corresponding-month">
-                  {{ getCorrespondingMonthDisplay(invoice) }}
+              <!-- MES CORRESPONDENCIA -->
+              <td>
+                <span class="corresponding-month">
+                  {{ invoiceUtilsService.getCorrespondingMonthDisplay(invoice) }}
                 </span>
               </td>
 
-              <!--COLUMNA: ESTADO DE PAGO -->
-              <td class="invoices-td">
+              <!-- ESTADO DE PAGO -->
+              <td>
                 @if (!isEditingCollection(invoice.id!)) {
-                  <!-- Modo visualización -->
                   <div class="collection-status-container">
                     <span
-                      [ngClass]="invoice.collection_status === 'collected' ? 'invoices-paid-badge' : 'invoices-pending-badge'"
+                      [ngClass]="invoice.collection_status === 'collected' ? 'paid-badge' : 'pending-badge'"
                       (click)="toggleCollectionStatus(invoice)"
                       title="Clic para cambiar estado">
                       {{ collectionStatusLabels[invoice.collection_status || 'pending'] }}
                     </span>
                     <button
-                      class="invoices-btn-edit-payment"
+                      class="edit-payment-btn"
                       (click)="startEditingCollection(invoice)"
                       title="Editar detalles">
                       ✏️
                     </button>
                   </div>
                 } @else {
-                  <!-- Modo edición -->
                   <select
                     [(ngModel)]="editingCollection[invoice.id!].collection_status"
-                    class="collection-select">
+                    class="form-input collection-select">
                     <option value="pending">Pendiente</option>
                     <option value="paid">Pagado</option>
                   </select>
                 }
               </td>
 
-              <!--NUEVA COLUMNA: MÉTODO DE PAGO -->
-              <td class="invoices-td">
+              <!-- PAGO -->
+              <td>
                 @if (!isEditingCollection(invoice.id!)) {
-                  <!-- Modo visualización -->
                   <span class="collection-method-display">
                     {{ collectionMethodLabels[invoice.collection_method || 'transfer'] }}
                   </span>
                 } @else {
-                  <!-- Modo edición -->
                   <select
                     [(ngModel)]="editingCollection[invoice.id!].collection_method"
-                    class="collection-select">
+                    class="form-input collection-select">
                     <option value="transfer">Transferencia</option>
                     <option value="direct_debit">Domiciliado</option>
                     <option value="cash">Efectivo</option>
@@ -170,50 +225,45 @@
                 }
               </td>
 
-              <!--  COLUMNA: FECHA DE PAGO -->
-              <td class="invoices-td">
+              <!-- FECHA DE PAGO -->
+              <td>
                 @if (!isEditingCollection(invoice.id!)) {
-                  <!-- Modo visualización -->
                   <span class="collection-date-display">
-                    {{ invoice.invoice_date ? (invoice.collection_date! | dataFormat) : '-' }}
+                    {{ invoice.collection_date ? (invoice.collection_date! | dataFormat) : '-' }}
                   </span>
                 } @else {
-                  <!-- Modo edición -->
                   <input
                     type="date"
                     [(ngModel)]="editingCollection[invoice.id!].collection_date"
-                    class="collection-date-input">
+                    class="form-input collection-date-input">
                 }
               </td>
 
-              <!-- Badge de devolución (columna existente) -->
-              <td class="invoices-td">
-                <span [ngClass]="invoice.is_refund === 1 ? 'invoices-refund-badge' : 'invoices-no-refund'">
-                  {{ invoice.is_refund === 1 ? 'Sí' : 'No' }}
-                </span>
+              <!-- ABONOS -->
+              <td>
+                @if (invoice.is_refund === 1) {
+                  <span class="status-abonado">Abonado</span>
+                }
               </td>
 
-              <!-- Factura original (columna existente) -->
-              <td class="invoices-td invoices-original">{{ invoice.original_invoice_number || '-' }}</td>
+              <!-- FACTURA ORIGINAL -->
+              <td class="original-cell">{{ invoice.original_invoice_number || '-' }}</td>
 
-              <!-- ✅ ACCIONES ACTUALIZADAS -->
-              <td class="invoices-td">
+              <!-- ACCIONES -->
+              <td>
                 @if (!isEditingCollection(invoice.id!)) {
-                  <!-- Botones normales -->
-                  <button class="invoices-btn-pdf" (click)="downloadPdf(invoice.id!)">📄 PDF</button>
-                  <button class="invoices-btn-pay" (click)="openRefundModal(invoice)">💰 Abonar</button>
-                  <button class="invoices-btn-edit" (click)="editInvoice(invoice.id!)">✏️ Editar</button>
-                  <!--<button class="invoices-btn-delete" (click)="delete(invoices.id!)">Eliminar</button>-->
+                  <button class="action-btn pdf-btn" (click)="downloadPdf(invoice.id!)">📄 PDF</button>
+                  <button class="action-btn pay-btn" (click)="openRefundModal(invoice)">💰 Abonar</button>
+                  <button class="action-btn edit-btn" (click)="editInvoice(invoice.id!)">✏️ Editar</button>
                 } @else {
-                  <!-- Botones de guardar/cancelar -->
                   <button
-                    class="invoices-btn-save"
+                    class="action-btn save-btn"
                     (click)="saveCollectionChanges(invoice.id!)"
                     title="Guardar cambios">
                     ✅ Guardar
                   </button>
                   <button
-                    class="invoices-btn-cancel"
+                    class="action-btn cancel-btn"
                     (click)="cancelEditingCollection(invoice.id!)"
                     title="Cancelar">
                     ❌ Cancelar
@@ -223,28 +273,84 @@
             </tr>
           }
         } @else {
-          <!-- Estado cuando no hay facturas -->
           <tr>
-            <td colspan="20" class="invoices-no-data">
-              <div class="invoices-empty-state">
-                <div class="invoices-empty-icon">📄</div>
-                <h3 class="invoices-empty-title">Sin facturas</h3>
-                <p class="invoices-empty-text">
-                  No hay facturas disponibles en este momento.
-                </p>
-                <button class="invoices-btn-create" (click)="createNewInvoice()" type="button">
+            <td colspan="19" class="no-data">
+              <div class="empty-state">
+                <p>No se encontraron facturas</p>
+                <button class="new-client-btn" (click)="createNewInvoice()">
                   + Nueva Factura
                 </button>
               </div>
             </td>
           </tr>
         }
-
       </tbody>
+
     </table>
   </div>
 
-  <!-- Modal de Abonos (mantiene igual) -->
+
+  <!-- Paginación -->
+  @if (paginationResult.totalPages > 1) {
+    <div class="pagination-container">
+
+      <!-- Información de resultados -->
+      <div class="pagination-info">
+        {{ getPaginationText() }}
+      </div>
+
+      <!-- Controles de paginación -->
+      <div class="pagination-controls">
+
+        <!-- Botón anterior -->
+        <button
+          class="pagination-btn"
+          [class.disabled]="!paginationResult.hasPrevious"
+          (click)="previousPage()"
+          [disabled]="!paginationResult.hasPrevious"
+        >
+          ‹ Anterior
+        </button>
+
+        <!-- Números de página -->
+        @for (page of getVisiblePages(); track page) {
+          <button
+            class="pagination-btn"
+            [class.active]="page === paginationConfig.currentPage"
+            (click)="goToPage(page)"
+          >
+            {{ page }}
+          </button>
+        }
+
+        <!-- Puntos suspensivos si hay más páginas -->
+        @if (paginationResult.totalPages > 5 && paginationConfig.currentPage < paginationResult.totalPages - 2) {
+          <span class="pagination-dots">...</span>
+        }
+
+        <!-- Última página -->
+        @if (paginationResult.totalPages > 5 && paginationConfig.currentPage < paginationResult.totalPages - 2) {
+          <button
+            class="pagination-btn"
+            (click)="goToPage(paginationResult.totalPages)"
+          >
+            {{ paginationResult.totalPages }}
+          </button>
+        }
+        <!-- Botón siguiente -->
+        <button
+          class="pagination-btn"
+          [class.disabled]="!paginationResult.hasNext"
+          (click)="nextPage()"
+          [disabled]="!paginationResult.hasNext"
+        >
+          Siguiente ›
+        </button>
+
+      </div>
+    </div>
+  }
+  <!-- Modal de Abonos -->
   @if (showRefundModal) {
     <div class="modal-overlay" (click)="closeRefundModal()">
       <div class="modal-content" (click)="$event.stopPropagation()">
@@ -259,29 +365,31 @@
           <p><strong>Total:</strong> {{ selectedInvoice?.total | currency:'EUR':'symbol':'1.2-2' }}</p>
 
           <form (ngSubmit)="saveRefund()">
-            <div class="form-group">
-              <label>Monto del Abono (€) *</label>
+            <div class="form-field">
+              <label class="form-label">Monto del Abono (€) *</label>
               <input
                 type="number"
                 [(ngModel)]="newRefund.amount"
                 name="amount"
                 step="0.01"
                 min="0.01"
+                class="form-input"
                 required>
             </div>
 
-            <div class="form-group">
-              <label>Fecha *</label>
+            <div class="form-field">
+              <label class="form-label">Fecha *</label>
               <input
                 type="date"
                 [(ngModel)]="newRefund.invoice_date"
                 name="bill_date"
+                class="form-input"
                 required>
             </div>
 
-            <div class="form-group">
-              <label>Método de Pago (referencia)</label>
-              <select [(ngModel)]="newRefund.collection_method" name="collection_method">
+            <div class="form-field">
+              <label class="form-label">Método de Pago (referencia)</label>
+              <select [(ngModel)]="newRefund.collection_method" name="collection_method" class="form-input">
                 <option value="transfer">Transferencia</option>
                 <option value="cash">Efectivo</option>
                 <option value="card">Tarjeta</option>
@@ -289,21 +397,22 @@
               </select>
             </div>
 
-            <div class="form-group">
-              <label>Concepto del Abono</label>
+            <div class="form-field">
+              <label class="form-label">Concepto del Abono</label>
               <textarea
                 [(ngModel)]="newRefund.concept"
                 name="concept"
                 rows="3"
-                placeholder="Abono por...">
+                placeholder="Abono por..."
+                class="form-input">
               </textarea>
             </div>
 
             <div class="modal-buttons">
-              <button type="button" class="btn-cancel" (click)="closeRefundModal()">
+              <button type="button" class="secondary-btn" (click)="closeRefundModal()">
                 Cancelar
               </button>
-              <button type="submit" class="btn-save">
+              <button type="submit" class="primary-btn">
                 Guardar Abono
               </button>
             </div>

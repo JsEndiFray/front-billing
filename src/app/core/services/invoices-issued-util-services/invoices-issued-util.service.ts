@@ -131,4 +131,72 @@ export class InvoicesIssuedUtilService {
   }
 
 
+
+  /**
+   * Determina si una factura es proporcional
+   */
+  isInvoiceProportional(invoice: Invoice): boolean {
+    return invoice.is_proportional === 1;
+  }
+
+
+  /**
+   * Genera la descripción del período para facturas proporcionales
+   */
+  getProportionalPeriod(invoice: Invoice): string {
+    if (!this.isInvoiceProportional(invoice)) {
+      return '-';
+    }
+
+    if (invoice.start_date && invoice.end_date) {
+      const startDate = new Date(invoice.start_date);
+      const endDate = new Date(invoice.end_date);
+
+      const startFormatted = `${startDate.getDate().toString().padStart(2, '0')}/${(startDate.getMonth() + 1).toString().padStart(2, '0')}`;
+      const endFormatted = `${endDate.getDate().toString().padStart(2, '0')}/${(endDate.getMonth() + 1).toString().padStart(2, '0')}`;
+
+      return `${startFormatted} al ${endFormatted}`;
+    }
+
+    return 'Sin período';
+  }
+
+  /**
+   * Formatea el mes de correspondencia para mostrar
+   */
+  getCorrespondingMonthDisplay(invoice: Invoice): string {
+    if (!invoice.corresponding_month) {
+      return '-';
+    }
+
+    const [year, month] = invoice.corresponding_month.split('-');
+    const monthNames = [
+      'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+      'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+    ];
+
+    const monthName = monthNames[parseInt(month, 10) - 1];
+    return `${monthName} ${year}`;
+  }
+
+
+  /**
+   * Calcula los días facturados para facturas proporcionales
+   */
+  getProportionalDays(invoice: Invoice): string {
+    if (!this.isInvoiceProportional(invoice) || !invoice.start_date || !invoice.end_date) {
+      return '-';
+    }
+
+    const startDate = new Date(invoice.start_date);
+    const endDate = new Date(invoice.end_date);
+    const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+    return `${diffDays} días`;
+  }
+
+
+
+
 }

@@ -1,71 +1,84 @@
-/* Contenedor principal */
-.invoices-wrapper {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  margin: 2rem auto;
-  width: 100%;
-  max-width: 100%;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-  overflow-x: auto;
-}
-
-/* Título principal */
-.invoices-title {
-  color: #1f2937;
-  font-size: 2rem;
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-/* ========================================
-   SECCIÓN DE BÚSQUEDA
-   ======================================== */
-
-/* Contenedor de búsqueda */
-.invoices-search-container {
-  margin-bottom: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-/* Wrapper del campo de búsqueda */
-.invoices-search-wrapper {
-  position: relative;
-  max-width: 32rem;
-  margin: 0 auto;
-  width: 100%;
-}
-
-/* Campo de búsqueda */
-.invoices-search-input {
-  width: 100%;
-  padding: 0.75rem 3rem 0.75rem 1rem;
-  border: 0.125rem solid #e5e7eb;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  color: #374151;
-  background: #ffffff;
-  transition: all 0.2s ease;
+/* Reset y estilos base */
+* {
   box-sizing: border-box;
 }
 
-/* Estado focus del campo de búsqueda */
-.invoices-search-input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 0.1875rem rgba(59, 130, 246, 0.1);
+/* Contenedor principal */
+.container {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin: 0 auto;
+  width: 100%;
+  max-width: auto;
+  box-shadow: 0 0.25rem 0.375rem -0.0625rem rgba(0, 0, 0, 0.1);
 }
 
-/* Placeholder del campo de búsqueda */
-.invoices-search-input::placeholder {
+/* Título y descripción  */
+.header {
+  margin-bottom: 2rem;
+}
+
+.title {
+  color: #1f2937;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.subtitle {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* Sección de filtros  */
+.filters-section {
+  background: #f9fafb;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* Buscador  */
+.search-container {
+  flex: 1;
+  min-width: 18.75rem;
+}
+
+.search-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.625rem 1rem;
+  border: 0.125rem solid #e5e7eb;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  color: #374151;
+  background: #ffffff;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.search-input::placeholder {
   color: #9ca3af;
 }
 
-/* Contenedor de acciones de búsqueda */
-.invoices-search-actions {
+
+
+/* Contenedor de iconos */
+.search-actions {
   position: absolute;
   right: 0.75rem;
   top: 50%;
@@ -74,16 +87,14 @@
   align-items: center;
   gap: 0.5rem;
 }
-
 /* Icono de búsqueda */
-.invoices-search-icon {
+.search-icon {
   color: #6b7280;
   font-size: 0.875rem;
   pointer-events: none;
 }
-
 /* Botón limpiar búsqueda */
-.invoices-clear-button {
+.clear-button {
   background: #f3f4f6;
   border: none;
   border-radius: 50%;
@@ -96,187 +107,169 @@
   color: #6b7280;
   font-size: 0.75rem;
   transition: all 0.2s ease;
-  pointer-events: auto;
 }
 
-/* Hover del botón limpiar */
-.invoices-clear-button:hover {
+.clear-button:hover {
   background: #e5e7eb;
   color: #374151;
 }
 
-/* Información de resultados de búsqueda */
-.invoices-search-results {
-  text-align: center;
-  color: #6b7280;
-  font-size: 0.75rem;
-  font-weight: 500;
+
+/* Contenedor de filtros */
+.filters-container {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
-/* ========================================
-   BOTONES PRINCIPALES
-   ======================================== */
+/* Selectores de filtro */
+.filter-select {
+  padding: 0.625rem 0.75rem;
+  border: 0.125rem solid #e5e7eb;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  color: #374151;
+  background: #ffffff;
+  cursor: pointer;
+  min-width: 10rem;
+  transition: border-color 0.2s;
+}
 
-/* Botón nueva factura */
-.invoices-btn-new {
-  background: #3b82f6;
-  color: white;
+.filter-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+/* Botones de acción */
+.actions-container {
+  display: flex;
+  gap: 0.75rem;
+  margin-left: auto;
+}
+
+.export-btn,
+.new-invoice-btn {
+  padding: 0.625rem 1rem;
   border: none;
   border-radius: 0.375rem;
-  padding: 0.5rem 1rem;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  margin: 0.75rem auto 1.5rem auto;
-  display: block;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
 }
-
-/* Hover del botón nueva factura */
-.invoices-btn-new:hover {
-  background: #2563eb;
-}
-
-/* ========================================
-   TABLA PRINCIPAL
-   ======================================== */
-
-/* Contenedor de la tabla */
-.invoices-table-container {
-  overflow-x: auto;
-}
-
-/* Tabla principal - ACTUALIZADA PARA 17 COLUMNAS */
-.invoices-table {
-  width: 100%;
-  min-width: 120rem; /* ✅ AUMENTADO para nuevas columnas de pago */
-  border-collapse: separate;
-  border-spacing: 0;
+.export-btn {
   background: #ffffff;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  border: 0.0625rem solid #e5e7eb;
+  color: #374151;
+  border: 0.125rem solid #e5e7eb;
 }
 
-/* Cabecera de la tabla */
-.invoices-table-head {
+.export-btn:hover {
   background: #f9fafb;
 }
 
-/* Celdas de encabezado */
-.invoices-th {
-  padding: 0.75rem 0.5rem;
-  color: #374151;
-  font-weight: 600;
+.new-invoice-btn {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+.new-invoice-btn:hover {
+  background: #2563eb;
+}
+
+/* Contenedor de tabla (igual que otros componentes) */
+.table-container {
+  background: #ffffff;
+  border: 0.0625rem solid #e5e7eb;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+/* Tabla (igual que otros componentes) */
+.clients-table {
+  width: 100%;
+  min-width: 120rem; /* Tabla amplia para todas las columnas */
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+/* Cabecera de la tabla */
+.clients-table thead {
+  background: #f9fafb;
+}
+
+.clients-table th {
+  padding: 0.75rem 1rem;
   text-align: left;
-  font-size: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   border-bottom: 0.0625rem solid #e5e7eb;
   white-space: nowrap;
 }
 
-/* ========================================
-   DISTRIBUCIÓN DE COLUMNAS - ACTUALIZADA
-   ======================================== */
-
-th:nth-child(1) { width: auto; }      /* ID */
-th:nth-child(2) { width: auto; }      /* Nº Factura */
-th:nth-child(3) { width: auto; }     /* Propiedad */
-th:nth-child(4) { width: auto; }      /* Cliente */
-th:nth-child(5) { width: auto; }      /* Propietario */
-/*th:nth-child(6) { width: 3%; }      !* % *!*/
-th:nth-child(6) { width: auto; }      /* Fecha */
-th:nth-child(7) { width: 4%; }      /* Base Imponible */
-th:nth-child(8) { width: 4%; }      /* IVA */
-th:nth-child(9) { width: 4%; }     /* IRPF */
-th:nth-child(10) { width: 5%; }     /* Total */
-th:nth-child(11) { width: 10%; }     /*Tipo de Factura*/
-th:nth-child(12) { width: 8%; }     /*Perido*/
-th:nth-child(13) { width: auto; }     /*Mes Correspondiente*/
-th:nth-child(14) { width: auto; }     /* Estado Pago */
-th:nth-child(15) { width: auto; }     /* Método Pago */
-th:nth-child(16) { width: auto; }     /* Fecha Pago */
-th:nth-child(17) { width: auto; }     /* Abonos */
-th:nth-child(18) { width: auto; }     /* F. Abonada */
-th:nth-child(19) { width: 12%; }    /* Acciones */
-
-/* ========================================
-   FILAS Y CELDAS DE DATOS
-   ======================================== */
-
-/* Cuerpo de la tabla */
-.invoices-table-body {
-  background: #ffffff;
+/* Celdas de datos */
+.clients-table td {
+  padding: 0.75rem 1rem;
+  color: #374151;
+  border-bottom: 0.0625rem solid #f3f4f6;
+  font-size: 0.875rem;
 }
 
-/* Filas de datos */
-.invoices-table-row:hover .invoices-td {
+/* Hover de filas */
+.clients-table tbody tr:hover {
   background: #f9fafb;
 }
 
-.invoices-table-row:last-child .invoices-td {
+/* Última fila sin borde */
+.clients-table tbody tr:last-child td {
   border-bottom: none;
 }
 
-/* Celdas de datos */
-.invoices-td {
-  padding: 0.75rem 0.5rem;
-  border-bottom: 0.0625rem solid #f3f4f6;
-  color: #374151;
-  font-size: 0.75rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 0;
-}
-
 /* ========================================
-   ESTILOS ESPECÍFICOS POR TIPO DE CELDA
+   CELDAS ESPECIALES PARA FACTURAS
    ======================================== */
 
-/* Estilo especial para número de factura */
-.invoices-invoices-number {
-  color: #3b82f6;
+/* Número de factura */
+.invoice-number-cell {
+  color: #6366f1;
   font-weight: 600;
   font-family: 'Courier New', monospace;
 }
 
-/* Estilo especial para cliente */
-.invoices-client {
+/* Cliente */
+.client-cell {
   color: #6366f1;
   font-weight: 500;
 }
 
-/* Estilo especial para propietario */
-.invoices-owner {
+/* Propietario */
+.owner-cell {
   color: #0891b2;
   font-weight: 500;
 }
 
-/* Estilo especial para porcentaje */
-.invoices-percentage {
-  color: #f59e0b;
-  font-weight: 600;
-  text-align: center;
-}
-
-/* Estilo especial para campos monetarios */
-.invoices-currency {
-  color: #059669;
+/* Campos monetarios */
+.currency-cell {
+  color: #10b981;
   font-weight: 600;
   text-align: right;
   font-family: 'Courier New', monospace;
 }
 
-/* Estilo especial para impuestos */
-.invoices-tax {
+/* Impuestos */
+.tax-cell {
   color: #f59e0b;
   font-weight: 600;
   text-align: center;
   font-family: 'Courier New', monospace;
 }
 
-/* Estilo especial para total */
-.invoices-total {
-  color: #059669;
+/* Total */
+.total-cell {
+  color: #10b981;
   font-weight: 700;
   text-align: right;
   font-family: 'Courier New', monospace;
@@ -284,43 +277,86 @@ th:nth-child(19) { width: 12%; }    /* Acciones */
   border-radius: 0.25rem;
 }
 
-/* Estilo especial para factura original */
-.invoices-original {
+/* Factura original */
+.original-cell {
   color: #6b7280;
   font-family: 'Courier New', monospace;
   text-align: center;
 }
 
 /* ========================================
-   BADGES Y ESTADOS
+   BADGES PARA TIPOS DE FACTURACIÓN
    ======================================== */
 
-/* Badge de devolución - Sí */
-.invoices-refund-badge {
-  background: #ef4444;
-  color: white;
+/* Badge proporcional */
+.proportional-badge {
+  background: linear-gradient(135deg, #ddd6fe, #c4b5fd);
+  color: #6b21a8;
+  font-weight: 700;
+  font-size: 0.75rem;
   padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  font-size: 0.6875rem;
-  font-weight: 600;
+  border-radius: 0.375rem;
+  border: 1px solid #a855f7;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
   white-space: nowrap;
-  display: inline-block;
 }
 
-/* Badge de devolución - No */
-.invoices-no-refund {
-  background: #10b981;
-  color: white;
+/* Badge normal */
+.normal-badge {
+  background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+  color: #0c4a6e;
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  border: 1px solid #0284c7;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
+
+/* Período proporcional */
+.proportional-period {
+  color: #dc2626;
+  font-weight: 700;
+  font-size: 0.75rem;
+  background: linear-gradient(45deg, #fef2f2, #fee2e2);
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
-  font-size: 0.6875rem;
+  border: 1px solid #fca5a5;
+  font-family: 'Courier New', monospace;
+  cursor: help;
+}
+
+/* Período normal */
+.normal-period {
+  color: #059669;
   font-weight: 600;
-  white-space: nowrap;
-  display: inline-block;
+  font-size: 0.75rem;
+  background: linear-gradient(45deg, #f0fdf4, #dcfce7);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #86efac;
+  font-family: 'Courier New', monospace;
+}
+
+/* Mes correspondiente */
+.corresponding-month {
+  color: #6366f1;
+  font-weight: 600;
+  font-size: 0.75rem;
+  background: linear-gradient(45deg, #eef2ff, #e0e7ff);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #a5b4fc;
+  font-family: 'Courier New', monospace;
 }
 
 /* ========================================
-   ESTILOS PARA GESTIÓN DE PAGOS - NUEVOS
+   GESTIÓN DE PAGOS
    ======================================== */
 
 /* Contenedor de estado de pago */
@@ -331,8 +367,8 @@ th:nth-child(19) { width: 12%; }    /* Acciones */
   justify-content: center;
 }
 
-/* Badge de estado pagado */
-.invoices-paid-badge {
+/* Badge pagado */
+.paid-badge {
   background: #10b981;
   color: white;
   padding: 0.25rem 0.5rem;
@@ -340,20 +376,19 @@ th:nth-child(19) { width: 12%; }    /* Acciones */
   font-size: 0.6875rem;
   font-weight: 600;
   white-space: nowrap;
-  display: inline-block;
   cursor: pointer;
   transition: all 0.2s ease;
   min-width: 60px;
   text-align: center;
 }
 
-.invoices-paid-badge:hover {
+.paid-badge:hover {
   background: #059669;
   transform: scale(1.05);
 }
 
-/* Badge de estado pendiente */
-.invoices-pending-badge {
+/* Badge pendiente */
+.pending-badge {
   background: #f59e0b;
   color: white;
   padding: 0.25rem 0.5rem;
@@ -361,20 +396,19 @@ th:nth-child(19) { width: 12%; }    /* Acciones */
   font-size: 0.6875rem;
   font-weight: 600;
   white-space: nowrap;
-  display: inline-block;
   cursor: pointer;
   transition: all 0.2s ease;
   min-width: 60px;
   text-align: center;
 }
 
-.invoices-pending-badge:hover {
+.pending-badge:hover {
   background: #d97706;
   transform: scale(1.05);
 }
 
-/* Botón de editar pago */
-.invoices-btn-edit-payment {
+/* Botón editar pago */
+.edit-payment-btn {
   background: none;
   border: none;
   cursor: pointer;
@@ -385,47 +419,20 @@ th:nth-child(19) { width: 12%; }    /* Acciones */
   opacity: 0.7;
 }
 
-.invoices-btn-edit-payment:hover {
+.edit-payment-btn:hover {
   opacity: 1;
   background: #f3f4f6;
 }
 
-/* Selectores de pago */
+/* Selectores de edición */
 .collection-select {
-  width: 100%;
   max-width: 100px;
-  padding: 0.25rem 0.375rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.25rem;
   font-size: 0.6875rem;
-  color: #374151;
-  background: white;
-  transition: border-color 0.15s ease;
 }
 
-.collection-select:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 0.125rem rgba(59, 130, 246, 0.1);
-}
-
-/* Input de fecha de pago */
 .collection-date-input {
-  width: 100%;
   max-width: 120px;
-  padding: 0.25rem 0.375rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.25rem;
   font-size: 0.6875rem;
-  color: #374151;
-  background: white;
-  transition: border-color 0.15s ease;
-}
-
-.collection-date-input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 0.125rem rgba(59, 130, 246, 0.1);
 }
 
 /* Texto de visualización */
@@ -435,213 +442,142 @@ th:nth-child(19) { width: 12%; }    /* Acciones */
   font-size: 0.6875rem;
   font-weight: 500;
   text-align: center;
-  display: block;
-  width: 100%;
-}
-
-/* Alineación de columnas de pago */
-.invoices-td:nth-child(12), /* Estado Pago */
-.invoices-td:nth-child(13), /* Método Pago */
-.invoices-td:nth-child(14) { /* Fecha Pago */
-  text-align: center;
-  vertical-align: middle;
-}
-
-/* Efectos hover para celdas de pago */
-.invoices-table-row:hover .payment-status-container {
-  opacity: 1;
-}
-
-.invoices-table-row .payment-status-container {
-  opacity: 0.9;
-  transition: opacity 0.2s ease;
-}
-
-/* Estados especiales para celdas de pago */
-.invoices-td:nth-child(12):has(.invoices-paid-badge) {
-  background: linear-gradient(45deg, #f0fdf4, #ecfdf5);
-}
-
-.invoices-td:nth-child(12):has(.invoices-pending-badge) {
-  background: linear-gradient(45deg, #fffbeb, #fef3c7);
 }
 
 /* ========================================
-   BOTONES DE ACCIÓN
+   BADGES DE ABONOS
    ======================================== */
 
-/* Botones de acción en tabla */
-.invoices-btn-edit,
-.invoices-btn-delete {
+/* ESTILO NUEVO PARA "ABONADO" */
+.status-abonado {
+  background-color: #fee2e2; /* Un fondo rojo claro */
+  color: #b91c1c; /* Un texto rojo oscuro */
   padding: 0.25rem 0.5rem;
-  margin: 0 0.125rem;
-  border: none;
   border-radius: 0.25rem;
   font-size: 0.6875rem;
-  font-weight: 500;
+  font-weight: 600;
+  white-space: nowrap;
+  border: 1px solid #fca5a5; /* Un borde rojo suave */
+}
+
+/* Badge abono sí */
+.refund-badge{
+  background: #ef4444;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ========================================
+   BOTONES DE ACCIÓN EN TABLA
+   ======================================== */
+
+.action-btn {
+  padding: 0.375rem 0.75rem;
+  margin: 0 0.25rem;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 50;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
 }
 
 /* Botón PDF */
-.invoices-btn-pdf {
+.pdf-btn {
   background: #3c71c6;
   color: white;
-  padding: 0.25rem 0.5rem;
-  margin: 0 0.125rem;
-  border: none;
-  border-radius: 0.25rem;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-.invoices-btn-pdf:hover {
+.pdf-btn:hover {
   background: #2563eb;
 }
 
-/* Botón editar */
-.invoices-btn-edit {
-  background: #059669;
-  color: white;
-}
-
-.invoices-btn-edit:hover {
-  background: #047857;
-}
-
-/* Botón eliminar */
-.invoices-btn-delete {
-  background: #ef4444;
-  color: white;
-}
-
-.invoices-btn-delete:hover {
-  background: #dc2626;
-}
-
-/* Botón de abono */
-.invoices-btn-pay {
+/* Botón pago */
+.pay-btn {
   background: #28a745;
   color: white;
-  padding: 0.25rem 0.5rem;
-  margin: 0 0.125rem;
-  border: none;
-  border-radius: 0.25rem;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-.invoices-btn-pay:hover {
+.pay-btn:hover {
   background: #218838;
 }
 
-/* Botones de guardar/cancelar para edición de pagos */
-.invoices-btn-save {
+/* Botón editar */
+.edit-btn {
+  background: #fbbf24;
+  color: white;
+}
+
+.edit-btn:hover {
+  background: #f59e0b;
+}
+
+/* Botón guardar */
+.save-btn {
   background: #10b981;
   color: white;
-  padding: 0.25rem 0.5rem;
-  margin: 0 0.125rem;
-  border: none;
-  border-radius: 0.25rem;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
   display: block;
   width: 100%;
   margin-bottom: 0.25rem;
 }
 
-.invoices-btn-save:hover {
+.save-btn:hover {
   background: #059669;
 }
 
-.invoices-btn-cancel {
+/* Botón cancelar */
+.cancel-btn {
   background: #6b7280;
   color: white;
-  padding: 0.25rem 0.5rem;
-  margin: 0 0.125rem;
-  border: none;
-  border-radius: 0.25rem;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
   display: block;
   width: 100%;
 }
 
-.invoices-btn-cancel:hover {
+.cancel-btn:hover {
   background: #4b5563;
 }
 
 /* ========================================
-   ESTADO SIN DATOS
+   ESTADO VACÍO
    ======================================== */
 
-/* Estado sin datos */
-.invoices-no-data {
+.no-data {
   text-align: center;
-  padding: 3rem;
+  padding: 3rem 1.5rem;
 }
 
-/* Tarjeta de estado vacío */
-.invoices-empty-state {
-  background: #f9fafb;
-  border: 0.0625rem solid #e5e7eb;
-  border-radius: 0.5rem;
-  padding: 2rem;
-  max-width: 25rem;
-  margin: 0 auto;
+.empty-state {
+  color: #6b7280;
 }
 
-/* Icono de estado vacío */
-.invoices-empty-icon {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  opacity: 0.7;
+.empty-state p {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
 }
+/*
 
-/* Título de estado vacío */
-.invoices-empty-title {
-  color: #1f2937;
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-}
+!* ========================================
+   INFORMACIÓN DE RESULTADOS
+   ======================================== *!
 
-/* Texto de estado vacío */
-.invoices-empty-text {
+.search-results-info {
+  text-align: center;
   color: #6b7280;
   font-size: 0.875rem;
-  line-height: 1.5;
-  margin: 0 0 1.5rem 0;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 0.0625rem solid #e5e7eb;
 }
+*/
 
-/* Botón crear en estado vacío */
-.invoices-btn-create {
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 0.375rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
+/* ========================================
+   MODAL DE ABONOS
+   ======================================== */
 
-.invoices-btn-create:hover {
-  background: #2563eb;
-}
-
-/* MODAL DE ABONOS*/
-
-/* Modal overlay */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -656,7 +592,6 @@ th:nth-child(19) { width: 12%; }    /* Acciones */
   backdrop-filter: blur(2px);
 }
 
-/* Contenido del modal */
 .modal-content {
   background: white;
   border-radius: 0.75rem;
@@ -664,8 +599,66 @@ th:nth-child(19) { width: 12%; }    /* Acciones */
   max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
   animation: modalAppear 0.2s ease-out;
+}
+
+
+/* Paginación */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 0.0625rem solid #e5e7eb;
+}
+
+.pagination-info {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pagination-btn {
+  padding: 0.5rem 0.75rem;
+  border: 0.0625rem solid #e5e7eb;
+  border-radius: 0.375rem;
+  background: #ffffff;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 2.5rem;
+}
+
+.pagination-btn:hover:not(.disabled) {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.pagination-btn.active {
+  background: #3b82f6;
+  color: #ffffff;
+  border-color: #3b82f6;
+}
+
+.pagination-btn.disabled {
+  color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.pagination-dots {
+  color: #9ca3af;
+  font-weight: 500;
+  padding: 0 0.5rem;
 }
 
 @keyframes modalAppear {
@@ -679,7 +672,6 @@ th:nth-child(19) { width: 12%; }    /* Acciones */
   }
 }
 
-/* Header del modal */
 .modal-header {
   background: #f8f9fa;
   padding: 1.25rem 1.5rem;
@@ -718,7 +710,6 @@ th:nth-child(19) { width: 12%; }    /* Acciones */
   color: #495057;
 }
 
-/* Cuerpo del modal */
 .modal-body {
   padding: 1.5rem;
 }
@@ -733,44 +724,37 @@ th:nth-child(19) { width: 12%; }    /* Acciones */
   color: #343a40;
 }
 
-/* Grupos de formulario en modal */
-.form-group {
+/* Campos del modal usando estilos consistentes */
+.form-field {
+  display: flex;
+  flex-direction: column;
   margin-bottom: 1.25rem;
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #495057;
-  font-weight: 500;
+.form-label {
+  color: #374151;
   font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.375rem;
 }
 
-.form-group input,
-.form-group select,
-.form-group textarea {
-  width: 100%;
+.form-input {
   padding: 0.625rem 0.75rem;
-  border: 1px solid #ced4da;
+  border: 0.125rem solid #e5e7eb;
   border-radius: 0.375rem;
   font-size: 0.875rem;
-  color: #495057;
-  background: white;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  box-sizing: border-box;
+  color: #374151;
+  background: #ffffff;
+  transition: border-color 0.2s;
 }
 
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
+.form-input:focus {
   outline: none;
-  border-color: #80bdff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  border-color: #3b82f6;
 }
 
-.form-group textarea {
-  resize: vertical;
-  min-height: 3rem;
+.form-input::placeholder {
+  color: #9ca3af;
 }
 
 /* Botones del modal */
@@ -783,225 +767,116 @@ th:nth-child(19) { width: 12%; }    /* Acciones */
   border-top: 1px solid #dee2e6;
 }
 
-.btn-cancel {
-  background: #6c757d;
-  color: white;
+/* Botones principales (estilo igual a otros componentes) */
+.primary-btn {
+  background: #3b82f6;
+  color: #ffffff;
   border: none;
-  padding: 0.625rem 1.25rem;
   border-radius: 0.375rem;
+  padding: 0.625rem 1rem;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
 }
 
-.btn-cancel:hover {
-  background: #5a6268;
+.primary-btn:hover {
+  background: #2563eb;
 }
 
-.btn-save {
-  background: #28a745;
-  color: white;
-  border: none;
-  padding: 0.625rem 1.25rem;
+.secondary-btn {
+  background: #ffffff;
+  color: #374151;
+  border: 0.125rem solid #e5e7eb;
   border-radius: 0.375rem;
+  padding: 0.625rem 1rem;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
 }
 
-.btn-save:hover {
-  background: #218838;
-}
-/* ========================================
-   🆕 ESTILOS PARA FACTURAS PROPORCIONALES
-   ======================================== */
-
-/* Badges de tipo de facturación */
-.invoices-proportional-badge {
-  background: linear-gradient(135deg, #ddd6fe, #c4b5fd);
-  color: #6b21a8;
-  font-weight: 700;
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.375rem;
-  border: 1px solid #a855f7;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  white-space: nowrap;
-}
-
-.invoices-normal-badge {
-  background: linear-gradient(135deg, #e0f2fe, #bae6fd);
-  color: #0c4a6e;
-  font-weight: 600;
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.375rem;
-  border: 1px solid #0284c7;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  white-space: nowrap;
-}
-
-/* Período de facturación */
-.invoices-proportional-period {
-  color: #dc2626;
-  font-weight: 700;
-  font-size: 0.75rem;
-  background: linear-gradient(45deg, #fef2f2, #fee2e2);
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  border: 1px solid #fca5a5;
-  font-family: 'Courier New', monospace;
-  cursor: help;
-}
-
-.invoices-normal-period {
-  color: #059669;
-  font-weight: 600;
-  font-size: 0.75rem;
-  background: linear-gradient(45deg, #f0fdf4, #dcfce7);
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  border: 1px solid #86efac;
-  font-family: 'Courier New', monospace;
-}
-
-/* Mes de correspondencia */
-.invoices-corresponding-month {
-  color: #6366f1;
-  font-weight: 600;
-  font-size: 0.75rem;
-  background: linear-gradient(45deg, #eef2ff, #e0e7ff);
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  border: 1px solid #a5b4fc;
-  font-family: 'Courier New', monospace;
-}
-
-/* Hover effects */
-.invoices-proportional-badge:hover {
-  background: linear-gradient(135deg, #c4b5fd, #a78bfa);
-  transform: translateY(-1px);
-}
-
-.invoices-normal-badge:hover {
-  background: linear-gradient(135deg, #bae6fd, #93c5fd);
-  transform: translateY(-1px);
-}
-
-.invoices-proportional-period:hover {
-  background: linear-gradient(45deg, #fee2e2, #fecaca);
-  transform: translateY(-1px);
+.secondary-btn:hover {
+  background: #f9fafb;
 }
 
 /* ========================================
-   🆕 RESPONSIVE PARA NUEVAS COLUMNAS
+   RESPONSIVE
    ======================================== */
 
-/* Tablet */
-@media (max-width: 64rem) {
-  .invoices-proportional-badge,
-  .invoices-normal-badge {
-    font-size: 0.7rem;
-    padding: 0.2rem 0.4rem;
+@media (max-width: 48rem) {
+  .container {
+    padding: 1rem;
   }
 
-  .invoices-proportional-period,
-  .invoices-normal-period,
-  .invoices-corresponding-month {
-    font-size: 0.7rem;
-    padding: 0.2rem 0.4rem;
-  }
-}
-
-/* RESPONSIVE DESIGN */
-
-/* Responsive para tablet grande */
-@media (max-width: 90rem) {
-  .invoices-wrapper {
-    padding: 1.25rem;
-    margin: 1.5rem auto;
-    width: 99%;
+  .filters-section {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .invoices-search-wrapper {
-    max-width: 28rem;
+  .actions-container {
+    margin-left: 0;
   }
 
-  .invoices-search-input {
-    padding: 0.625rem 2.75rem 0.625rem 0.875rem;
-    font-size: 0.8125rem;
+  .clients-table {
+    font-size: 0.75rem;
+    min-width: 100rem;
   }
 
-  .invoices-table {
-    min-width: 110rem; /* Ajustado para nuevas columnas */
-  }
-
-  .invoices-th,
-  .invoices-td {
-    padding: 0.625rem 0.375rem;
-    font-size: 0.6875rem;
+  .clients-table th,
+  .clients-table td {
+    padding: 0.5rem 0.75rem;
   }
 
   .collection-select,
   .collection-date-input {
     font-size: 0.625rem;
-    padding: 0.1875rem 0.25rem;
     max-width: 80px;
   }
 
-  .invoices-paid-badge,
-  .invoices-pending-badge {
+  .paid-badge,
+  .pending-badge {
     font-size: 0.625rem;
-    padding: 0.1875rem 0.375rem;
     min-width: 50px;
   }
+
+  .proportional-badge,
+  .normal-badge,
+  .proportional-period,
+  .normal-period,
+  .corresponding-month {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+  }
 }
-/* Responsive para móvil */
+
 @media (max-width: 30rem) {
-  .invoices-wrapper {
+  .container {
     padding: 0.75rem;
     margin: 0.5rem auto;
   }
 
-  .invoices-title {
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
+  .title {
+    font-size: 1.5rem;
   }
 
-  .invoices-search-container {
-    margin-bottom: 1rem;
-  }
-
-  .invoices-search-input {
-    padding: 0.5rem 2.25rem 0.5rem 0.625rem;
-    font-size: 0.6875rem;
-  }
-
-  .invoices-search-input::placeholder {
-    font-size: 0.6875rem;
-  }
-
-  .invoices-search-results {
-    font-size: 0.6875rem;
-  }
-
-  .invoices-table {
+  .clients-table {
     min-width: 90rem;
+    font-size: 0.6875rem;
   }
 
-  .invoices-empty-state {
-    padding: 1.5rem;
+  .clients-table th,
+  .clients-table td {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.6875rem;
   }
 
-  .collection-method-display,
-  .collection-date-display {
-    font-size: 0.625rem;
+  .action-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.6875rem;
+    display: block;
+    width: 100%;
+    margin: 0.125rem 0;
   }
 
   .collection-select,
@@ -1009,15 +884,11 @@ th:nth-child(19) { width: 12%; }    /* Acciones */
     max-width: 70px;
   }
 
-  /* Agregar esto al final de tu CSS para móviles */
-  @media (max-width: 768px) {
-    .invoices-table-container {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch; /* ✅ Scroll suave en móviles */
-    }
+  .modal-content {
+    width: 95%;
+  }
 
-    .invoices-table {
-      min-width: 800px; /* ✅ Más pequeño en móviles */
-    }
+  .modal-buttons {
+    flex-direction: column;
   }
 }

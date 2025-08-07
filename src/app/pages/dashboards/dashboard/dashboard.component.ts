@@ -25,13 +25,17 @@ export class DashboardComponent {
   // Mapeo de rutas a títulos
   private routeTitles: { [key: string]: string } = {
     '/dashboards': 'Home',
-    '/dashboards/users/list': 'Usuarios',
-    '/dashboards/employee/list': 'Empleados',
+    '/dashboards/clients/list': 'Clientes',
     '/dashboards/owners/list': 'Propietarios',
     '/dashboards/estates/list': 'Propiedades',
     '/dashboards/estates-owners/list': 'Porcentajes',
-    '/dashboards/clients/list': 'Clientes',
-    '/dashboards/invoices-issued/list': 'Facturas'
+    //libro iva
+    '/dashboards/invoices-issued/list': 'Facturas Emitidas',
+    //facturas recibidas
+    //proveedores
+    //gastos internos
+    '/dashboards/users/list': 'Usuarios',
+    '/dashboards/employee/list': 'Empleados',
   };
 
   constructor(
