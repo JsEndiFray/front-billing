@@ -5,6 +5,7 @@
     <p class="subtitle">Administra los porcentajes de propiedad de inmuebles</p>
   </div>
 
+
   <!-- Sección de filtros y búsqueda -->
   <div class="filters-section">
 
@@ -15,14 +16,27 @@
         [(ngModel)]="searchTerm"
         (input)="onSearchChange()"
         placeholder="Buscar por propiedad, propietario o porcentaje..."
-        class="search-input"
-      >
+        class="search-input" autocomplete="of">
+
+      <!-- Iconos de búsqueda y limpiar -->
+      <div class="search-actions">
+        <span class="search-icon">🔍</span>
+        @if (searchTerm && searchTerm.trim() !== '') {
+          <button
+            type="button"
+            (click)="clearFilters()"
+            class="clear-button"
+            title="Limpiar búsqueda">
+            ✕
+          </button>
+        }
+      </div>
     </div>
 
     <!-- Botón exportar y nuevo registro -->
     <div class="actions-container">
       <button class="export-btn">Exportar</button>
-      <button class="new-client-btn" (click)="newEstateOwner()">+ Nuevo Porcentaje</button>
+      <!--<button class="new-client-btn" (click)="newEstateOwner()">+ Nuevo Porcentaje</button>-->
     </div>
 
   </div>
@@ -39,6 +53,7 @@
         <th>PROPIETARIO</th>
         <th>PORCENTAJE (%)</th>
         <th>CREADO</th>
+        <th>ACCIONES</th>
       </tr>
       </thead>
 
@@ -48,10 +63,14 @@
           @for (item of estateOwners; track item.id) {
             <tr>
               <td>#{{ item.id }}</td>
-              <td class="property-cell">{{ item.estate_name }}</td>
-              <td class="owner-cell">{{ item.owner_name }}</td>
-              <td class="percentage-cell">{{ item.ownership_percentage }}%</td>
+              <td>{{ item.estate_name }}</td>
+              <td>{{ item.owner_name }}</td>
+              <td>{{ item.ownership_percentage }}%</td>
               <td>{{ item.date_create | dataFormat }}</td>
+              <td>
+                <button class="action-btn edit-btn" (click)="editEstateOwners(item.id!)">Editar</button>
+              </td>
+
             </tr>
           }
         } @else {

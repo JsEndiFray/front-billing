@@ -7,7 +7,7 @@ import {Router} from '@angular/router';
 import Swal from 'sweetalert2';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
 import {SearchService} from '../../../core/services/shared-services/search.service';
-import {PaginationConfig, PaginationResult} from '../../../interface/pagination';
+import {PaginationConfig, PaginationResult} from '../../../interface/pagination-interface';
 import {PaginationService} from '../../../core/services/shared-services/pagination.service';
 
 /**

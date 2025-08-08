@@ -15,7 +15,7 @@ import {NgClass} from '@angular/common';
 import {SearchService} from '../../../../core/services/shared-services/search.service';
 import Swal from 'sweetalert2';
 import {CommonModule} from '@angular/common';
-import {PaginationConfig, PaginationResult} from '../../../../interface/pagination';
+import {PaginationConfig, PaginationResult} from '../../../../interface/pagination-interface';
 import {PaginationService} from '../../../../core/services/shared-services/pagination.service';
 import {
   InvoicesIssuedUtilService
@@ -213,23 +213,23 @@ export class InvoicesIssuedListComponent implements OnInit {
     }
     //filtro por estado de pagos
     if (this.selectedCollectionStatus) {
-      filtered = filtered.filter(envoice => envoice.collection_status === this.selectedCollectionStatus);
+      filtered = filtered.filter(invoice => invoice.collection_status === this.selectedCollectionStatus);
     }
     //filtro por mes o porporcional
     if (this.selectedTypeBilling !== '') {
-      filtered = filtered.filter(envoice => envoice.is_proportional === Number(this.selectedTypeBilling));
+      filtered = filtered.filter(invoice => invoice.is_proportional === Number(this.selectedTypeBilling));
     }
     //filtro facturas por propietarios
     if (this.selectedOwners) {
-      filtered = filtered.filter(envoice => envoice.owner_name === this.selectedOwners);
+      filtered = filtered.filter(invoice => invoice.owner_name === this.selectedOwners);
     }
     //filtro facturas por clientes
     if (this.selectedClients) {
-      filtered = filtered.filter(envoice => envoice.client_name === this.selectedClients);
+      filtered = filtered.filter(invoice => invoice.client_name === this.selectedClients);
     }
     // Filtro solo facturas de abono
     if(this.selectedRefundStatus !== ''){
-      filtered = filtered.filter(envoice => envoice.is_refund === Number(this.selectedRefundStatus));
+      filtered = filtered.filter(invoice => invoice.is_refund === Number(this.selectedRefundStatus));
     }
 
 

@@ -69,6 +69,54 @@
 .search-input::placeholder {
   color: #9ca3af;
 }
+.search-container{
+  position: relative;
+  width: 100%;
+}
+/* Ajustar padding del input para los iconos */
+.search-container .search-input {
+  padding-right: 3rem; /* Espacio para los iconos */
+}
+
+/* Contenedor de iconos */
+.search-actions {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Icono de búsqueda */
+.search-icon {
+  color: #6b7280;
+  font-size: 0.875rem;
+  pointer-events: none;
+}
+
+/* Botón limpiar búsqueda */
+.clear-button {
+  background: #f3f4f6;
+  border: none;
+  border-radius: 50%;
+  width: 1.25rem;
+  height: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6b7280;
+  font-size: 0.75rem;
+  transition: all 0.2s ease;
+}
+.clear-button:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+
 
 /* Botones de acción (igual que otros componentes) */
 .actions-container {
@@ -158,26 +206,6 @@
   border-bottom: none;
 }
 
-/* Celdas especiales */
-.property-cell {
-  color: #6366f1;
-  font-weight: 500;
-}
-
-.owner-cell {
-  color: #0891b2;
-  font-weight: 500;
-}
-
-.percentage-cell {
-  color: #059669;
-  font-weight: 700;
-  text-align: center;
-  background: linear-gradient(135deg, #d1fae5, #ecfdf5);
-  border-radius: 0.25rem;
-  font-size: 1rem;
-}
-
 /* Estado vacío */
 .no-data {
   text-align: center;
@@ -192,6 +220,31 @@
   margin: 0 0 1rem 0;
   font-size: 1rem;
 }
+
+/* Botones de acción en tabla (igual que otros componentes) */
+.action-btn {
+  padding: 0.375rem 0.75rem;
+  margin: 0 0.25rem;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.edit-btn {
+  background: #fbbf24;
+  color: #ffffff;
+}
+
+
+
+
+
+
+
+
+
 
 /* Información de resultados de búsqueda */
 .search-results-info {

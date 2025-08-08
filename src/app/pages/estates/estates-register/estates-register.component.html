@@ -5,142 +5,514 @@
     <p class="subtitle">Crear nueva propiedad inmobiliaria en el sistema</p>
   </div>
 
-  <!-- Formulario principal -->
-  <form (ngSubmit)="createEstate()">
+  <!-- === INDICADOR DE PASOS === -->
+  <div class="stepper-indicator">
+    <div class="step" [class.active]="currentStep === 1" [class.completed]="currentStep > 1">
+      <div class="step-circle">1</div>
+      <span>Propiedad</span>
+    </div>
+    <div class="step-line" [class.completed]="currentStep > 1"></div>
+    <div class="step" [class.active]="currentStep === 2" [class.completed]="currentStep > 2">
+      <div class="step-circle">2</div>
+      <span>Propietarios</span>
+    </div>
+    <div class="step-line" [class.completed]="currentStep > 2"></div>
+    <div class="step" [class.active]="currentStep === 3" [class.completed]="currentStep > 3">
+      <div class="step-circle">3</div>
+      <span>Resumen</span>
+    </div>
+  </div>
 
-    <!-- Sección: Identificación de la propiedad -->
-    <div class="section">
-      <h2 class="section-title">🏠 Identificación de la Propiedad</h2>
-      <div class="form-grid">
+  <!-- === PASO 1: FORMULARIO DE PROPIEDAD === -->
+  @if (currentStep === 1) {
+    <form (ngSubmit)="createEstate()">
+      <!-- Sección: Identificación de la propiedad -->
+      <div class="section">
+        <h2 class="section-title">🏠 Identificación de la Propiedad</h2>
+        <div class="form-grid">
 
-        <div class="form-field form-field-full">
-          <label for="referencia" class="form-label">Referencia Catastral *</label>
-          <input
-            type="text"
-            [(ngModel)]="estate.cadastral_reference"
-            name="cadastral_reference"
-            id="referencia"
-            placeholder="Ej: 1234567AB0001XX"
-            class="form-input reference-input"
-            required>
+          <div class="form-field form-field-full">
+            <label for="referencia" class="form-label">Referencia Catastral *</label>
+            <input
+              type="text"
+              [(ngModel)]="estate.cadastral_reference"
+              name="cadastral_reference"
+              id="referencia"
+              placeholder="Ej: 1234567AB0001XX"
+              class="form-input reference-input"
+              required>
+          </div>
+
+          <div class="form-field">
+            <label for="price" class="form-label">Precio (€) *</label>
+            <input
+              type="number"
+              [(ngModel)]="estate.price"
+              name="price"
+              id="price"
+              placeholder="250000"
+              class="form-input price-input"
+              min="0"
+              step="1000"
+              required>
+          </div>
+
+          <div class="form-field">
+            <label for="surface" class="form-label">Superficie (m²) *</label>
+            <input
+              type="number"
+              [(ngModel)]="estate.surface"
+              name="surface"
+              id="surface"
+              placeholder="120"
+              class="form-input surface-input"
+              min="1"
+              step="1"
+              required>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Sección: Dirección -->
+      <div class="section">
+        <h2 class="section-title">📍 Ubicación</h2>
+        <div class="form-grid">
+
+          <div class="form-field form-field-full">
+            <label for="address" class="form-label">Dirección *</label>
+            <input
+              type="text"
+              [(ngModel)]="estate.address"
+              name="address"
+              id="address"
+              placeholder="Calle Principal 123, 2º A"
+              class="form-input"
+              autocomplete="street-address"
+              required>
+          </div>
+
+          <div class="form-field">
+            <label for="postal_code" class="form-label">Código Postal *</label>
+            <input
+              type="text"
+              [(ngModel)]="estate.postal_code"
+              name="postal_code"
+              id="postal_code"
+              placeholder="28001"
+              class="form-input postal-input"
+              autocomplete="postal-code"
+              pattern="[0-9]{5}"
+              maxlength="5"
+              required>
+          </div>
+
+          <div class="form-field">
+            <label for="location" class="form-label">Localidad *</label>
+            <input
+              type="text"
+              [(ngModel)]="estate.location"
+              name="location"
+              id="location"
+              placeholder="Madrid"
+              class="form-input"
+              autocomplete="address-level2"
+              required>
+          </div>
+
+          <div class="form-field">
+            <label for="province" class="form-label">Provincia *</label>
+            <input
+              type="text"
+              [(ngModel)]="estate.province"
+              name="province"
+              id="province"
+              placeholder="Madrid"
+              class="form-input"
+              autocomplete="address-level1"
+              required>
+          </div>
+
+          <div class="form-field">
+            <label for="country" class="form-label">País *</label>
+            <input
+              type="text"
+              [(ngModel)]="estate.country"
+              name="country"
+              id="country"
+              placeholder="España"
+              class="form-input"
+              autocomplete="country-name"
+              value="España"
+              required>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="actions-section">
+        <button type="submit" class="primary-btn">
+          🏠 Registrar Propiedad
+        </button>
+        <button type="button" class="secondary-btn" (click)="goBack()">
+          ← Volver al Listado
+        </button>
+      </div>
+
+    </form>
+  }
+  <!-- === PASO 2: ASIGNAR PROPIETARIOS === -->
+  @if (currentStep === 2) {
+    <div class="owners-section">
+      <h2>👥 Asignar Propietarios</h2>
+      <p class="step-description">Selecciona los propietarios y asigna sus porcentajes de participación</p>
+
+      <!-- Información de la propiedad creada -->
+      @if (createdEstate) {
+        <div class="property-info">
+          <h3>🏠 Propiedad: {{ createdEstate.address }}</h3>
+          <small>Ref. Catastral: {{ createdEstate.cadastral_reference }}</small>
+        </div>
+      }
+
+      <!-- === SELECTOR DE PROPIETARIOS === -->
+      <div class="owners-selector">
+
+        <!-- Lista de propietarios seleccionados -->
+        @for (selectedOwner of selectedOwners; track $index) {
+          <div class="owner-row" [class.invalid]="isOwnerAlreadySelected(selectedOwner.owner.id, $index)">
+
+
+            <!-- Selector de propietario -->
+            <div class="owner-select">
+              <label>Propietario *</label>
+              <select
+                [(ngModel)]="selectedOwner.owner"
+                name="owner_{{$index}}"
+                class="form-select"
+                required>
+                <option [ngValue]="null" disabled>Seleccionar propietario</option>
+                @for (owner of getAvailableOwnersForSelect($index); track owner.id) {
+                  <option [ngValue]="owner">
+                    {{ owner.name }} {{ owner.lastname }} ({{ owner.identification }})
+                  </option>
+                }
+              </select>
+
+              <!-- === FORMULARIO CREAR PROPIETARIO === -->
+              @if (showCreateOwnerForm) {
+                <div class="create-owner-overlay">
+                  <div class="create-owner-modal">
+                    <div class="modal-header">
+                      <h3>➕ Crear Nuevo Propietario</h3>
+                      <button type="button" class="btn-close" (click)="cancelCreateOwner()">✕</button>
+                    </div>
+
+                    <div class="modal-content">
+                      <!-- Datos personales -->
+                      <div class="form-section-compact">
+                        <h4>👤 Datos Personales</h4>
+                        <div class="form-grid-compact">
+                          <div class="form-field">
+                            <label>Nombre *</label>
+                            <input
+                              type="text"
+                              [(ngModel)]="newOwner.name"
+                              name="new_name"
+                              class="form-input"
+                              placeholder="Nombre"
+                              required>
+                          </div>
+                          <div class="form-field">
+                            <label>Apellidos *</label>
+                            <input
+                              type="text"
+                              [(ngModel)]="newOwner.lastname"
+                              name="new_lastname"
+                              class="form-input"
+                              placeholder="Apellidos"
+                              required>
+                          </div>
+                          <div class="form-field">
+                            <label>NIF/NIE *</label>
+                            <input
+                              type="text"
+                              [(ngModel)]="newOwner.identification"
+                              name="new_identification"
+                              class="form-input"
+                              placeholder="12345678A"
+                              required>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Contacto -->
+                      <div class="form-section-compact">
+                        <h4>📞 Contacto</h4>
+                        <div class="form-grid-compact">
+                          <div class="form-field">
+                            <label>Email *</label>
+                            <input
+                              type="email"
+                              [(ngModel)]="newOwner.email"
+                              name="new_email"
+                              class="form-input"
+                              placeholder="email@ejemplo.com"
+                              required>
+                          </div>
+                          <div class="form-field">
+                            <label>Teléfono *</label>
+                            <input
+                              type="tel"
+                              [(ngModel)]="newOwner.phone"
+                              name="new_phone"
+                              class="form-input"
+                              placeholder="123456789"
+                              required>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Dirección -->
+                      <div class="form-section-compact">
+                        <h4>🏠 Dirección</h4>
+                        <div class="form-grid-compact">
+                          <div class="form-field form-field-full">
+                            <label>Dirección *</label>
+                            <input
+                              type="text"
+                              [(ngModel)]="newOwner.address"
+                              name="new_address"
+                              class="form-input"
+                              placeholder="Calle, número, piso"
+                              required>
+                          </div>
+                          <div class="form-field">
+                            <label>Código Postal *</label>
+                            <input
+                              type="text"
+                              [(ngModel)]="newOwner.postal_code"
+                              name="new_postal_code"
+                              class="form-input"
+                              placeholder="28001"
+                              maxlength="5"
+                              required>
+                          </div>
+                          <div class="form-field">
+                            <label>Localidad *</label>
+                            <input
+                              type="text"
+                              [(ngModel)]="newOwner.location"
+                              name="new_location"
+                              class="form-input"
+                              placeholder="Madrid"
+                              required>
+                          </div>
+                          <div class="form-field">
+                            <label>Provincia *</label>
+                            <input
+                              type="text"
+                              [(ngModel)]="newOwner.province"
+                              name="new_province"
+                              class="form-input"
+                              placeholder="Madrid"
+                              required>
+                          </div>
+                          <div class="form-field">
+                            <label>País *</label>
+                            <input
+                              type="text"
+                              [(ngModel)]="newOwner.country"
+                              name="new_country"
+                              class="form-input"
+                              placeholder="España"
+                              value="España"
+                              required>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Botones del modal -->
+                    <div class="modal-actions">
+                      <button type="button" class="btn-modal-cancel" (click)="cancelCreateOwner()">
+                        Cancelar
+                      </button>
+                      <button type="button" class="btn-modal-save" (click)="saveNewOwner()">
+                        💾 Crear Propietario
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              }
+
+              <!-- Botón para crear nuevo propietario -->
+              <button
+                type="button"
+                class="btn-create-owner"
+                (click)="openCreateOwnerForm($index)">
+                ➕ Crear Nuevo Propietario
+              </button>
+            </div>
+
+
+            <!-- Input de porcentaje -->
+            <div class="percentage-input">
+              <label>Porcentaje *</label>
+              <input
+                type="number"
+                [(ngModel)]="selectedOwner.percentage"
+                name="percentage_{{$index}}"
+                class="form-input"
+                placeholder="0"
+                min="0.01"
+                max="100"
+                step="0.01"
+                required>
+              <span class="percentage-symbol">%</span>
+            </div>
+
+            <!-- Botón eliminar -->
+            <div class="remove-button">
+              <button
+                type="button"
+                class="btn-remove"
+                (click)="removeOwner($index)"
+                [disabled]="selectedOwners.length === 1">
+                🗑️
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- Botón añadir propietario -->
+        <button
+          type="button"
+          class="btn-add-owner"
+          (click)="addOwner()"
+          [disabled]="selectedOwners.length >= availableOwners.length">
+          ➕ Añadir Propietario
+        </button>
+
+        <!-- Validación de porcentaje total -->
+        <div class="percentage-validation" [class.valid]="isValidPercentage()" [class.invalid]="!isValidPercentage()">
+          <div class="total-display">
+            <strong>Total: {{ getTotalPercentage() }}%</strong>
+          </div>
+          <div class="validation-message">
+            @if (getTotalPercentage() === 100) {
+              <span class="success">✅ Porcentaje válido</span>
+            } @else if (getTotalPercentage() < 100) {
+              <span class="warning">⚠️ Faltan {{ 100 - getTotalPercentage() }}%</span>
+            } @else {
+              <span class="error">❌ Excede en {{ getTotalPercentage() - 100 }}%</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones de navegación -->
+      <div class="actions-section">
+        <button type="button" class="secondary-btn" (click)="currentStep = 1">
+          ← Volver a Propiedad
+        </button>
+        <button
+          type="button"
+          class="primary-btn"
+          [disabled]="!canContinueToStep3()"
+          (click)="continueToSummary()">
+          Continuar al Resumen →
+        </button>
+      </div>
+
+    </div>
+  }
+  <!-- === PASO 3: RESUMEN === -->
+  @if (currentStep === 3) {
+    <div class="summary-section">
+      <h2>📋 Resumen Final</h2>
+      <p class="step-description">Revisa la información antes de guardar definitivamente</p>
+
+      <!-- === RESUMEN COMPLETO === -->
+      <div class="summary-content">
+
+        <!-- Información de la propiedad -->
+        <div class="summary-section-item">
+          <h3>🏠 Propiedad Registrada</h3>
+          @if (createdEstate) {
+            <div class="property-summary">
+              <div class="summary-row">
+                <span class="label">Dirección:</span>
+                <span class="value">{{ createdEstate.address }}</span>
+              </div>
+              <div class="summary-row">
+                <span class="label">Referencia Catastral:</span>
+                <span class="value ref-value">{{ createdEstate.cadastral_reference }}</span>
+              </div>
+              <div class="summary-row">
+                <span class="label">Precio:</span>
+                <span class="value price-value">{{ createdEstate.price }} €</span>
+              </div>
+              <div class="summary-row">
+                <span class="label">Superficie:</span>
+                <span class="value">{{ createdEstate.surface }} m²</span>
+              </div>
+              <div class="summary-row">
+                <span class="label">Localidad:</span>
+                <span class="value">{{ createdEstate.location }}, {{ createdEstate.province }}</span>
+              </div>
+            </div>
+          }
         </div>
 
-        <div class="form-field">
-          <label for="price" class="form-label">Precio (€) *</label>
-          <input
-            type="number"
-            [(ngModel)]="estate.price"
-            name="price"
-            id="price"
-            placeholder="250000"
-            class="form-input price-input"
-            min="0"
-            step="1000"
-            required>
+        <!-- Propietarios y porcentajes -->
+        <div class="summary-section-item">
+          <h3>👥 Propietarios Asignados</h3>
+          <div class="owners-summary">
+            @for (selectedOwner of selectedOwners; track $index) {
+              <div class="owner-summary-row">
+                <div class="owner-info">
+                  <strong>{{ selectedOwner.owner.name }} {{ selectedOwner.owner.lastname }}</strong>
+                  <small>{{ selectedOwner.owner.identification }}</small>
+                </div>
+                <div class="owner-percentage">
+                  <span class="percentage-badge">{{ selectedOwner.percentage }}%</span>
+                </div>
+              </div>
+            }
+
+            <!-- Total verificación -->
+            <div class="total-summary">
+              <strong>Total: {{ getTotalPercentage() }}% ✅</strong>
+            </div>
+          </div>
         </div>
 
-        <div class="form-field">
-          <label for="surface" class="form-label">Superficie (m²) *</label>
-          <input
-            type="number"
-            [(ngModel)]="estate.surface"
-            name="surface"
-            id="surface"
-            placeholder="120"
-            class="form-input surface-input"
-            min="1"
-            step="1"
-            required>
+        <!-- Información adicional -->
+        <div class="summary-section-item">
+          <h3>ℹ️ Información</h3>
+          <div class="info-summary">
+            <ul>
+              <li>✅ La propiedad ya está guardada en el sistema</li>
+              <li>🔄 Los propietarios se guardarán al confirmar</li>
+              <li>📊 Total de propietarios: {{ selectedOwners.length }}</li>
+              <li>💾 Si algún propietario falla, podrás corregirlo después</li>
+            </ul>
+          </div>
         </div>
+      </div>
 
+      <!-- Botones finales -->
+      <div class="actions-section">
+        <button type="button" class="secondary-btn" (click)="currentStep = 2">
+          ← Volver a Propietarios
+        </button>
+        <button type="button" class="primary-btn" (click)="saveAllOwnershipData()">
+          💾 Guardar Todo
+        </button>
       </div>
     </div>
+  }
 
-    <!-- Sección: Dirección -->
-    <div class="section">
-      <h2 class="section-title">📍 Ubicación</h2>
-      <div class="form-grid">
-
-        <div class="form-field form-field-full">
-          <label for="address" class="form-label">Dirección *</label>
-          <input
-            type="text"
-            [(ngModel)]="estate.address"
-            name="address"
-            id="address"
-            placeholder="Calle Principal 123, 2º A"
-            class="form-input"
-            autocomplete="street-address"
-            required>
-        </div>
-
-        <div class="form-field">
-          <label for="postal_code" class="form-label">Código Postal *</label>
-          <input
-            type="text"
-            [(ngModel)]="estate.postal_code"
-            name="postal_code"
-            id="postal_code"
-            placeholder="28001"
-            class="form-input postal-input"
-            autocomplete="postal-code"
-            pattern="[0-9]{5}"
-            maxlength="5"
-            required>
-        </div>
-
-        <div class="form-field">
-          <label for="location" class="form-label">Localidad *</label>
-          <input
-            type="text"
-            [(ngModel)]="estate.location"
-            name="location"
-            id="location"
-            placeholder="Madrid"
-            class="form-input"
-            autocomplete="address-level2"
-            required>
-        </div>
-
-        <div class="form-field">
-          <label for="province" class="form-label">Provincia *</label>
-          <input
-            type="text"
-            [(ngModel)]="estate.province"
-            name="province"
-            id="province"
-            placeholder="Madrid"
-            class="form-input"
-            autocomplete="address-level1"
-            required>
-        </div>
-
-        <div class="form-field">
-          <label for="country" class="form-label">País *</label>
-          <input
-            type="text"
-            [(ngModel)]="estate.country"
-            name="country"
-            id="country"
-            placeholder="España"
-            class="form-input"
-            autocomplete="country-name"
-            value="España"
-            required>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Botones de acción -->
-    <div class="actions-section">
-      <button type="submit" class="primary-btn">
-        🏠 Registrar Propiedad
-      </button>
-      <button type="button" class="secondary-btn" (click)="goBack()">
-        ← Volver al Listado
-      </button>
-    </div>
-
-  </form>
 </div>

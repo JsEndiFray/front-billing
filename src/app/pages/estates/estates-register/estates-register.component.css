@@ -199,3 +199,963 @@
     padding: 0.75rem;
   }
 }
+
+
+
+
+/* === ESTILOS DEL STEPPER === */
+
+/* Contenedor principal del indicador de pasos */
+.stepper-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-radius: 0.5rem;
+  border: 0.0625rem solid #e2e8f0;
+}
+
+/* Cada paso individual */
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+/* Círculo con número del paso */
+.step-circle {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+
+  /* Estado por defecto (inactivo) */
+  background: #e5e7eb;
+  color: #9ca3af;
+  border: 0.125rem solid #d1d5db;
+}
+
+/* Texto del paso */
+.step span {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  transition: color 0.3s ease;
+}
+
+/* Línea conectora entre pasos */
+.step-line {
+  width: 4rem;
+  height: 0.125rem;
+  background: #e5e7eb;
+  margin: 0 1rem;
+  transition: background-color 0.3s ease;
+}
+
+/* === ESTADOS DEL STEPPER === */
+
+/* Paso activo (actual) */
+.step.active .step-circle {
+  background: #3b82f6;
+  color: #ffffff;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.2);
+}
+
+.step.active span {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+/* Paso completado */
+.step.completed .step-circle {
+  background: #10b981;
+  color: #ffffff;
+  border-color: #10b981;
+}
+
+.step.completed span {
+  color: #10b981;
+  font-weight: 600;
+}
+
+/* Línea completada */
+.step-line.completed {
+  background: #10b981;
+}
+
+
+/* === ESTILOS DE LAS SECCIONES DE PASOS === */
+
+/* Sección de propietarios */
+.owners-section {
+  background: #f9fafb;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  border: 0.0625rem solid #e5e7eb;
+}
+
+.owners-section h2 {
+  color: #1f2937;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.step-description {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 0 0 1.5rem 0;
+}
+
+/* Información de la propiedad creada */
+.property-info {
+  background: #dbeafe;
+  border: 0.0625rem solid #bfdbfe;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.property-info h3 {
+  color: #1e40af;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+}
+
+.property-info small {
+  color: #1e40af;
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+/* Sección de resumen */
+.summary-section {
+  background: #f9fafb;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  border: 0.0625rem solid #e5e7eb;
+}
+
+.summary-section h2 {
+  color: #1f2937;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+/* Placeholder temporal */
+.temp-placeholder {
+  background: #fef3c7;
+  border: 0.0625rem solid #f59e0b;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.temp-placeholder p {
+  margin: 0.5rem 0;
+  color: #92400e;
+}
+
+
+/* === RESPONSIVE PARA EL STEPPER === */
+
+@media (max-width: 48rem) {
+  /* Stepper en móvil - más compacto */
+  .stepper-indicator {
+    padding: 1rem;
+  }
+
+  .step-circle {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.875rem;
+  }
+
+  .step span {
+    font-size: 0.75rem;
+  }
+
+  .step-line {
+    width: 2.5rem;
+    margin: 0 0.5rem;
+  }
+}
+
+@media (max-width: 30rem) {
+  /* Stepper vertical en pantallas muy pequeñas */
+  .stepper-indicator {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .step-line {
+    width: 0.125rem;
+    height: 2rem;
+    margin: 0;
+  }
+}
+
+/* === SELECTOR DE PROPIETARIOS === */
+
+/* Contenedor principal del selector */
+.owners-selector {
+  background: #ffffff;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  border: 0.0625rem solid #e5e7eb;
+  margin-bottom: 1.5rem;
+}
+
+/* Fila de cada propietario */
+.owner-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr auto;
+  gap: 1rem;
+  align-items: end;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 0.375rem;
+  border: 0.0625rem solid #e2e8f0;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.owner-row:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+/* Fila inválida (propietario duplicado) */
+.owner-row.invalid {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+/* Selector de propietario */
+.owner-select {
+  display: flex;
+  flex-direction: column;
+}
+
+.owner-select label {
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.375rem;
+}
+
+.owner-select .form-select {
+  padding: 0.625rem 0.75rem;
+  border: 0.125rem solid #e5e7eb;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  color: #374151;
+  background: #ffffff;
+  transition: border-color 0.2s;
+}
+
+.owner-select .form-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+/* Input de porcentaje */
+.percentage-input {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.percentage-input label {
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.375rem;
+}
+
+.percentage-input .form-input {
+  padding: 0.625rem 2rem 0.625rem 0.75rem;
+  border: 0.125rem solid #e5e7eb;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  color: #059669;
+  font-weight: 600;
+  text-align: center;
+  background: #ffffff;
+  transition: border-color 0.2s;
+}
+
+.percentage-input .form-input:focus {
+  outline: none;
+  border-color: #10b981;
+}
+
+/* Símbolo de porcentaje */
+.percentage-symbol {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  color: #059669;
+  font-weight: 600;
+  font-size: 0.875rem;
+  pointer-events: none;
+}
+
+/* Botón eliminar propietario */
+.remove-button {
+  display: flex;
+  align-items: end;
+}
+
+.btn-remove {
+  background: #ef4444;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.625rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-remove:hover:not(:disabled) {
+  background: #dc2626;
+  transform: scale(1.05);
+}
+
+.btn-remove:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* === BOTONES Y VALIDACIÓN === */
+
+/* Botón añadir propietario */
+.btn-add-owner {
+  background: #10b981;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-add-owner:hover:not(:disabled) {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.btn-add-owner:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Validación de porcentaje total */
+.percentage-validation {
+  background: #f8fafc;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  border: 0.125rem solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
+}
+
+/* Estados de validación */
+.percentage-validation.valid {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+}
+
+.percentage-validation.invalid {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+/* Display del total */
+.total-display {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.percentage-validation.valid .total-display {
+  color: #059669;
+}
+
+.percentage-validation.invalid .total-display {
+  color: #dc2626;
+}
+
+/* Mensajes de validación */
+.validation-message {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.validation-message .success {
+  color: #059669;
+}
+
+.validation-message .warning {
+  color: #f59e0b;
+}
+
+.validation-message .error {
+  color: #dc2626;
+}
+
+
+/* === RESPONSIVE PARA SELECTOR === */
+
+@media (max-width: 48rem) {
+  /* Grid de propietario a una columna en móvil */
+  .owner-row {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .remove-button {
+    justify-self: center;
+  }
+
+  .percentage-validation {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+}
+
+@media (max-width: 30rem) {
+  .owners-selector {
+    padding: 1rem;
+  }
+
+  .owner-row {
+    padding: 0.75rem;
+  }
+
+  .btn-add-owner {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* === RESUMEN FINAL === */
+
+/* Contenedor principal del resumen */
+.summary-content {
+  display: grid;
+  gap: 1.5rem;
+}
+
+/* Cada sección del resumen */
+.summary-section-item {
+  background: #ffffff;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  border: 0.0625rem solid #e5e7eb;
+  box-shadow: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.05);
+}
+
+.summary-section-item h3 {
+  color: #1f2937;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 0.125rem solid #f3f4f6;
+}
+
+/* === RESUMEN DE PROPIEDAD === */
+
+.property-summary {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 0.0625rem solid #f9fafb;
+}
+
+.summary-row:last-child {
+  border-bottom: none;
+}
+
+.summary-row .label {
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+  min-width: 8rem;
+}
+
+.summary-row .value {
+  color: #1f2937;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: right;
+  flex: 1;
+}
+
+/* Valores especiales */
+.ref-value {
+  color: #6366f1;
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+}
+
+.price-value {
+  color: #10b981;
+  font-size: 1rem;
+}
+
+/* === RESUMEN DE PROPIETARIOS === */
+
+.owners-summary {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.owner-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border-radius: 0.375rem;
+  border: 0.0625rem solid #e2e8f0;
+}
+
+.owner-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.owner-info strong {
+  color: #1f2937;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.owner-info small {
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-family: 'Courier New', monospace;
+}
+
+.owner-percentage {
+  display: flex;
+  align-items: center;
+}
+
+.percentage-badge {
+  background: #10b981;
+  color: #ffffff;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+/* Total del resumen */
+.total-summary {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: #ecfdf5;
+  border: 0.0625rem solid #a7f3d0;
+  border-radius: 0.375rem;
+  text-align: center;
+  color: #059669;
+  font-size: 1rem;
+}
+
+/* === INFORMACIÓN ADICIONAL === */
+
+.info-summary ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: #6b7280;
+}
+
+.info-summary li {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.info-summary li:last-child {
+  margin-bottom: 0;
+}
+
+/* === RESPONSIVE PARA RESUMEN === */
+
+@media (max-width: 48rem) {
+  .summary-content {
+    gap: 1rem;
+  }
+
+  .summary-section-item {
+    padding: 1rem;
+  }
+
+  .summary-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .summary-row .label {
+    min-width: auto;
+    font-weight: 600;
+  }
+
+  .summary-row .value {
+    text-align: left;
+  }
+
+  .owner-summary-row {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+}
+
+@media (max-width: 30rem) {
+  .summary-section-item h3 {
+    font-size: 1rem;
+  }
+
+  .ref-value {
+    word-break: break-all;
+    font-size: 0.6875rem;
+  }
+
+  .percentage-badge {
+    font-size: 0.75rem;
+    padding: 0.1875rem 0.5rem;
+  }
+}
+
+/* === BOTÓN CREAR PROPIETARIO === */
+
+.btn-create-owner {
+  background: #059669;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 0.5rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.btn-create-owner:hover {
+  background: #047857;
+  transform: translateY(-1px);
+}
+
+.btn-create-owner:active {
+  transform: translateY(0);
+}
+
+/* === MODAL CREAR PROPIETARIO === */
+
+/* Overlay de fondo */
+.create-owner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Modal principal */
+.create-owner-modal {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 1.25rem 2.5rem rgba(0, 0, 0, 0.2);
+  max-width: 50rem;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Header del modal */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 0.0625rem solid #e5e7eb;
+  background: #f8fafc;
+  border-radius: 0.75rem 0.75rem 0 0;
+}
+
+.modal-header h3 {
+  color: #1f2937;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.btn-close {
+  background: #ef4444;
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.btn-close:hover {
+  background: #dc2626;
+  transform: scale(1.1);
+}
+
+/* Contenido del modal */
+.modal-content {
+  padding: 1.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+/* Secciones compactas */
+.form-section-compact {
+  background: #f9fafb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 0.0625rem solid #e5e7eb;
+}
+
+.form-section-compact h4 {
+  color: #374151;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 0.0625rem solid #e5e7eb;
+}
+
+/* Grid compacto */
+.form-grid-compact {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.75rem;
+}
+
+.form-grid-compact .form-field-full {
+  grid-column: 1 / -1;
+}
+
+.form-grid-compact .form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-grid-compact .form-field label {
+  color: #374151;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.form-grid-compact .form-input {
+  padding: 0.5rem 0.625rem;
+  border: 0.0625rem solid #e5e7eb;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  color: #374151;
+  background: #ffffff;
+  transition: border-color 0.2s;
+}
+
+.form-grid-compact .form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.form-grid-compact .form-input::placeholder {
+  color: #9ca3af;
+}
+
+/* === BOTONES DEL MODAL === */
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-top: 0.0625rem solid #e5e7eb;
+  background: #f8fafc;
+  border-radius: 0 0 0.75rem 0.75rem;
+}
+
+.btn-modal-cancel {
+  background: #f3f4f6;
+  color: #374151;
+  border: 0.0625rem solid #d1d5db;
+  border-radius: 0.375rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-modal-cancel:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.btn-modal-save {
+  background: #059669;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.625rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-modal-save:hover {
+  background: #047857;
+  transform: translateY(-1px);
+  box-shadow: 0 0.25rem 0.5rem rgba(5, 150, 105, 0.3);
+}
+
+.btn-modal-save:active {
+  transform: translateY(0);
+}
+
+/* === ANIMACIONES === */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(2rem) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* === RESPONSIVE PARA MODAL === */
+
+@media (max-width: 48rem) {
+  .create-owner-modal {
+    width: 95%;
+    max-height: 95vh;
+  }
+
+  .modal-header,
+  .modal-content,
+  .modal-actions {
+    padding: 1rem;
+  }
+
+  .form-grid-compact {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .btn-modal-cancel,
+  .btn-modal-save {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 30rem) {
+  .create-owner-modal {
+    width: 98%;
+    border-radius: 0.5rem;
+  }
+
+  .modal-header h3 {
+    font-size: 1.125rem;
+  }
+
+  .form-section-compact {
+    padding: 0.75rem;
+  }
+
+  .btn-create-owner {
+    font-size: 0.6875rem;
+    padding: 0.375rem 0.75rem;
+  }
+}

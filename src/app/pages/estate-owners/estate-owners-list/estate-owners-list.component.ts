@@ -79,7 +79,7 @@ export class EstateOwnersListComponent implements OnInit {
   /**
    * Limpia el filtro de búsqueda y muestra todo el porcentajes
    */
-  clearSearch() {
+  clearFilters() {
     this.searchTerm = '';
     this.filterOwners();
   }
