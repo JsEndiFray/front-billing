@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {User} from '../../../interface/users-interface';
+import {User} from '../../../interfaces/users-interface';
 import {UserService} from '../../../core/services/user-services/user.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';

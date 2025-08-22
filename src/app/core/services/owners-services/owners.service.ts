@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from '../api-service/api.service';
-import {Owners} from '../../../interface/owners-interface';
+import {Owners} from '../../../interfaces/owners-interface';
 import {Observable} from 'rxjs';
 
 /**

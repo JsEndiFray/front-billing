@@ -1,1 +1,379 @@
-<p>invoice-received-list works!</p>
+<div class="container">
+  <!-- Título y descripción -->
+  <div class="header">
+    <h1 class="title">Gestión de Facturas Recibidas</h1>
+    <p class="subtitle">Administra el listado completo de facturas de proveedores</p>
+  </div>
+
+  <!-- Sección de filtros y búsqueda -->
+  <div class="filters-section">
+    <!-- Buscador CON ICONOS -->
+    <form class="search-container" [formGroup]="searchForm">
+      <div class="search-wrapper">
+        <input
+          type="text"
+          formControlName="searchTerm"
+          placeholder="Buscar por número de factura, proveedor, categoría..."
+          class="search-input"
+          autocomplete="off">
+
+        <!-- Iconos de búsqueda y limpiar -->
+        <div class="search-actions">
+          <span class="search-icon">🔍</span>
+          @if (searchTerm && searchTerm.trim() !== '') {
+            <button type="button" (click)="clearSearch()" class="clear-button" title="Limpiar búsqueda">✕</button>
+          }
+        </div>
+      </div>
+    </form>
+  </div>
+
+
+  <!-- Sección de filtros de estado -->
+  <div class="filters-container">
+    <!-- Filtro por estado de pago -->
+    <form [formGroup]="filtersForm">
+      <!-- Estado de pago -->
+      <select formControlName="selectedPaymentStatus" class="filter-select">
+        <option value="">Estado de Pago</option>
+        @for (status of paymentStatusLabels; track status.value) {
+          <option [value]="status.value">{{ status.label }}</option>
+        }
+      </select>
+
+      <!-- Tipo de factura -->
+      <select formControlName="selectedRefundStatus" class="filter-select">
+        <option value="">Por Tipo</option>
+        @for (refund of refundStatusOptions; track refund.value) {
+          <option [value]="refund.value">{{ refund.label }}</option>
+        }
+      </select>
+
+      <!-- Categoría -->
+      <select formControlName="selectedCategory" class="filter-select">
+        <option value="">Por Categoría</option>
+        @for (category of categoryOptions; track category) {
+          <option [value]="category">{{ category }}</option>
+        }
+      </select>
+
+      <!-- Proveedor -->
+      <select formControlName="selectedSupplier" class="filter-select">
+        <option value="">Por Proveedor</option>
+        @for (supplier of suppliersOptions; track supplier) {
+          <option [value]="supplier">{{ supplier }}</option>
+        }
+      </select>
+
+      <!-- Botón limpiar filtros -->
+      <button
+        type="button"
+        (click)="clearFilters()"
+        class="clear-filters-btn"
+        title="Limpiar todos los filtros">
+        Limpiar filtros
+      </button>
+
+
+    </form>
+
+    <!-- Botones de factura recibida -->
+    <div class="actions-container">
+      <button class="export-btn">Exportar</button>
+      <button class="new-invoice-btn" (click)="createNewInvoice()">+ Nueva Factura Recibida</button>
+    </div>
+  </div>
+
+
+  <!-- Configuración de paginación -->
+  <div class="pagination-config">
+    <form [formGroup]="paginationForm">
+      <label for="itemsPerPage">Elementos por página:</label>
+      <select
+        id="itemsPerPage"
+        formControlName="itemsPerPage"
+        class="items-per-page-select">
+        <option [value]="5">5</option>
+        <option [value]="10">10</option>
+        <option [value]="25">25</option>
+        <option [value]="50">50</option>
+      </select>
+    </form>
+  </div>
+
+
+  <!-- Tabla de facturas recibidas -->
+  <div class="table-container">
+    <table class="invoices-table">
+      <!-- Cabecera -->
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nº FACTURA</th>
+        <th>REFERENCIA</th>
+        <th>PROVEEDOR</th>
+        <th>FECHA FACTURA</th>
+        <th>FECHA VENCIMIENTO</th>
+        <th>BASE</th>
+        <th>IVA</th>
+        <th>IRPF</th>
+        <th>TOTAL</th>
+        <th>CATEGORÍA</th>
+        <th>DESCRIPCIÓN</th>
+        <th>ESTADO PAGO</th>
+        <th>MÉTODO PAGO</th>
+        <th>FECHA PAGO</th>
+        <th>ABONOS</th>
+        <th>FACTURA ORIGINAL</th>
+        <th>ACCIONES</th>
+      </tr>
+      </thead>
+
+      <!-- Cuerpo de la tabla -->
+      <tbody>
+        @if (invoices && invoices.length > 0) {
+          @for (invoice of invoices; track invoice.id) {
+            <tr>
+              <td>#{{ invoice.id }}</td>
+              <td class="invoice-number-cell">{{ invoice.invoice_number }}</td>
+              <td class="reference-cell">{{ invoice.our_reference }}</td>
+              <td class="supplier-cell" title="CIF: {{ invoice.supplier_tax_id }}">
+                {{ invoice.supplier_name }}
+              </td>
+              <td>{{ invoice.invoice_date | dataFormat }}</td>
+              <td [class.overdue]="invoiceUtilService.isOverdue(invoice)">
+                {{ invoice.due_date | dataFormat }}
+              </td>
+              <td class="currency-cell">{{ invoice.tax_base | currency:'EUR':'symbol':'1.2-2' }}</td>
+              <td class="tax-cell">{{ invoice.iva_percentage }}%</td>
+              <td class="tax-cell">{{ invoice.irpf_percentage }}%</td>
+              <td class="total-cell">{{ invoice.total_amount | currency:'EUR':'symbol':'1.2-2' }}</td>
+
+              <!-- CATEGORÍA -->
+              <td>
+                <span [ngClass]="invoiceUtilService.getCategoryClass(invoice.category)">
+                  {{ getCategoryLabel(invoice.category!) || invoice.category }}
+                </span>
+              </td>
+
+              <!-- DESCRIPCIÓN -->
+              <td class="description-cell" [title]="invoice.description">
+                {{ invoiceUtilService.truncateText(invoice.description, 30) }}
+              </td>
+
+              <!-- ESTADO DE PAGO -->
+              <td>
+                @if (!isEditingPayment(invoice.id!)) {
+                  <div class="payment-status-container">
+                    <span [ngClass]="invoiceUtilService.getPaymentStatusClass(invoice.collection_status)"
+                          (click)="togglePaymentStatus(invoice)"
+                          title="Clic para cambiar estado">
+                      {{ getStatusLabel(invoice.collection_status || 'pending') }}
+                    </span>
+                    <button class="edit-payment-btn" (click)="startEditingPayment(invoice)"
+                            title="Editar detalles">
+                      ✏️
+                    </button>
+                  </div>
+                } @else if (editPaymentForm) {
+                  <div [formGroup]="editPaymentForm">
+                    <select formControlName="collection_status" class="form-input payment-select">
+                      @for (status of paymentStatusLabels; track status.value) {
+                        <option [value]="status.value">{{ status.label }}</option>
+                      }
+                    </select>
+                  </div>
+                }
+              </td>
+
+              <!-- MÉTODO DE PAGO -->
+              <td>
+                @if (!isEditingPayment(invoice.id!)) {
+                  <span class="payment-method-display">
+                    {{ getMethodLabel(invoice.collection_method || 'transfer') }}
+                  </span>
+                } @else if (editPaymentForm) {
+                  <div [formGroup]="editPaymentForm">
+                    <select formControlName="collection_method" class="form-input payment-select">
+                      @for (method of paymentMethodLabels; track method.value) {
+                        <option [value]="method.value">{{ method.label }}</option>
+                      }
+                    </select>
+                  </div>
+                }
+              </td>
+
+              <!-- FECHA DE PAGO -->
+              <td>
+                @if (!isEditingPayment(invoice.id!)) {
+                  <span class="payment-date-display">
+                    {{ invoice.collection_date ? (invoice.collection_date! | dataFormat) : '-' }}
+                  </span>
+                } @else if (editPaymentForm) {
+                  <div [formGroup]="editPaymentForm">
+                    <input type="date" formControlName="collection_date"
+                           class="form-input payment-date-input">
+                  </div>
+                }
+              </td>
+
+              <!-- ABONOS -->
+              <td>
+                @if (invoice.is_refund) {
+                  <span class="status-refund">Abono</span>
+                }
+              </td>
+
+              <!-- FACTURA ORIGINAL -->
+              <td class="original-cell">{{ invoice.original_invoice_number || '-' }}</td>
+
+              <!-- ACCIONES -->
+              <td>
+                @if (!isEditingPayment(invoice.id!)) {
+                  <button class="action-btn pdf-btn" (click)="downloadPdf(invoice.id!)">📄 PDF</button>
+
+                  <!-- BOTÓN DE ARCHIVO ADJUNTO -->
+                  @if (invoice.has_attachments) {
+                    <button class="action-btn attachment-btn" (click)="viewAttachment(invoice)"
+                            title="Ver archivo adjunto">
+                      📎 Archivo
+                    </button>
+                  }
+                  <button class="action-btn refund-btn" (click)="openRefundModal(invoice)">💰 Abonar</button>
+                  <button class="action-btn edit-btn" (click)="editInvoice(invoice.id!)">✏️ Editar</button>
+                } @else {
+                  <button
+                    class="action-btn save-btn"
+                    (click)="savePaymentChanges(invoice.id!)"
+                    title="Guardar cambios">
+                    ✅ Guardar
+                  </button>
+                  <button
+                    class="action-btn cancel-btn"
+                    (click)="cancelEditingPayment(invoice.id!)"
+                    title="Cancelar">
+                    ❌ Cancelar
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        } @else {
+          <tr>
+            <td colspan="18" class="no-data">
+              <div class="empty-state">
+                <p>No se encontraron facturas recibidas</p>
+                <button class="new-invoice-btn" (click)="createNewInvoice()">
+                  + Nueva Factura Recibida
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+
+    </table>
+  </div>
+
+  <!-- Paginación -->
+  @if (paginationResult.totalPages > 1) {
+    <div class="pagination-container">
+
+      <!-- Información de resultados -->
+      <div class="pagination-info">
+        {{ getPaginationText() }}
+      </div>
+
+      <!-- Controles de paginación -->
+      <div class="pagination-controls">
+
+        <!-- Botón anterior -->
+        <button
+          class="pagination-btn"
+          [class.disabled]="!paginationResult.hasPrevious"
+          (click)="previousPage()"
+          [disabled]="!paginationResult.hasPrevious">
+          ‹ Anterior
+        </button>
+
+        <!-- Números de página -->
+        @for (page of getVisiblePages(); track page) {
+          <button
+            class="pagination-btn"
+            [class.active]="page === paginationConfig.currentPage"
+            (click)="goToPage(page)">
+            {{ page }}
+          </button>
+        }
+
+        <!-- Puntos suspensivos si hay más páginas -->
+        @if (paginationResult.totalPages > 5 && paginationConfig.currentPage < paginationResult.totalPages - 2) {
+          <span class="pagination-dots">...</span>
+        }
+
+        <!-- Última página -->
+        @if (paginationResult.totalPages > 5 && paginationConfig.currentPage < paginationResult.totalPages - 2) {
+          <button
+            class="pagination-btn"
+            (click)="goToPage(paginationResult.totalPages)">
+            {{ paginationResult.totalPages }}
+          </button>
+        }
+
+        <!-- Botón siguiente -->
+        <button
+          class="pagination-btn"
+          [class.disabled]="!paginationResult.hasNext"
+          (click)="nextPage()"
+          [disabled]="!paginationResult.hasNext">
+          Siguiente ›
+        </button>
+
+      </div>
+    </div>
+  }
+
+  <!-- Modal de Abonos -->
+  @if (showRefundModal) {
+    <div class="modal-overlay" (click)="closeRefundModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+          <h3>💰 Registrar Abono</h3>
+          <button class="close-btn" (click)="closeRefundModal()">×</button>
+        </div>
+
+        <div class="modal-body">
+          <p><strong>Factura:</strong> {{ selectedInvoice?.invoice_number }}</p>
+          <p><strong>Proveedor:</strong> {{ selectedInvoice?.supplier_name }}</p>
+          <p><strong>Total:</strong> {{ selectedInvoice?.total_amount | currency:'EUR':'symbol':'1.2-2' }}</p>
+
+          <form [formGroup]="refundForm" (ngSubmit)="saveRefund()">
+            <div class="form-field">
+              <label class="form-label">Motivo del Abono *</label>
+              <textarea
+                formControlName="refundReason"
+                rows="3"
+                placeholder="Motivo del abono..."
+                class="form-input"
+                [class.error]="refundForm.get('refundReason')?.invalid && refundForm.get('refundReason')?.touched">
+              </textarea>
+              @if (refundForm.get('refundReason')?.invalid && refundForm.get('refundReason')?.touched) {
+                <span class="error-message">El motivo del abono es obligatorio</span>
+              }
+            </div>
+
+            <div class="modal-buttons">
+              <button type="button" class="secondary-btn" (click)="closeRefundModal()">
+                Cancelar
+              </button>
+              <button type="submit" class="primary-btn" [disabled]="refundForm.invalid">
+                Crear Abono
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Owners} from '../../../interface/owners-interface';
+import {Owners} from '../../../interfaces/owners-interface';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {OwnersService} from '../../../core/services/owners-services/owners.service';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
 import {SearchService} from '../../../core/services/shared-services/search.service';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
 import {Router} from '@angular/router';
-import {PaginationConfig, PaginationResult} from '../../../interface/pagination-interface';
+import {PaginationConfig, PaginationResult} from '../../../interfaces/pagination-interface';
 import {PaginationService} from '../../../core/services/shared-services/pagination.service';
 
 /**

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from '../api-service/api.service';
 import {Observable, switchMap} from 'rxjs';
-import {Clients} from '../../../interface/clientes-interface';
+import {Clients} from '../../../interfaces/clientes-interface';
 
 /**
  * Servicio para gestión de clientes

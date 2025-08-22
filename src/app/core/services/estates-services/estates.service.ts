@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from '../api-service/api.service';
 import {Observable} from 'rxjs';
-import {Estates} from '../../../interface/estates.interface';
+import {Estates} from '../../../interfaces/estates-interface';
 
 /**
  * Servicio para gestión de propiedades inmobiliarias

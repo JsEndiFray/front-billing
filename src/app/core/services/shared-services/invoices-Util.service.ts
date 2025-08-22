@@ -1,20 +1,13 @@
 import {Injectable} from '@angular/core';
-import {Invoice} from '../../../interface/invoices-issued-interface';
+import {Invoice} from '../../../interfaces/invoices-issued-interface';
+import {CalculableInvoice} from '../../../interfaces/calculate-interface';
 
 @Injectable({
   providedIn: 'root'
 })
-export class InvoicesIssuedUtilService {
+export class InvoicesUtilService {
 
   constructor() {
-  }
-
-  /**
-   * Obtiene la fecha actual en formato YYYY-MM-DD
-   * @returns Fecha actual en formato "2025-07-11"
-   */
-  getCurrentDateForInput(): string {
-    return new Date().toISOString().split('T')[0];
   }
 
   /**
@@ -54,61 +47,37 @@ export class InvoicesIssuedUtilService {
   }
 
 
-  /**
+  /*/!**
    * Inicializa valores por defecto para los campos de cobro
    * @param invoice - La factura a inicializar
-   */
+   *!/
   initializeCollectionDefaults(invoice: Invoice): void {
     if (invoice.collection_status === 'collected' && !invoice.collection_date) {
       invoice.collection_date = this.getCurrentDateForInput();
     }
   }
 
-  /**
+  /!**
    * Valida si una factura marcada como cobrada tiene fecha de cobro
    * @param invoice - La factura a validar
    * @returns true si es válida, false si falta la fecha
-   */
+   *!/
   validateCollectedInvoiceHasDate(invoice: Invoice): boolean {
     return !(invoice.collection_status === 'collected' && !invoice.collection_date);
   }
 
-  /**
+  /!**
    * Obtiene el mensaje de validación para factura cobrada sin fecha
    * NOTA: Este método devuelve un string, pero el uso de SweetAlert debe ser en el COMPONENTE.
    * @returns string con el mensaje de error (sin usar Swal.fire)
-   */
+   *!/
   getCollectedWithoutDateMessage(): string {
     return 'Las facturas marcadas como cobradas deben tener una fecha de cobro.';
   }
+*/
 
 
-  // ========================================
-  // 🆕 NUEVA FUNCIÓN: calculateTotal()
-  // ========================================
 
-  /**
-   * Calcula el total de una factura (normal o proporcional)
-   * @param invoice - La factura a calcular
-   * @param onProportionalDatesChangeCallback - Función del componente para manejar cálculo proporcional
-   */
-  calculateTotal(invoice: Invoice, onProportionalDatesChangeCallback?: () => void): void {
-    if (invoice.is_proportional === 1) {
-      // Si es proporcional, llamar al callback del componente
-      if (onProportionalDatesChangeCallback) {
-        onProportionalDatesChangeCallback();
-      }
-    } else {
-      // Si es normal, usar cálculo estándar
-      const base = parseFloat(invoice.tax_base?.toString() || '0') || 0;
-      const ivaPercent = parseFloat(invoice.iva?.toString() || '0') || 0;
-      const irpfPercent = parseFloat(invoice.irpf?.toString() || '0') || 0;
-
-      // Fórmula: Total = Base + (Base × IVA%) - (Base × IRPF%)
-      const total = base + (base * ivaPercent / 100) - (base * irpfPercent / 100);
-      invoice.total = parseFloat(total.toFixed(2));
-    }
-  }
 
   /**
    * Formatea todas las fechas de una factura para enviar al backend
@@ -197,6 +166,120 @@ export class InvoicesIssuedUtilService {
   }
 
 
+// ==========================================================
+// 🆕 FUNCIONES REUTILIZABLES GENÉRICAS DE RECEIVED Y ISSUED
+// ==========================================================
+
+  /**
+   * Obtiene la fecha actual en formato YYYY-MM-DD
+   * @returns Fecha actual en formato "2025-07-11"
+   * SE UTILIZA EN RECEIVED Y ISSUED
+   */
+  getCurrentDateForInput(): string {
+    return new Date().toISOString().split('T')[0];
+  }
+
+
+
+
+
+
+
+  /**
+   * Calcula el total de una factura (normal o proporcional)
+   * @param invoice - La factura a calcular
+   * @param onProportionalDatesChangeCallback - Función del componente para manejar cálculo proporcional
+   * SE UTILIZA EN RECEIVED Y ISSUED
+   */
+  calculateTotal(invoice: CalculableInvoice, onProportionalDatesChangeCallback?: () => void): void {
+    if (invoice.is_proportional === 1) {
+      // Si es proporcional, llamar al callback del componente
+      if (onProportionalDatesChangeCallback) {
+        onProportionalDatesChangeCallback();
+      }
+    } else {
+      // Si es normal, usar cálculo estándar
+      const base = parseFloat(invoice.tax_base?.toString() || '0') || 0;
+      // Maneja ambos nombres de propiedades
+      const ivaPercent = parseFloat((invoice.iva || invoice.iva_percentage)?.toString() || '0') || 0;
+      const irpfPercent = parseFloat((invoice.irpf || invoice.irpf_percentage)?.toString() || '0') || 0;
+
+      const total = base + (base * ivaPercent / 100) - (base * irpfPercent / 100);
+
+      // Asigna a ambas propiedades para compatibilidad
+      invoice.total = parseFloat(total.toFixed(2));
+      invoice.total_amount = parseFloat(total.toFixed(2));
+    }
+  }
+
+
+
+
+
+
+
+// =================================================
+// 🆕 FUNCIONES REUTILIZABLES GENÉRICAS DE RECEIVED
+// =================================================
+
+  /**
+   * Verifica si una factura está vencida
+   * @param invoice - Factura (Invoice o InvoiceReceived)
+   * @returns true si está vencida, false si no
+   */
+  isOverdue<T extends { due_date?: string, collection_status?: string }>(invoice: T): boolean {
+    if (!invoice.due_date || invoice.collection_status === 'paid' || invoice.collection_status === 'collected') {
+      return false;
+    }
+    const today = new Date();
+    const dueDate = new Date(invoice.due_date);
+    return dueDate < today;
+  }
+
+  /**
+   * Obtiene la clase CSS para el estado de pago/cobro
+   * @param status - Estado de pago/cobro
+   * @returns Clase CSS correspondiente
+   */
+  getPaymentStatusClass(status: string | undefined): string {
+    switch (status) {
+      case 'paid':
+      case 'collected':
+        return 'paid-badge';
+      case 'overdue':
+        return 'overdue-badge';
+      case 'disputed':
+        return 'disputed-badge';
+      case 'pending':
+      default:
+        return 'pending-badge';
+    }
+  }
+
+  /**
+   * Obtiene la clase CSS para una categoría (sistema escalable)
+   * @param category - Categoría de la factura
+   * @returns Clase CSS generada automáticamente
+   */
+  getCategoryClass(category: string | undefined): string {
+    if (!category) return 'category-default';
+
+    // Convierte cualquier categoría a clase CSS válida
+    // Ej: "Servicios Públicos" → "category-servicios-publicos"
+    return `category-${category.toLowerCase().replace(/\s+/g, '-')}`;
+  }
+
+  /**
+   * Trunca un texto a una longitud máxima
+   * @param text - Texto a truncar
+   * @param maxLength - Longitud máxima
+   * @returns Texto truncado con "..." si es necesario
+   */
+  truncateText(text: string | undefined, maxLength: number): string {
+    if (!text) return '-';
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  }
 
 
 }

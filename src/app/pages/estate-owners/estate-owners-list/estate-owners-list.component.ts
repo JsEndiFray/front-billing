@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {EstatesOwners} from '../../../interface/estates-owners-interface';
+import {EstatesOwners} from '../../../interfaces/estates-owners-interface';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
 import {EstateOwnersService} from '../../../core/services/estate-owners-services/estate-owners.service';
 import {Router} from '@angular/router';

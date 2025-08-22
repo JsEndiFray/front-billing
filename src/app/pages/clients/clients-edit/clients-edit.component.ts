@@ -3,7 +3,7 @@ import {FormsModule} from '@angular/forms';
 import {ClientsService} from '../../../core/services/clients-services/clients.service';
 import {ClientsValidatorService} from '../../../core/services/validator-services/clients-validator.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Clients} from '../../../interface/clientes-interface';
+import {Clients} from '../../../interfaces/clientes-interface';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
 

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Estates} from '../../../interface/estates.interface';
+import {Estates} from '../../../interfaces/estates-interface';
 
 /**
  * Servicio de validación para propiedades inmobiliarias

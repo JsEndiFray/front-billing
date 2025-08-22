@@ -4,7 +4,7 @@ import {AuthService} from '../../../core/services/auth-service/auth.service';
 import Swal from 'sweetalert2';
 import {HttpErrorResponse} from '@angular/common/http';
 import {FormsModule} from '@angular/forms';
-import {UsersLogin} from '../../../interface/users-interface';
+import {UsersLogin} from '../../../interfaces/users-interface';
 
 /**
  * Componente de autenticación

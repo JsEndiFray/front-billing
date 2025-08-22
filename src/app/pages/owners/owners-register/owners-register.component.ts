@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {Owners} from '../../../interface/owners-interface';
+import {Owners} from '../../../interfaces/owners-interface';
 import {OwnersService} from '../../../core/services/owners-services/owners.service';
 import {OwnersValidatorService} from '../../../core/services/validator-services/owners-validator.service';
 import {Router} from '@angular/router';

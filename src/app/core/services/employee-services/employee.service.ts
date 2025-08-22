@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from '../api-service/api.service';
 import {Observable} from 'rxjs';
-import {Employee} from '../../../interface/employee-interface';
+import {Employee} from '../../../interfaces/employee-interface';
 
 /**
  * Servicio para gestión de empleados

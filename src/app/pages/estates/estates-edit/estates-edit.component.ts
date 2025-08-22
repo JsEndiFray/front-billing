@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {Estates} from '../../../interface/estates.interface';
+import {Estates} from '../../../interfaces/estates-interface';
 import {EstatesService} from '../../../core/services/estates-services/estates.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import Swal from 'sweetalert2';

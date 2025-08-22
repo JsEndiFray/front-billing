@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {EstatesOwners} from '../../../interface/estates-owners-interface';
+import {EstatesOwners} from '../../../interfaces/estates-owners-interface';
 
 /**
  * Servicio de validación para relaciones propiedad-propietario

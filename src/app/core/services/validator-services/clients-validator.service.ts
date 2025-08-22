@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Clients} from '../../../interface/clientes-interface';
+import {Clients} from '../../../interfaces/clientes-interface';
 
 /**
  * Servicio de validación para clientes

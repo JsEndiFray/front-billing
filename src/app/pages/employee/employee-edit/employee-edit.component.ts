@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {Employee} from '../../../interface/employee-interface';
+import {Employee} from '../../../interfaces/employee-interface';
 import {ActivatedRoute, Router} from '@angular/router';
 import {EmployeeService} from '../../../core/services/employee-services/employee.service';
 import {HttpErrorResponse} from '@angular/common/http';

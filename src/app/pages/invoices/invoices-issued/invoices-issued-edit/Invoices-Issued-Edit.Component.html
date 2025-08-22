@@ -337,8 +337,8 @@
             (change)="onCollectionStatusChange()"
             class="form-input payment-status-select"
             required>
-            <option value="pending">{{ collectionStatusLabels.pending }}</option>
-            <option value="paid">{{ collectionStatusLabels.collected }}</option>
+            <option value="pending">{{ collectionStatusLabels }}</option>
+            <option value="paid">{{ collectionStatusLabels }}</option>
           </select>
         </div>
 
@@ -350,10 +350,10 @@
             id="payment_method"
             class="form-input collection-method-select"
             required>
-            <option value="transfer">{{ collectionMethodLabels.transfer }}</option>
-            <option value="direct_debit">{{ collectionMethodLabels.direct_debit }}</option>
-            <option value="cash">{{ collectionMethodLabels.cash }}</option>
-            <option value="card">{{ collectionMethodLabels.card }}</option>
+            <option value="transfer">{{ collectionMethodLabels }}</option>
+            <option value="direct_debit">{{ collectionMethodLabels }}</option>
+            <option value="cash">{{ collectionMethodLabels }}</option>
+            <option value="card">{{ collectionMethodLabels }}</option>
           </select>
         </div>
 
@@ -400,13 +400,13 @@
           <span class="collection-summary-value"
                 [class.status-pending]="invoice.collection_status === 'pending'"
                 [class.status-paid]="invoice.collection_status === 'collected'">
-            {{ collectionStatusLabels[invoice.collection_status || 'pending'] }}
+            {{ getStatusLabel(invoice.collection_status || 'pending') }}
           </span>
         </div>
         <div class="collection-summary-item">
           <span class="collection-summary-label">Método:</span>
           <span class="collection-summary-value">
-            {{ collectionMethodLabels[invoice.collection_method || 'transfer'] }}
+            {{ getMethodLabel(invoice.collection_method || 'transfer') }}
           </span>
         </div>
         @if (invoice.collection_date) {

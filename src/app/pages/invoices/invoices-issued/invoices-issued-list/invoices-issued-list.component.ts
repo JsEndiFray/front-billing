@@ -1,25 +1,24 @@
 import {Component, OnInit} from '@angular/core';
-import {
-  BILLING_TYPE_LABELS,
-  COLLECTION_METHOD_LABELS,
-  COLLECTION_STATUS_LABELS,
-  Invoice,
-  RefundInvoice
-} from '../../../../interface/invoices-issued-interface';
+import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {Invoice, RefundInvoice} from '../../../../interfaces/invoices-issued-interface';
 import {DataFormatPipe} from '../../../../shared/pipe/data-format.pipe';
 import {InvoicesIssuedService} from '../../../../core/services/invoices-issued-service/invoices-issued.service';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import {NgClass} from '@angular/common';
 import {SearchService} from '../../../../core/services/shared-services/search.service';
 import Swal from 'sweetalert2';
 import {CommonModule} from '@angular/common';
-import {PaginationConfig, PaginationResult} from '../../../../interface/pagination-interface';
+import {PaginationConfig, PaginationResult} from '../../../../interfaces/pagination-interface';
 import {PaginationService} from '../../../../core/services/shared-services/pagination.service';
 import {
-  InvoicesIssuedUtilService
-} from '../../../../core/services/invoices-issued-util-services/invoices-issued-util.service';
+  InvoicesUtilService
+} from '../../../../core/services/shared-services/invoices-Util.service';
+import {
+  BILLING_TYPE_LABELS,
+  CATEGORIES_LABELS,
+  COLLECTION_METHOD_LABELS, COLLECTION_STATUS_LABELS,
+} from '../../../../shared/Collection-Enum/collection-enum';
 
 
 /**
@@ -31,7 +30,6 @@ import {
   imports: [
     DataFormatPipe,
     ReactiveFormsModule,
-    FormsModule,
     NgClass,
     CommonModule,
   ],
@@ -40,33 +38,61 @@ import {
 })
 export class InvoicesIssuedListComponent implements OnInit {
 
+  // ==========================================
+  // PROPIEDADES DE FORMULARIOS MÚLTIPLES
+  // ==========================================
+
+  // FormGroup para búsqueda de texto
+  searchForm: FormGroup;
+
+  //Formulario para filtros de búsqueda
+  filtersForm: FormGroup;
+
+  // FormGroup para configuración de paginación
+  paginationForm: FormGroup;
+
+  // Formulario para edición de pagos (no usado actualment
+  editCollectionForm: FormGroup | null = null;
+
+  // Formulario para modal de abonos
+  refundForm: FormGroup;
+
+  // ==========================================
+  // PROPIEDADES DE DATOS
+  // ==========================================
+
   // Lista de facturas que se muestra en la tabla
   invoices: Invoice[] = [];
 
   // Lista completa de facturas (datos originales sin filtrar)
   allInvoices: Invoice[] = [];
 
-  // Texto que escribe el usuario para buscar
-  searchTerm: string = '';
-
   // Lista de clientes filtrados (antes de paginar)
   filteredInvoices: Invoice[] = [];
 
-  //pago pendientes filtros
-  selectedCollectionStatus: string = '';
-  selectedTypeBilling: string = '';
-  selectedOwners: string = '';
-  selectedClients: string = '';
-  selectedRefundStatus: string = '';
-
-  // Opciones para filtros
-  collectionStatusOptions: Array<'pending' | 'collected' | 'overdue' | 'disputed'> = [];
+  // ==========================================
+  // PROPIEDADES DE FILTROS Y BÚSQUEDA
+  // ==========================================
+//Extrae los meses o porporcionales unicos
   billingTypeOptions: Array<0 | 1> = [];
+  //Extrae propietarios unicos
   ownersOptions: string[] = [];
+  //Extrae clientes unicos
   clientsOptions: string[] = [];
-  refundStatusOptions: { value: string, label:string }[] = [];
+  //Extrae facturas de abono unicos
+  refundStatusOptions: { value: string, label: string }[] = [];
 
-  // Configuración de paginación
+  //========================================
+  //LABELS PARA LOS NUEVOS CAMPOS DE COBROS
+  //========================================
+  collectionStatusLabels = COLLECTION_STATUS_LABELS;
+  collectionMethodLabels = COLLECTION_METHOD_LABELS;
+  billingTypeLabels = BILLING_TYPE_LABELS;
+
+  // ==========================================
+  // PROPIEDADES DE PAGINACIÓN
+  // ==========================================
+
   paginationConfig: PaginationConfig = {
     currentPage: 1,
     itemsPerPage: 5,
@@ -83,37 +109,62 @@ export class InvoicesIssuedListComponent implements OnInit {
     endIndex: 0
   };
 
-  // Variables para el modal de abonos
-  showRefundModal: boolean = false;
-  selectedInvoice: Invoice | null = null;
-
-  // Datos del nuevo abono
-  newRefund: RefundInvoice = {
-    originalInvoiceId: 0,
-    invoice_date: '',
-    amount: 0,
-    concept: '',
-    collection_method: 'tranfer'
-  };
-
-  //NUEVAS VARIABLES PARA GESTIÓN DE PAGOS
-
-  // Labels para mostrar en la UI
-  collectionStatusLabels = COLLECTION_STATUS_LABELS;
-  collectionMethodLabels = COLLECTION_METHOD_LABELS;
-  billingTypeLabels = BILLING_TYPE_LABELS;
+  // ==========================================
+  // PROPIEDADES DE MODALES Y EDICIÓN
+  // ==========================================
 
   //Datos temporales para edición rápida - AHORA USA INVOICE
   editingCollection: { [invoiceId: number]: Partial<Invoice> } = {};
 
+  // Variables para el modal de abonos
+  showRefundModal: boolean = false;
+
+  // Factura seleccionada para crear abono
+  selectedInvoice: Invoice | null = null;
+
+  // Datos del nuevo abono
+  newRefund: {
+    originalInvoiceId: number;
+  } = {
+    originalInvoiceId: 0
+  };
+
 
   constructor(
     private invoicesIssuedService: InvoicesIssuedService,
-    private invoicesIssuedUtilService: InvoicesIssuedUtilService,
+    private invoicesIssuedUtilService: InvoicesUtilService,
     private router: Router,
     private searchService: SearchService,
     private paginationService: PaginationService,
+    private fb: FormBuilder
   ) {
+
+    // FormGroup para búsqueda
+    this.searchForm = this.fb.group({
+      searchTerm: ['']
+    });
+
+    this.filtersForm = this.fb.group({
+      selectedCollectionStatus: [''],
+      selectedRefundStatus: [''],
+      selectedOwners: [''],
+      selectedClients: [''],
+      selectedTypeBilling: [''],
+    });
+
+    // FormGroup para paginación
+    this.paginationForm = this.fb.group({
+      itemsPerPage: [5],
+      currentPage: [1]
+    });
+
+    //FormGroup para modal de abonos
+    this.refundForm = this.fb.group({
+      amount: ['', [Validators.required, Validators.min(0.01)]],
+      invoice_date: ['', [Validators.required]],
+      collection_method: ['transfer'],
+      concept: ['']
+    });
   }
 
   /**
@@ -122,12 +173,49 @@ export class InvoicesIssuedListComponent implements OnInit {
    */
   ngOnInit(): void {
     this.getListInvoices();
+    this.setupFormSubscriptions();
   }
 
-  // GETTER; se pasa para los metodos en el html
-  get invoiceUtilsService() {
-    return this.invoicesIssuedUtilService;
+  /**
+   * Configura las suscripciones reactivas para los FormGroups
+   */
+  setupFormSubscriptions(): void {
+    // Suscripción para búsqueda en tiempo real
+    this.searchForm.get('searchTerm')?.valueChanges.subscribe(() => {
+      this.applyFilters();
+    });
+
+    // Suscripción para cambios en filtros
+    this.filtersForm.valueChanges.subscribe(() => {
+      this.applyFilters();
+    });
+
+    this.paginationForm.get('itemsPerPage')?.valueChanges.subscribe((items) => {
+      this.paginationConfig.itemsPerPage = items;
+      this.paginationConfig.currentPage = 1;
+      this.updatePagination();
+    });
   }
+
+  // ==========================================
+  // MÉTODOS HELPER PARA ETIQUETAS
+  // ==========================================
+  getStatusLabel(status: string): string {
+    return COLLECTION_STATUS_LABELS.find(item => item.value === status)?.label || status;
+  }
+
+  getMethodLabel(method: string): string {
+    return COLLECTION_METHOD_LABELS.find(item => item.value === method)?.label || method;
+  }
+
+  getCategoryLabel(category: string): string {
+    return CATEGORIES_LABELS.find(item => item.value === category)?.label || category;
+  }
+
+  // ==========================================
+  // MÉTODOS DE CARGA DE DATOS
+  // ==========================================
+
 
   /**
    * Obtiene todas las facturas del servidor
@@ -139,38 +227,21 @@ export class InvoicesIssuedListComponent implements OnInit {
         this.allInvoices = invoicesList;
         this.extractFilterOptions();
         this.applyFilters();
-      }, error: (e: HttpErrorResponse) => {
+      },
+      error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
       }
     })
   }
 
-  //==========================
-  // PROCESO DE LOS FILTROS
-  //==========================
-
-  /**
-   * Limpia el filtro de búsqueda y muestra todas las facturas
-   */
-  clearFilters() {
-    this.searchTerm = '';
-    this.applyFilters();
-  }
-
-  /**
-   * Se ejecuta cada vez que cambia algún filtro o el término de búsqueda.
-   * Aplica todos los filtros disponibles para actualizar la lista de facturas.
-   */
-  onFilterCharger() {
-    this.applyFilters();
-  }
+  // ==========================================
+  // MÉTODOS DE FILTROS Y BÚSQUEDA
+  // ==========================================
 
   /**
    * Extrae todos los filtos
    */
   extractFilterOptions() {
-    //Extrae los estados de cobro únicos
-    this.collectionStatusOptions = ['pending', 'collected', 'overdue', 'disputed'];
 
     //Extrae los meses o porporcionales unicos
     this.billingTypeOptions = [0, 1];
@@ -193,56 +264,94 @@ export class InvoicesIssuedListComponent implements OnInit {
 
     //Extrae facturas de abono unicos
     this.refundStatusOptions = [
-      { value: '1', label: 'Abono' },
-      { value: '0', label: 'Factura' }
+      {value: '1', label: 'Abono'},
+      {value: '0', label: 'Factura'}
     ];
   }
+
   /**
    * Filtra la lista de facturas según el texto de búsqueda
    * Busca en: número de factura, ID de propiedad, ID de cliente, ID de propietario, mes correspondencia
    */
-  applyFilters() {
+  applyFilters(): void {
     let filtered = [...this.allInvoices];
+
+    const search = this.searchForm.get('searchTerm')?.value;
+    const collectionStatus = this.filtersForm.get('selectedCollectionStatus')?.value;
+    const refundStatus = this.filtersForm.get('selectedRefundStatus')?.value;
+    const owners = this.filtersForm.get('selectedOwners')?.value;
+    const clients = this.filtersForm.get('selectedClients')?.value;
+    const typeBilling = this.filtersForm.get('selectedTypeBilling')?.value;
+
     // Filtro por búsqueda de texto
-    if (this.searchTerm.trim()) {
+    if (search.trim()) {
       filtered = this.searchService.filterData(
-        filtered,
-        this.searchTerm,
+        filtered, search,
         ['invoice_number', 'estates_id', 'clients_id', 'owners_id', 'corresponding_month', 'estate_name', 'client_name', 'owner_name']
-      )
-    }
-    //filtro por estado de pagos
-    if (this.selectedCollectionStatus) {
-      filtered = filtered.filter(invoice => invoice.collection_status === this.selectedCollectionStatus);
-    }
-    //filtro por mes o porporcional
-    if (this.selectedTypeBilling !== '') {
-      filtered = filtered.filter(invoice => invoice.is_proportional === Number(this.selectedTypeBilling));
-    }
-    //filtro facturas por propietarios
-    if (this.selectedOwners) {
-      filtered = filtered.filter(invoice => invoice.owner_name === this.selectedOwners);
-    }
-    //filtro facturas por clientes
-    if (this.selectedClients) {
-      filtered = filtered.filter(invoice => invoice.client_name === this.selectedClients);
-    }
-    // Filtro solo facturas de abono
-    if(this.selectedRefundStatus !== ''){
-      filtered = filtered.filter(invoice => invoice.is_refund === Number(this.selectedRefundStatus));
+      );
     }
 
+    // Filtro por estado de pagos
+    if (collectionStatus) {
+      filtered = filtered.filter(invoice => invoice.collection_status === collectionStatus);
+    }
+    // Tipo de factura o de abono
+    if (refundStatus) {
+      filtered = filtered.filter(invoice => invoice.is_refund === Number(refundStatus));
+    }
+
+    // Filtro facturas por propietarios
+    if (owners) {
+      filtered = filtered.filter(invoice => invoice.owner_name === owners);
+    }
+
+    // Filtro facturas por clientes
+    if (clients) {
+      filtered = filtered.filter(invoice => invoice.client_name === clients);
+    }
+
+
+    // Filtro por mes o proporcional
+    if (typeBilling) {
+      filtered = filtered.filter(invoice => invoice.is_proportional === Number(typeBilling));
+    }
 
     this.filteredInvoices = filtered;
     this.paginationConfig.totalItems = filtered.length;
     this.paginationConfig.currentPage = 1;
     this.updatePagination();
   }
+  /**
+   * Limpia el filtro de búsqueda
+   */
+  clearSearch(): void {
+    this.searchForm.patchValue({
+      searchTerm: ''
+    });
+  }
 
 
-  //==============
-  // PAGINACION
-  //=============
+  /**
+   * Limpia el filtro de búsqueda y muestra todas las facturas
+   */
+  clearFilters():void {
+    // Resetear cada FormGroup por separado con valores explícitos
+    this.searchForm.patchValue({
+      searchTerm: ''
+    });
+
+    this.filtersForm.patchValue({
+      selectedCollectionStatus: '',
+      selectedRefundStatus: '',
+      selectedOwners: '',
+      selectedClients: '',
+      selectedTypeBilling: ''  // Asegurarse que sea string vacío, no null
+    });
+  }
+
+  // ========================
+  // MÉTODOS DE PAGINACIÓN
+  // ========================
   /**
    * Actualiza la paginación con los datos filtrados
    */
@@ -303,10 +412,9 @@ export class InvoicesIssuedListComponent implements OnInit {
     );
   }
 
-
-  //===========
-  // CRUD
-  //===========
+  // ==========================================
+  // MÉTODOS DE NAVEGACIÓN Y CRUD
+  // ==========================================
 
   /**
    * Navega a la página de registro de nueva factura
@@ -321,7 +429,13 @@ export class InvoicesIssuedListComponent implements OnInit {
   editInvoice(id: number) {
     this.router.navigate(['/dashboards/invoices-issued/edit', id]);
   }
-
+  /**
+   * Exporta los datos filtrados
+   */
+  exportData() {
+    // Implementar lógica de exportación aquí
+    console.log('Exportando datos:', this.allInvoices);
+  }
 
   /**
    * Elimina una factura después de confirmar la acción
@@ -353,30 +467,33 @@ export class InvoicesIssuedListComponent implements OnInit {
     })
   }
 
-
   // ==========================================
-  // GESTIÓN DE COBROS (antes pagos)
+  // MÉTODOS DE GESTIÓN DE COBROS
   // ==========================================
-
-
   /**
    * Prepara los datos para editar el cobro de una factura
    */
-  startEditingCollection(invoice: Invoice) {
-    this.editingCollection[invoice.id!] = {
-      collection_status: invoice.collection_status || 'pending',
-      collection_method: invoice.collection_method || 'transfer',
-      collection_date: invoice.collection_date || undefined,
-      collection_notes: invoice.collection_notes || undefined,
-      collection_reference: invoice.collection_reference || undefined
-    };
+  startEditingCollection(invoice: Invoice): void {
+
+    // Crear FormGroup dinámico para esta factura específica
+    this.editCollectionForm = this.fb.group({
+      collection_status: [invoice.collection_status || 'pending'],
+      collection_method: [invoice.collection_method || 'transfer'],
+      collection_date: [invoice.collection_date || ''],
+      collection_notes: [invoice.collection_notes || ''],
+      collection_reference: [invoice.collection_reference || '']
+    });
+
+    // Mantener referencia simple para saber qué factura se está editando
+    this.editingCollection[invoice.id!] = {id: invoice.id};
   }
 
   /**
    * Cancela la edición del cobro
    */
-  cancelEditingCollection(invoiceId: number) {
+  cancelEditingCollection(invoiceId: number): void {
     delete this.editingCollection[invoiceId];
+    this.editCollectionForm = null; // Destruir FormGroup
   }
 
   /**
@@ -389,14 +506,15 @@ export class InvoicesIssuedListComponent implements OnInit {
   /**
    * Guarda los cambios del estado de cobro
    */
-  saveCollectionChanges(invoiceId: number) {
-    const collectionData = this.editingCollection[invoiceId];
-
-    if (!collectionData) {
+  saveCollectionChanges(invoiceId: number): void {
+    if (!this.editCollectionForm || this.editCollectionForm.invalid) {
       return;
     }
+
+    const formValues = this.editCollectionForm.value;
+
     // Validación: Si se marca como cobrado, debe tener fecha
-    if (collectionData.collection_status === 'collected' && !collectionData.collection_date) {
+    if (formValues.collection_status === 'collected' && !formValues.collection_date) {
       Swal.fire({
         title: 'Error',
         text: 'Las facturas cobradas deben tener una fecha de cobro',
@@ -404,8 +522,9 @@ export class InvoicesIssuedListComponent implements OnInit {
       });
       return;
     }
+
     // Llamar al servicio para actualizar
-    this.invoicesIssuedService.updateCollectionStatus(invoiceId, collectionData).subscribe({
+    this.invoicesIssuedService.updateCollectionStatus(invoiceId, formValues).subscribe({
       next: (updatedInvoice) => {
         Swal.fire({
           title: '¡Éxito!',
@@ -417,11 +536,14 @@ export class InvoicesIssuedListComponent implements OnInit {
 
         // Limpiar edición y recargar lista
         delete this.editingCollection[invoiceId];
+        this.editCollectionForm = null;
         this.getListInvoices();
-      }, error: (e: HttpErrorResponse) => {
+      },
+      error: (e: HttpErrorResponse) => {
+        // Error manejado por interceptor
       }
     });
-  };
+  }
 
   /**
    * Cambio rápido de estado pendiente/cobrado
@@ -429,22 +551,27 @@ export class InvoicesIssuedListComponent implements OnInit {
   toggleCollectionStatus(invoice: Invoice) {
     const newStatus = invoice.collection_status === 'collected' ? 'pending' : 'collected';
 
-    const collectionData: Partial<Invoice> = {
+    const collectionData: {
+      collection_status: 'pending' | 'collected' | 'overdue' | 'disputed';
+      collection_method: 'transfer' | 'direct_debit' | 'cash' | 'card' | 'check';
+      collection_date?: string;
+      collection_reference?: string;
+      collection_notes?: string;
+    }={
       collection_status: newStatus,
       collection_method: invoice.collection_method || 'transfer',
-      collection_date: newStatus === 'collected' ? new Date().toISOString().split('T')[0] : null,
-      collection_notes: invoice.collection_notes || undefined,
-      collection_reference: invoice.collection_reference || undefined
+      collection_date: newStatus === 'collected' ? new Date().toISOString().split('T')[0] : undefined,
+      collection_reference: invoice.collection_reference,
+      collection_notes: invoice.collection_notes
     };
     this.invoicesIssuedService.updateCollectionStatus(invoice.id!, collectionData).subscribe({
       next: () => {
-        // Actualizar localmente para respuesta inmediata
         invoice.collection_status = newStatus;
         invoice.collection_date = collectionData.collection_date;
         invoice.collection_reference = collectionData.collection_reference;
         invoice.collection_notes = collectionData.collection_notes;
 
-        const statusText = newStatus === 'collected' ? 'cobrada' : 'pendiente';
+        const statusText = newStatus === 'collected' ? 'cobrado' : 'pendiente';
         Swal.fire({
           title: '¡Actualizado!',
           text: `Factura marcada como ${statusText}`,
@@ -461,19 +588,23 @@ export class InvoicesIssuedListComponent implements OnInit {
   // ==========================================
   // ABONOS (MODAL Y CREACIÓN)
   // ==========================================
+
   /**
    * Abre el modal para registrar un abono
    */
-  openRefundModal(invoice: Invoice) {
+  openRefundModal(invoice: Invoice): void {
     this.selectedInvoice = invoice;
     this.showRefundModal = true;
-    // Preparar datos del nuevo abono
-    this.newRefund = {
-      originalInvoiceId: invoice.id!,
-      invoice_date: new Date().toISOString().split('T')[0],
+
+    // Preparar datos en el FormGroup
+    this.refundForm.patchValue({
       amount: 0,
-      concept: '',
-    };
+      invoice_date: new Date().toISOString().split('T')[0],
+      collection_method: 'transfer',
+      concept: ''
+    });
+    // Solo mantener el ID fuera del FormGroup
+    this.newRefund.originalInvoiceId = invoice.id!;
   }
 
   /**
@@ -482,33 +613,39 @@ export class InvoicesIssuedListComponent implements OnInit {
   closeRefundModal() {
     this.showRefundModal = false;
     this.selectedInvoice = null;
+    this.refundForm.reset();
   }
 
   /**
    * Guarda el nuevo abono
    */
-  saveRefund() {
-    // Validaciones básicas
-    if (!this.newRefund.amount || this.newRefund.amount <= 0) {
+  /**
+   * Guarda el nuevo abono
+   */
+  saveRefund(): void {
+    if (this.refundForm.invalid) {
+      this.refundForm.markAsTouched(); // Mostrar errores
       Swal.fire({
         title: 'Error',
-        text: 'El monto del abono debe ser mayor a cero',
+        text: 'El motivo del abono es obligatorio',
         icon: 'error'
       });
       return;
     }
 
-    if (!this.newRefund.invoice_date) {
-      Swal.fire({
-        title: 'Error',
-        text: 'La fecha del abono es obligatoria',
-        icon: 'error'
-      });
-      return;
-    }
+    const formValues = this.refundForm.value;
 
-    // Crear el abono con datos limpios
-    this.invoicesIssuedService.createRefund(this.newRefund).subscribe({
+    // Crear objeto RefundInvoice con datos del FormGroup
+    const refundData: RefundInvoice = {
+      originalInvoiceId: this.newRefund.originalInvoiceId,
+      invoice_date: formValues.invoice_date,
+      amount: parseFloat(formValues.amount),
+      concept: formValues.concept?.trim() || '',
+      collection_method: formValues.collection_method
+    };
+
+    // Crear el abono
+    this.invoicesIssuedService.createRefund(refundData).subscribe({
       next: (data) => {
         Swal.fire({
           title: 'Éxito!',
@@ -588,4 +725,39 @@ export class InvoicesIssuedListComponent implements OnInit {
       }
     });
   }
+
+
+  // ==========================================
+  // GETTERS PARA TEMPLATE
+  // ==========================================
+  get invoiceUtilsService() {
+    return this.invoicesIssuedUtilService;
+  }
+
+  /**
+   * Getter para obtener el valor del campo de búsqueda
+   */
+  get searchTerm(): string {
+    return this.searchForm.get('searchTerm')?.value || '';
+  }
+
+
+
+
+
+
+
+  get collectionStatusControl() {
+    return this.editCollectionForm?.get('collection_status') as FormControl;
+  }
+
+  get collectionMethodControl() {
+    return this.editCollectionForm?.get('collection_method') as FormControl;
+  }
+
+  get collectionDateControl() {
+    return this.editCollectionForm?.get('collection_date') as FormControl;
+  }
+
+
 }

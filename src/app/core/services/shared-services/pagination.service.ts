@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {PaginationConfig, PaginationResult} from '../../../interface/pagination-interface';
+import {PaginationConfig, PaginationResult} from '../../../interfaces/pagination-interface';
 
 
 /**

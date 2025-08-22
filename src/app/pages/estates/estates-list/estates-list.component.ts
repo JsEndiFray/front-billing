@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Estates} from '../../../interface/estates.interface';
+import {Estates} from '../../../interfaces/estates-interface';
 import {EstatesService} from '../../../core/services/estates-services/estates.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {FormsModule} from '@angular/forms';
@@ -7,7 +7,7 @@ import {Router} from '@angular/router';
 import Swal from 'sweetalert2';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
 import {SearchService} from '../../../core/services/shared-services/search.service';
-import {PaginationConfig, PaginationResult} from '../../../interface/pagination-interface';
+import {PaginationConfig, PaginationResult} from '../../../interfaces/pagination-interface';
 import {PaginationService} from '../../../core/services/shared-services/pagination.service';
 
 /**

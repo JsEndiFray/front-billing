@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {Owners} from '../../../interface/owners-interface';
+import {Owners} from '../../../interfaces/owners-interface';
 import {ActivatedRoute, Router} from '@angular/router';
 import {OwnersService} from '../../../core/services/owners-services/owners.service';
 import {HttpErrorResponse} from '@angular/common/http';

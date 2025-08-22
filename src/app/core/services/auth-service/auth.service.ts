@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {Observable, tap, throwError} from 'rxjs';
-import {LoginResponse, User, UsersLogin} from '../../../interface/users-interface';
+import {LoginResponse, User, UsersLogin} from '../../../interfaces/users-interface';
 import {ApiService} from '../api-service/api.service';
 import {Router} from '@angular/router';
 import {UserActivityService} from '../user-services/user-activity.service';

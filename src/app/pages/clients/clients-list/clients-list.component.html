@@ -5,68 +5,75 @@
     <p class="subtitle">Administra tus clientes y genera facturas de manera eficiente</p>
   </div>
 
-  <!-- Sección de filtros y búsqueda -->
+
+  <!--Filtros de busqueda-->
   <div class="filters-section">
-
-    <!-- Buscador CON ICONOS -->
-    <div class="search-wrapper">
+    <!-- FormGroup de búsqueda -->
+    <form [formGroup]="searchForm" class="search-wrapper">
       <div class="search-container">
-        <input
-          type="text"
-          [(ngModel)]="searchTerm"
-          (input)="onSearchChange()"
-          placeholder="Buscar clientes..."
-          class="search-input"
-          autocomplete="off">
-
+        <input type="text" formControlName="searchTerm" placeholder="Buscar clientes..." class="search-input"
+               autocomplete="off">
         <!-- Iconos de búsqueda y limpiar -->
         <div class="search-actions">
           <span class="search-icon">🔍</span>
           @if (searchTerm && searchTerm.trim() !== '') {
-            <button
-              type="button"
-              (click)="clearSearch()"
-              class="clear-button"
-              title="Limpiar búsqueda">
-              ✕
-            </button>
+            <button type="button" (click)="clearSearch()" class="clear-button" title="Limpiar búsqueda">✕</button>
           }
         </div>
       </div>
-    </div>
+    </form>
+  </div>
 
-    <!-- Filtros -->
-    <div class="filters-container">
+
+  <div class="filters-section">
+
+    <!-- FormGroup de filtros -->
+    <form [formGroup]="filtersForm">
       <!-- Filtro por tipo -->
-      <select
-        [(ngModel)]="selectedType"
-        (change)="onTypeFilterChange()" class="filter-select">
+      <select formControlName="selectedType" class="filter-select">
         <option value="">Todos los tipos</option>
-        @for (types of clientTypeOptions; track types){
-          <option [value]="types">{{ clientTypeLabels[types]}}</option>
+        @for (types of clientTypeOptions; track types) {
+          <option [value]="types">{{ clientTypeLabels[types] }}</option>
         }
       </select>
 
       <!-- Filtro por provincia -->
-      <select
-        [(ngModel)]="selectedProvince"
-        (change)="onProvinceFilterChange()"
-        class="filter-select">
+      <select formControlName="selectedProvince" class="filter-select">
         <option value="">Todas las provincias</option>
         @for (province of provinceOptions; track province) {
           <option [value]="province">{{ province }}</option>
         }
       </select>
-    </div>
 
+      <!-- Botón limpiar filtros -->
+      <button type="button" (click)="clearFilters()" class="clear-filters-btn" title="Limpiar todos los filtros">
+        Limpiar filtros
+      </button>
+    </form>
 
-    <!-- Botón exportar y nuevo cliente -->
+    <!-- Botones de acción -->
     <div class="actions-container">
-      <button class="export-btn">Exportar</button>
-      <button class="new-client-btn" (click)="newClient()">+ Nuevo Cliente</button>
+      <button type="button" class="export-btn" (click)="exportData()">Exportar</button>
+      <button type="button" class="new-client-btn" (click)="newClient()">+ Nuevo Cliente</button>
     </div>
   </div>
 
+
+  <!-- Configuración de paginación -->
+  <div class="pagination-config">
+    <form [formGroup]="paginationForm">
+      <label for="itemsPerPage">Elementos por página:</label>
+      <select
+        id="itemsPerPage"
+        formControlName="itemsPerPage"
+        class="items-per-page-select">
+        <option [value]="5">5</option>
+        <option [value]="10">10</option>
+        <option [value]="25">25</option>
+        <option [value]="50">50</option>
+      </select>
+    </form>
+  </div>
 
   <!-- Tabla de clientes -->
   <div class="table-container">
@@ -122,9 +129,11 @@
                 <button class="action-btn edit-btn" (click)="editClient(client.id!)">
                   Editar
                 </button>
-                <button class="action-btn delete-btn" (click)="deleteClient(client.id!)">
+
+                <!--<button class="action-btn delete-btn" (click)="deleteClient(client.id!)">
                   Eliminar
-                </button>
+                </button>-->
+
               </td>
             </tr>
           }

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Owners} from '../../../interface/owners-interface';
+import {Owners} from '../../../interfaces/owners-interface';
 
 /**
  * Servicio de validación para propietarios

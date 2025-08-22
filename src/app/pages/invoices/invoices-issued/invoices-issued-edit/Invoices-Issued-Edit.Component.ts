@@ -3,16 +3,13 @@ import {FormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {CurrencyPipe} from '@angular/common';
 import {
-  BILLING_TYPE_LABELS,
-  COLLECTION_METHOD_LABELS,
-  COLLECTION_STATUS_LABELS,
   Invoice,
   ProportionalSimulation,
   ProportionalSimulationResponse
-} from '../../../../interface/invoices-issued-interface';
-import {Owners} from '../../../../interface/owners-interface';
-import {Clients} from '../../../../interface/clientes-interface';
-import {Estates} from '../../../../interface/estates.interface';
+} from '../../../../interfaces/invoices-issued-interface';
+import {Owners} from '../../../../interfaces/owners-interface';
+import {Clients} from '../../../../interfaces/clientes-interface';
+import {Estates} from '../../../../interfaces/estates-interface';
 import {InvoicesIssuedService} from '../../../../core/services/invoices-issued-service/invoices-issued.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {OwnersService} from '../../../../core/services/owners-services/owners.service';
@@ -24,8 +21,12 @@ import {
   InvoicesIssuedValidatorService
 } from '../../../../core/services/validator-services/invoices-issued-validator.service';
 import {
-  InvoicesIssuedUtilService
-} from '../../../../core/services/invoices-issued-util-services/invoices-issued-util.service';
+  InvoicesUtilService
+} from '../../../../core/services/shared-services/invoices-Util.service';
+import {
+  BILLING_TYPE_LABELS,
+  COLLECTION_METHOD_LABELS, COLLECTION_STATUS_LABELS
+} from '../../../../shared/Collection-Enum/collection-enum';
 
 @Component({
   selector: 'app-invoices-issued-edit',
@@ -94,7 +95,7 @@ export class InvoicesIssuedEditComponent implements OnInit {
     private clientsServices: ClientsService,
     private estatesServices: EstatesService,
     private invoicesIssuedValidatorService: InvoicesIssuedValidatorService,
-    private invoicesIssuedUtilService: InvoicesIssuedUtilService,
+    private invoicesIssuedUtilService: InvoicesUtilService,
   ) {
   }
 
@@ -235,6 +236,19 @@ export class InvoicesIssuedEditComponent implements OnInit {
     this.invoicesIssuedUtilService.calculateTotal(this.invoice, () => this.onProportionalDatesChange())
   }
 
+
+  getStatusLabel(status: string): string {
+    const statusOption = COLLECTION_STATUS_LABELS.find(option => option.value === status);
+    return statusOption?.label || 'Pendiente';
+  }
+
+  getMethodLabel(method: string): string {
+    const methodOption = COLLECTION_METHOD_LABELS.find(option => option.value === method);
+    return methodOption?.label || 'Transferencia';
+  }
+
+
+
   updateInvoice() {
     if (!this.invoice.id) {
       Swal.fire({
@@ -266,7 +280,7 @@ export class InvoicesIssuedEditComponent implements OnInit {
           this.invoice = data; // Data ya es Invoice, no array
           Swal.fire({
             title: 'Éxito!',
-            text: `Factura actualizada con estado: ${this.collectionStatusLabels[this.invoice.collection_status || 'pending']}`,
+            text: `Factura actualizada con estado: ${this.getStatusLabel(this.invoice.collection_status || 'pending')}`,
             icon: 'success',
             confirmButtonText: 'Ok'
           }).then(() => {

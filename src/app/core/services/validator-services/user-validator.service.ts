@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {User} from '../../../interface/users-interface';
+import {User} from '../../../interfaces/users-interface';
 
 /**
  * Servicio de validación para usuarios del sistema

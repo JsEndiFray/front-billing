@@ -1,13 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {Employee} from '../../../interface/employee-interface';
+import {Employee} from '../../../interfaces/employee-interface';
 import {EmployeeService} from '../../../core/services/employee-services/employee.service';
 import {Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import {SearchService} from '../../../core/services/shared-services/search.service';
 import Swal from 'sweetalert2';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
-import {PaginationConfig, PaginationResult} from '../../../interface/pagination-interface';
+import {PaginationConfig, PaginationResult} from '../../../interfaces/pagination-interface';
 import {PaginationService} from '../../../core/services/shared-services/pagination.service';
 
 /**

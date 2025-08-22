@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from '../api-service/api.service';
 import {Observable} from 'rxjs';
-import {User} from '../../../interface/users-interface';
+import {User} from '../../../interfaces/users-interface';
 
 /**
  * Servicio para gestión de usuarios del sistema

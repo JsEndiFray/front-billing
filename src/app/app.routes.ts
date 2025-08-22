@@ -60,6 +60,7 @@ import {
   InvoicesReceivedEditComponent
 } from './pages/invoices/invoices-received/invoices-received-edit/invoices-received-edit.component';
 
+
 // facturas de gastos (internal-expenses) - Sistema de gastos internos
 import {
   InvoicesExpensesRegisterComponent
@@ -196,7 +197,7 @@ export const routes: Routes = [
         children: [
           {path: 'register', component: InvoicesRegisterReceivedComponent, title: 'Registar Factura Recibida'},
           {path: 'list', component: InvoicesReceivedListComponent, title: 'Listado de Facturas Recibidas'},
-          {path: 'edit/id', component: InvoicesReceivedEditComponent, title: 'Editar Factura Recibida'}
+          {path: 'edit/:id', component: InvoicesReceivedEditComponent, title: 'Editar Factura Recibida'}
         ]
       },
       //Módulo: sistemas de gastos internos
@@ -205,7 +206,7 @@ export const routes: Routes = [
         children: [
           {path: 'register', component: InvoicesExpensesRegisterComponent, title: 'Registrar Factura de Gasto'},
           {path: `list`, component: InvoicesExpensesListComponent, title: 'Listado Facturas de Gastos'},
-          {path: 'edit/id', component: InvoicesExpensesEditComponent, title: 'Editar Factura de Gasto'},
+          {path: 'edit/:id', component: InvoicesExpensesEditComponent, title: 'Editar Factura de Gasto'},
         ]
       },
       //Módulo de proveedores

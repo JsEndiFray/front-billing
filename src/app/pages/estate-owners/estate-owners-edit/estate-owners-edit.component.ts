@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {EstatesOwners} from '../../../interface/estates-owners-interface';
-import {Estates} from '../../../interface/estates.interface';
-import {Owners} from '../../../interface/owners-interface';
+import {EstatesOwners} from '../../../interfaces/estates-owners-interface';
+import {Estates} from '../../../interfaces/estates-interface';
+import {Owners} from '../../../interfaces/owners-interface';
 import {ActivatedRoute, Router} from '@angular/router';
 import {EstatesService} from '../../../core/services/estates-services/estates.service';
 import {OwnersService} from '../../../core/services/owners-services/owners.service';

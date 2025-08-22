@@ -9,14 +9,10 @@ import {
   ProportionalSimulation,
   ProportionalSimulationResponse,
   RefundInvoice,
-  InvoiceStats,
-  ClientStats,
-  OwnerStats,
-  VATBookDataEntry,
-  IncomeStatementEntry,
-  MonthlySummary
-} from '../../../interface/invoices-issued-interface';
+} from '../../../interfaces/invoices-issued-interface';
 import {HttpClient} from '@angular/common/http';
+import {ClientStats, InvoiceStats, OwnerStats} from '../../../interfaces/stats-interface';
+import {IncomeStatementEntry, MonthlySummary, VATBookDataEntry} from '../../../interfaces/vat-book-interface';
 
 /**
  * Servicio de Angular para interactuar con el backend de facturas emitidas.

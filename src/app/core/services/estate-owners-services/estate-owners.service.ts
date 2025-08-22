@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from '../api-service/api.service';
 import {Observable} from 'rxjs';
-import {EstatesOwners} from '../../../interface/estates-owners-interface';
+import {EstatesOwners} from '../../../interfaces/estates-owners-interface';
 
 /**
  * Servicio para gestión de relaciones propiedad-propietario

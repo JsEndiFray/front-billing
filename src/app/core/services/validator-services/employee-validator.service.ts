@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Employee} from '../../../interface/employee-interface';
+import {Employee} from '../../../interfaces/employee-interface';
 
 /**
  * Servicio de validación para propietarios

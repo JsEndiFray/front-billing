@@ -6,7 +6,7 @@
   </div>
 
   <!-- Formulario principal -->
-  <form (ngSubmit)="registerInvoice()">
+  <form [formGroup]="invoiceForm" (ngSubmit)="registerInvoice()">
 
     <!-- Sección: Identificación -->
     <div class="section">
@@ -27,11 +27,14 @@
           <label for="fecha" class="form-label">Fecha *</label>
           <input
             type="date"
-            [(ngModel)]="invoice.invoice_date"
-            name="date"
+            formControlName="invoice_date"
             id="fecha"
             class="form-input"
-            required>
+            [class.error]="isFieldInvalid('invoice_date')">
+          @if (isFieldInvalid('invoice_date')) {
+            <span class="error-message">La fecha es obligatoria</span>
+
+          }
         </div>
 
       </div>
@@ -45,11 +48,9 @@
         <div class="form-field">
           <label for="estate" class="form-label">Propiedad *</label>
           <select
-            required
-            [(ngModel)]="invoice.estates_id"
-            name="estate_id"
+            formControlName="estates_id"
             id="estate"
-            class="form-input">
+            class="form-input" [class.error]="isFieldInvalid('estates_id')">>
             <option value="" disabled>Selecciona una propiedad</option>
             @for (estate of estates; track estate.id) {
               <option [value]="estate.id">
@@ -62,11 +63,9 @@
         <div class="form-field">
           <label for="clients" class="form-label">Cliente *</label>
           <select
-            required
-            [(ngModel)]="invoice.clients_id"
-            name="client_id"
+            formControlName="clients_id"
             id="clients"
-            class="form-input">
+            class="form-input" [class.error]="isFieldInvalid('clients_id')">
             <option value="" disabled>Selecciona un cliente</option>
             @for (client of clients; track client.id) {
               <option [value]="client.id">
@@ -79,11 +78,9 @@
         <div class="form-field">
           <label for="owners" class="form-label">Propietario *</label>
           <select
-            required
-            [(ngModel)]="invoice.owners_id"
-            name="owner_id"
+            formControlName="owners_id"
             id="owners"
-            class="form-input">
+            class="form-input" [class.error]="isFieldInvalid('owners_id')">
             <option value="" disabled>Selecciona un propietario</option>
             @for (owner of owners; track owner.id) {
               <option [value]="owner.id">
@@ -100,58 +97,56 @@
     <div class="section">
       <h2 class="section-title">💰 Cálculos Financieros</h2>
       <div class="form-grid">
-
+        <!-- Base Imponible - Cambiar: -->
         <div class="form-field">
           <label for="tax_base" class="form-label">Base Imponible (€) *</label>
           <input
             type="number"
-            [(ngModel)]="invoice.tax_base"
-            name="tax_base"
+            formControlName="tax_base"
             id="tax_base"
-            (input)="onTaxBaseChange()"
+            (input)="calculateAmounts()"
             step="0.01"
             min="0"
             placeholder="0.00"
-            class="form-input currency-input"
-            required>
+            class="form-input currency-input" [class.error]="isFieldInvalid('tax_base')">
+          @if (isFieldInvalid('tax_base')) {
+            <span class="error-message">La base imponible es obligatoria</span>
+          }
         </div>
-
+        <!-- IVA - Cambiar: -->
         <div class="form-field">
           <label for="iva" class="form-label">IVA (%)</label>
           <input
             type="number"
-            [(ngModel)]="invoice.iva"
-            name="iva"
+            formControlName="iva"
             id="iva"
-            (input)="onIvaChange()"
+            (input)="calculateAmounts()"
             step="0.01"
             min="0"
             max="100"
             placeholder="21.00"
             class="form-input percentage-input">
         </div>
-
+        <!-- IRPF - Cambiar: -->
         <div class="form-field">
           <label for="irpf" class="form-label">IRPF (%)</label>
           <input
             type="number"
-            [(ngModel)]="invoice.irpf"
-            name="irpf"
+            formControlName="irpf"
             id="irpf"
-            (input)="onIrpfChange()"
+            (input)="calculateAmounts()"
             step="0.01"
             min="0"
             max="100"
             placeholder="15.00"
             class="form-input percentage-input">
         </div>
-
+        <!-- Total - Cambiar: -->
         <div class="form-field">
           <label for="total" class="form-label">Total (€)</label>
           <input
             type="number"
-            [(ngModel)]="invoice.total"
-            name="total"
+            formControlName="total"
             id="total"
             readonly
             class="form-input total-input"
@@ -169,22 +164,20 @@
         <div class="form-field">
           <label for="is_proportional" class="form-label">Tipo de Facturación</label>
           <select
-            [(ngModel)]="invoice.is_proportional"
-            name="is_proportional"
+            formControlName="is_proportional"
             id="is_proportional"
             (change)="onBillingTypeChange()"
             class="form-input billing-type-select">
-            <option [value]="0">{{ billingTypeLabels[0] }}</option>
-            <option [value]="1">{{ billingTypeLabels[1] }}</option>
+            <option value="0">{{ billingTypeLabels[0] }}</option>
+            <option value="1">{{ billingTypeLabels[1] }}</option>
           </select>
         </div>
-
+        <!-- Mes de Correspondencia - Cambiar: -->
         <div class="form-field">
           <label for="corresponding_month" class="form-label">Mes de Correspondencia</label>
           <input
             type="month"
-            [(ngModel)]="invoice.corresponding_month"
-            name="corresponding_month"
+            formControlName="corresponding_month"
             id="corresponding_month"
             class="form-input month-input"
             placeholder="Ej: 2025-06 para Junio 2025">
@@ -193,21 +186,23 @@
           </small>
         </div>
 
+
+
+
         <!-- Campos proporcionales (solo si está seleccionado) -->
-        @if (invoice.is_proportional == 1) {
+        @if (invoiceForm.get('is_proportional')?.value === "1") {
           <div class="form-field">
             <label for="start_date" class="form-label">
               Fecha de Inicio *
               <span class="required-indicator">*</span>
             </label>
+            <!-- Fecha de Inicio - Cambiar: -->
             <input
               type="date"
-              [(ngModel)]="invoice.start_date"
-              name="start_date"
+              formControlName="start_date"
               id="start_date"
               (change)="onProportionalDatesChange()"
-              class="form-input proportional-date-input"
-              required>
+              class="form-input proportional-date-input">
           </div>
 
           <div class="form-field">
@@ -215,14 +210,13 @@
               Fecha de Fin *
               <span class="required-indicator">*</span>
             </label>
+            <!-- Fecha de Fin - Cambiar: -->
             <input
               type="date"
-              [(ngModel)]="invoice.end_date"
-              name="end_date"
+              formControlName="end_date"
               id="end_date"
               (change)="onProportionalDatesChange()"
-              class="form-input proportional-date-input"
-              required>
+              class="form-input proportional-date-input">
           </div>
         }
 
@@ -248,11 +242,13 @@
             </div>
             <div class="detail-item">
               <span class="detail-label">Base original:</span>
-              <span class="detail-value">{{ simulationResult.details.original_base | currency:'EUR':'symbol':'1.2-2' }}</span>
+              <span
+                class="detail-value">{{ simulationResult.details.original_base | currency:'EUR':'symbol':'1.2-2' }}</span>
             </div>
             <div class="detail-item">
               <span class="detail-label">Base proporcional:</span>
-              <span class="detail-value">{{ simulationResult.details.proportional_base | currency:'EUR':'symbol':'1.2-2' }}</span>
+              <span
+                class="detail-value">{{ simulationResult.details.proportional_base | currency:'EUR':'symbol':'1.2-2' }}</span>
             </div>
             <div class="detail-item total-line">
               <span class="detail-label">Total proporcional:</span>
@@ -277,48 +273,46 @@
 
         <div class="form-field">
           <label for="collection_status" class="form-label">Estado de Pago</label>
+          <!-- Estado de Pago - Cambiar: -->
           <select
-            [(ngModel)]="invoice.collection_status"
-            name="collection_status"
+            formControlName="collection_status"
             id="collection_status"
             (change)="onCollectionStatusChange()"
             class="form-input payment-status-select">
-            <option value="pending">{{ collectionStatusLabels.pending }}</option>
-            <option value="collected">{{ collectionStatusLabels.collected }}</option>
+            @for (status of collectionStatusLabels; track status.value){
+              <option [value]="status.value">{{status.label}}</option>
+            }
           </select>
         </div>
 
         <div class="form-field">
           <label for="collection_method" class="form-label">Método de Pago</label>
+          <!-- Método de Pago - Cambiar: -->
           <select
-            [(ngModel)]="invoice.collection_method"
-            name="collection_method"
+            formControlName="collection_method"
             id="collection_method"
             class="form-input collection-method-select">
-            <option value="transfer">{{ collectionMethodLabels.transfer }}</option>
-            <option value="direct_debit">{{ collectionMethodLabels.direct_debit }}</option>
-            <option value="cash">{{ collectionMethodLabels.cash }}</option>
-            <option value="card">{{ collectionMethodLabels.card }}</option>
+            @for (metho of collectionMethodLabels; track metho.value){
+              <option [value]="metho.value">{{metho.label}}</option>
+            }
           </select>
         </div>
 
         <div class="form-field">
           <label for="collection_date" class="form-label">
             Fecha de Pago
-            @if (invoice.collection_status === 'collected') {
+            @if (invoiceForm.get('collection_status')?.value === 'collected') {
               <span class="required-indicator">*</span>
             }
           </label>
           <input
             type="date"
-            [(ngModel)]="invoice.collection_date"
-            name="collection_date"
+            formControlName="collection_date"
             id="collection_date"
             class="form-input collection-date-input"
-            [required]="invoice.collection_status === 'collected'"
-            [disabled]="invoice.collection_status === 'pending'"
+            [disabled]="invoiceForm.get('collection-status')?.value === 'pending'"
             placeholder="Fecha en que se realizó el pago">
-          @if (invoice.collection_status === 'pending') {
+          @if (invoiceForm.get('collection_status')?.value === 'pending') {
             <small class="help-text">
               Se habilitará al marcar como "Pagado"
             </small>
@@ -327,9 +321,9 @@
 
         <div class="form-field form-field-full">
           <label for="collection_notes" class="form-label">Notas del Pago (opcional)</label>
+          <!-- Notas del Pago - Cambiar: -->
           <textarea
-            [(ngModel)]="invoice.collection_notes"
-            name="collection_notes"
+            formControlName="collection_notes"
             id="collection_notes"
             rows="3"
             class="form-input collection-notes-textarea"
@@ -342,23 +336,26 @@
       <!-- Información visual del estado -->
       <div class="collection-summary">
         <div class="collection-summary-item">
-          <span class="collection-summary-label">Estado:</span>
+          <span class="collection-summary-label">Estado:fsefefef</span>
+          <!-- Estado - Cambiar: -->
           <span class="collection-summary-value"
-                [class.status-pending]="invoice.collection_status === 'pending'"
-                [class.status-paid]="invoice.collection_status === 'collected'">
-            {{ collectionStatusLabels[invoice.collection_status || 'pending'] }}
+                [class.status-pending]="invoiceForm.get('collection_status')?.value === 'pending'"
+                [class.status-paid]="invoiceForm.get('collection_status')?.value === 'collected'">
+            {{ getStatusLabel(invoiceForm.get('collection_status')?.value || 'pending') }}
           </span>
         </div>
         <div class="collection-summary-item">
           <span class="collection-summary-label">Método:</span>
+          <!-- Método - Cambiar: -->
           <span class="collection-summary-value">
-            {{ collectionMethodLabels[invoice.collection_method || 'transfer'] }}
+            {{ getMethodLabel(invoiceForm.get('collection_method')?.value || 'transfer') }}
           </span>
         </div>
-        @if (invoice.collection_date) {
+        <!-- Fecha de Pago -->
+        @if (invoiceForm.get('collection_date')?.value) {
           <div class="collection-summary-item">
             <span class="collection-summary-label">Fecha de Pago:</span>
-            <span class="collection-summary-value">{{ invoice.collection_date }}</span>
+            <span class="collection-summary-value">{{ invoiceForm.get('collection_date')?.value }}</span>
           </div>
         }
       </div>
@@ -366,7 +363,7 @@
 
     <!-- Botones de acción -->
     <div class="actions-section">
-      <button type="submit" class="primary-btn">
+      <button type="submit" class="primary-btn" [disabled]="invoiceForm.invalid">
         💰 Crear Factura
       </button>
       <button type="button" class="secondary-btn" (click)="goBack()">

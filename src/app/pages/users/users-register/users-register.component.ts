@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import {Router} from '@angular/router';
 import {AuthService} from '../../../core/services/auth-service/auth.service';
 import {HttpErrorResponse} from '@angular/common/http';
-import {User} from '../../../interface/users-interface';
+import {User} from '../../../interfaces/users-interface';
 import {UserValidatorService} from '../../../core/services/validator-services/user-validator.service';
 
 /**
