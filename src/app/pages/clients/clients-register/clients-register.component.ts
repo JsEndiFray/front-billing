@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {FormsModule} from '@angular/forms';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ClientsValidatorService} from '../../../core/services/validator-services/clients-validator.service';
 import Swal from 'sweetalert2';
 import {Clients} from '../../../interfaces/clientes-interface';
@@ -16,8 +15,7 @@ import {HttpErrorResponse} from '@angular/common/http';
   selector: 'app-clients',
   standalone: true,
   imports: [
-    CommonModule,
-    FormsModule
+    ReactiveFormsModule
   ],
   providers: [
     ClientsValidatorService
@@ -26,39 +24,43 @@ import {HttpErrorResponse} from '@angular/common/http';
   styleUrl: './clients-register.component.css'
 })
 export class ClientsRegisterComponent implements OnInit {
+  // ==========================================
+  // PROPIEDADES DE FORMULARIOS MÚLTIPLES
+  // ==========================================
 
-  // Objeto que guarda los datos del cliente principal
-  client: Clients = {
-    id: null,
-    type_client: '',
-    name: '',
-    lastname: '',
-    company_name: '',
-    identification: '',
-    phone: '',
-    email: '',
-    address: '',
-    postal_code: '',
-    location: '',
-    province: '',
-    country: 'ESPAÑA',
-    date_create: '',
-    date_update: '',
-    parent_company_id: null,
-    relationship_type: undefined
-  };
-
+  //extraer los datos del cliente principal
+  clientForm: FormGroup;
   // Lista de administradores para empresas (solo si es empresa)
-  administrators: Clients[] = [];
+  administratorForms: FormGroup[] = [];
 
   // ID de la empresa creada (para vincular administradores)
   createdCompanyId: number | null | undefined = null;
 
+
   constructor(
     private clientsValidatorService: ClientsValidatorService,
     private router: Router,
-    private clientsService: ClientsService
+    private clientsService: ClientsService,
+    private fb: FormBuilder
   ) {
+    this.clientForm = this.fb.group({
+      type_client: ['', Validators.required],
+      name: ['', Validators.required],
+      lastname: ['', Validators.required],
+      company_name: [''],
+      identification: ['', Validators.required],
+      phone: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      address: ['', Validators.required],
+      postal_code: ['', [Validators.required, Validators.maxLength(5)]],
+      location: ['', Validators.required],
+      province: ['', Validators.required],
+      country: ['ESPAÑA', Validators.required],
+      date_create: [''],
+      date_update: [''],
+      parent_company_id: [null],
+      relationship_type: [undefined]
+    })
   }
 
   /**
@@ -75,19 +77,25 @@ export class ClientsRegisterComponent implements OnInit {
    * Limpia datos específicos según el tipo seleccionado
    */
   selectClientType(type: string): void {
-    this.client.type_client = type;
-    this.client.company_name = '';
-    this.client.parent_company_id = null;
-    this.client.relationship_type = undefined;
+    this.clientForm.patchValue({
+      type_client: type,
+      company_name: '',
+      parent_company_id: null,
+      relationship_type: undefined
+
+    })
 
     // Limpiar administradores si cambia de empresa
     if (type !== 'empresa') {
-      this.administrators = [];
+      this.administratorForms = [];
     }
 
     // Los autónomos pueden ser administradores por defecto
     if (type === 'autonomo') {
-      this.client.relationship_type = 'administrator';
+      this.clientForm.patchValue({
+        relationship_type: 'administrator'
+      })
+
     }
   }
 
@@ -96,8 +104,16 @@ export class ClientsRegisterComponent implements OnInit {
    * Se ejecuta cuando cambian nombre o apellidos en empresas
    */
   updateCompanyName(): void {
-    if (this.client.type_client === 'empresa') {
-      this.client.company_name = `${this.client.name} ${this.client.lastname}`.trim();
+    // Obtiene todos los valores actuales del formulario
+    const formValue = this.clientForm.value;
+    // Verifica si el tipo de cliente es 'empresa'
+    if (formValue.type_client === 'empresa') {
+      // Combina el nombre y apellido, eliminando espacios extras
+      const companyName = `${formValue.name} ${formValue.lastname}`.trim();
+      // Actualiza el campo 'company_name' del formulario con el nuevo valor
+      this.clientForm.patchValue({
+        company_name: companyName
+      });
     }
   }
 
@@ -106,7 +122,8 @@ export class ClientsRegisterComponent implements OnInit {
    * CIF para empresas, NIF/NIE para particulares y autónomos
    */
   getIdentificationPlaceholder(): string {
-    switch (this.client.type_client) {
+    const clientType = this.clientForm.get('type_client')?.value;
+    switch (clientType) {
       case 'empresa':
         return 'CIF (ej: A12345674)';
       case 'particular':
@@ -122,44 +139,83 @@ export class ClientsRegisterComponent implements OnInit {
    * Solo disponible para empresas
    */
   addAdministrator(): void {
-    const newAdmin: Clients = {
-      id: null,
-      type_client: 'autonomo',        // Los administradores siempre son autónomos
-      name: '',
-      lastname: '',
-      company_name: '',
-      identification: '',
-      phone: '',
-      email: '',
-      address: '',
-      postal_code: '',
-      location: '',
-      province: '',
-      country: 'ESPAÑA',
-      date_create: '',
-      date_update: '',
-      parent_company_id: null,         // Se asignará después de crear la empresa
-      relationship_type: 'administrator'
-    };
-    this.administrators.push(newAdmin);
+    // Crear FormGroup para el nuevo administrador
+    const adminForm = this.fb.group({
+      id: [null],
+      type_client: ['autonomo'],
+      name: ['', Validators.required],
+      lastname: ['', Validators.required],
+      company_name: [''],
+      identification: ['', Validators.required],
+      phone: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      address: ['', Validators.required],
+      postal_code: ['', [Validators.required, Validators.maxLength(5)]],
+      location: ['', Validators.required],
+      province: ['', Validators.required],
+      country: ['ESPAÑA', Validators.required],
+      date_create: [''],
+      date_update: [''],
+      parent_company_id: [null],
+      relationship_type: ['administrator']
+    });
+
+    this.administratorForms.push(adminForm);
+
   }
 
   /**
    * Elimina un administrador de la lista
    */
   removeAdministrator(index: number): void {
-    this.administrators.splice(index, 1);
+    this.administratorForms.splice(index, 1);
   }
 
   /**
    * Valida los datos de un administrador
    * Muestra mensaje de error si la validación falla
    */
-  validateAdministrator(admin: Clients): boolean {
-    const validation = this.clientsValidatorService.validateClient(admin);
+  validateAdministrator(adminForm: FormGroup, index: number): boolean {
+
+    // Primero validar que el FormGroup sea válido
+    if (!adminForm.valid) {
+      // Marcar todos los campos como tocados para mostrar errores
+      adminForm.markAllAsTouched();
+      Swal.fire({
+        title: `Error en administrador ${index + 1}`,
+        text: 'Por favor, complete todos los campos requeridos',
+        icon: 'error'
+      });
+      return false;
+    }
+
+    // Crear objeto Clients desde el FormGroup para validación adicional
+    const adminValues = adminForm.value;
+    const adminToValidate: Clients = {
+      id: null,
+      type_client: 'autonomo',
+      name: adminValues.name,
+      lastname: adminValues.lastname,
+      company_name: '',
+      identification: adminValues.identification,
+      phone: adminValues.phone,
+      email: adminValues.email,
+      address: adminValues.address,
+      postal_code: adminValues.postal_code,
+      location: adminValues.location,
+      province: adminValues.province,
+      country: adminValues.country,
+      date_create: '',
+      date_update: '',
+      parent_company_id: null,
+      relationship_type: 'administrator'
+    };
+
+
+    const validation = this.clientsValidatorService.validateClient(adminToValidate);
     if (!validation.isValid) {
       Swal.fire({
-        title: 'Error en administrador',
+        title: `Error en administrador ${index + 1}`,
         text: validation.message,
         icon: 'error'
       });
@@ -174,7 +230,9 @@ export class ClientsRegisterComponent implements OnInit {
    */
   createClient(): void {
     // Verificar que se haya seleccionado un tipo
-    if (!this.client.type_client) {
+    if (!this.clientForm.valid) {
+      // Marcar todos los campos como tocados para mostrar errores
+      this.clientForm.markAllAsTouched();
       Swal.fire({
         title: 'Error!',
         text: 'Debe seleccionar un tipo de cliente',
@@ -182,9 +240,42 @@ export class ClientsRegisterComponent implements OnInit {
       });
       return;
     }
+    // Obtener valores del FormGroup
+    const formValues = this.clientForm.value;
+
+    // Verificar que se haya seleccionado un tipo
+    if (!formValues.type_client) {
+      Swal.fire({
+        title: 'Error!',
+        text: 'Debe seleccionar un tipo de cliente',
+        icon: 'error'
+      });
+      return;
+    }
+    // Crear objeto Clients desde el FormGroup
+    const clientToCreate: Clients = {
+      id: null,
+      type_client: formValues.type_client,
+      name: formValues.name,
+      lastname: formValues.lastname,
+      company_name: formValues.company_name || '',
+      identification: formValues.identification,
+      phone: formValues.phone,
+      email: formValues.email,
+      address: formValues.address,
+      postal_code: formValues.postal_code,
+      location: formValues.location,
+      province: formValues.province,
+      country: formValues.country,
+      date_create: '',
+      date_update: '',
+      parent_company_id: formValues.parent_company_id,
+      relationship_type: formValues.relationship_type
+    };
+
 
     // Limpiar espacios y validar datos del cliente principal
-    const cleanClient = this.clientsValidatorService.cleanClientData(this.client);
+    const cleanClient = this.clientsValidatorService.cleanClientData(clientToCreate);
     const validation = this.clientsValidatorService.validateClient(cleanClient);
 
     if (!validation.isValid) {
@@ -202,11 +293,16 @@ export class ClientsRegisterComponent implements OnInit {
         this.createdCompanyId = data[0].id;
 
         // Si es empresa con administradores, crearlos después
-        if (this.client.type_client === 'empresa' && this.administrators.length > 0) {
+        if (formValues.type_client === 'empresa' && this.administratorForms.length > 0) {
           this.createAdministrators();
         } else {
           // Si no hay administradores, mostrar éxito directamente
-          this.showSuccess();
+          Swal.fire({
+            title: "Cliente registrado correctamente.",
+            icon: "success",
+            draggable: true
+          });
+          this.router.navigate(['/dashboards/clients/list']);
         }
       },
       error: (e: HttpErrorResponse) => {
@@ -215,35 +311,63 @@ export class ClientsRegisterComponent implements OnInit {
     });
   }
 
+  //volver a tras
+  goBack() {
+    this.router.navigate(['/dashboards/clients/list'])
+  }
+
+
+  //===============================
+  // Util para los administradores
+  //===============================
   /**
    * Crea todos los administradores de la empresa
    * Proceso: validar todos → crear en paralelo → mostrar resultado
    */
   private createAdministrators(): void {
     // Validar todos los administradores antes de crear ninguno
-    for (let i = 0; i < this.administrators.length; i++) {
-      if (!this.validateAdministrator(this.administrators[i])) {
+    for (let i = 0; i < this.administratorForms.length; i++) {
+      if (!this.validateAdministrator(this.administratorForms[i], i)) {
         return; // Si alguno falla, no crear ninguno
       }
     }
 
     // Crear todas las promesas para crear administradores en paralelo
-    const adminPromises = this.administrators.map(admin => {
-      const cleanAdmin = this.clientsValidatorService.cleanClientData(admin);
-      cleanAdmin.parent_company_id = this.createdCompanyId;  // Vincular con la empresa
-      cleanAdmin.relationship_type = 'administrator';
-      cleanAdmin.type_client = 'autonomo';
+    const adminPromises = this.administratorForms.map(adminForm => {
+      const adminValues = adminForm.value;
 
+      // Crear objeto Clients desde el FormGroup
+      const adminToCreate: Clients = {
+        id: null,
+        type_client: 'autonomo',
+        name: adminValues.name,
+        lastname: adminValues.lastname,
+        company_name: '',
+        identification: adminValues.identification,
+        phone: adminValues.phone,
+        email: adminValues.email,
+        address: adminValues.address,
+        postal_code: adminValues.postal_code,
+        location: adminValues.location,
+        province: adminValues.province,
+        country: adminValues.country,
+        date_create: '',
+        date_update: '',
+        parent_company_id: this.createdCompanyId,  // Vincular con la empresa
+        relationship_type: 'administrator'
+      };
+
+      // Limpiar datos y crear
+      const cleanAdmin = this.clientsValidatorService.cleanClientData(adminToCreate);
       return this.clientsService.createClientes(cleanAdmin).toPromise();
     });
-
     // Ejecutar todas las creaciones en paralelo
     Promise.all(adminPromises).then(
       (results: (Clients[] | undefined)[]) => {
         // Todos los administradores creados correctamente
         Swal.fire({
           title: 'Éxito!',
-          text: `Empresa y ${this.administrators.length} administrador(es) creados`,
+          text: `Empresa y ${this.administratorForms.length} administrador(es) creados`,
           icon: 'success'
         });
         this.router.navigate(['/dashboards/clients/list']);
@@ -259,22 +383,5 @@ export class ClientsRegisterComponent implements OnInit {
         this.router.navigate(['/dashboards/clients/list']);
       }
     );
-  }
-
-  /**
-   * Muestra mensaje de éxito y redirige a la lista
-   * Para clientes sin administradores
-   */
-  private showSuccess(): void {
-    Swal.fire({
-      title: "Cliente registrado correctamente.",
-      icon: "success",
-      draggable: true
-    });
-    this.router.navigate(['/dashboards/clients/list']);
-  }
-
-  goBack() {
-    this.router.navigate(['/dashboards/clients/list'])
   }
 }

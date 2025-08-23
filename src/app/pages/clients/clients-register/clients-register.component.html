@@ -6,14 +6,14 @@
   </div>
 
   <!-- Formulario principal -->
-  <form #clientForm="ngForm" (ngSubmit)="createClient()">
+  <form [formGroup]="clientForm" (ngSubmit)="createClient()">
 
     <!-- Sección: Selección de tipo -->
     <div class="section">
       <h2 class="section-title">Tipo de Cliente</h2>
       <div class="type-selection">
         <div class="type-card"
-             [class.selected]="client.type_client === 'empresa'"
+             [class.selected]="clientForm.get('type_client')?.value === 'empresa'"
              (click)="selectClientType('empresa')">
           <div class="type-icon">🏢</div>
           <h3>Empresa</h3>
@@ -21,7 +21,7 @@
         </div>
 
         <div class="type-card"
-             [class.selected]="client.type_client === 'particular'"
+             [class.selected]="clientForm.get('type_client')?.value === 'particular'"
              (click)="selectClientType('particular')">
           <div class="type-icon">👤</div>
           <h3>Particular</h3>
@@ -29,7 +29,7 @@
         </div>
 
         <div class="type-card"
-             [class.selected]="client.type_client === 'autonomo'"
+             [class.selected]="clientForm.get('type_client')?.value === 'autonomo'"
              (click)="selectClientType('autonomo')">
           <div class="type-icon">💼</div>
           <h3>Autónomo</h3>
@@ -37,7 +37,7 @@
         </div>
       </div>
 
-      @if (client.type_client === 'empresa') {
+      @if (clientForm.get('type_client')?.value === 'empresa') {
         <div class="info-message">
           💡 Los datos de nombre y apellidos se utilizarán como razón social
         </div>
@@ -55,11 +55,10 @@
             type="text"
             id="name"
             name="name"
-            [(ngModel)]="client.name"
-            (ngModelChange)="updateCompanyName()"
+            formControlName="name"
+            (input)="updateCompanyName()"
             placeholder="Introduce el nombre"
-            class="form-input"
-            required>
+            class="form-input">
         </div>
 
         <div class="form-field">
@@ -68,21 +67,21 @@
             type="text"
             id="lastname"
             name="lastname"
-            [(ngModel)]="client.lastname"
-            (ngModelChange)="updateCompanyName()"
+            formControlName="lastname"
+            (input)="updateCompanyName()"
             placeholder="Introduce los apellidos"
             class="form-input"
             required>
         </div>
 
-        @if (client.type_client === 'empresa') {
+        @if (clientForm.get('type_client')?.value === 'empresa') {
           <div class="form-field form-field-full">
             <label for="company_name" class="form-label">Razón Social *</label>
             <input
               type="text"
               id="company_name"
               name="company_name"
-              [(ngModel)]="client.company_name"
+              formControlName="company_name"
               placeholder="Se completa automáticamente"
               class="form-input company-input"
               required>
@@ -91,7 +90,7 @@
 
         <div class="form-field">
           <label for="identification" class="form-label">
-            @if (client.type_client === 'empresa') {
+            @if (clientForm.get('type_client')?.value === 'empresa') {
               CIF *
             } @else {
               Identificación *
@@ -101,7 +100,7 @@
             type="text"
             id="identification"
             name="identification"
-            [(ngModel)]="client.identification"
+           formControlName="identification"
             [placeholder]="getIdentificationPlaceholder()"
             class="form-input identification-input"
             required>
@@ -113,7 +112,7 @@
             type="tel"
             id="phone"
             name="phone"
-            [(ngModel)]="client.phone"
+            formControlName="phone"
             placeholder="+34 123 456 789"
             class="form-input"
             required>
@@ -125,7 +124,7 @@
             type="email"
             id="email"
             name="email"
-            [(ngModel)]="client.email"
+            formControlName="email"
             placeholder="ejemplo@correo.com"
             class="form-input"
             required>
@@ -137,7 +136,7 @@
             type="text"
             id="address"
             name="address"
-            [(ngModel)]="client.address"
+            formControlName="address"
             placeholder="Calle, número, piso..."
             class="form-input"
             required>
@@ -149,7 +148,7 @@
             type="text"
             id="postal_code"
             name="postal_code"
-            [(ngModel)]="client.postal_code"
+            formControlName="postal_code"
             placeholder="28001"
             class="form-input postal-input"
             maxlength="5"
@@ -162,7 +161,7 @@
             type="text"
             id="location"
             name="location"
-            [(ngModel)]="client.location"
+           formControlName="location"
             placeholder="Madrid"
             class="form-input"
             required>
@@ -174,7 +173,7 @@
             type="text"
             id="province"
             name="province"
-            [(ngModel)]="client.province"
+            formControlName="province"
             placeholder="Madrid"
             class="form-input"
             required>
@@ -186,17 +185,16 @@
             type="text"
             id="country"
             name="country"
-            [(ngModel)]="client.country"
+           formControlName="country"
             value="España"
             class="form-input"
             required>
         </div>
-
       </div>
     </div>
 
     <!-- Sección: Administradores (solo empresas) -->
-    @if (client.type_client === 'empresa') {
+    @if (clientForm.get('type_client')?.value === 'empresa') {
       <div class="section">
         <h2 class="section-title">Administradores (Opcional)</h2>
 
@@ -210,10 +208,10 @@
           </button>
         </div>
 
-        @for (admin of administrators; track $index) {
-          <div class="admin-container">
+        @for (admin of administratorForms; track $index) {
+          <div class="admin-container" [formGroup]="administratorForms[$index]">
             <div class="admin-header">
-              <h3>👤 Administrador {{$index + 1}}</h3>
+              <h3>👤 Administrador {{ $index + 1 }}</h3>
               <button type="button" class="remove-admin-btn" (click)="removeAdministrator($index)">
                 Eliminar
               </button>
@@ -225,8 +223,7 @@
                 <input
                   type="text"
                   [id]="'admin_name_' + $index"
-                  [(ngModel)]="admin.name"
-                  [name]="'admin_name_' + $index"
+                  formControlName="name"
                   placeholder="Nombre del administrador"
                   class="form-input"
                   required>
@@ -237,8 +234,7 @@
                 <input
                   type="text"
                   [id]="'admin_lastname_' + $index"
-                  [(ngModel)]="admin.lastname"
-                  [name]="'admin_lastname_' + $index"
+                  formControlName="lastname"
                   placeholder="Apellidos del administrador"
                   class="form-input"
                   required>
@@ -249,8 +245,7 @@
                 <input
                   type="text"
                   [id]="'admin_identification_' + $index"
-                  [(ngModel)]="admin.identification"
-                  [name]="'admin_identification_' + $index"
+                  formControlName="identification"
                   placeholder="NIF, NIE o Pasaporte"
                   class="form-input identification-input"
                   required>
@@ -261,8 +256,7 @@
                 <input
                   type="tel"
                   [id]="'admin_phone_' + $index"
-                  [(ngModel)]="admin.phone"
-                  [name]="'admin_phone_' + $index"
+                  formControlName="phone"
                   placeholder="+34 123 456 789"
                   class="form-input"
                   required>
@@ -273,8 +267,7 @@
                 <input
                   type="email"
                   [id]="'admin_email_' + $index"
-                  [(ngModel)]="admin.email"
-                  [name]="'admin_email_' + $index"
+                  formControlName="email"
                   placeholder="admin@empresa.com"
                   class="form-input"
                   required>
@@ -285,8 +278,7 @@
                 <input
                   type="text"
                   [id]="'admin_address_' + $index"
-                  [(ngModel)]="admin.address"
-                  [name]="'admin_address_' + $index"
+                  formControlName="address"
                   placeholder="Dirección completa"
                   class="form-input"
                   required>
@@ -297,8 +289,7 @@
                 <input
                   type="text"
                   [id]="'admin_postal_code_' + $index"
-                  [(ngModel)]="admin.postal_code"
-                  [name]="'admin_postal_code_' + $index"
+                  formControlName="postal_code"
                   placeholder="28001"
                   class="form-input postal-input"
                   maxlength="5"
@@ -310,8 +301,7 @@
                 <input
                   type="text"
                   [id]="'admin_location_' + $index"
-                  [(ngModel)]="admin.location"
-                  [name]="'admin_location_' + $index"
+                  formControlName="location"
                   placeholder="Madrid"
                   class="form-input"
                   required>
@@ -322,8 +312,7 @@
                 <input
                   type="text"
                   [id]="'admin_province_' + $index"
-                  [(ngModel)]="admin.province"
-                  [name]="'admin_province_' + $index"
+                  formControlName="province"
                   placeholder="Madrid"
                   class="form-input"
                   required>
@@ -334,8 +323,7 @@
                 <input
                   type="text"
                   [id]="'admin_country_' + $index"
-                  [(ngModel)]="admin.country"
-                  [name]="'admin_country_' + $index"
+                  formControlName="country"
                   value="España"
                   class="form-input"
                   required>
@@ -349,7 +337,7 @@
     <!-- Botones de acción -->
     <div class="actions-section">
       <button type="submit" class="primary-btn">
-        @if (client.type_client === 'empresa') {
+        @if (clientForm.get('type_client')?.value === 'empresa') {
           🏢 Crear Empresa
         } @else {
           👤 Crear Cliente

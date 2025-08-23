@@ -237,13 +237,8 @@ export class InvoicesIssuedRegisterComponent implements OnInit {
   onBillingTypeChange(): void {
     const formValues = this.invoiceForm.value;
 
-    // 🔍 DEBUG COMPLETO
-    console.log('🔍 DEBUGGING is_proportional:');
-    console.log('Value:', formValues.is_proportional);
-    console.log('Type:', typeof formValues.is_proportional);
 
     if (formValues.is_proportional === "0") {
-      console.log('✅ Es NORMAL - Limpiando campos proporcionales');
       // Si cambia a normal, limpiar campos proporcionales
       this.invoiceForm.patchValue({
         start_date: '',
@@ -251,7 +246,6 @@ export class InvoicesIssuedRegisterComponent implements OnInit {
       });
       this.simulationResult = null;
     }else if (formValues.is_proportional === "1"){
-      console.log('✅ Es PROPORCIONAL - Manteniendo campos');
     }
     this.calculateAmounts();
   }
@@ -383,22 +377,9 @@ export class InvoicesIssuedRegisterComponent implements OnInit {
       });
     } else {
       // Marcar campos como tocados para mostrar errores
-      this.markFormGroupTouched();
+      this.invoiceForm.markAllAsTouched();
     }
   }
-
-
-  /**
-   * Marca todos los campos del formulario como tocados
-   */
-  markFormGroupTouched(): void {
-    Object.keys(this.invoiceForm.controls).forEach(key => {
-      const control = this.invoiceForm.get(key);
-      control?.markAsTouched();
-    });
-  }
-
-
   goBack() {
     // Verificar si hay cambios sin guardar
     if (this.invoiceForm.dirty) {
