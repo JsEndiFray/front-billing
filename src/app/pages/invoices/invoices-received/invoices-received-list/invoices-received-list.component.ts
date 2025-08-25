@@ -108,20 +108,13 @@ export class InvoicesReceivedListComponent implements OnInit {
   // ==========================================
 
   // Datos temporales para edición rápida de pagos
-  editingPayment: { [invoiceId: number]: Partial<InvoiceReceived> } = {};
+  editingPayment: Set<number> = new Set();
 
   // Control de visibilidad del modal de abonos
   showRefundModal: boolean = false;
 
   // Factura seleccionada para crear abono
   selectedInvoice: InvoiceReceived | null = null;
-
-  //Datos del nuevo abono
-  newRefund: {
-    originalInvoiceId: number;
-  } = {
-    originalInvoiceId: 0,
-  };
 
   constructor(
     private invoicesReceivedService: InvoicesReceivedService,
@@ -146,8 +139,7 @@ export class InvoicesReceivedListComponent implements OnInit {
 
     // FormGroup para paginación
     this.paginationForm = this.fb.group({
-      itemsPerPage: [5],
-      currentPage: [1]
+      itemsPerPage: [5]
     });
 
     // FormGroup para modal de abonos
@@ -282,15 +274,6 @@ export class InvoicesReceivedListComponent implements OnInit {
     this.paginationConfig.totalItems = filtered.length;
     this.paginationConfig.currentPage = 1;
     this.updatePagination();
-  }
-
-  /**
-   * Limpia el filtro de búsqueda
-   */
-  clearSearch(): void {
-    this.searchForm.patchValue({
-      searchTerm: ''
-    });
   }
 
   /**
@@ -447,7 +430,7 @@ export class InvoicesReceivedListComponent implements OnInit {
       collection_reference: [invoice.collection_reference || ''],
       collection_notes: [invoice.collection_notes || '']
     });
-    this.editingPayment[invoice.id!] = {id: invoice.id};
+    this.editingPayment.add(invoice.id!);
   };
 
 
@@ -455,7 +438,7 @@ export class InvoicesReceivedListComponent implements OnInit {
    * Cancela la edición del pago.
    */
   cancelEditingPayment(invoiceId: number): void {
-    delete this.editingPayment[invoiceId];
+     this.editingPayment.delete(invoiceId);
     this.editPaymentForm = null; // Destruir FormGroup
   }
 
@@ -463,7 +446,7 @@ export class InvoicesReceivedListComponent implements OnInit {
    * Verifica si una factura está en modo edición de pago.
    */
   isEditingPayment(invoiceId: number): boolean {
-    return !!this.editingPayment[invoiceId];
+    return this.editingPayment.has(invoiceId);
   }
 
   /**
@@ -498,7 +481,7 @@ export class InvoicesReceivedListComponent implements OnInit {
         });
 
         // Limpiar edición y recargar lista
-        delete this.editingPayment[invoiceId];
+        this.editingPayment.delete(invoiceId);
         this.editPaymentForm = null;
         this.getListInvoices();
       },
@@ -560,9 +543,10 @@ export class InvoicesReceivedListComponent implements OnInit {
     this.showRefundModal = true;
 
     // Preparar datos del nuevo abono
-    this.newRefund = {
-      originalInvoiceId: invoice.id!,
-    };
+   this.refundForm.patchValue({
+     refundReason: ''
+   })
+
   }
 
   /**
@@ -580,7 +564,7 @@ export class InvoicesReceivedListComponent implements OnInit {
   saveRefund(): void {
     // Usar FormGroup para validación
     if (this.refundForm.invalid) {
-      this.refundForm.markAsTouched(); // Mostrar errores
+      this.refundForm.markAllAsTouched(); // Mostrar errores
       Swal.fire({
         title: 'Error',
         text: 'El motivo del abono es obligatorio',
@@ -590,11 +574,11 @@ export class InvoicesReceivedListComponent implements OnInit {
     }
 
     //Obtener valor del FormGroup
-    const refunReason = this.refundForm.get('refundReason')?.value;
+    const refundReason = this.refundForm.get('refundReason')?.value;
     // Crear el abono
     this.invoicesReceivedService.createRefund(
-      this.newRefund.originalInvoiceId,
-      refunReason // ← Usar valor del FormGroup
+      this.selectedInvoice?.id!,
+      refundReason // ← Usar valor del FormGroup
     ).subscribe({
       next: (data) => {
         Swal.fire({

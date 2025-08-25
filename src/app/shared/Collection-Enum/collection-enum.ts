@@ -37,10 +37,10 @@ export const COLLECTION_METHOD_LABELS = [
 // ========================================
 // Facturación proporcional
 // ========================================
-export const BILLING_TYPE_LABELS = {
-  0: 'Mes completo',
-  1: 'Proporcional por días'
-} as const;
+export const BILLING_TYPE_LABELS = [
+  { value: 0, label: 'Mes completo' },
+  { value: 1, label: 'Proporcional por días' }
+]
 
 
 export const CATEGORIES_LABELS = [

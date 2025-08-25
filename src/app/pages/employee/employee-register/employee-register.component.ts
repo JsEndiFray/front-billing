@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {Employee} from '../../../interfaces/employee-interface';
 import {EmployeeService} from '../../../core/services/employee-services/employee.service';
 import {EmployeeValidatorServices} from '../../../core/services/validator-services/employee-validator.service';
-import {FormsModule} from '@angular/forms';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import Swal from 'sweetalert2';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -10,34 +10,39 @@ import {HttpErrorResponse} from '@angular/common/http';
 @Component({
   selector: 'app-employee-register',
   imports: [
-    FormsModule
+    ReactiveFormsModule
   ],
   templateUrl: './employee-register.component.html',
   styleUrl: './employee-register.component.css'
 })
 export class EmployeeRegisterComponent {
 
-  employee: Employee = {
-    name: '',
-    lastname: '',
-    email: '',
-    identification: '',
-    phone: '',
-    address: '',
-    postal_code: '',
-    location: '',
-    province: '',
-    country: '',
-    date_create: '',
-    date_update: ''
-  }
+  // ==========================================
+  // PROPIEDADES DE FORMULARIOS MÚLTIPLES
+  // ==========================================
 
+  employeeForm: FormGroup;
 
   constructor(
     private employeeServices: EmployeeService,
     private employeeValidator: EmployeeValidatorServices,
     private router: Router,
+    private fb: FormBuilder
   ) {
+    this.employeeForm = this.fb.group({
+      name: ['', Validators.required],
+      lastname: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      identification: ['', Validators.required],
+      phone: ['', Validators.required],
+      address: ['', Validators.required],
+      postal_code: ['', [Validators.required, Validators.maxLength(5)]],
+      location: ['', Validators.required],
+      province: ['', Validators.required],
+      country: ['ESPAÑA'],
+      date_create: [''],
+      date_update: ['']
+    });
   }
 
   /**
@@ -45,8 +50,22 @@ export class EmployeeRegisterComponent {
    * Valida todos los datos antes de enviar al servidor
    */
   createEmployee() {
+
+    if (this.employeeForm.invalid) {
+      this.employeeForm.markAllAsTouched();
+      Swal.fire({
+        title: 'Error!',
+        text: 'Por favor, complete todos los campos requeridos',
+        icon: 'error'
+      });
+      return;
+    }
+
+    // Obtener datos del FormGroup
+    const formData = this.employeeForm.value;
+
     // Limpiar espacios y preparar datos
-    const cleanEmp = this.employeeValidator.cleanEmployeeData(this.employee);
+    const cleanEmp = this.employeeValidator.cleanEmployeeData(formData);
 
     // Validar que todos los campos estén correctos
     const validation = this.employeeValidator.validateEmployee(cleanEmp);
@@ -73,7 +92,6 @@ export class EmployeeRegisterComponent {
     })
 
   }
-
 
   goBack() {
     this.router.navigate(['/dashboards/employee/list'])

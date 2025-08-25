@@ -16,24 +16,23 @@
         <!-- Iconos de búsqueda y limpiar -->
         <div class="search-actions">
           <span class="search-icon">🔍</span>
-          @if (searchTerm && searchTerm.trim() !== '') {
-            <button type="button" (click)="clearSearch()" class="clear-button" title="Limpiar búsqueda">✕</button>
+          @if (searchForm.get('searchTerm')?.value) {
+            <button type="button" (click)="clearFilters()" class="clear-button" title="Limpiar búsqueda">✕</button>
           }
         </div>
       </div>
     </form>
   </div>
 
-
+  <!-- Filtros -->
   <div class="filters-section">
-
     <!-- FormGroup de filtros -->
     <form [formGroup]="filtersForm">
       <!-- Filtro por tipo -->
       <select formControlName="selectedType" class="filter-select">
         <option value="">Todos los tipos</option>
-        @for (types of clientTypeOptions; track types) {
-          <option [value]="types">{{ clientTypeLabels[types] }}</option>
+        @for (types of clientTypeLabels; track types.value) {
+          <option [value]="types.value">{{ types.label }}</option>
         }
       </select>
 

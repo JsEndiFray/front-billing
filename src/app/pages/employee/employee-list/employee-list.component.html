@@ -8,51 +8,59 @@
   <!-- Sección de filtros y búsqueda -->
   <div class="filters-section">
     <!-- Buscador -->
-    <div class="search-container">
-      <input
-        type="text"
-        [(ngModel)]="searchTerm"
-        (input)="onFilterCharger()"
-        placeholder="Buscar empleados..."
-        class="search-input" autocomplete="off">
-
-      <!-- Iconos de búsqueda y limpiar -->
-      <div class="search-actions">
-        <span class="search-icon">🔍</span>
-        @if (searchTerm && searchTerm.trim() !== '') {
-          <button
-            type="button"
-            (click)="clearFilters()"
-            class="clear-button"
-            title="Limpiar búsqueda">
-            ✕
-          </button>
-        }
+    <form [formGroup]="searchForm" class="search-wrapper">
+      <div class="search-container">
+        <input type="text" formControlName="searchTerm" placeholder="Buscar empleados..."
+               class="search-input" autocomplete="off">
+        <!-- Iconos de búsqueda y limpiar -->
+        <div class="search-actions">
+          <span class="search-icon">🔍</span>
+          @if (searchForm.get('searchTerm')?.value) {
+            <button type="button" (click)="clearFilters()" class="clear-button" title="Limpiar búsqueda">✕</button>
+          }
+        </div>
       </div>
-    </div>
+    </form>
+  </div>
 
-    <!-- Filtros -->
-    <div class="filters-container">
-      <!-- Filtro por provincia -->
-      <select
-        [(ngModel)]="selectedProvince"
-        (change)="onFilterCharger()"
-        class="filter-select">
+  <!-- Filtros -->
+  <div class="filters-section">
+    <!-- Filtro por provincia -->
+    <form [formGroup]="filtersForm">
+      <select formControlName="selectedProvince" class="filter-select">
         <option value="">Todas las provincias</option>
         @for (province of provinceOptions; track province) {
           <option [value]="province">{{ province }}</option>
         }
       </select>
-    </div>
 
+      <!-- Botón limpiar filtros -->
+      <button type="button" (click)="clearFilters()" class="clear-filters-btn" title="Limpiar todos los filtros">
+        Limpiar filtros
+      </button>
+    </form>
 
     <!-- Botón exportar y nuevo empleado -->
     <div class="actions-container">
-      <button class="export-btn">Exportar</button>
-      <button class="new-client-btn" (click)="newEmployee()">
-        + Nuevo Empleado
-      </button>
+      <button type="button" class="export-btn" (click)="exportData()">Exportar</button>
+      <button class="new-client-btn" (click)="newEmployee()">+ Nuevo Empleado</button>
     </div>
+  </div>
+
+  <!-- Configuración de paginación -->
+  <div class="pagination-config">
+    <form [formGroup]="paginationForm">
+      <label for="itemsPerPage">Elementos por página:</label>
+      <select
+        id="itemsPerPage"
+        formControlName="itemsPerPage"
+        class="items-per-page-select">
+        <option [value]="5">5</option>
+        <option [value]="10">10</option>
+        <option [value]="25">25</option>
+        <option [value]="50">50</option>
+      </select>
+    </form>
   </div>
 
   <!-- Tabla de empleados -->

@@ -8,7 +8,7 @@
   </div>
 
   <!-- Formulario principal -->
-  <form (ngSubmit)="updateEmployee()">
+  <form [formGroup]="employeeForm" (ngSubmit)="updateEmployee()">
 
     <!-- Sección: Información personal -->
     <div class="section">
@@ -19,8 +19,7 @@
           <label for="name" class="form-label">Nombre *</label>
           <input
             type="text"
-            [(ngModel)]="employee.name"
-            name="name"
+            formControlName="name"
             id="name"
             placeholder="Nombre del empleado"
             class="form-input"
@@ -31,8 +30,7 @@
           <label for="lastname" class="form-label">Apellidos *</label>
           <input
             type="text"
-            [(ngModel)]="employee.lastname"
-            name="lastname"
+            formControlName="lastname"
             id="lastname"
             placeholder="Apellidos del empleado"
             class="form-input"
@@ -43,8 +41,7 @@
           <label for="identification" class="form-label">Identificación *</label>
           <input
             type="text"
-            [(ngModel)]="employee.identification"
-            name="identification"
+            formControlName="identification"
             id="identification"
             placeholder="DNI/NIE/PASS"
             class="form-input identification-input"
@@ -63,8 +60,7 @@
           <label for="email" class="form-label">Email *</label>
           <input
             type="email"
-            [(ngModel)]="employee.email"
-            name="email"
+            formControlName="email"
             id="email"
             placeholder="empleado@email.com"
             class="form-input email-input"
@@ -75,8 +71,7 @@
           <label for="phone" class="form-label">Teléfono *</label>
           <input
             type="tel"
-            [(ngModel)]="employee.phone"
-            name="phone"
+            formControlName="phone"
             id="phone"
             placeholder="123 456 789"
             class="form-input"
@@ -95,8 +90,7 @@
           <label for="address" class="form-label">Dirección *</label>
           <input
             type="text"
-            [(ngModel)]="employee.address"
-            name="address"
+            formControlName="address"
             id="address"
             placeholder="Calle Principal 123, 2º A"
             class="form-input"
@@ -107,8 +101,7 @@
           <label for="postal_code" class="form-label">Código Postal</label>
           <input
             type="text"
-            [(ngModel)]="employee.postal_code"
-            name="postal_code"
+            formControlName="postal_code"
             id="postal_code"
             placeholder="28001"
             class="form-input postal-input"
@@ -120,8 +113,7 @@
           <label for="location" class="form-label">Localidad *</label>
           <input
             type="text"
-            [(ngModel)]="employee.location"
-            name="location"
+            formControlName="location"
             id="location"
             placeholder="Madrid"
             class="form-input"
@@ -132,8 +124,7 @@
           <label for="province" class="form-label">Provincia *</label>
           <input
             type="text"
-            [(ngModel)]="employee.province"
-            name="province"
+            formControlName="province"
             id="province"
             placeholder="Madrid"
             class="form-input"
@@ -144,8 +135,7 @@
           <label for="country" class="form-label">País</label>
           <input
             type="text"
-            [(ngModel)]="employee.country"
-            name="country"
+            formControlName="country"
             id="country"
             placeholder="España"
             class="form-input"

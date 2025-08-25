@@ -16,7 +16,7 @@
         <div class="search-actions">
           <span class="search-icon">🔍</span>
           @if (searchForm.get('searchTerm')?.value) {
-            <button type="button" (click)="clearSearch()" class="clear-button" title="Limpiar búsqueda">✕</button>
+            <button type="button" (click)="clearFilters()" class="clear-button" title="Limpiar búsqueda">✕</button>
           }
         </div>
       </div>
@@ -38,8 +38,8 @@
       <!-- Filtro de facturas por mes o proporcional-->
       <select formControlName="selectedTypeBilling" class="filter-select">
         <option value="">Por Facturación</option>
-        @for (typesBill of billingTypeOptions; track typesBill) {
-          <option [value]="typesBill">{{ billingTypeLabels[typesBill] }}</option>
+        @for (typesBill of billingTypeLabels; track typesBill.value) {
+          <option [value]="typesBill.value">{{ typesBill.label }}</option>
         }
       </select>
 
@@ -152,9 +152,9 @@
                 <span
                   [ngClass]="invoicesUtilService.isInvoiceProportional(invoice) ? 'proportional-badge' : 'normal-badge'">
                   @if (invoicesUtilService.isInvoiceProportional(invoice)) {
-                    📊 {{ billingTypeLabels[1] }}
+                    📊 {{ billingTypeLabels[1].label }}
                   } @else {
-                    📄 {{ billingTypeLabels[0] }}
+                    📄 {{ billingTypeLabels[0].label }}
                   }
                 </span>
               </td>

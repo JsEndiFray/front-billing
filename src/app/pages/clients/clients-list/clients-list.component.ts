@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
-import {CLIENT_TYPE_LABELS, Clients} from '../../../interfaces/clientes-interface';
+import {Clients} from '../../../interfaces/clientes-interface';
 import {ClientsService} from '../../../core/services/clients-services/clients.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
@@ -9,6 +9,7 @@ import {Router} from '@angular/router';
 import {SearchService} from '../../../core/services/shared-services/search.service';
 import {PaginationConfig, PaginationResult} from '../../../interfaces/pagination-interface';
 import {PaginationService} from '../../../core/services/shared-services/pagination.service';
+import {CLIENT_TYPES_LABELS} from '../../../shared/Collection-Enum/collection-enum';
 
 
 /**
@@ -56,10 +57,9 @@ export class ClientsListComponent implements OnInit {
 
   // Opciones para filtros
   provinceOptions: string[] = [];
-  clientTypeOptions: Array<'particular' | 'autonomo' | 'empresa'> = [];
 
   // LABEL PARA MOSTRAR
-  clientTypeLabels = CLIENT_TYPE_LABELS;
+  clientTypeLabels = CLIENT_TYPES_LABELS;
 
   // Configuración de paginación
   paginationConfig: PaginationConfig = {
@@ -98,8 +98,7 @@ export class ClientsListComponent implements OnInit {
 
     // FormGroup para paginación
     this.paginationForm = this.fb.group({
-      itemsPerPage: [5],
-      currentPage: [1]
+      itemsPerPage: [5]
     });
 
   }
@@ -107,6 +106,7 @@ export class ClientsListComponent implements OnInit {
   ngOnInit(): void {
     this.getListClients();
     this.setupFormSubscriptions();
+
   }
 
   // ==========================================
@@ -148,7 +148,6 @@ export class ClientsListComponent implements OnInit {
       next: (clientList) => {
         this.allClients = clientList;
         this.extractProvinceOptions();
-        this.extractTypeOptions();
         this.applyFilters();
       },
       error: (e: HttpErrorResponse) => {
@@ -156,6 +155,9 @@ export class ClientsListComponent implements OnInit {
       }
     });
   }
+  // ==========================================
+  // MÉTODOS DE FILTRADO Y BÚSQUEDA
+  // ==========================================
 
   /**
    * Extrae las provincias únicas de los clientes para el filtro
@@ -170,15 +172,18 @@ export class ClientsListComponent implements OnInit {
   }
 
   /**
-   * Extrae los tipos únicos
+   * Limpia todos los filtros
    */
-  extractTypeOptions() {
-    this.clientTypeOptions = ['particular', 'autonomo', 'empresa'];
+  clearFilters() {
+    // Resetear cada FormGroup por separado con valores explícitos
+    this.searchForm.patchValue({
+      searchTerm: ''
+    });
+    this.filtersForm.patchValue({
+      selectedType: '',
+      selectedProvince: ''
+    })
   }
-
-  // ==========================================
-  // MÉTODOS DE FILTRADO Y BÚSQUEDA
-  // ==========================================
 
   /**
    * Aplica todos los filtros y actualiza la paginación
@@ -219,29 +224,6 @@ export class ClientsListComponent implements OnInit {
 
   }
 
-  /**
-   * Limpia el filtro de búsqueda
-   */
-  clearSearch() {
-    this.searchForm.patchValue({
-      searchTerm: ''
-    });
-  }
-
-  /**
-   * Limpia todos los filtros
-   */
-  clearFilters() {
-    // Resetear cada FormGroup por separado con valores explícitos
-    this.searchForm.patchValue({
-      searchTerm: ''
-    });
-    this.filtersForm.patchValue({
-      selectedType: '',
-      selectedProvince: ''
-    })
-  }
-
   // ==========================================
   // MÉTODOS DE PAGINACIÓN
   // ==========================================
@@ -264,7 +246,7 @@ export class ClientsListComponent implements OnInit {
     if (this.paginationService.isValidPage(page, this.paginationResult.totalPages)) {
       this.paginationConfig.currentPage = page;
       this.paginationForm.patchValue({
-        currentPage: page
+        itemsPerPage: 5,
       }, {emitEvent: false});
       this.updatePagination();
     }
@@ -308,126 +290,6 @@ export class ClientsListComponent implements OnInit {
       this.clients.length
     );
   }
-
-  // ==========================================
-  // MÉTODOS DE VALIDACIÓN
-  // ==========================================
-
-  /**
-   * Verifica si un campo específico de un FormGroup es inválido para mostrar errores
-   * @param formGroup - El FormGroup a validar (searchForm, filtersForm, paginationForm)
-   * @param fieldName - Nombre del campo a validar
-   */
-
-  /**
-   * Verifica si un campo es inválido para mostrar errores
-   */
-  isFieldInvalid(formGroup: FormGroup, fieldName: string): boolean {
-    const field = formGroup.get(fieldName);
-    return !!(field && field.invalid && (field.dirty || field.touched));
-  }
-
-  /**
-   * Verifica si el formulario de búsqueda es válido
-   */
-  isSearchFormValid(): boolean {
-    return this.searchForm.valid;
-  }
-
-  /**
-   * Verifica si el formulario de filtros es válido
-   */
-  isFiltersFormValid(): boolean {
-    return this.filtersForm.valid;
-  }
-
-  /**
-   * Verifica si el formulario de paginación es válido
-   */
-  isPaginationFormValid(): boolean {
-    return this.paginationForm.valid;
-  }
-
-  /**
-   * Verifica si todos los formularios son válidos
-   */
-  areAllFormsValid(): boolean {
-    const searchValid = this.isSearchFormValid();
-    const filtersValid = this.isFiltersFormValid();
-    const paginationValid = this.isPaginationFormValid();
-    return searchValid && filtersValid && paginationValid;
-  }
-
-  /**
-   * Marca todos los campos de un FormGroup como touched para mostrar errores
-   * @param formGroup - El FormGroup a marcar
-   */
-  markFormGroupTouched(formGroup: FormGroup): void {
-    Object.keys(formGroup.controls).forEach(key => {
-      const control = formGroup.get(key);
-      control?.markAsTouched();
-    });
-  }
-
-  /**
-   * Marca todos los formularios como touched
-   */
-  markAllFormsTouched(): void {
-    this.markFormGroupTouched(this.searchForm);
-    this.markFormGroupTouched(this.filtersForm);
-    this.markFormGroupTouched(this.paginationForm);
-  }
-
-  /**
-   * Resetea un FormGroup específico
-   * @param formGroup - El FormGroup a resetear
-   */
-  resetFormGroup(formGroup: FormGroup): void {
-    formGroup.reset();
-  }
-
-  /**
-   * Resetea todos los formularios independientes
-   */
-  resetAllForms(): void {
-    this.searchForm.reset();
-    this.filtersForm.reset();
-    this.paginationForm.reset();
-
-    // Aplicar valores por defecto después del reset
-    this.paginationForm.patchValue({
-      itemsPerPage: 5,
-      currentPage: 1
-    });
-
-    console.log('Todos los formularios han sido reseteados');
-  }
-
-  /**
-   * Verifica si hay datos en el formulario de búsqueda
-   */
-  hasSearchData(): boolean {
-    const searchTerm = this.searchForm.get('searchTerm')?.value;
-    return searchTerm && searchTerm.trim() !== '';
-  }
-
-  /**
-   * Verifica si hay filtros aplicados
-   */
-  hasFiltersApplied(): boolean {
-    const selectedType = this.filtersForm.get('selectedType')?.value;
-    const selectedProvince = this.filtersForm.get('selectedProvince')?.value;
-    return (selectedType && selectedType !== '') || (selectedProvince && selectedProvince !== '');
-  }
-
-  /**
-   * Verifica si se han aplicado búsqueda o filtros
-   */
-  hasAnyFilterOrSearch(): boolean {
-    return this.hasSearchData() || this.hasFiltersApplied();
-  }
-
-
   // ==========================================
   // MÉTODOS DE ACCIONES
   // ==========================================
@@ -483,44 +345,5 @@ export class ClientsListComponent implements OnInit {
   exportData() {
     // Implementar lógica de exportación aquí
     console.log('Exportando datos:', this.filteredClients);
-  }
-
-  // ==========================================
-  // GETTERS PARA ACCESO FÁCIL A VALORES
-  // ==========================================
-
-  /**
-   * Getter para obtener el valor del campo de búsqueda
-   */
-  get searchTerm(): string {
-    return this.searchForm.get('searchTerm')?.value || '';
-  }
-
-  /**
-   * Getter para obtener el tipo seleccionado en filtros
-   */
-  get selectedType(): string {
-    return this.filtersForm.get('selectedType')?.value || '';
-  }
-
-  /**
-   * Getter para obtener la provincia seleccionada en filtros
-   */
-  get selectedProvince(): string {
-    return this.filtersForm.get('selectedProvince')?.value || '';
-  }
-
-  /**
-   * Getter para obtener items por página de paginación
-   */
-  get itemsPerPage(): number {
-    return this.paginationForm.get('itemsPerPage')?.value || 5;
-  }
-
-  /**
-   * Getter para obtener la página actual de paginación
-   */
-  get currentPage(): number {
-    return this.paginationForm.get('currentPage')?.value || 1;
   }
 }

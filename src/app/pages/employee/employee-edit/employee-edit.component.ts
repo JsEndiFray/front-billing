@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormsModule} from '@angular/forms';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Employee} from '../../../interfaces/employee-interface';
 import {ActivatedRoute, Router} from '@angular/router';
 import {EmployeeService} from '../../../core/services/employee-services/employee.service';
@@ -10,33 +10,40 @@ import {EmployeeValidatorServices} from '../../../core/services/validator-servic
 @Component({
   selector: 'app-employee-edit',
   imports: [
-    FormsModule
+    ReactiveFormsModule
   ],
   templateUrl: './employee-edit.component.html',
   styleUrl: './employee-edit.component.css'
 })
 export class EmployeeEditComponent implements OnInit {
 
-  employee: Employee = {
-    name: '',
-    lastname: '',
-    email: '',
-    identification: '',
-    phone: '',
-    address: '',
-    postal_code: '',
-    location: '',
-    province: '',
-    country: '',
-    date_update: ''
-  }
+  // ==========================================
+  // PROPIEDADES DE FORMULARIOS MÚLTIPLES
+  // ==========================================
+
+  employeeForm: FormGroup;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private employeeServices: EmployeeService,
     private employeeValidator: EmployeeValidatorServices,
+    private fb: FormBuilder
   ) {
+    this.employeeForm = this.fb.group({
+      name: ['', Validators.required],
+      lastname: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      identification: ['', Validators.required],
+      phone: ['', Validators.required],
+      address: ['', Validators.required],
+      postal_code: ['', [Validators.required, Validators.maxLength(5)]],
+      location: ['', Validators.required],
+      province: ['', Validators.required],
+      country: ['ESPAÑA'],
+      date_create: [''],
+      date_update: ['']
+    });
   }
 
   ngOnInit(): void {
@@ -46,9 +53,22 @@ export class EmployeeEditComponent implements OnInit {
         this.employeeServices.getEmployeeById(id).subscribe({
           next: (data) => {
             if (data && data.length > 0) {
-              this.employee = data[0];
-            }
+              const employee = data[0];
 
+              this.employeeForm.patchValue({
+                name: employee.name,
+                lastname: employee.lastname,
+                email: employee.email,
+                identification: employee.identification,
+                phone: employee.phone,
+                address: employee.address,
+                postal_code: employee.postal_code,
+                location: employee.location,
+                province: employee.province,
+                country: employee.country,
+                date_update: employee.date_update
+              })
+            }
           }, error: (e: HttpErrorResponse) => {
           }
         })
@@ -61,18 +81,24 @@ export class EmployeeEditComponent implements OnInit {
    * Valida información antes de enviar al servidor
    */
   updateEmployee() {
-    // Verificar que el propietario tenga ID válido
-    if (this.employee.id == null) {
+
+    // Verificar que el formulario sea válido
+    if (!this.employeeForm.valid) {
+      this.employeeForm.markAllAsTouched();
       Swal.fire({
-        title: 'Error',
-        text: 'ID de usuario no válido.',
-        icon: 'error',
-        confirmButtonText: 'Ok'
+        title: 'Error!',
+        text: 'Por favor, complete todos los campos requeridos',
+        icon: 'error'
       });
       return;
     }
+
+    // ✅ Usar directamente los valores del FormGroup
+    const formData = this.employeeForm.value;
+
+
     // Limpiar espacios y preparar datos
-    const cleanEmployee = this.employeeValidator.cleanEmployeeData(this.employee);
+    const cleanEmployee = this.employeeValidator.cleanEmployeeData(formData);
     // Validar que todos los campos estén correctos
     const validation = this.employeeValidator.validateEmployee(cleanEmployee);
     if (!validation.isValid) {
@@ -84,20 +110,21 @@ export class EmployeeEditComponent implements OnInit {
       });
       return;
     }
+
+    // ✅ Usar ID de la ruta, no de una propiedad inexistente
+    const employeeId = this.route.snapshot.params['id'];
+
     // Enviar datos actualizados al servidor
-    this.employeeServices.updateEmployee(this.employee.id, cleanEmployee).subscribe({
+    this.employeeServices.updateEmployee(employeeId, cleanEmployee).subscribe({
       next: (data) => {
-        if (data && data.length > 0) {
-          this.employee = data[0];
-          Swal.fire({
-            title: '¡Éxito!',
-            text: 'Empleado actualizado correctamente.',
-            icon: 'success',
-            confirmButtonText: 'Ok'
-          });
-          // Regresar a la lista de propietarios
-          this.router.navigate(['/dashboards/employee/list'])
-        }
+        Swal.fire({
+          title: '¡Éxito!',
+          text: 'Empleado actualizado correctamente.',
+          icon: 'success',
+          confirmButtonText: 'Ok'
+        });
+        // Regresar a la lista de propietarios
+        this.router.navigate(['/dashboards/employee/list'])
 
       }, error: (e: HttpErrorResponse) => {
       }

@@ -23,10 +23,3 @@ export interface Clients {
   relationship_type?: 'administrator';    // Tipo de relación
   parent_company_name?: string;           // Nombre de empresa padre (para display)
 }
-
-export const CLIENT_TYPE_LABELS = {
-  particular: 'Particular',
-  autonomo: 'Autonomo',
-  empresa: 'Empresa'
-
-}

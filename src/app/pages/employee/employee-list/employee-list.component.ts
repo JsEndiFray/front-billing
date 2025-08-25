@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormsModule} from '@angular/forms';
+import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {Employee} from '../../../interfaces/employee-interface';
 import {EmployeeService} from '../../../core/services/employee-services/employee.service';
 import {Router} from '@angular/router';
@@ -17,13 +17,29 @@ import {PaginationService} from '../../../core/services/shared-services/paginati
 @Component({
   selector: 'app-employee-list',
   imports: [
-    FormsModule,
-    DataFormatPipe
+    DataFormatPipe,
+    ReactiveFormsModule,
   ],
   templateUrl: './employee-list.component.html',
   styleUrl: './employee-list.component.css'
 })
 export class EmployeeListComponent implements OnInit {
+
+  // ==========================================
+  // PROPIEDADES DE FORMULARIOS MÚLTIPLES
+  // ==========================================
+  // FormGroup para búsqueda de texto
+  searchForm: FormGroup;
+
+  // FormGroup para filtros de selección
+  filtersForm: FormGroup;
+
+  // FormGroup para configuración de paginación
+  paginationForm: FormGroup;
+
+  // ==========================================
+  // PROPIEDADES DE DATOS
+  // ==========================================
 
   // Lista de propietarios que se muestra en la tabla
   employees: Employee[] = [];
@@ -31,14 +47,8 @@ export class EmployeeListComponent implements OnInit {
   // Lista completa de propietarios (datos originales sin filtrar)
   allEmployees: Employee[] = [];
 
-  // Texto que escribe el usuario para buscar
-  searchTerm: string = '';
-
   // Lista de clientes filtrados (antes de paginar)
   filteredEmployee: Employee[] = [];
-
-// Filtros
-  selectedProvince: string = '';
 
   // Opciones para filtros
   provinceOptions: string[] = [];
@@ -49,7 +59,6 @@ export class EmployeeListComponent implements OnInit {
     itemsPerPage: 3,
     totalItems: 0
   };
-
 
 // Resultado de paginación
   paginationResult: PaginationResult<Employee> = {
@@ -66,13 +75,58 @@ export class EmployeeListComponent implements OnInit {
     private router: Router,
     private searchService: SearchService,
     private paginationService: PaginationService,
+    private fb: FormBuilder
   ) {
+    // FormGroup para búsqueda
+    this.searchForm = this.fb.group({
+      searchTerm: ['']
+    });
+
+    // FormGroup para filtros
+    this.filtersForm = this.fb.group({
+      selectedProvince: ['']
+    });
+
+    // FormGroup para paginación
+    this.paginationForm = this.fb.group({
+      itemsPerPage: [5]
+    });
+
+
   }
 
   ngOnInit(): void {
     this.getListEmployee();
+    this.setupFormSubscriptions();
   }
 
+  // ==========================================
+  // MÉTODOS DE CONFIGURACIÓN
+  // ==========================================
+
+
+  setupFormSubscriptions() {
+    this.searchForm.get('searchTerm')?.valueChanges.subscribe(() => {
+      this.applyFilters()
+    });
+
+    this.filtersForm.valueChanges.subscribe(() => {
+      this.applyFilters();
+    });
+
+    // Suscripción para cambios en configuración de paginación
+    this.paginationForm.get('itemsPerPage')?.valueChanges.subscribe((items) => {
+      this.paginationConfig.itemsPerPage = items;
+      this.paginationConfig.currentPage = 1; // Resetear a primera página
+      this.updatePagination();
+    });
+
+
+  }
+
+  // ==========================================
+  // MÉTODOS DE CARGA DE DATOS
+  // ==========================================
   /**
    * Obtiene todos los empleados del servidor
    * Guarda una copia original para los filtros de búsqueda
@@ -88,27 +142,9 @@ export class EmployeeListComponent implements OnInit {
     })
   }
 
-  //==========================
-  // PROCESO DE LOS FILTROS
-  //==========================
-  /**
-   * Limpia el filtro de búsqueda
-   */
-  clearFilters() {
-    this.searchTerm = '';
-    this.selectedProvince = '';
-    this.applyFilters();
-  }
-
-  /**
-   * Se ejecuta cada vez que cambia algún filtro o el término de búsqueda.
-   * Aplica todos los filtros disponibles para actualizar.
-   */
-  onFilterCharger() {
-    this.applyFilters();
-  }
-
-
+  // ==========================================
+  // MÉTODOS DE FILTROS Y BÚSQUEDA
+  // ==========================================
 
   /**
    * Extrae las provincias únicas de los clientes para el filtro
@@ -126,25 +162,43 @@ export class EmployeeListComponent implements OnInit {
   }
 
   /**
+   * Limpia el filtro de búsqueda
+   */
+  clearFilters() {
+    this.searchForm.patchValue({
+      searchTerm: ''
+    });
+    this.filtersForm.patchValue({
+      selectedProvince: ''
+    })
+  }
+
+
+  /**
    * Filtra la lista de empleados según el texto de búsqueda
    * Busca en: nombre completo, identificación y teléfono
    */
   applyFilters() {
     let filtered = [...this.allEmployees];
 
+
+    // Obtener valores directamente de cada FormGroup independiente
+    const searchTerm = this.searchForm.get('searchTerm')?.value;
+    const selectedProvince = this.filtersForm.get('selectedProvince')?.value;
+
     // Filtro por búsqueda de texto
-    if (this.searchTerm.trim()) {
+    if (searchTerm) {
       filtered = this.searchService.filterWithFullName(
         filtered,
-        this.searchTerm,
+        searchTerm,
         `name`,
         'lastname',
         ['phone', 'identification']
       );
     }
     // Filtro por provincia
-    if (this.selectedProvince) {
-      filtered = filtered.filter(employee => employee.province === this.selectedProvince);
+    if (selectedProvince) {
+      filtered = filtered.filter(employee => employee.province === selectedProvince);
     }
 
     this.filteredEmployee = filtered;
@@ -153,9 +207,9 @@ export class EmployeeListComponent implements OnInit {
     this.updatePagination();
   }
 
-  //==============
-  // PAGINACION
-  //==============
+  // ==========================================
+  // MÉTODOS DE PAGINACIÓN
+  // ==========================================
 
   /**
    * Actualiza la paginación con los datos filtrados
@@ -217,11 +271,9 @@ export class EmployeeListComponent implements OnInit {
     );
   }
 
-
-
-  //========
-  // CRUD
-  //========
+  // ==========================================
+  // MÉTODOS DE NAVEGACIÓN Y CRUD
+  // ==========================================
 
 
   /**
@@ -264,6 +316,9 @@ export class EmployeeListComponent implements OnInit {
 
   newEmployee() {
     this.router.navigate(['/dashboards/employee/register'])
+  }
+
+  exportData() {
   }
 
 }

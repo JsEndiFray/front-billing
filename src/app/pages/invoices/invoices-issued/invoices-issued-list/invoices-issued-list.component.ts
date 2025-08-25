@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Invoice, RefundInvoice} from '../../../../interfaces/invoices-issued-interface';
 import {DataFormatPipe} from '../../../../shared/pipe/data-format.pipe';
 import {InvoicesIssuedService} from '../../../../core/services/invoices-issued-service/invoices-issued.service';
@@ -16,7 +16,6 @@ import {
 } from '../../../../core/services/shared-services/invoices-Util.service';
 import {
   BILLING_TYPE_LABELS,
-  CATEGORIES_LABELS,
   COLLECTION_METHOD_LABELS, COLLECTION_STATUS_LABELS,
 } from '../../../../shared/Collection-Enum/collection-enum';
 
@@ -73,8 +72,7 @@ export class InvoicesIssuedListComponent implements OnInit {
   // ==========================================
   // PROPIEDADES DE FILTROS Y BÚSQUEDA
   // ==========================================
-//Extrae los meses o porporcionales unicos
-  billingTypeOptions: Array<0 | 1> = [];
+
   //Extrae propietarios unicos
   ownersOptions: string[] = [];
   //Extrae clientes unicos
@@ -147,8 +145,7 @@ export class InvoicesIssuedListComponent implements OnInit {
 
     // FormGroup para paginación
     this.paginationForm = this.fb.group({
-      itemsPerPage: [5],
-      currentPage: [1]
+      itemsPerPage: [5]
     });
 
     //FormGroup para modal de abonos
@@ -219,9 +216,6 @@ export class InvoicesIssuedListComponent implements OnInit {
    * Extrae todos los filtos
    */
   extractFilterOptions() {
-
-    //Extrae los meses o porporcionales unicos
-    this.billingTypeOptions = [0, 1];
 
     //Extrae propietarios unicos
     const owners = this.allInvoices
@@ -298,16 +292,6 @@ export class InvoicesIssuedListComponent implements OnInit {
     this.paginationConfig.currentPage = 1;
     this.updatePagination();
   }
-
-  /**
-   * Limpia el filtro de búsqueda
-   */
-  clearSearch(): void {
-    this.searchForm.patchValue({
-      searchTerm: ''
-    });
-  }
-
 
   /**
    * Limpia el filtro de búsqueda y muestra todas las facturas
