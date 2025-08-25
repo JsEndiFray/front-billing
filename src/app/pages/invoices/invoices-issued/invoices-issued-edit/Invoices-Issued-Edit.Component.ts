@@ -45,7 +45,6 @@ export class InvoicesIssuedEditComponent implements OnInit {
   clients: Clients[] = [];
   estates: Estates[] = [];
   originalInvoices: Invoice[] = [];
-  isEditMode: boolean = false;
 
   //LABELS PARA LOS NUEVOS CAMPOS DE PAGO
   collectionStatusLabels = COLLECTION_STATUS_LABELS;
@@ -95,7 +94,7 @@ export class InvoicesIssuedEditComponent implements OnInit {
     private clientsServices: ClientsService,
     private estatesServices: EstatesService,
     private invoicesIssuedValidatorService: InvoicesIssuedValidatorService,
-    private invoicesIssuedUtilService: InvoicesUtilService,
+    protected invoicesIssuedUtilService: InvoicesUtilService,
   ) {
   }
 
@@ -108,7 +107,6 @@ export class InvoicesIssuedEditComponent implements OnInit {
     this.route.params.subscribe(params => {
       const id = params['id'];
       if (id) {
-        this.isEditMode = true;
         this.invoicesIssuedService.getInvoiceById(id).subscribe({
           next: (data) => {
             this.invoice = data;
@@ -192,13 +190,8 @@ export class InvoicesIssuedEditComponent implements OnInit {
   getListOwners() {
     this.ownersServices.getOwners().subscribe({
       next: (data: Owners[]) => {
-        console.log('Datos recibidos:', data);
-        console.log('Tipo de datos:', typeof data);
-        console.log('Es array?:', Array.isArray(data));
         this.owners = data;
-        console.log('this.owners después de asignar:', this.owners);
       }, error: (e: HttpErrorResponse) => {
-        console.log('Error en getOwners:', e);
         this.owners = [];
       }
     })
@@ -236,19 +229,6 @@ export class InvoicesIssuedEditComponent implements OnInit {
     this.invoicesIssuedUtilService.calculateTotal(this.invoice, () => this.onProportionalDatesChange())
   }
 
-
-  getStatusLabel(status: string): string {
-    const statusOption = COLLECTION_STATUS_LABELS.find(option => option.value === status);
-    return statusOption?.label || 'Pendiente';
-  }
-
-  getMethodLabel(method: string): string {
-    const methodOption = COLLECTION_METHOD_LABELS.find(option => option.value === method);
-    return methodOption?.label || 'Transferencia';
-  }
-
-
-
   updateInvoice() {
     if (!this.invoice.id) {
       Swal.fire({
@@ -280,7 +260,7 @@ export class InvoicesIssuedEditComponent implements OnInit {
           this.invoice = data; // Data ya es Invoice, no array
           Swal.fire({
             title: 'Éxito!',
-            text: `Factura actualizada con estado: ${this.getStatusLabel(this.invoice.collection_status || 'pending')}`,
+            text: `Factura actualizada con estado: ${this.invoicesIssuedUtilService.getStatusLabel(this.invoice.collection_status || 'pending')}`,
             icon: 'success',
             confirmButtonText: 'Ok'
           }).then(() => {

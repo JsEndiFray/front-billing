@@ -21,9 +21,9 @@
             class="form-select"
             required>
             <option value="">Seleccionar tipo</option>
-            <option value="particular">Particular</option>
-            <option value="autonomo">Autónomo</option>
-            <option value="empresa">Empresa</option>
+            @for (type of clientsTypesLables; track type.value){
+              <option [value]="type.value">{{type.label}}</option>
+            }
           </select>
         </div>
 

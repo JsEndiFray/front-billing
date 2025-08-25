@@ -11,8 +11,7 @@ import {PaginationConfig, PaginationResult} from '../../../../interfaces/paginat
 import {InvoicesReceivedService} from '../../../../core/services/invoices-received-services/invoices-received.service';
 import {InvoicesUtilService} from '../../../../core/services/shared-services/invoices-Util.service';
 import {InvoiceReceived} from '../../../../interfaces/invoices-received-interface';
-import {
-  CATEGORIES_LABELS, PAYMENT_METHOD_LABELS, PAYMENT_STATUS_LABELS
+import {PAYMENT_METHOD_LABELS, PAYMENT_STATUS_LABELS
 } from '../../../../shared/Collection-Enum/collection-enum';
 
 /**
@@ -129,7 +128,7 @@ export class InvoicesReceivedListComponent implements OnInit {
     private router: Router,
     private searchService: SearchService,
     private paginationService: PaginationService,
-    private invoicesUtilService: InvoicesUtilService,
+    protected invoicesUtilService: InvoicesUtilService,
     private fb: FormBuilder
   ) {
     // FormGroup para búsqueda
@@ -191,24 +190,6 @@ export class InvoicesReceivedListComponent implements OnInit {
     });
 
   }
-
-  // ==========================================
-  // MÉTODOS HELPER PARA ETIQUETAS
-  // ==========================================
-
-  getStatusLabel(status: string): string {
-    return PAYMENT_STATUS_LABELS.find(item => item.value === status)?.label || status;
-  }
-
-  getMethodLabel(method: string): string {
-    return PAYMENT_METHOD_LABELS.find(item => item.value === method)?.label || method;
-  }
-
-  getCategoryLabel(category: string): string {
-    return CATEGORIES_LABELS.find(item => item.value === category)?.label || category;
-  }
-
-
   // ==========================================
   // MÉTODOS DE CARGA DE DATOS
   // ==========================================
@@ -747,22 +728,6 @@ export class InvoicesReceivedListComponent implements OnInit {
         });
       }
     });
-  }
-
-  // ==========================================
-  // GETTERS PARA ACCESO FÁCIL A VALORES
-  // ==========================================
-
-
-  get invoiceUtilService() {
-    return this.invoicesUtilService
-  };
-
-  /**
-   * Getter para obtener el valor del campo de búsqueda
-   */
-  get searchTerm(): string {
-    return this.searchForm.get('searchTerm')?.value || '';
   }
 
 }

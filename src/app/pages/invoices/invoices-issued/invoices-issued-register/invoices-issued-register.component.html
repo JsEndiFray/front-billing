@@ -336,19 +336,19 @@
       <!-- Información visual del estado -->
       <div class="collection-summary">
         <div class="collection-summary-item">
-          <span class="collection-summary-label">Estado:fsefefef</span>
+          <span class="collection-summary-label">Estado:</span>
           <!-- Estado - Cambiar: -->
           <span class="collection-summary-value"
                 [class.status-pending]="invoiceForm.get('collection_status')?.value === 'pending'"
                 [class.status-paid]="invoiceForm.get('collection_status')?.value === 'collected'">
-            {{ getStatusLabel(invoiceForm.get('collection_status')?.value || 'pending') }}
+            {{ invoicesUtilService.getStatusLabel(invoiceForm.get('collection_status')?.value || 'pending') }}
           </span>
         </div>
         <div class="collection-summary-item">
           <span class="collection-summary-label">Método:</span>
           <!-- Método - Cambiar: -->
           <span class="collection-summary-value">
-            {{ getMethodLabel(invoiceForm.get('collection_method')?.value || 'transfer') }}
+            {{ invoicesUtilService.getMethodLabel(invoiceForm.get('collection_method')?.value || 'transfer') }}
           </span>
         </div>
         <!-- Fecha de Pago -->

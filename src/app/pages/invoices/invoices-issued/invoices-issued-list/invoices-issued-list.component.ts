@@ -51,7 +51,7 @@ export class InvoicesIssuedListComponent implements OnInit {
   // FormGroup para configuración de paginación
   paginationForm: FormGroup;
 
-  // Formulario para edición de pagos (no usado actualment
+  // FormGroup dinámico para editar cobros de facturas
   editCollectionForm: FormGroup | null = null;
 
   // Formulario para modal de abonos
@@ -113,8 +113,8 @@ export class InvoicesIssuedListComponent implements OnInit {
   // PROPIEDADES DE MODALES Y EDICIÓN
   // ==========================================
 
-  //Datos temporales para edición rápida - AHORA USA INVOICE
-  editingCollection: { [invoiceId: number]: Partial<Invoice> } = {};
+  // Conjunto de IDs de facturas en modo edición
+  editingCollection: Set<number> = new Set();
 
   // Variables para el modal de abonos
   showRefundModal: boolean = false;
@@ -122,17 +122,10 @@ export class InvoicesIssuedListComponent implements OnInit {
   // Factura seleccionada para crear abono
   selectedInvoice: Invoice | null = null;
 
-  // Datos del nuevo abono
-  newRefund: {
-    originalInvoiceId: number;
-  } = {
-    originalInvoiceId: 0
-  };
-
 
   constructor(
     private invoicesIssuedService: InvoicesIssuedService,
-    private invoicesIssuedUtilService: InvoicesUtilService,
+    protected invoicesUtilService: InvoicesUtilService,
     private router: Router,
     private searchService: SearchService,
     private paginationService: PaginationService,
@@ -196,22 +189,6 @@ export class InvoicesIssuedListComponent implements OnInit {
       this.updatePagination();
     });
   }
-
-  // ==========================================
-  // MÉTODOS HELPER PARA ETIQUETAS
-  // ==========================================
-  getStatusLabel(status: string): string {
-    return COLLECTION_STATUS_LABELS.find(item => item.value === status)?.label || status;
-  }
-
-  getMethodLabel(method: string): string {
-    return COLLECTION_METHOD_LABELS.find(item => item.value === method)?.label || method;
-  }
-
-  getCategoryLabel(category: string): string {
-    return CATEGORIES_LABELS.find(item => item.value === category)?.label || category;
-  }
-
   // ==========================================
   // MÉTODOS DE CARGA DE DATOS
   // ==========================================
@@ -321,6 +298,7 @@ export class InvoicesIssuedListComponent implements OnInit {
     this.paginationConfig.currentPage = 1;
     this.updatePagination();
   }
+
   /**
    * Limpia el filtro de búsqueda
    */
@@ -334,7 +312,7 @@ export class InvoicesIssuedListComponent implements OnInit {
   /**
    * Limpia el filtro de búsqueda y muestra todas las facturas
    */
-  clearFilters():void {
+  clearFilters(): void {
     // Resetear cada FormGroup por separado con valores explícitos
     this.searchForm.patchValue({
       searchTerm: ''
@@ -429,6 +407,7 @@ export class InvoicesIssuedListComponent implements OnInit {
   editInvoice(id: number) {
     this.router.navigate(['/dashboards/invoices-issued/edit', id]);
   }
+
   /**
    * Exporta los datos filtrados
    */
@@ -485,14 +464,14 @@ export class InvoicesIssuedListComponent implements OnInit {
     });
 
     // Mantener referencia simple para saber qué factura se está editando
-    this.editingCollection[invoice.id!] = {id: invoice.id};
+    this.editingCollection.add(invoice.id!)
   }
 
   /**
    * Cancela la edición del cobro
    */
   cancelEditingCollection(invoiceId: number): void {
-    delete this.editingCollection[invoiceId];
+    this.editingCollection.delete(invoiceId);
     this.editCollectionForm = null; // Destruir FormGroup
   }
 
@@ -500,7 +479,7 @@ export class InvoicesIssuedListComponent implements OnInit {
    * Verifica si una factura está en modo edición de cobro
    */
   isEditingCollection(invoiceId: number): boolean {
-    return !!this.editingCollection[invoiceId];
+    return this.editingCollection.has(invoiceId);
   }
 
   /**
@@ -535,7 +514,7 @@ export class InvoicesIssuedListComponent implements OnInit {
         });
 
         // Limpiar edición y recargar lista
-        delete this.editingCollection[invoiceId];
+        this.editingCollection.delete(invoiceId);
         this.editCollectionForm = null;
         this.getListInvoices();
       },
@@ -557,7 +536,7 @@ export class InvoicesIssuedListComponent implements OnInit {
       collection_date?: string;
       collection_reference?: string;
       collection_notes?: string;
-    }={
+    } = {
       collection_status: newStatus,
       collection_method: invoice.collection_method || 'transfer',
       collection_date: newStatus === 'collected' ? new Date().toISOString().split('T')[0] : undefined,
@@ -603,8 +582,6 @@ export class InvoicesIssuedListComponent implements OnInit {
       collection_method: 'transfer',
       concept: ''
     });
-    // Solo mantener el ID fuera del FormGroup
-    this.newRefund.originalInvoiceId = invoice.id!;
   }
 
   /**
@@ -624,10 +601,10 @@ export class InvoicesIssuedListComponent implements OnInit {
    */
   saveRefund(): void {
     if (this.refundForm.invalid) {
-      this.refundForm.markAsTouched(); // Mostrar errores
+      this.refundForm.markAllAsTouched(); // Mostrar errores
       Swal.fire({
         title: 'Error',
-        text: 'El motivo del abono es obligatorio',
+        text: 'Por favor, complete todos los campos requeridos',
         icon: 'error'
       });
       return;
@@ -637,7 +614,7 @@ export class InvoicesIssuedListComponent implements OnInit {
 
     // Crear objeto RefundInvoice con datos del FormGroup
     const refundData: RefundInvoice = {
-      originalInvoiceId: this.newRefund.originalInvoiceId,
+      originalInvoiceId: this.selectedInvoice?.id!,
       invoice_date: formValues.invoice_date,
       amount: parseFloat(formValues.amount),
       concept: formValues.concept?.trim() || '',
@@ -725,39 +702,5 @@ export class InvoicesIssuedListComponent implements OnInit {
       }
     });
   }
-
-
-  // ==========================================
-  // GETTERS PARA TEMPLATE
-  // ==========================================
-  get invoiceUtilsService() {
-    return this.invoicesIssuedUtilService;
-  }
-
-  /**
-   * Getter para obtener el valor del campo de búsqueda
-   */
-  get searchTerm(): string {
-    return this.searchForm.get('searchTerm')?.value || '';
-  }
-
-
-
-
-
-
-
-  get collectionStatusControl() {
-    return this.editCollectionForm?.get('collection_status') as FormControl;
-  }
-
-  get collectionMethodControl() {
-    return this.editCollectionForm?.get('collection_method') as FormControl;
-  }
-
-  get collectionDateControl() {
-    return this.editCollectionForm?.get('collection_date') as FormControl;
-  }
-
 
 }

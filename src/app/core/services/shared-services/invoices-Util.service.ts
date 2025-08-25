@@ -1,6 +1,11 @@
 import {Injectable} from '@angular/core';
 import {Invoice} from '../../../interfaces/invoices-issued-interface';
 import {CalculableInvoice} from '../../../interfaces/calculate-interface';
+import {
+  CATEGORIES_LABELS,
+  COLLECTION_METHOD_LABELS,
+  COLLECTION_STATUS_LABELS
+} from '../../../shared/Collection-Enum/collection-enum';
 
 @Injectable({
   providedIn: 'root'
@@ -179,12 +184,6 @@ export class InvoicesUtilService {
     return new Date().toISOString().split('T')[0];
   }
 
-
-
-
-
-
-
   /**
    * Calcula el total de una factura (normal o proporcional)
    * @param invoice - La factura a calcular
@@ -211,12 +210,6 @@ export class InvoicesUtilService {
       invoice.total_amount = parseFloat(total.toFixed(2));
     }
   }
-
-
-
-
-
-
 
 // =================================================
 // 🆕 FUNCIONES REUTILIZABLES GENÉRICAS DE RECEIVED
@@ -279,6 +272,31 @@ export class InvoicesUtilService {
     if (!text) return '-';
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
+  }
+
+  //=====================================================
+  // METODOS PARA LOS ETIQUETAS LABELS EN LOS COMPONENTES
+  //=====================================================
+
+  /**
+   * Obtiene la etiqueta legible para un estado de cobro
+   */
+  getStatusLabel(status: string): string {
+    return COLLECTION_STATUS_LABELS.find(item => item.value === status)?.label || status;
+  }
+
+  /**
+   * Obtiene la etiqueta legible para un método de cobro
+   */
+  getMethodLabel(method: string): string {
+    return COLLECTION_METHOD_LABELS.find(item => item.value === method)?.label || method;
+  }
+
+  /**
+   * Obtiene la etiqueta legible para una categoría
+   */
+  getCategoryLabel(category: string): string {
+    return CATEGORIES_LABELS.find(item => item.value === category)?.label || category;
   }
 
 

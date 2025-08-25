@@ -63,3 +63,12 @@ export const CATEGORIES_LABELS = [
   {value: 'suministros', label: 'Suministros'},
   {value: 'mobiliario', label: 'Mobiliario'}
 ];
+
+// ========================================
+// Para clientes
+// ========================================
+export const CLIENT_TYPES_LABELS = [
+  { value: 'particular', label: 'Particular' },
+  { value: 'autonomo', label: 'Autónomo' },
+  { value: 'empresa', label: 'Empresa' }
+];

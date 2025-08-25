@@ -71,7 +71,7 @@ export class InvoicesIssuedRegisterComponent implements OnInit {
     private ownerServices: OwnersService,
     private invoicesIssuedService: InvoicesIssuedService,
     private router: Router,
-    private invoicesUtilService: InvoicesUtilService,
+    protected invoicesUtilService: InvoicesUtilService,
     private fb: FormBuilder,
   ) {
     this.invoiceForm = this.fb.group({
@@ -115,24 +115,6 @@ export class InvoicesIssuedRegisterComponent implements OnInit {
     this.getListOwners();
     this.setDefaultValues();
   }
-  // ==========================================
-  // GETTERS PARA TEMPLATE
-  // ==========================================
-
-
-
-
-
-  getStatusLabel(status: string): string {
-    const statusOption = COLLECTION_STATUS_LABELS.find(option => option.value === status);
-    return statusOption?.label || 'Pendiente';
-  }
-
-  getMethodLabel(method: string): string {
-    const methodOption = COLLECTION_METHOD_LABELS.find(option => option.value === method);
-    return methodOption?.label || 'Transferencia';
-  }
-
 
   // ==========================================
   // MÉTODOS DE CARGA DE DATOS
@@ -214,8 +196,7 @@ export class InvoicesIssuedRegisterComponent implements OnInit {
     const formValues = this.invoiceForm.value;
 
     if (formValues.is_proportional === "1") {
-      // Si es proporcional, usar la simulación existente
-      //this.onProportionalDatesChange();
+
     } else {
       // Cálculo normal
       const taxBase = parseFloat(formValues.tax_base) || 0;
@@ -245,7 +226,6 @@ export class InvoicesIssuedRegisterComponent implements OnInit {
         end_date: ''
       });
       this.simulationResult = null;
-    }else if (formValues.is_proportional === "1"){
     }
     this.calculateAmounts();
   }
@@ -258,8 +238,6 @@ export class InvoicesIssuedRegisterComponent implements OnInit {
 
     if (formValues.is_proportional === "1" && formValues.start_date && formValues.end_date) {
       this.simulateProportionalBilling();
-    } else {
-      //this.calculateAmounts();
     }
   }
 
@@ -365,7 +343,7 @@ export class InvoicesIssuedRegisterComponent implements OnInit {
         next: (data) => {
           Swal.fire({
             title: "Se ha registrado correctamente.",
-            text: `Factura creada con estado: ${this.getStatusLabel(formValues.collection_status || 'pending')}`,
+            text: `Factura creada con estado: ${this.invoicesUtilService.getStatusLabel(formValues.collection_status || 'pending')}`,
             icon: "success",
             draggable: true
           });

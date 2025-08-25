@@ -6,10 +6,10 @@
   </div>
 
   <!-- Formulario -->
-  <form [formGroup]="mainForm" (ngSubmit)="onSubmit()" class="invoice-form">
+  <div class="invoice-form">
 
-    <!-- Información Básica -->
-    <div class="form-section" formGroupName="basicInfo">
+    <!-- FormGroup para información básica -->
+    <form class="form-section" [formGroup]="basicInfoForm" (ngSubmit)="onSubmit()">
       <h2 class="section-title">Información Básica</h2>
 
       <div class="form-row">
@@ -52,10 +52,11 @@
           <input type="date" formControlName="due_date" class="form-input">
         </div>
       </div>
-    </div>
+    </form>
 
-    <!-- Importes -->
-    <div class="form-section" formGroupName="amounts">
+
+    <!-- FormGroup para importes y cálculos -->
+    <form class="form-section" [formGroup]="amountsForm">
       <h2 class="section-title">Importes</h2>
 
       <div class="form-row">
@@ -98,10 +99,11 @@
         <span class="total-label">Total Calculo:</span>
         <span class="total-amount">{{ amountsForm.get('total_amount')?.value | currency:'EUR':'symbol':'1.2-2' }}</span>
       </div>
-    </div>
+    </form>
 
-    <!-- Categorización -->
-    <div class="form-section" formGroupName="categories">
+
+    <!-- FormGroup para categorización -->
+    <form class="form-section" [formGroup]="categoriesForm">
       <h2 class="section-title">Categorización</h2>
 
       <div class="form-row">
@@ -135,7 +137,7 @@
           <span class="error-message">La descripción es obligatoria</span>
         }
       </div>
-    </div>
+    </form>
 
     <!-- Archivo Adjunto -->
     <div class="form-section">
@@ -189,7 +191,7 @@
     </div>
 
     <!-- Estado de Pago -->
-    <div class="form-section" formGroupName="payment">
+    <form class="form-section" [formGroup]="paymentForm">
       <h2 class="section-title">Estado de Pago</h2>
 
       <div class="form-row">
@@ -226,7 +228,7 @@
                  placeholder="Ej: TRF-001234">
         </div>
       }
-    </div>
+    </form>
 
     <!-- Botones -->
     <div class="form-actions">
@@ -243,6 +245,6 @@
       </button>
     </div>
 
-  </form>
+  </div>
 
 </div>

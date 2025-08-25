@@ -31,10 +31,6 @@ export class InvoicesReceivedEditComponent implements OnInit {
   // ==========================================
   // PROPIEDADES DE FORMULARIOS MÚLTIPLES
   // ==========================================
-
-  // FormGroup principal
-  mainForm: FormGroup;
-
   // Información básica del proveedor y factura
   basicInfoForm: FormGroup;
 
@@ -134,21 +130,12 @@ export class InvoicesReceivedEditComponent implements OnInit {
       payment_reference: ['']
     });
 
-
-    // FormGroup principal que contiene todos los demás
-    this.mainForm = this.fb.group({
-      basicInfo: this.basicInfoForm,
-      amounts: this.amountsForm,
-      categories: this.categoriesForm,
-      payment: this.paymentForm
-    });
   }
 
   ngOnInit(): void {
     this.getInvoiceId();
     this.loadSuppliers();
     this.loadInvoiceData();
-
     this.setupFormSubscriptions();
 
   }
@@ -278,7 +265,7 @@ export class InvoicesReceivedEditComponent implements OnInit {
    * Verifica si todos los formularios son válidos
    */
   areAllFormsValid(): boolean {
-    return this.mainForm.valid &&
+    return this.basicInfoForm.valid &&
       this.amountsForm.valid &&
       this.categoriesForm.valid &&
       this.paymentForm.valid;
@@ -436,8 +423,8 @@ export class InvoicesReceivedEditComponent implements OnInit {
           // Error manejado por interceptor
         }
       });
-    } else {// Marcar todos los campos como tocados para mostrar errores
-
+    } else {
+      // Marcar todos los campos como tocados para mostrar errores
       this.markAllFormsTouched();
     }
   };

@@ -6,6 +6,7 @@ import {Clients} from '../../../interfaces/clientes-interface';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {CLIENT_TYPES_LABELS} from '../../../shared/Collection-Enum/collection-enum';
 
 /**
  * Componente para editar clientes existentes
@@ -39,6 +40,11 @@ export class ClientsEditComponent implements OnInit {
 
   // Variables para gestionar administradores de empresas
   availableAdmins: Clients[] = [];                // Lista de posibles administradores
+
+  //======================
+  //Propiedades Labels
+  //======================
+  clientsTypesLables = CLIENT_TYPES_LABELS
 
   constructor(
     private clientesServices: ClientsService,
@@ -233,8 +239,9 @@ export class ClientsEditComponent implements OnInit {
     this.router.navigate(['/dashboards/clients/list']);
   }
 
-  //================================================================================
-  // INICIO
+  //=====================
+  // METODO PRIVADO AUX
+  //=====================
 
   /**
    * Carga lista de clientes que pueden ser administradores
@@ -411,8 +418,5 @@ export class ClientsEditComponent implements OnInit {
       }
     });
   }
-
-  // FIN
-  //==============================================================================
 
 }

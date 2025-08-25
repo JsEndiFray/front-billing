@@ -9,12 +9,13 @@
   <div class="filters-section">
     <form class="search-container" [formGroup]="searchForm">
       <div class="search-wrapper">
-        <input type="text" formControlName="searchTerm" placeholder="Buscar por número de factura, cliente, propietario..."
-          class="search-input"
-          autocomplete="off">
+        <input type="text" formControlName="searchTerm"
+               placeholder="Buscar por número de factura, cliente, propietario..."
+               class="search-input"
+               autocomplete="off">
         <div class="search-actions">
           <span class="search-icon">🔍</span>
-          @if (searchTerm && searchTerm !== '') {
+          @if (searchForm.get('searchTerm')?.value) {
             <button type="button" (click)="clearSearch()" class="clear-button" title="Limpiar búsqueda">✕</button>
           }
         </div>
@@ -149,8 +150,8 @@
               <!-- TIPO DE FACTURACIÓN -->
               <td>
                 <span
-                  [ngClass]="invoiceUtilsService.isInvoiceProportional(invoice) ? 'proportional-badge' : 'normal-badge'">
-                  @if (invoiceUtilsService.isInvoiceProportional(invoice)) {
+                  [ngClass]="invoicesUtilService.isInvoiceProportional(invoice) ? 'proportional-badge' : 'normal-badge'">
+                  @if (invoicesUtilService.isInvoiceProportional(invoice)) {
                     📊 {{ billingTypeLabels[1] }}
                   } @else {
                     📄 {{ billingTypeLabels[0] }}
@@ -160,9 +161,9 @@
 
               <!-- PERÍODO -->
               <td>
-                @if (invoiceUtilsService.isInvoiceProportional(invoice)) {
-                  <span class="proportional-period" [title]="invoiceUtilsService.getProportionalDays(invoice)">
-                    {{ invoiceUtilsService.getProportionalPeriod(invoice) }}
+                @if (invoicesUtilService.isInvoiceProportional(invoice)) {
+                  <span class="proportional-period" [title]="invoicesUtilService.getProportionalDays(invoice)">
+                    {{ invoicesUtilService.getProportionalPeriod(invoice) }}
                   </span>
                 } @else {
                   <span class="normal-period">Mes completo</span>
@@ -172,7 +173,7 @@
               <!-- MES CORRESPONDENCIA -->
               <td>
                 <span class="corresponding-month">
-                  {{ invoiceUtilsService.getCorrespondingMonthDisplay(invoice) }}
+                  {{ invoicesUtilService.getCorrespondingMonthDisplay(invoice) }}
                 </span>
               </td>
 
@@ -184,7 +185,7 @@
                       [ngClass]="invoice.collection_status === 'collected' ? 'paid-badge' : 'pending-badge'"
                       (click)="toggleCollectionStatus(invoice)"
                       title="Clic para cambiar estado">
-                      {{ getStatusLabel(invoice.collection_status || 'pending') }}
+                      {{ invoicesUtilService.getStatusLabel(invoice.collection_status || 'pending') }}
                     </span>
                     <button
                       class="edit-payment-btn"
@@ -194,12 +195,14 @@
                     </button>
                   </div>
                 } @else {
-                  <select
-                    [formControl]="collectionStatusControl" class="form-input collection-select">
-                    @for (status of collectionStatusLabels; track status.value) {
-                      <option [value]="status.value">{{ status.label }}</option>
-                    }
-                  </select>
+                  <form [formGroup]="editCollectionForm!">
+                    <select formControlName="collection_status" class="form-input collection-select">
+                      @for (status of collectionStatusLabels; track status.value) {
+                        <option [value]="status.value">{{ status.label }}</option>
+                      }
+                    </select>
+                  </form>
+
                 }
               </td>
 
@@ -207,15 +210,18 @@
               <td>
                 @if (!isEditingCollection(invoice.id!)) {
                   <span class="collection-method-display">
-                    {{ getMethodLabel(invoice.collection_method || 'transfer') }}
+                    {{ invoicesUtilService.getMethodLabel(invoice.collection_method || 'transfer') }}
                   </span>
                 } @else {
-                  <select
-                    [formControl]="collectionMethodControl" class="form-input collection-select">
-                    @for (metho of collectionMethodLabels; track metho.value) {
-                      <option [value]="metho.value">{{ metho.label }}</option>
-                    }
-                  </select>
+                  <form [formGroup]="editCollectionForm!">
+                    <select
+                      formControlName="collection_method" class="form-input collection-select">
+                      @for (metho of collectionMethodLabels; track metho.value) {
+                        <option [value]="metho.value">{{ metho.label }}</option>
+                      }
+                    </select>
+                  </form>
+
                 }
               </td>
 
@@ -226,9 +232,10 @@
                     {{ invoice.collection_date ? (invoice.collection_date! | dataFormat) : '-' }}
                   </span>
                 } @else {
-                  <input
-                    type="date"
-                    [formControl]="collectionDateControl " class="form-input collection-date-input">
+                  <form [formGroup]="editCollectionForm!">
+                    <input type="date" formControlName="collection_date" class="form-input collection-date-input">
+                  </form>
+
                 }
               </td>
 
@@ -383,10 +390,9 @@
             <div class="form-field">
               <label class="form-label">Método de Pago (referencia)</label>
               <select formControlName="collection_method" class="form-input">
-                <option value="transfer">Transferencia</option>
-                <option value="cash">Efectivo</option>
-                <option value="card">Tarjeta</option>
-                <option value="check">Cheque</option>
+                @for (method of collectionMethodLabels; track method.value){
+                  <option [value]="method.value">{{method.label}}</option>
+                }
               </select>
             </div>
 

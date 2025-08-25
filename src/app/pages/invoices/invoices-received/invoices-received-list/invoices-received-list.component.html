@@ -20,7 +20,7 @@
         <!-- Iconos de búsqueda y limpiar -->
         <div class="search-actions">
           <span class="search-icon">🔍</span>
-          @if (searchTerm && searchTerm.trim() !== '') {
+          @if (searchForm.get('searchTerm')?.value) {
             <button type="button" (click)="clearSearch()" class="clear-button" title="Limpiar búsqueda">✕</button>
           }
         </div>
@@ -141,7 +141,7 @@
                 {{ invoice.supplier_name }}
               </td>
               <td>{{ invoice.invoice_date | dataFormat }}</td>
-              <td [class.overdue]="invoiceUtilService.isOverdue(invoice)">
+              <td [class.overdue]="invoicesUtilService.isOverdue(invoice)">
                 {{ invoice.due_date | dataFormat }}
               </td>
               <td class="currency-cell">{{ invoice.tax_base | currency:'EUR':'symbol':'1.2-2' }}</td>
@@ -151,24 +151,24 @@
 
               <!-- CATEGORÍA -->
               <td>
-                <span [ngClass]="invoiceUtilService.getCategoryClass(invoice.category)">
-                  {{ getCategoryLabel(invoice.category!) || invoice.category }}
+                <span [ngClass]="invoicesUtilService.getCategoryClass(invoice.category)">
+                  {{ invoicesUtilService.getCategoryLabel(invoice.category!) || invoice.category }}
                 </span>
               </td>
 
               <!-- DESCRIPCIÓN -->
               <td class="description-cell" [title]="invoice.description">
-                {{ invoiceUtilService.truncateText(invoice.description, 30) }}
+                {{ invoicesUtilService.truncateText(invoice.description, 30) }}
               </td>
 
               <!-- ESTADO DE PAGO -->
               <td>
                 @if (!isEditingPayment(invoice.id!)) {
                   <div class="payment-status-container">
-                    <span [ngClass]="invoiceUtilService.getPaymentStatusClass(invoice.collection_status)"
+                    <span [ngClass]="invoicesUtilService.getPaymentStatusClass(invoice.collection_status)"
                           (click)="togglePaymentStatus(invoice)"
                           title="Clic para cambiar estado">
-                      {{ getStatusLabel(invoice.collection_status || 'pending') }}
+                      {{ invoicesUtilService.getStatusLabel(invoice.collection_status || 'pending') }}
                     </span>
                     <button class="edit-payment-btn" (click)="startEditingPayment(invoice)"
                             title="Editar detalles">
@@ -190,7 +190,7 @@
               <td>
                 @if (!isEditingPayment(invoice.id!)) {
                   <span class="payment-method-display">
-                    {{ getMethodLabel(invoice.collection_method || 'transfer') }}
+                    {{ invoicesUtilService.getMethodLabel(invoice.collection_method || 'transfer') }}
                   </span>
                 } @else if (editPaymentForm) {
                   <div [formGroup]="editPaymentForm">

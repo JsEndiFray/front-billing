@@ -400,13 +400,13 @@
           <span class="collection-summary-value"
                 [class.status-pending]="invoice.collection_status === 'pending'"
                 [class.status-paid]="invoice.collection_status === 'collected'">
-            {{ getStatusLabel(invoice.collection_status || 'pending') }}
+            {{ invoicesIssuedUtilService.getStatusLabel(invoice.collection_status || 'pending') }}
           </span>
         </div>
         <div class="collection-summary-item">
           <span class="collection-summary-label">Método:</span>
           <span class="collection-summary-value">
-            {{ getMethodLabel(invoice.collection_method || 'transfer') }}
+            {{ invoicesIssuedUtilService.getMethodLabel(invoice.collection_method || 'transfer') }}
           </span>
         </div>
         @if (invoice.collection_date) {
