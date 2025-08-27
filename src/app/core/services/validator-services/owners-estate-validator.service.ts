@@ -10,7 +10,8 @@ import {EstatesOwners} from '../../../interfaces/estates-owners-interface';
 })
 export class OwnersEstateValidatorService {
 
-  constructor() {}
+  constructor() {
+  }
 
   /**
    * Limpia datos manteniendo solo campos necesarios

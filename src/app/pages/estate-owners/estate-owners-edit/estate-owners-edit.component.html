@@ -17,7 +17,7 @@
   }
 
   <!-- Formulario principal -->
-  <form (ngSubmit)="updateOwnership()" #ownershipForm="ngForm">
+  <form (ngSubmit)="updateOwnership()" [formGroup]="estateOwnersFormGroup">
 
     <!-- Sección 1: Campos principales -->
     <div class="form-section">
@@ -30,11 +30,11 @@
         <div class="form-field">
           <label for="estate_id">Inmueble *</label>
           <select
-            [(ngModel)]="estateOwners.estate_id"
+            formControlName="estate_id"
             name="estate_id"
             id="estate_id"
             class="form-select"
-            (ngModelChange)="getEstateList()"
+            (change)="findSelectedEstate()"
             required>
             <option value="">Seleccionar inmueble</option>
             <!-- Lista de inmuebles disponibles -->
@@ -61,11 +61,11 @@
         <div class="form-field">
           <label for="owners_id">Propietario *</label>
           <select
-            [(ngModel)]="estateOwners.owners_id"
+            formControlName="owners_id"
             name="owners_id"
             id="owners_id"
             class="form-select"
-            (ngModelChange)="getOwnersLIst()"
+            (change)="findSelectedOwner()"
             required>
             <option value="">Seleccionar propietario</option>
             <!-- Lista de propietarios disponibles -->
@@ -93,8 +93,7 @@
           <label for="ownership_percent">Porcentaje de Propiedad * (%)</label>
           <input
             type="number"
-            [(ngModel)]="estateOwners.ownership_percentage"
-            name="ownership_percent"
+           formControlName="ownership_percentage"
             id="ownership_percent"
             class="form-input"
             placeholder="50.00"
@@ -105,9 +104,9 @@
           <small class="help-text">Ejemplo: 50.00 = 50%</small>
 
           <!-- Vista previa del porcentaje en tiempo real -->
-          @if (estateOwners.ownership_percentage) {
+          @if (estateOwnersFormGroup.get('ownership_percentage')?.value) {
             <div class="percentage-preview">
-              <span class="percentage-value">{{ estateOwners.ownership_percentage }}%</span>
+              <span class="percentage-value">{{ estateOwnersFormGroup.get('ownership_percentage')?.value}}%</span>
             </div>
           }
         </div>
@@ -134,7 +133,7 @@
           </div>
           <div class="summary-item">
             <strong>Nuevo Porcentaje:</strong>
-            <span class="new-value">{{ estateOwners.ownership_percentage }}%</span>
+            <span class="new-value">{{ estateOwnersFormGroup.get('ownership_percentage')?.value }}%</span>
           </div>
         </div>
       </div>
@@ -175,7 +174,7 @@
       <button
         type="submit"
         class="btn-primary"
-        [disabled]="!ownershipForm.valid || totalPercentageForEstate > 100">
+        [disabled]="!estateOwnersFormGroup.valid || totalPercentageForEstate > 100">
         @if (isEditMode) {
           ✓ Actualizar Porcentaje
         } @else {

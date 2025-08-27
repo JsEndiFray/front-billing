@@ -5,8 +5,11 @@ import {EstateOwnersService} from '../../../core/services/estate-owners-services
 import {Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
-import {FormsModule} from '@angular/forms';
+import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {SearchService} from '../../../core/services/shared-services/search.service';
+import {PaginationConfig, PaginationResult} from '../../../interfaces/pagination-interface';
+import {PaginationService} from '../../../core/services/shared-services/pagination.service';
+
 
 /**
  * Componente para mostrar la lista de relaciones inmueble-propietario
@@ -16,27 +19,63 @@ import {SearchService} from '../../../core/services/shared-services/search.servi
   selector: 'app-estate-owners-list',
   imports: [
     DataFormatPipe,
-    FormsModule
+    ReactiveFormsModule
   ],
   templateUrl: './estate-owners-list.component.html',
   styleUrl: './estate-owners-list.component.css'
 })
 export class EstateOwnersListComponent implements OnInit {
 
+  // ==========================================
+  // PROPIEDADES DE FORMULARIOS MÚLTIPLES
+  // ==========================================
+  // FormGroup para búsqueda de texto
+  searchForm: FormGroup;
+
+  // FormGroup para configuración de paginación
+  paginationForm: FormGroup;
+
   // Lista de relaciones inmueble-propietario que se muestra en la tabla
-  estateOwners: EstatesOwners[] = [];
+  filteredEstateOwners: EstatesOwners[] = [];
 
 // Lista completa de propietarios y propiedades (datos originales sin filtrar)
   allEstateOwners: EstatesOwners[] = [];
 
-// Texto que escribe el usuario para buscar
-  searchTerm: string = '';
+  estateOwners: EstatesOwners[] = [];
+
+  // Configuración de paginación
+  paginationConfig: PaginationConfig = {
+    currentPage: 1,
+    itemsPerPage: 5,
+    totalItems: 0
+  };
+
+// Resultado de paginación
+  paginationResult: PaginationResult<EstatesOwners> = {
+    items: [],
+    totalPages: 0,
+    hasNext: false,
+    hasPrevious: false,
+    startIndex: 0,
+    endIndex: 0
+  };
 
   constructor(
     private estateOwnersService: EstateOwnersService,
     private router: Router,
     private searchService: SearchService,
+    private paginationService: PaginationService,
+    private fb: FormBuilder,
   ) {
+    this.searchForm = this.fb.group({
+      searchTerm: ['']
+    });
+
+    this.paginationForm = this.fb.group({
+      itemsPerPage: [5]
+    })
+
+
   }
 
   /**
@@ -45,7 +84,30 @@ export class EstateOwnersListComponent implements OnInit {
    */
   ngOnInit(): void {
     this.getAllEstateOwners();
+    this.setupFormSubscriptions();
   }
+
+
+// ==========================================
+  // MÉTODOS DE CONFIGURACIÓN
+  // ==========================================
+
+  setupFormSubscriptions() {
+    this.searchForm.get('searchTerm')?.valueChanges.subscribe(() => {
+      this.applyFilters()
+    })
+
+    this.paginationForm.get('itemsPerPage')?.valueChanges.subscribe((items) => {
+      this.paginationConfig.itemsPerPage = items;
+      this.paginationConfig.currentPage = 1;
+      this.updatePagination();
+    });
+
+  }
+
+  // ==========================================
+  // MÉTODOS DE CARGA DE DATOS
+  // ==========================================
 
   /**
    * Obtiene todas las relaciones inmueble-propietario del servidor
@@ -54,42 +116,121 @@ export class EstateOwnersListComponent implements OnInit {
   getAllEstateOwners() {
     this.estateOwnersService.getAllEstateOwners().subscribe({
       next: (data) => {
-        this.estateOwners = data;
         this.allEstateOwners = data;
+        this.applyFilters();
       }, error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
       }
     })
   }
 
-
-
-  /**
-   * Filtra la lista de porcentajes según el texto de búsqueda
-   * Busca en: propietario y direccion, identificación y teléfono
-   */
-  filterOwners() {
-    this.estateOwners = this.searchService.filterData(
-      this.allEstateOwners,
-      this.searchTerm,
-      ['owner_name', 'estate_name', 'ownership_percentage']
-    )
-  }
+  // ==========================================
+  // MÉTODOS DE FILTROS Y BÚSQUEDA
+  // ==========================================
 
   /**
    * Limpia el filtro de búsqueda y muestra todo el porcentajes
    */
   clearFilters() {
-    this.searchTerm = '';
-    this.filterOwners();
+    this.searchForm.patchValue({
+      searchTerm: ''
+    })
   }
 
   /**
-   * Se ejecuta cada vez que el usuario escribe en el buscador
+   * Filtra la lista de empleados según el texto de búsqueda
+   * Busca en: nombre completo, identificación y teléfono
    */
-  onSearchChange() {
-    this.filterOwners();
+  applyFilters() {
+    let filtered = [...this.allEstateOwners];
+
+    // Obtener valores directamente de cada FormGroup independiente
+    const searchTerm = this.searchForm.get('searchTerm')?.value;
+
+    // Filtro por búsqueda de texto
+    if (searchTerm) {
+      filtered = this.searchService.filterData(
+        filtered,
+        searchTerm,
+        ['owner_name', 'estate_name', 'ownership_percentage']
+      )
+    }
+
+
+    this.filteredEstateOwners = filtered;
+    this.paginationConfig.totalItems = filtered.length;
+    this.paginationConfig.currentPage = 1;
+    this.updatePagination();
+
+
+  };
+
+  // ==========================================
+  // MÉTODOS DE PAGINACIÓN
+  // ==========================================
+  /**
+   * Actualiza la paginación con los datos filtrados
+   */
+  updatePagination() {
+    this.paginationResult = this.paginationService.paginate(
+      this.filteredEstateOwners,
+      this.paginationConfig
+    );
+    this.estateOwners = this.paginationResult.items;
   }
+
+  /**
+   * Navega a una página específica
+   */
+  goToPage(page: number) {
+    if (this.paginationService.isValidPage(page, this.paginationResult.totalPages)) {
+      this.paginationConfig.currentPage = page;
+      this.updatePagination();
+    }
+  }
+
+  /**
+   * Navega a la página anterior
+   */
+  previousPage() {
+    if (this.paginationResult.hasPrevious) {
+      this.goToPage(this.paginationConfig.currentPage - 1);
+    }
+  };
+
+  /**
+   * Navega a la página siguiente
+   */
+  nextPage() {
+    if (this.paginationResult.hasNext) {
+      this.goToPage(this.paginationConfig.currentPage + 1);
+    }
+  };
+
+  /**
+   * Obtiene las páginas visibles para la navegación
+   */
+  getVisiblePages(): number[] {
+    return this.paginationService.getVisiblePages(
+      this.paginationConfig.currentPage,
+      this.paginationResult.totalPages,
+      5
+    );
+  }
+
+  /**
+   * Obtiene el texto informativo de paginación
+   */
+  getPaginationText(): string {
+    return this.paginationService.getPaginationText(
+      this.paginationConfig,
+      this.allEstateOwners.length
+    );
+  }
+
+  // ==========================================
+  // MÉTODOS DE NAVEGACIÓN Y CRUD
+  // ==========================================
 
   /**
    * Navega a la página de edición de la relación
@@ -131,8 +272,9 @@ export class EstateOwnersListComponent implements OnInit {
       }
     })
   }
-
   newEstateOwner() {
     this.router.navigate(['/dashboards/estates/register'])
   }
+
+  exportData(){}
 }

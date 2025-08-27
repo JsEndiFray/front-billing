@@ -31,9 +31,6 @@ import {EstatesListComponent} from './pages/estates/estates-list/estates-list.co
 import {EstatesEditComponent} from './pages/estates/estates-edit/estates-edit.component';
 
 // Porcentajes de propiedades (Estates-Owners) - Relaciones propiedad-propietario
-import {
-  EstateOwnersRegisterComponent
-} from './pages/estate-owners/estate-owners-register/estate-owners-register.component';
 import {EstateOwnersListComponent} from './pages/estate-owners/estate-owners-list/estate-owners-list.component';
 import {EstateOwnersEditComponent} from './pages/estate-owners/estate-owners-edit/estate-owners-edit.component';
 
@@ -175,7 +172,6 @@ export const routes: Routes = [
       {
         path: 'estates-owners',
         children: [
-          {path: 'register', component: EstateOwnersRegisterComponent, title: 'Registrar Porcentaje'},
           {path: 'list', component: EstateOwnersListComponent, title: 'Listado Porcentajes'},
           {path: 'edit/:id', component: EstateOwnersEditComponent, title: 'Editar Porcentaje'}
         ]

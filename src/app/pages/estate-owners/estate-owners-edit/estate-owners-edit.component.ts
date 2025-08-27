@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormsModule} from '@angular/forms';
-import {EstatesOwners} from '../../../interfaces/estates-owners-interface';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Estates} from '../../../interfaces/estates-interface';
 import {Owners} from '../../../interfaces/owners-interface';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -18,37 +17,38 @@ import {OwnersEstateValidatorService} from '../../../core/services/validator-ser
 @Component({
   selector: 'app-estate-owners-edit',
   imports: [
-    FormsModule
+    ReactiveFormsModule
   ],
   templateUrl: './estate-owners-edit.component.html',
   styleUrl: './estate-owners-edit.component.css'
 })
 export class EstateOwnersEditComponent implements OnInit {
 
-  // Objeto que guarda los datos de la relación inmueble-propietario
-  estateOwners: EstatesOwners = {
-    id: null,
-    estate_id: null,
-    estate_name: '',
-    owners_id: null,
-    owner_name: '',
-    ownership_percentage: null,
-    date_create: '',
-    date_update: ''
-  }
+  // ==========================================
+  // PROPIEDADES DE FORMULARIOS MÚLTIPLES
+  // ==========================================
 
-  // Listas para los selectores del formulario
+
+  estateOwnersFormGroup: FormGroup;
+
+  totalPercentageForEstate: number = 0;
+
+  // ==========================================
+  // CARGAS LOS DATOS AL FORMULARIO
+  // ==========================================
+
   estates: Estates[] = [];
   owners: Owners[] = [];
 
-  // Objetos completos de lo que está seleccionado actualmente
+  // ==========================================
+  // SELECCIONA LOS DATOS DENTRO DEL SELEC
+  // ==========================================
   selectedEstate: Estates | null = null;
   selectedOwner: Owners | null = null;
 
   // Variables de control del formulario
   isEditMode: boolean = false;          // Si estamos editando o creando
   originalPercentage: number = 0;       // Porcentaje original antes de editar
-  totalPercentageForEstate: number = 0; // Total de porcentajes para validar
 
   constructor(
     private router: Router,
@@ -57,7 +57,20 @@ export class EstateOwnersEditComponent implements OnInit {
     private ownersServices: OwnersService,
     private estateOwnersService: EstateOwnersService,
     private ownersEstateValidatorService: OwnersEstateValidatorService,
+    private fb: FormBuilder,
   ) {
+    // guarda los datos de la relación inmueble-propietario
+    this.estateOwnersFormGroup = this.fb.group({
+      id: [null],
+      estate_id: [null, Validators.required],
+      estate_name: [''],
+      owners_id: [null, Validators.required],
+      owner_name: [''],
+      ownership_percentage: [null, [Validators.min(0), Validators.max(100)]],
+      date_create: [''],
+      date_update: ['']
+    });
+
   }
 
   /**
@@ -76,9 +89,13 @@ export class EstateOwnersEditComponent implements OnInit {
         this.estateOwnersService.getEstatesOwnersById(id).subscribe({
           next: (data) => {
             if (data && data.length > 0) {
-              this.estateOwners = data[0];
-              this.originalPercentage = data[0].ownership_percentage || 0;
+              const estateOwnersData = data[0];
+              this.originalPercentage = estateOwnersData.ownership_percentage || 0;
+
+              // Llenar FormGroup directamente
+              this.estateOwnersFormGroup.patchValue(estateOwnersData);
             }
+
             // Cargar las listas y después buscar las relaciones
             this.loadDataAndFindRelations();
 
@@ -96,7 +113,7 @@ export class EstateOwnersEditComponent implements OnInit {
         this.getOwnersLIst();
       }
     })
-  }
+  };
 
   /**
    * Carga tanto inmuebles como propietarios y luego busca las relaciones
@@ -174,8 +191,9 @@ export class EstateOwnersEditComponent implements OnInit {
    * Valida datos antes de enviar al servidor
    */
   updateOwnership() {
+    const formId = this.estateOwnersFormGroup.get('id')?.value;
     // Verificar que la relación tenga ID válido
-    if (this.estateOwners.id === null || this.estateOwners.id === undefined) {
+    if (formId === null || formId === undefined) {
       Swal.fire({
         title: 'Error!',
         text: 'ID de relación no válido.',
@@ -185,8 +203,10 @@ export class EstateOwnersEditComponent implements OnInit {
       return;
     }
 
+    const formData = this.estateOwnersFormGroup.value;
+
     // Limpiar espacios y preparar datos
-    const cleanData = this.ownersEstateValidatorService.cleanData(this.estateOwners);
+    const cleanData = this.ownersEstateValidatorService.cleanData(formData);
 
     // Validar que todos los campos estén correctos
     const validation = this.ownersEstateValidatorService.validateEstateOwners(cleanData);
@@ -201,10 +221,10 @@ export class EstateOwnersEditComponent implements OnInit {
     }
 
     // Enviar datos actualizados al servidor
-    this.estateOwnersService.updateEstateOwners(this.estateOwners.id, cleanData).subscribe({
+    this.estateOwnersService.updateEstateOwners(formId, cleanData).subscribe({
       next: (data) => {
         if (data && data.length > 0) {
-          this.estateOwners = data[0];
+          this.estateOwnersFormGroup.patchValue(data[0]);
           Swal.fire({
             title: '¡Éxito!',
             text: 'Relación inmueble-propietario actualizada correctamente.',
@@ -225,7 +245,8 @@ export class EstateOwnersEditComponent implements OnInit {
    * Para mostrar información detallada en el formulario
    */
   findSelectedEstate() {
-    this.selectedEstate = this.estates.find(estate => estate.id === this.estateOwners.estate_id) || null;
+    const estateId = this.estateOwnersFormGroup.get('estate_id')?.value;
+    this.selectedEstate = this.estates.find(estate => estate.id === estateId) || null;
   }
 
   /**
@@ -233,7 +254,8 @@ export class EstateOwnersEditComponent implements OnInit {
    * Para mostrar información detallada en el formulario
    */
   findSelectedOwner() {
-    this.selectedOwner = this.owners.find(owner => owner.id === this.estateOwners.owners_id) || null;
+    const ownerId = this.estateOwnersFormGroup.get('owners_id')?.value;
+    this.selectedOwner = this.owners.find(owners => owners.id === ownerId) || null;
   }
 
   /**
