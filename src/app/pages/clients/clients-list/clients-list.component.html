@@ -176,7 +176,7 @@
         </button>
 
         <!-- Números de página -->
-        @for (page of getVisiblePages(); track page) {
+        @for (page of getVisiblePages(); track $index) {
           <button
             class="pagination-btn"
             [class.active]="page === paginationConfig.currentPage"

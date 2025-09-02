@@ -1,12 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {ClientsService} from '../../../core/services/clients-services/clients.service';
-import {ClientsValidatorService} from '../../../core/services/validator-services/clients-validator.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Clients} from '../../../interfaces/clientes-interface';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {CLIENT_TYPES_LABELS} from '../../../shared/Collection-Enum/collection-enum';
+import {ValidatorService} from '../../../core/services/validator-services/validator.service';
 
 /**
  * Componente para editar clientes existentes
@@ -45,7 +45,7 @@ export class ClientsEditComponent implements OnInit {
 
   constructor(
     private clientesServices: ClientsService,
-    private clientsValidatorServices: ClientsValidatorService,
+    private validatorService: ValidatorService,
     private route: ActivatedRoute,
     private router: Router,
     private fb: FormBuilder
@@ -159,14 +159,13 @@ export class ClientsEditComponent implements OnInit {
       return;
     }
 
-    // ✅ Usar directamente los valores del FormGroup
-    const formData = this.clientForm.value;
+    //Aplicar transformaciones automáticas
+    this.validatorService.applyTransformations(this.clientForm, 'client')
 
-    // Limpiar espacios y preparar datos
-    const cleanClient = this.clientsValidatorServices.cleanClientData(formData);
+    const client: Clients = this.clientForm.value;
 
     // Validar que todos los campos estén correctos
-    const validation = this.clientsValidatorServices.validateClient(cleanClient);
+    const validation = this.validatorService.validateClient(client);
     if (!validation.isValid) {
       Swal.fire({
         title: 'Error de validación!',
@@ -181,20 +180,20 @@ export class ClientsEditComponent implements OnInit {
     const clientId = this.route.snapshot.params['id'];
 
     // Lógica especial para empresas con administradores
-    if (formData.type_client === 'empresa') {
+    if (client.type_client === 'empresa') {
       if (this.adminTypeControl.value === 'new') {
         // Crear nuevo administrador primero, luego actualizar empresa
-        this.createNewAdminAndUpdateCompany(clientId, cleanClient);
+        this.createNewAdminAndUpdateCompany(clientId, client);
         return;
       } else if (this.adminTypeControl.value === 'existing' && this.selectedAdminControl.value) {
         // Asignar administrador existente, luego actualizar empresa
-        this.assignExistingAdmin(clientId, cleanClient);
+        this.assignExistingAdmin(clientId, client);
         return;
       }
     }
 
     // Flujo normal para otros tipos de cliente o empresas sin administrador
-    this.performClientUpdate(clientId, cleanClient);
+    this.performClientUpdate(clientId, client);
   }
 
   /**
@@ -251,7 +250,7 @@ export class ClientsEditComponent implements OnInit {
    * Asigna un administrador existente a la empresa
    * Actualiza los datos del administrador para vincularlo con la empresa
    */
-  private assignExistingAdmin(clientId: number, cleanClient: Partial<Clients>): void {
+  private assignExistingAdmin(clientId: number, cleanClient: Clients): void {
     const selectedId = this.selectedAdminControl.value;
     if (!selectedId) return;
 
@@ -283,7 +282,7 @@ export class ClientsEditComponent implements OnInit {
    * Crea un nuevo administrador y lo asigna a la empresa
    * Proceso: validar → crear administrador → vincular a empresa → actualizar cliente
    */
-  private createNewAdminAndUpdateCompany(clientId: number, cleanClient: Partial<Clients>): void {
+  private createNewAdminAndUpdateCompany(clientId: number, cleanClient: Clients): void {
     // Verificar que el FormGroup del administrador sea válido
     if (!this.newAdminForm.valid) {
       this.newAdminForm.markAllAsTouched();
@@ -294,9 +293,14 @@ export class ClientsEditComponent implements OnInit {
         confirmButtonText: 'Ok'
       });
       return;
-    }
+    };
+
+    //Aplicar transformaciones automáticas al formulario de admin
+    this.validatorService.applyTransformations(this.newAdminForm, 'client');
+
     // Obtener valores del FormGroup
     const adminFormData = this.newAdminForm.value;
+
     // Crear objeto Clients desde el FormGroup
     const adminToCreate: Clients = {
       id: null,
@@ -320,7 +324,7 @@ export class ClientsEditComponent implements OnInit {
 
 
     // Validar datos del nuevo administrador
-    const adminValidation = this.clientsValidatorServices.validateClient(adminToCreate);
+    const adminValidation = this.validatorService.validateClient(adminToCreate);
     if (!adminValidation.isValid) {
       Swal.fire({
         title: 'Error en datos del administrador',
@@ -331,9 +335,8 @@ export class ClientsEditComponent implements OnInit {
       return;
     }
 
-    // Limpiar y crear el nuevo administrador
-    const cleanAdmin = this.clientsValidatorServices.cleanClientData(adminToCreate);
-    this.clientesServices.createClientes(cleanAdmin).subscribe({
+    // Crear el nuevo administrador (ya está limpio tras las transformaciones)
+    this.clientesServices.createClientes(adminToCreate).subscribe({
       next: (newAdmin) => {
         this.clientesServices.associateClientToCompany(clientId, newAdmin[0].id!).subscribe({
           next: () => {
@@ -355,7 +358,7 @@ export class ClientsEditComponent implements OnInit {
    * Actualiza solo los datos del cliente
    * Método separado de la lógica de administradores para mayor claridad
    */
-  private performClientUpdate(clientId: number, cleanClient: Partial<Clients>): void {
+  private performClientUpdate(clientId: number, cleanClient: Clients): void {
     this.clientesServices.updateClient(clientId, cleanClient).subscribe({
       next: (data) => {
         Swal.fire({

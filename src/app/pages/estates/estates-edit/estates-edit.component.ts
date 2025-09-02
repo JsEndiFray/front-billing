@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {FormsModule} from '@angular/forms';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Estates} from '../../../interfaces/estates-interface';
 import {EstatesService} from '../../../core/services/estates-services/estates.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import Swal from 'sweetalert2';
 import {HttpErrorResponse} from '@angular/common/http';
-import {EstatesValidatorService} from '../../../core/services/validator-services/estates-validator.service';
+import {ValidatorService} from '../../../core/services/validator-services/validator.service';
 
 /**
  * Componente para editar propiedades inmobiliarias existentes
@@ -14,32 +14,36 @@ import {EstatesValidatorService} from '../../../core/services/validator-services
 @Component({
   selector: 'app-estates-edit',
   imports: [
-    FormsModule,
+    ReactiveFormsModule,
   ],
   templateUrl: './estates-edit.component.html',
   styleUrl: './estates-edit.component.css'
 })
 export class EstatesEditComponent implements OnInit {
 
-  // Objeto que guarda todos los datos de la propiedad
-  estate: Estates = {
-    id: null,
-    cadastral_reference: '',
-    price: null,
-    address: '',
-    postal_code: '',
-    location: '',
-    province: '',
-    country: '',
-    surface: null
-  }
+  // ==========================================
+  // PROPIEDADES DE FORMULARIOS MÚLTIPLES
+  // ==========================================
+  estateForm: FormGroup;
 
   constructor(
     private estateService: EstatesService,
     private router: Router,
     private route: ActivatedRoute,
-    private estateValidatorServices: EstatesValidatorService,
+    private validatorService: ValidatorService,
+    private fb: FormBuilder
   ) {
+    this.estateForm = this.fb.group({
+      id: [null],
+      cadastral_reference: ['', [Validators.required, Validators.minLength(20), Validators.maxLength(20)]],
+      price: [null, [Validators.required, Validators.min(1)]],
+      address: ['', [Validators.required]],
+      postal_code: ['', [Validators.required, Validators.pattern('[0-9]{5}')]],
+      location: ['', [Validators.required]],
+      province: ['', [Validators.required]],
+      country: ['España', [Validators.required]],
+      surface: [null, [Validators.required, Validators.min(1)]],
+    })
   }
 
   /**
@@ -55,7 +59,7 @@ export class EstatesEditComponent implements OnInit {
         this.estateService.getById(id).subscribe({
           next: (data) => {
             if (data && data.length > 0) {
-              this.estate = data[0];
+              this.estateForm.patchValue(data[0]);//carga valores en el FormGroup
             }
           },
           error: (e: HttpErrorResponse) => {
@@ -70,23 +74,24 @@ export class EstatesEditComponent implements OnInit {
    * Actualiza los datos de la propiedad
    * Valida información antes de enviar al servidor
    */
-  updateEstate() {
+  async updateEstate() {
     // Verificar que la propiedad tenga ID válido
-    if (this.estate.id === null || this.estate.id === undefined) {
+    if(!this.estateForm.valid){
       Swal.fire({
         title: 'Error!',
-        text: 'ID de inmueble no válido.',
-        icon: 'error',
-        confirmButtonText: 'Ok'
+        text: 'Formulario inválido, corrige los errores',
+        icon: 'error'
       });
       return;
     }
 
-    // Limpiar espacios y preparar datos
-    const cleanEstate = this.estateValidatorServices.cleanEstatesData(this.estate)
+    // Transformar datos (aplica mayúsculas, limpia espacios, etc.)
+    this.validatorService.applyTransformations(this.estateForm, 'estate');
+
+    const estateData = this.estateForm.value;
 
     // Validar que todos los campos estén correctos
-    const validation = this.estateValidatorServices.validateEstate(cleanEstate)
+    const validation = await this.validatorService.validateEstate(estateData)
     if (!validation.isValid) {
       Swal.fire({
         title: 'Error!',
@@ -98,10 +103,10 @@ export class EstatesEditComponent implements OnInit {
     }
 
     // Enviar datos actualizados al servidor
-    this.estateService.updateEstate(this.estate.id, cleanEstate).subscribe({
+    this.estateService.updateEstate(estateData.id, estateData).subscribe({
       next: (data) => {
         if (data && data.length > 0) {
-          this.estate = data[0];
+          this.estateForm.patchValue(data[0]);//actualizar valores
           Swal.fire({
             title: '¡Éxito!',
             text: 'Inmueble actualizado correctamente.',

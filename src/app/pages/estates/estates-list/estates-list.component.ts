@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {Estates} from '../../../interfaces/estates-interface';
 import {EstatesService} from '../../../core/services/estates-services/estates.service';
 import {HttpErrorResponse} from '@angular/common/http';
-import {FormsModule} from '@angular/forms';
+import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {Router} from '@angular/router';
 import Swal from 'sweetalert2';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
@@ -17,12 +17,28 @@ import {PaginationService} from '../../../core/services/shared-services/paginati
 @Component({
   selector: 'app-estates-list',
   standalone: true,
-  imports: [FormsModule, DataFormatPipe
+  imports: [
+    DataFormatPipe,
+    ReactiveFormsModule
   ],
   templateUrl: './estates-list.component.html',
   styleUrl: './estates-list.component.css'
 })
 export class EstatesListComponent implements OnInit {
+
+  // ==========================================
+  // PROPIEDADES DE FORMULARIOS MÚLTIPLES
+  // ==========================================
+
+  searchForm: FormGroup;
+
+  filtersForm: FormGroup;
+
+  paginationForm: FormGroup;
+
+  // ==========================================
+  // PROPIEDADES DE DATOS
+  // ==========================================
 
   // Lista de propiedades que se muestra en la tabla
   estates: Estates[] = [];
@@ -30,14 +46,8 @@ export class EstatesListComponent implements OnInit {
   // Lista completa de propiedades (datos originales sin filtrar)
   allStates: Estates[] = [];
 
-  // Texto que escribe el usuario para buscar
-  searchTerm: string = '';
-
   // Lista de clientes filtrados (antes de paginar)
   filteredEstates: Estates[] = [];
-
-// Filtros
-  selectedProvince: string = '';
 
   // Opciones para filtros
   provinceOptions: string[] = [];
@@ -64,7 +74,19 @@ export class EstatesListComponent implements OnInit {
     private router: Router,
     private searchService: SearchService,
     private paginationService: PaginationService,
+    private fb: FormBuilder
   ) {
+    this.searchForm = this.fb.group({
+      searchTerm: ['']
+    });
+
+    this.filtersForm = this.fb.group({
+      selectedProvince: ['']
+    });
+
+    this.paginationForm = this.fb.group({
+      itemsPerPage: [5]
+    });
   }
 
   /**
@@ -73,7 +95,34 @@ export class EstatesListComponent implements OnInit {
    */
   ngOnInit(): void {
     this.getListEstate();
+    this.setupFormSubscriptions();
   }
+
+  // ==========================================
+  // MÉTODOS DE CONFIGURACIÓN
+  // ==========================================
+
+
+  setupFormSubscriptions() {
+    this.searchForm.get('searchTerm')?.valueChanges.subscribe(() => {
+      this.applyFilters()
+    });
+
+    this.filtersForm.valueChanges.subscribe(() => {
+      this.applyFilters();
+    });
+
+    // Suscripción para cambios en configuración de paginación
+    this.paginationForm.get('itemsPerPage')?.valueChanges.subscribe((items) => {
+      this.paginationConfig.itemsPerPage = items;
+      this.paginationConfig.currentPage = 1; // Resetear a primera página
+      this.updatePagination();
+    });
+  }
+
+  // ==========================================
+  //EXTRAER  DATOS
+  // ==========================================
 
   /**
    * Obtiene todas las propiedades del servidor
@@ -90,6 +139,10 @@ export class EstatesListComponent implements OnInit {
       }
     });
   }
+
+  // ==========================================
+  // METODOS DE FILTROS
+  // ==========================================
 
   /**
    * Extrae las provincias únicas de los clientes para el filtro
@@ -112,24 +165,53 @@ export class EstatesListComponent implements OnInit {
   applyFilters() {
     let filtered = [...this.allStates];
 
+    const searchTerm = this.searchForm.get('searchTerm')?.value;
+    const selectedProvince = this.filtersForm.get('selectedProvince')?.value;
+
     // Filtro por búsqueda de texto
-    if (this.searchTerm.trim()) {
+    if (searchTerm) {
       filtered = this.searchService.filterData(
         filtered,
-        this.searchTerm,
+        searchTerm,
         ['cadastral_reference', 'address', 'location', 'province']
       );
     }
     // Filtro por provincia
-    if (this.selectedProvince) {
-      filtered = filtered.filter(employee => employee.province === this.selectedProvince);
+    if (selectedProvince) {
+      filtered = filtered.filter(estate => estate.province === selectedProvince);
     }
     this.filteredEstates = filtered;
     this.paginationConfig.totalItems = filtered.length;
     this.paginationConfig.currentPage = 1; // Resetear a primera página
     this.updatePagination();
   }
+  /**
+   * Limpia todos los filtros
+   */
+  clearFilters() {
+    this.searchForm.patchValue({
+      searchTerm: ''
+    });
 
+    this.filtersForm.patchValue({
+      selectedProvince: ''
+    })
+
+  }
+
+  // ==========================================
+  // METODO DE PAGINACION
+  // ==========================================
+
+  /**
+   * Navega a una página específica
+   */
+  goToPage(page: number) {
+    if (this.paginationService.isValidPage(page, this.paginationResult.totalPages)) {
+      this.paginationConfig.currentPage = page;
+      this.updatePagination();
+    }
+  }
   /**
    * Actualiza la paginación con los datos filtrados
    */
@@ -139,32 +221,6 @@ export class EstatesListComponent implements OnInit {
       this.paginationConfig
     );
     this.estates = this.paginationResult.items;
-  }
-
-  /**
-   * Se ejecuta cuando cambia el filtro de provincia
-   */
-  onProvinceFilterChange() {
-    this.applyFilters();
-  }
-
-
-  /**
-   * Limpia todos los filtros
-   */
-  clearFilters() {
-    this.searchTerm = '';
-    this.selectedProvince = '';
-    this.applyFilters();
-  }
-  /**
-   * Navega a una página específica
-   */
-  goToPage(page: number) {
-    if (this.paginationService.isValidPage(page, this.paginationResult.totalPages)) {
-      this.paginationConfig.currentPage = page;
-      this.updatePagination();
-    }
   }
 
   /**
@@ -204,15 +260,11 @@ export class EstatesListComponent implements OnInit {
       this.paginationConfig,
       this.estates.length
     );
-  }
-
-
-  /**
-   * Se ejecuta cada vez que el usuario escribe en el buscador
-   */
-  onSearchChange() {
-    this.applyFilters();
   };
+
+  // ==========================================
+  // METODO CRD
+  // ==========================================
 
   /**
    * Navega a la página de edición de propiedad

@@ -1,11 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {Employee} from '../../../interfaces/employee-interface';
 import {ActivatedRoute, Router} from '@angular/router';
 import {EmployeeService} from '../../../core/services/employee-services/employee.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
-import {EmployeeValidatorServices} from '../../../core/services/validator-services/employee-validator.service';
+import {ValidatorService} from '../../../core/services/validator-services/validator.service';
 
 @Component({
   selector: 'app-employee-edit',
@@ -27,7 +26,7 @@ export class EmployeeEditComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private employeeServices: EmployeeService,
-    private employeeValidator: EmployeeValidatorServices,
+    private validatorService: ValidatorService,
     private fb: FormBuilder
   ) {
     this.employeeForm = this.fb.group({
@@ -93,14 +92,15 @@ export class EmployeeEditComponent implements OnInit {
       return;
     }
 
-    // ✅ Usar directamente los valores del FormGroup
-    const formData = this.employeeForm.value;
+    // Aplica transformaciones automáticas al formulario de empleado:
+    this.validatorService.applyTransformations(this.employeeForm, 'employee');
+
+    //Usar directamente los valores del FormGroup
+    const employeeData = this.employeeForm.value;
 
 
-    // Limpiar espacios y preparar datos
-    const cleanEmployee = this.employeeValidator.cleanEmployeeData(formData);
     // Validar que todos los campos estén correctos
-    const validation = this.employeeValidator.validateEmployee(cleanEmployee);
+    const validation = this.validatorService.validateEmployee(employeeData);
     if (!validation.isValid) {
       Swal.fire({
         title: 'Error!',
@@ -111,11 +111,20 @@ export class EmployeeEditComponent implements OnInit {
       return;
     }
 
-    // ✅ Usar ID de la ruta, no de una propiedad inexistente
+    //Usar ID de la ruta, no de una propiedad inexistente
     const employeeId = this.route.snapshot.params['id'];
+    if (!employeeId) {
+      Swal.fire({
+        title: 'Error',
+        text: 'ID de empleado no válido',
+        icon: 'error'
+      });
+      return;
+    }
+
 
     // Enviar datos actualizados al servidor
-    this.employeeServices.updateEmployee(employeeId, cleanEmployee).subscribe({
+    this.employeeServices.updateEmployee(employeeId, employeeData).subscribe({
       next: (data) => {
         Swal.fire({
           title: '¡Éxito!',

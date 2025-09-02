@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {ClientsValidatorService} from '../../../core/services/validator-services/clients-validator.service';
 import Swal from 'sweetalert2';
 import {Clients} from '../../../interfaces/clientes-interface';
 import {Router} from '@angular/router';
 import {ClientsService} from '../../../core/services/clients-services/clients.service';
 import {HttpErrorResponse} from '@angular/common/http';
+import {ValidatorService} from '../../../core/services/validator-services/validator.service';
 
 /**
  * Componente para registrar nuevos clientes con tipos dinámicos
@@ -18,7 +18,6 @@ import {HttpErrorResponse} from '@angular/common/http';
     ReactiveFormsModule
   ],
   providers: [
-    ClientsValidatorService
   ],
   templateUrl: './clients-register.component.html',
   styleUrl: './clients-register.component.css'
@@ -38,7 +37,7 @@ export class ClientsRegisterComponent implements OnInit {
 
 
   constructor(
-    private clientsValidatorService: ClientsValidatorService,
+    private validatorService: ValidatorService,
     private router: Router,
     private clientsService: ClientsService,
     private fb: FormBuilder
@@ -52,7 +51,7 @@ export class ClientsRegisterComponent implements OnInit {
       phone: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       address: ['', Validators.required],
-      postal_code: ['', [Validators.required, Validators.maxLength(5)]],
+      postal_code: ['', [Validators.required, Validators.pattern('[0-9]{5}')]],
       location: ['', Validators.required],
       province: ['', Validators.required],
       country: ['ESPAÑA', Validators.required],
@@ -69,7 +68,7 @@ export class ClientsRegisterComponent implements OnInit {
    */
   ngOnInit(): void {
     // Generar CIF válido para pruebas
-    console.log('CIF válido generado:', this.clientsValidatorService.generateValidCIF());
+    console.log('CIF válido generado:', this.validatorService.generateValidCIF());
   }
 
   /**
@@ -189,6 +188,8 @@ export class ClientsRegisterComponent implements OnInit {
       return false;
     }
 
+    this.validatorService.applyTransformations(adminForm, 'client');
+
     // Crear objeto Clients desde el FormGroup para validación adicional
     const adminValues = adminForm.value;
     const adminToValidate: Clients = {
@@ -212,7 +213,7 @@ export class ClientsRegisterComponent implements OnInit {
     };
 
 
-    const validation = this.clientsValidatorService.validateClient(adminToValidate);
+    const validation = this.validatorService.validateClient(adminToValidate);
     if (!validation.isValid) {
       Swal.fire({
         title: `Error en administrador ${index + 1}`,
@@ -273,10 +274,10 @@ export class ClientsRegisterComponent implements OnInit {
       relationship_type: formValues.relationship_type
     };
 
+    //Aplicar transformaciones (mayúsculas, etc.)
+    this.validatorService.applyTransformations(this.clientForm, 'client');
 
-    // Limpiar espacios y validar datos del cliente principal
-    const cleanClient = this.clientsValidatorService.cleanClientData(clientToCreate);
-    const validation = this.clientsValidatorService.validateClient(cleanClient);
+    const validation = this.validatorService.validateClient(clientToCreate);
 
     if (!validation.isValid) {
       Swal.fire({
@@ -288,7 +289,7 @@ export class ClientsRegisterComponent implements OnInit {
     }
 
     // Crear el cliente principal
-    this.clientsService.createClientes(cleanClient).subscribe({
+    this.clientsService.createClientes(clientToCreate).subscribe({
       next: (data) => {
         this.createdCompanyId = data[0].id;
 
@@ -357,9 +358,8 @@ export class ClientsRegisterComponent implements OnInit {
         relationship_type: 'administrator'
       };
 
-      // Limpiar datos y crear
-      const cleanAdmin = this.clientsValidatorService.cleanClientData(adminToCreate);
-      return this.clientsService.createClientes(cleanAdmin).toPromise();
+      // Los datos ya están limpios tras validateAdministrator()
+      return this.clientsService.createClientes(adminToCreate).toPromise();
     });
     // Ejecutar todas las creaciones en paralelo
     Promise.all(adminPromises).then(

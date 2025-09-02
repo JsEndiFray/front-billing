@@ -7,59 +7,63 @@
 
   <!-- Sección de filtros y búsqueda -->
   <div class="filters-section">
-
     <!-- Buscador CON ICONOS -->
-    <div class="search-container">
-      <div class="search-wrapper">
-        <input
-          type="text"
-          [(ngModel)]="searchTerm"
-          (input)="onSearchChange()"
-          placeholder="Buscar propiedades..."
-          class="search-input"
-          autocomplete="off"z>
-
-        <!-- Iconos de búsqueda y limpiar -->
-        <div class="search-actions">
-          <span class="search-icon">🔍</span>
-          @if (searchTerm && searchTerm.trim() !== '') {
-            <button
-              type="button"
-              (click)="clearFilters()"
-              class="clear-button"
-              title="Limpiar búsqueda"
-            >
-              ✕
-            </button>
-          }
+    <form [formGroup]="searchForm" class="search-wrapper">
+      <div class="search-container">
+        <div class="search-wrapper">
+          <input type="text" formControlName="searchTerm" placeholder="Buscar propiedades..."
+                 class="search-input" autocomplete="off">
+          <!-- Iconos de búsqueda y limpiar -->
+          <div class="search-actions">
+            <span class="search-icon">🔍</span>
+            @if (searchForm.get('searchTerm')?.value) {
+              <button type="button" (click)="clearFilters()" class="clear-button" title="Limpiar búsqueda">✕</button>
+            }
+          </div>
         </div>
       </div>
-    </div>
+    </form>
+  </div>
+  <!-- Filtros -->
+  <div class="filters-container">
+    <!-- Filtro por provincia -->
+    <form [formGroup]="filtersForm">
+      <select formControlName="selectedProvince" class="filter-select">
+        <option value="">Todas las provincias</option>
+        @for (province of provinceOptions; track province) {
+          <option [value]="province">{{ province }}</option>
+        }
+      </select>
 
-    <!-- Filtros -->
-    <div class="filters-container">
-      <!-- Filtro por provincia --><select
-      [(ngModel)]="selectedProvince"
-      (change)="onProvinceFilterChange()"
-      class="filter-select">
-      <option value="">Todas las provincias</option>
-      @for (province of provinceOptions; track province) {
-        <option [value]="province">{{ province }}</option>
-      }
-    </select>
-
-
-    </div>
-
-
+      <!-- Botón limpiar filtros -->
+      <button type="button" (click)="clearFilters()" class="clear-filters-btn" title="Limpiar todos los filtros">
+        Limpiar filtros
+      </button>
+    </form>
 
     <!-- Botón exportar y nueva propiedad -->
     <div class="actions-container">
       <button class="export-btn">Exportar</button>
       <button class="new-client-btn" (click)="newEstate()">+ Nueva Propiedad</button>
     </div>
-
   </div>
+
+  <!-- Configuración de paginación -->
+  <div class="pagination-config">
+    <form [formGroup]="paginationForm">
+      <label for="itemsPerPage">Elementos por página:</label>
+      <select
+        id="itemsPerPage"
+        formControlName="itemsPerPage"
+        class="items-per-page-select">
+        <option [value]="5">5</option>
+        <option [value]="10">10</option>
+        <option [value]="25">25</option>
+        <option [value]="50">50</option>
+      </select>
+    </form>
+  </div>
+
 
   <!-- Tabla de propiedades -->
   <div class="table-container">
@@ -103,6 +107,7 @@
                 <button class="action-btn edit-btn" (click)="editEstate(estate.id!)">
                   Editar
                 </button>
+<!--                <button class="action-btn edit-btn" (click)="deleteEstate(estate.id!)"> Eliminar</button>-->
               </td>
             </tr>
           }
@@ -140,19 +145,13 @@
           class="pagination-btn"
           [class.disabled]="!paginationResult.hasPrevious"
           (click)="previousPage()"
-          [disabled]="!paginationResult.hasPrevious"
-        >
-          ‹ Anterior
+          [disabled]="!paginationResult.hasPrevious">‹ Anterior
         </button>
 
         <!-- Números de página -->
         @for (page of getVisiblePages(); track page) {
-          <button
-            class="pagination-btn"
-            [class.active]="page === paginationConfig.currentPage"
-            (click)="goToPage(page)"
-          >
-            {{ page }}
+          <button class="pagination-btn" [class.active]="page === paginationConfig.currentPage"
+                  (click)="goToPage(page)">{{ page }}
           </button>
         }
 
@@ -160,31 +159,19 @@
         @if (paginationResult.totalPages > 5 && paginationConfig.currentPage < paginationResult.totalPages - 2) {
           <span class="pagination-dots">...</span>
         }
-
         <!-- Última página -->
         @if (paginationResult.totalPages > 5 && paginationConfig.currentPage < paginationResult.totalPages - 2) {
-          <button
-            class="pagination-btn"
-            (click)="goToPage(paginationResult.totalPages)"
-          >
-            {{ paginationResult.totalPages }}
+          <button class="pagination-btn"
+                  (click)="goToPage(paginationResult.totalPages)">{{ paginationResult.totalPages }}
           </button>
         }
-
         <!-- Botón siguiente -->
-        <button
-          class="pagination-btn"
-          [class.disabled]="!paginationResult.hasNext"
-          (click)="nextPage()"
-          [disabled]="!paginationResult.hasNext"
-        >
-          Siguiente ›
+        <button class="pagination-btn"
+                [class.disabled]="!paginationResult.hasNext"
+                (click)="nextPage()"
+                [disabled]="!paginationResult.hasNext">Siguiente ›
         </button>
-
       </div>
     </div>
   }
-
-
-
 </div>

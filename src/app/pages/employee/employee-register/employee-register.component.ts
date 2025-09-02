@@ -1,10 +1,10 @@
 import {Component} from '@angular/core';
 import {EmployeeService} from '../../../core/services/employee-services/employee.service';
-import {EmployeeValidatorServices} from '../../../core/services/validator-services/employee-validator.service';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import Swal from 'sweetalert2';
 import {HttpErrorResponse} from '@angular/common/http';
+import {ValidatorService} from '../../../core/services/validator-services/validator.service';
 
 @Component({
   selector: 'app-employee-register',
@@ -24,7 +24,7 @@ export class EmployeeRegisterComponent {
 
   constructor(
     private employeeServices: EmployeeService,
-    private employeeValidator: EmployeeValidatorServices,
+    private validatorService: ValidatorService,
     private router: Router,
     private fb: FormBuilder
   ) {
@@ -60,14 +60,14 @@ export class EmployeeRegisterComponent {
       return;
     }
 
-    // Obtener datos del FormGroup
-    const formData = this.employeeForm.value;
+    // Aplica transformaciones automáticas al formulario de empleado:
+    this.validatorService.applyTransformations(this.employeeForm, 'employee');
 
-    // Limpiar espacios y preparar datos
-    const cleanEmp = this.employeeValidator.cleanEmployeeData(formData);
+    //Usar directamente los valores del FormGroup
+    const employeeData = this.employeeForm.value;
 
     // Validar que todos los campos estén correctos
-    const validation = this.employeeValidator.validateEmployee(cleanEmp);
+    const validation = this.validatorService.validateEmployee(employeeData);
     if (!validation.isValid) {
       Swal.fire({
         title: 'Error!',
@@ -77,7 +77,7 @@ export class EmployeeRegisterComponent {
       return;
     }
     // Enviar datos al servidor
-    this.employeeServices.createEmployee(cleanEmp).subscribe({
+    this.employeeServices.createEmployee(employeeData).subscribe({
       next: (data) => {
         Swal.fire({
           title: "Empleado registrado correctamente",

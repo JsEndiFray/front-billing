@@ -8,7 +8,7 @@ import {OwnersService} from '../../../core/services/owners-services/owners.servi
 import {EstateOwnersService} from '../../../core/services/estate-owners-services/estate-owners.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
-import {OwnersEstateValidatorService} from '../../../core/services/validator-services/owners-estate-validator.service';
+import {ValidatorService} from '../../../core/services/validator-services/validator.service';
 
 /**
  * Componente para editar relaciones inmueble-propietario
@@ -27,7 +27,6 @@ export class EstateOwnersEditComponent implements OnInit {
   // ==========================================
   // PROPIEDADES DE FORMULARIOS MÚLTIPLES
   // ==========================================
-
 
   estateOwnersFormGroup: FormGroup;
 
@@ -56,7 +55,7 @@ export class EstateOwnersEditComponent implements OnInit {
     private estateServices: EstatesService,
     private ownersServices: OwnersService,
     private estateOwnersService: EstateOwnersService,
-    private ownersEstateValidatorService: OwnersEstateValidatorService,
+    private validatorService: ValidatorService,
     private fb: FormBuilder,
   ) {
     // guarda los datos de la relación inmueble-propietario
@@ -203,13 +202,12 @@ export class EstateOwnersEditComponent implements OnInit {
       return;
     }
 
-    const formData = this.estateOwnersFormGroup.value;
+    this.validatorService.applyTransformations(this.estateOwnersFormGroup, 'estate_ownership');
 
-    // Limpiar espacios y preparar datos
-    const cleanData = this.ownersEstateValidatorService.cleanData(formData);
+    const estateOwnerData = this.estateOwnersFormGroup.value;
 
     // Validar que todos los campos estén correctos
-    const validation = this.ownersEstateValidatorService.validateEstateOwners(cleanData);
+    const validation = this.validatorService.validateEstateOwner(estateOwnerData);
     if (!validation.isValid) {
       Swal.fire({
         title: 'Error de validación',
@@ -221,7 +219,7 @@ export class EstateOwnersEditComponent implements OnInit {
     }
 
     // Enviar datos actualizados al servidor
-    this.estateOwnersService.updateEstateOwners(formId, cleanData).subscribe({
+    this.estateOwnersService.updateEstateOwners(formId, estateOwnerData).subscribe({
       next: (data) => {
         if (data && data.length > 0) {
           this.estateOwnersFormGroup.patchValue(data[0]);
