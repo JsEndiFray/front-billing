@@ -103,12 +103,12 @@
               <td class="surface-cell">{{ estate.surface }} m²</td>
               <td>{{ estate.date_create | dataFormat }}</td>
               <td>{{ estate.date_update | dataFormat }}</td>
+
               <td>
-                <button class="action-btn edit-btn" (click)="editEstate(estate.id!)">
-                  Editar
-                </button>
-<!--                <button class="action-btn edit-btn" (click)="deleteEstate(estate.id!)"> Eliminar</button>-->
+                <button class="action-btn edit-btn" (click)="editEstate(estate.id!)">Editar</button>
+                <button class="action-btn delete-btn" (click)="deleteEstate(estate.id!)"> Eliminar</button>
               </td>
+
             </tr>
           }
         } @else {

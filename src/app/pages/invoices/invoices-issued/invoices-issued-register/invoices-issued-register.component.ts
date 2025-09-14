@@ -5,9 +5,6 @@ import {
   ProportionalSimulation,
   ProportionalSimulationResponse
 } from '../../../../interfaces/invoices-issued-interface';
-import {
-  InvoicesIssuedValidatorService
-} from '../../../../core/services/validator-services/invoices-issued-validator.service';
 import {Estates} from '../../../../interfaces/estates-interface';
 import {Clients} from '../../../../interfaces/clientes-interface';
 import {Owners} from '../../../../interfaces/owners-interface';
@@ -26,6 +23,7 @@ import {
   BILLING_TYPE_LABELS,
   COLLECTION_METHOD_LABELS, COLLECTION_STATUS_LABELS,
 } from '../../../../shared/Collection-Enum/collection-enum';
+import {ValidatorService} from '../../../../core/services/validator-services/validator.service';
 
 /**
  * Componente para registrar nuevas facturas
@@ -65,7 +63,7 @@ export class InvoicesIssuedRegisterComponent implements OnInit {
   simulationResult: ProportionalSimulationResponse | null = null;
 
   constructor(
-    private invoicesIssuedValidatorService: InvoicesIssuedValidatorService,
+    private validatorService: ValidatorService,
     private estateServices: EstatesService,
     private clientsServices: ClientsService,
     private ownerServices: OwnersService,
@@ -99,9 +97,9 @@ export class InvoicesIssuedRegisterComponent implements OnInit {
       // Información de cobro
       collection_status: ['pending'],
       collection_method: ['transfer'],
-      collection_date: [''],
+      collection_date: [{value: '', disabled: true}],
       collection_notes: [''],
-      collection_reference: ['']
+      collection_reference: [{value: '', disabled: true}]
     })
   }
 
@@ -281,24 +279,31 @@ export class InvoicesIssuedRegisterComponent implements OnInit {
    * Si marca como "cobrado" sin fecha, pone la fecha actual
    */
   onCollectionStatusChange(): void {
-    const formValues = this.invoiceForm.value;
+    const status = this.invoiceForm.get('collection_status')?.value;
+    const dateControl = this.invoiceForm.get('collection_date');
+    const referenceControl = this.invoiceForm.get('collection_reference');
 
-    if (formValues.collection_status === 'collected') {
-      // Si marca como cobrado y no tiene fecha, poner fecha de hoy
-      if (!formValues.collection_date) {
+    if (status === 'collected') {
+      // habilitar campos
+      dateControl?.enable();
+      referenceControl?.enable();
+
+      if (!dateControl?.value) {
+        // Si no tiene fecha, asignar la actual
         this.invoiceForm.patchValue({
           collection_date: this.invoicesUtilService.getCurrentDateForInput()
         });
       }
     } else {
-      // Si marca como pendiente, limpiar campos de cobro
+      // deshabilitar y limpiar campos
+      dateControl?.disable();
       this.invoiceForm.patchValue({
         collection_date: '',
-        collection_reference: '',
-        collection_notes: ''
+        collection_notes: '',
+        collection_reference: ''
       });
     }
-  };
+  }
 
   //=====
   //CRUD
@@ -309,6 +314,9 @@ export class InvoicesIssuedRegisterComponent implements OnInit {
    */
   registerInvoice(): void {
     if (this.invoiceForm.valid) {
+
+      this.validatorService.applyTransformations(this.invoiceForm, 'invoice');
+
       // Obtener valores del FormGroup
       const formValues = this.invoiceForm.value;
 
@@ -327,7 +335,7 @@ export class InvoicesIssuedRegisterComponent implements OnInit {
       const invoiceFormatted = this.invoicesUtilService.formatInvoiceDatesForBackend(invoiceToSend);
 
       // Validar factura completa
-      const validation = this.invoicesIssuedValidatorService.validateInvoice(invoiceFormatted);
+      const validation = this.validatorService.validateInvoice(invoiceFormatted);
       if (!validation.isValid) {
         Swal.fire({
           title: 'Error!',
@@ -358,6 +366,7 @@ export class InvoicesIssuedRegisterComponent implements OnInit {
       this.invoiceForm.markAllAsTouched();
     }
   }
+
   goBack() {
     // Verificar si hay cambios sin guardar
     if (this.invoiceForm.dirty) {

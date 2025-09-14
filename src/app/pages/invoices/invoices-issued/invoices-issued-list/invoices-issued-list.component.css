@@ -205,6 +205,74 @@
 }
 
 /* ========================================
+   NUEVOS FILTROS DE FECHA Y MONTO
+   ======================================== */
+
+/* Contenedores de filtros específicos */
+.date-filters,
+.amount-filters {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Inputs de filtros */
+.filter-input {
+  padding: 0.625rem 0.75rem;
+  border: 0.125rem solid #e5e7eb;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  color: #374151;
+  background: #ffffff;
+  cursor: text;
+  min-width: 8rem;
+  transition: border-color 0.2s;
+}
+
+.filter-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 0.125rem rgba(59, 130, 246, 0.1);
+}
+
+.filter-input::placeholder {
+  color: #9ca3af;
+  font-size: 0.8125rem;
+}
+
+/* Inputs específicos de fecha */
+.filter-input[type="date"] {
+  min-width: 9rem;
+}
+
+/* Inputs específicos de número */
+.filter-input[type="number"] {
+  min-width: 7rem;
+  text-align: right;
+}
+
+/* Mensajes de error de validación */
+.filter-error {
+  color: #dc2626;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: #fef2f2;
+  border: 0.0625rem solid #fca5a5;
+  border-radius: 0.25rem;
+  padding: 0.375rem 0.5rem;
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.filter-error::before {
+  content: "⚠️";
+  font-size: 0.75rem;
+}
+
+/* ========================================
    CONFIGURACIÓN DE PAGINACIÓN (INDEPENDIENTE)
    ======================================== */
 .pagination-config {
@@ -881,6 +949,25 @@
     align-items: flex-start;
     gap: 0.5rem;
   }
+
+  /* Filtros de fecha y monto en móvil */
+  .date-filters,
+  .amount-filters {
+    width: 100%;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .filter-input {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .filter-error {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
 }
 
 @media (max-width: 30rem) {

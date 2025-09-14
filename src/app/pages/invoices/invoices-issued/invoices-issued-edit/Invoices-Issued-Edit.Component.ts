@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormsModule} from '@angular/forms';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {CurrencyPipe} from '@angular/common';
 import {
@@ -17,28 +17,32 @@ import {ClientsService} from '../../../../core/services/clients-services/clients
 import {EstatesService} from '../../../../core/services/estates-services/estates.service';
 import Swal from 'sweetalert2';
 import {DataFormatPipe} from '../../../../shared/pipe/data-format.pipe';
-import {
-  InvoicesIssuedValidatorService
-} from '../../../../core/services/validator-services/invoices-issued-validator.service';
-import {
-  InvoicesUtilService
-} from '../../../../core/services/shared-services/invoices-Util.service';
+import {InvoicesUtilService} from '../../../../core/services/shared-services/invoices-Util.service';
 import {
   BILLING_TYPE_LABELS,
   COLLECTION_METHOD_LABELS, COLLECTION_STATUS_LABELS
 } from '../../../../shared/Collection-Enum/collection-enum';
+import {ValidatorService} from '../../../../core/services/validator-services/validator.service';
+import {CalculableInvoice} from '../../../../interfaces/calculate-interface';
 
 @Component({
   selector: 'app-invoices-issued-edit',
   imports: [
-    FormsModule,
     CurrencyPipe,
-    DataFormatPipe
+    DataFormatPipe,
+    ReactiveFormsModule
   ],
   templateUrl: './Invoices-Issued-Edit.Component.html',
   styleUrl: './Invoices-Issued-Edit.Component.css'
 })
 export class InvoicesIssuedEditComponent implements OnInit {
+
+  // ==========================================
+  // PROPIEDADES DEL FORMULARIO
+  // ==========================================
+
+  // Formulario reactivo principal
+  invoiceForm: FormGroup;
 
   //variables
   owners: Owners[] = [];
@@ -49,41 +53,11 @@ export class InvoicesIssuedEditComponent implements OnInit {
   //LABELS PARA LOS NUEVOS CAMPOS DE PAGO
   collectionStatusLabels = COLLECTION_STATUS_LABELS;
   collectionMethodLabels = COLLECTION_METHOD_LABELS;
-  billingTypeLabels = BILLING_TYPE_LABELS;
+  billingTypeLabels = [...BILLING_TYPE_LABELS];
 
   //VARIABLES PARA FACTURACIÓN PROPORCIONAL
   isSimulating: boolean = false;
   simulationResult: ProportionalSimulationResponse | null = null;
-
-
-  invoice: Invoice = {
-    id: null,
-    invoice_number: '',
-    estates_id: null,
-    clients_id: null,
-    owners_id: null,
-    ownership_percent: null,
-    invoice_date: '',
-    tax_base: null,
-    iva: null,
-    irpf: null,
-    total: null,
-    is_refund: 0,
-    original_invoice_id: null,
-    original_invoice_number: null,
-    // CAMPOS DE COBRO CON VALORES POR DEFECTO
-    collection_status: 'pending',
-    collection_method: 'transfer',
-    collection_date: null,
-    collection_notes: '',
-    // CAMPOS PROPORCIONALES
-    start_date: '',
-    end_date: '',
-    corresponding_month: null,
-    is_proportional: 0,
-    created_at: '',
-    updated_at: '',
-  };
 
 
   constructor(
@@ -93,9 +67,46 @@ export class InvoicesIssuedEditComponent implements OnInit {
     private ownersServices: OwnersService,
     private clientsServices: ClientsService,
     private estatesServices: EstatesService,
-    private invoicesIssuedValidatorService: InvoicesIssuedValidatorService,
-    protected invoicesIssuedUtilService: InvoicesUtilService,
+    private validatorService: ValidatorService,
+    protected invoicesUtilService: InvoicesUtilService,
+    private fb: FormBuilder,
   ) {
+    this.invoiceForm = this.fb.group({
+      // Identificación
+      id: [null],
+      invoice_number: [''],
+      invoice_date: ['', [Validators.required]],
+
+      // Entidades relacionadas
+      estates_id: ['', [Validators.required]],
+      clients_id: ['', [Validators.required]],
+      owners_id: ['', [Validators.required]],
+      ownership_percent: [null],
+
+      // Cálculos financieros
+      tax_base: ['', [Validators.required, Validators.min(0.01)]],
+      iva: [21, [Validators.min(0), Validators.max(100)]],
+      irpf: [0, [Validators.min(0), Validators.max(100)]],
+      total: [0],
+
+      // Facturación proporcional
+      is_proportional: [0],
+      corresponding_month: [null],
+      start_date: [''],
+      end_date: [''],
+
+      // Información de cobro
+      collection_status: ['pending'],
+      collection_method: ['transfer'],
+      collection_date: [{value: '', disabled: true}],
+      collection_notes: [''],
+      collection_reference: [{value: '', disabled: true}],
+
+      // Campos adicionales para Edit
+      is_refund: [0],
+      original_invoice_id: [null],
+      original_invoice_number: [null]
+    });
   }
 
   ngOnInit(): void {
@@ -109,18 +120,24 @@ export class InvoicesIssuedEditComponent implements OnInit {
       if (id) {
         this.invoicesIssuedService.getInvoiceById(id).subscribe({
           next: (data) => {
-            this.invoice = data;
-            // Formatear las fechas para los inputs HTML (YYYY-MM-DD)
-            this.invoice.invoice_date = this.invoicesIssuedUtilService.formatDateForInput(this.invoice.invoice_date);
-            this.invoice.collection_date = this.invoicesIssuedUtilService.formatDateForInput(this.invoice.collection_date);
-            // Formatear fechas proporcionales si existen
-            this.invoice.start_date = this.invoicesIssuedUtilService.formatDateForInput(this.invoice.start_date);
-            this.invoice.end_date = this.invoicesIssuedUtilService.formatDateForInput(this.invoice.end_date);
+            this.invoiceForm.patchValue({
+              ...data,
+              // Formatear las fechas para los inputs HTML (YYYY-MM-DD)
+              invoice_date: this.invoicesUtilService.formatDateForInput(data.invoice_date),
+              collection_date: this.invoicesUtilService.formatDateForInput(data.collection_date),
+              // Formatear fechas proporcionales si existen
+              start_date: this.invoicesUtilService.formatDateForInput(data.start_date),
+              end_date: this.invoicesUtilService.formatDateForInput(data.end_date),
+              // Asegurar que is_proportional sea string como en Register
+              is_proportional: data.is_proportional || 0,
+              is_refund: data.is_refund|| 0
+            });
             // Si es proporcional y las fechas están cargadas, simular para mostrar detalles
-            if (this.invoice.is_proportional && this.invoice.start_date && this.invoice.end_date && this.invoice.tax_base) {
+            if (data.is_proportional && data.start_date && data.end_date) {
               this.simulateProportionalBilling();
             }
-          }, error: (e: HttpErrorResponse) => {
+          },
+          error: (e: HttpErrorResponse) => {
           }
         })
       }
@@ -128,18 +145,41 @@ export class InvoicesIssuedEditComponent implements OnInit {
   };
 
   // Manejo del cambio de estado de cobro
-  onCollectionStatusChange() {
-    this.invoicesIssuedUtilService.handleCollectionStatusChange(this.invoice);
+  onCollectionStatusChange(): void {
+    const status = this.invoiceForm.get('collection_status')?.value;
+    const dateControl = this.invoiceForm.get('collection_date');
+    const referenceControl = this.invoiceForm.get('collection_reference');
+
+    if (status === 'collected') {
+      dateControl?.enable();
+      referenceControl?.enable();
+
+      if (!dateControl?.value) {
+        this.invoiceForm.patchValue({
+          collection_date: this.invoicesUtilService.getCurrentDateForInput()
+        });
+      }
+    } else {
+      dateControl?.disable();
+      referenceControl?.disable();
+      this.invoiceForm.patchValue({
+        collection_date: '',
+        collection_reference: ''
+      });
+    }
   }
 
   /**
    * Se ejecuta cuando cambia el tipo de facturación (normal/proporcional)
    */
   onBillingTypeChange(): void {
-    if (this.invoice.is_proportional === 0) { // CAMBIO: 0 a false
-      // Si cambia a normal, limpiar campos proporcionales
-      this.invoice.start_date = '';
-      this.invoice.end_date = '';
+    const formValues = this.invoiceForm.value;
+
+    if (formValues.is_proportional === 0) {
+      this.invoiceForm.patchValue({
+        start_date: '',
+        end_date: ''
+      });
       this.simulationResult = null;
     }
     this.calculateTotal();
@@ -149,35 +189,35 @@ export class InvoicesIssuedEditComponent implements OnInit {
    * Se ejecuta cuando cambian las fechas proporcionales
    */
   onProportionalDatesChange(): void {
-    // CAMBIO: 1 a true
-    if (this.invoice.is_proportional == 1 && this.invoice.start_date && this.invoice.end_date) {
-      this.simulateProportionalBilling();
-    } else {
-      this.calculateTotal();
-    }
+    this.calculateTotal();
+
   }
 
   /**
    * Simula facturación proporcional
    */
   simulateProportionalBilling(): void {
-    if (!this.invoice.start_date || !this.invoice.end_date || this.invoice.tax_base === null || this.invoice.tax_base === undefined) {
-      return; // No simular si faltan datos esenciales
+    const formValues = this.invoiceForm.value;
+
+    if (!formValues.start_date || !formValues.end_date || !formValues.tax_base) {
+      return;
     }
 
     this.isSimulating = true;
     const simulation: ProportionalSimulation = {
-      tax_base: this.invoice.tax_base,
-      iva: this.invoice.iva || 0,
-      irpf: this.invoice.irpf || 0,
-      start_date: this.invoice.start_date,
-      end_date: this.invoice.end_date
+      tax_base: parseFloat(formValues.tax_base),
+      iva: parseFloat(formValues.iva) || 0,
+      irpf: parseFloat(formValues.irpf) || 0,
+      start_date: formValues.start_date,
+      end_date: formValues.end_date
     };
 
     this.invoicesIssuedService.simulateProportionalBilling(simulation).subscribe({
       next: (result) => {
         this.simulationResult = result;
-        this.invoice.total = result.total;
+        this.invoiceForm.patchValue({
+          total: result.total
+        });
         this.isSimulating = false;
       },
       error: (e: HttpErrorResponse) => {
@@ -226,11 +266,47 @@ export class InvoicesIssuedEditComponent implements OnInit {
   }
 
   calculateTotal() {
-    this.invoicesIssuedUtilService.calculateTotal(this.invoice, () => this.onProportionalDatesChange())
+    const formValues = this.invoiceForm.value;
+
+    // Crear objeto temporal para el servicio
+    const tempInvoice: CalculableInvoice = {
+      tax_base: formValues.tax_base,
+      iva: formValues.iva,
+      irpf: formValues.irpf,
+      is_proportional: parseInt(formValues.is_proportional) || 0, // Convertir string a number
+      total: formValues.total
+    };
+
+    // Usar el servicio con callback para proporcional
+    this.invoicesUtilService.calculateTotal(tempInvoice, () => {
+      if (formValues.start_date && formValues.end_date) {
+        this.simulateProportionalBilling();
+      }
+    });
+
+    // Si no es proporcional, actualizar el FormGroup con el total calculado
+    if (formValues.is_proportional === 0) {
+      this.invoiceForm.patchValue({
+        total: tempInvoice.total
+      });
+    }
+  };
+
+  /**
+   * Verifica si un campo del formulario es inválido y debe mostrar mensaje de error
+   * @param fieldName - Nombre del campo a validar
+   * @returns true si el campo es inválido Y ha sido tocado o modificado por el usuario
+   */
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.invoiceForm.get(fieldName);
+    return !!(field && field.invalid && (field.dirty || field.touched));
   }
 
-  updateInvoice() {
-    if (!this.invoice.id) {
+
+  updateInvoice(): void {
+    const formValues = this.invoiceForm.value;
+
+    if (!formValues.id) {
       Swal.fire({
         title: 'Error!',
         text: 'No se puede actualizar: ID de factura no válido',
@@ -240,37 +316,50 @@ export class InvoicesIssuedEditComponent implements OnInit {
       return;
     }
 
-    // Formatear las fechas antes de enviar al backend
-    const invoiceWithFormattedDates = this.invoicesIssuedUtilService.formatInvoiceDatesForBackend(this.invoice); // CAMBIO: formatBillDatesForBackend a formatInvoiceDatesForBackend
+    // Aplicar transformaciones si las necesitas
+    this.validatorService.applyTransformations(this.invoiceForm, 'invoice');
 
-    // Validaciones
-    const validation = this.invoicesIssuedValidatorService.validateInvoice(invoiceWithFormattedDates);
+    // Crear objeto Invoice para enviar
+    const invoiceToSend: Invoice = {
+      ...formValues,
+      tax_base: parseFloat(formValues.tax_base) || 0,
+      iva: parseFloat(formValues.iva) || 0,
+      irpf: parseFloat(formValues.irpf) || 0,
+      total: parseFloat(formValues.total) || 0,
+      is_proportional: parseInt(formValues.is_proportional) || 0
+    };
+
+    // Formatear fechas para backend
+    const invoiceFormatted = this.invoicesUtilService.formatInvoiceDatesForBackend(invoiceToSend);
+
+    // Validar
+    const validation = this.validatorService.validateInvoice(invoiceFormatted);
     if (!validation.isValid) {
       Swal.fire({
         title: 'Error!',
-        text: validation.message, // Mensaje del validador
+        text: validation.message,
         icon: 'error',
         confirmButtonText: 'Ok'
       });
       return;
     }
 
-    this.invoicesIssuedService.updateInvoice(this.invoice.id, invoiceWithFormattedDates).subscribe({
-        next: (data) => {
-          this.invoice = data; // Data ya es Invoice, no array
-          Swal.fire({
-            title: 'Éxito!',
-            text: `Factura actualizada con estado: ${this.invoicesIssuedUtilService.getStatusLabel(this.invoice.collection_status || 'pending')}`,
-            icon: 'success',
-            confirmButtonText: 'Ok'
-          }).then(() => {
-            this.goBack();
-          });
-          this.loadOriginalInvoices();
-        }, error: (e: HttpErrorResponse) => {
-        }
+    // Enviar al servidor
+    this.invoicesIssuedService.updateInvoice(formValues.id, invoiceFormatted).subscribe({
+      next: (data) => {
+        Swal.fire({
+          title: 'Éxito!',
+          text: `Factura actualizada con estado: ${this.invoicesUtilService.getStatusLabel(formValues.collection_status || 'pending')}`,
+          icon: 'success',
+          confirmButtonText: 'Ok'
+        }).then(() => {
+          this.goBack();
+        });
+      },
+      error: (e: HttpErrorResponse) => {
+        // Error manejado por interceptor
       }
-    )
+    });
   }
 
   goBack() {

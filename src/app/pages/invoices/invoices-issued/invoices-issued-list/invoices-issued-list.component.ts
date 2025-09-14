@@ -1,5 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {
+  FormArray,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
 import {Invoice, RefundInvoice} from '../../../../interfaces/invoices-issued-interface';
 import {DataFormatPipe} from '../../../../shared/pipe/data-format.pipe';
 import {InvoicesIssuedService} from '../../../../core/services/invoices-issued-service/invoices-issued.service';
@@ -18,6 +24,7 @@ import {
   BILLING_TYPE_LABELS,
   COLLECTION_METHOD_LABELS, COLLECTION_STATUS_LABELS,
 } from '../../../../shared/Collection-Enum/collection-enum';
+import {ValidatorService} from '../../../../core/services/validator-services/validator.service';
 
 
 /**
@@ -50,8 +57,8 @@ export class InvoicesIssuedListComponent implements OnInit {
   // FormGroup para configuración de paginación
   paginationForm: FormGroup;
 
-  // FormGroup dinámico para editar cobros de facturas
-  editCollectionForm: FormGroup | null = null;
+  // FormArray para editar cobros de múltiples facturas
+  editCollectionFormsArray: FormArray;
 
   // Formulario para modal de abonos
   refundForm: FormGroup;
@@ -111,8 +118,8 @@ export class InvoicesIssuedListComponent implements OnInit {
   // PROPIEDADES DE MODALES Y EDICIÓN
   // ==========================================
 
-  // Conjunto de IDs de facturas en modo edición
-  editingCollection: Set<number> = new Set();
+  // Mapa para rastrear qué facturas están en edición
+  editingCollectionMap: Map<number, number> = new Map(); // invoiceId -> formArrayIndex
 
   // Variables para el modal de abonos
   showRefundModal: boolean = false;
@@ -127,7 +134,8 @@ export class InvoicesIssuedListComponent implements OnInit {
     private router: Router,
     private searchService: SearchService,
     private paginationService: PaginationService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private validatorService: ValidatorService,
   ) {
 
     // FormGroup para búsqueda
@@ -141,12 +149,21 @@ export class InvoicesIssuedListComponent implements OnInit {
       selectedOwners: [''],
       selectedClients: [''],
       selectedTypeBilling: [''],
+      startDate: [''],
+      endDate: [''],
+      minAmount: [null, [Validators.min(0)]],
+      maxAmount: [null, [Validators.min(0)]]
+    }, {
+      validators: [this.validatorService.dateRangeValidator, this.validatorService.amountRangeValidator]
     });
 
     // FormGroup para paginación
     this.paginationForm = this.fb.group({
       itemsPerPage: [5]
     });
+
+    // FormArray para múltiples ediciones
+    this.editCollectionFormsArray = this.fb.array([]);
 
     //FormGroup para modal de abonos
     this.refundForm = this.fb.group({
@@ -180,12 +197,14 @@ export class InvoicesIssuedListComponent implements OnInit {
       this.applyFilters();
     });
 
+    // Suscripción para cambios en paginación
     this.paginationForm.get('itemsPerPage')?.valueChanges.subscribe((items) => {
       this.paginationConfig.itemsPerPage = items;
       this.paginationConfig.currentPage = 1;
       this.updatePagination();
     });
   }
+
   // ==========================================
   // MÉTODOS DE CARGA DE DATOS
   // ==========================================
@@ -200,6 +219,7 @@ export class InvoicesIssuedListComponent implements OnInit {
       next: (invoicesList) => {
         this.allInvoices = invoicesList;
         this.extractFilterOptions();
+        this.clearAllEditingForms();
         this.applyFilters();
       },
       error: (e: HttpErrorResponse) => {
@@ -240,9 +260,9 @@ export class InvoicesIssuedListComponent implements OnInit {
     ];
   }
 
+
   /**
-   * Filtra la lista de facturas según el texto de búsqueda
-   * Busca en: número de factura, ID de propiedad, ID de cliente, ID de propietario, mes correspondencia
+   * Aplica todos los filtros a la lista de facturas
    */
   applyFilters(): void {
     let filtered = [...this.allInvoices];
@@ -253,38 +273,64 @@ export class InvoicesIssuedListComponent implements OnInit {
     const owners = this.filtersForm.get('selectedOwners')?.value;
     const clients = this.filtersForm.get('selectedClients')?.value;
     const typeBilling = this.filtersForm.get('selectedTypeBilling')?.value;
+    const startDate = this.filtersForm.get('startDate')?.value;
+    const endDate = this.filtersForm.get('endDate')?.value;
+    const minAmount = this.filtersForm.get('minAmount')?.value;
+    const maxAmount = this.filtersForm.get('maxAmount')?.value;
 
     // Filtro por búsqueda de texto
-    if (search.trim()) {
+    if (search?.trim()) {
       filtered = this.searchService.filterData(
         filtered, search,
         ['invoice_number', 'estates_id', 'clients_id', 'owners_id', 'corresponding_month', 'estate_name', 'client_name', 'owner_name']
       );
     }
 
-    // Filtro por estado de pagos
+    // Filtros existentes
     if (collectionStatus) {
       filtered = filtered.filter(invoice => invoice.collection_status === collectionStatus);
     }
-    // Tipo de factura o de abono
+
     if (refundStatus) {
       filtered = filtered.filter(invoice => invoice.is_refund === Number(refundStatus));
     }
 
-    // Filtro facturas por propietarios
     if (owners) {
       filtered = filtered.filter(invoice => invoice.owner_name === owners);
     }
 
-    // Filtro facturas por clientes
     if (clients) {
       filtered = filtered.filter(invoice => invoice.client_name === clients);
     }
 
-
-    // Filtro por mes o proporcional
     if (typeBilling) {
       filtered = filtered.filter(invoice => invoice.is_proportional === Number(typeBilling));
+    }
+
+    // Nuevos filtros de fecha
+    if (startDate) {
+      filtered = filtered.filter(invoice => {
+        if (!invoice.invoice_date) return false;
+        const invoiceDate = new Date(invoice.invoice_date);
+        return !isNaN(invoiceDate.getTime()) && invoiceDate >= new Date(startDate);
+      });
+    }
+
+    if (endDate) {
+      filtered = filtered.filter(invoice => {
+        if (!invoice.invoice_date) return false;
+        const invoiceDate = new Date(invoice.invoice_date);
+        return !isNaN(invoiceDate.getTime()) && invoiceDate <= new Date(endDate);
+      });
+    }
+
+    // Nuevos filtros de monto
+    if (minAmount !== null) {
+      filtered = filtered.filter(invoice => (invoice.total || 0) >= minAmount);
+    }
+
+    if (maxAmount !== null) {
+      filtered = filtered.filter(invoice => (invoice.total || 0) <= maxAmount);
     }
 
     this.filteredInvoices = filtered;
@@ -302,12 +348,17 @@ export class InvoicesIssuedListComponent implements OnInit {
       searchTerm: ''
     });
 
+    // Resetear filtros incluyendo los nuevos campos
     this.filtersForm.patchValue({
       selectedCollectionStatus: '',
       selectedRefundStatus: '',
       selectedOwners: '',
       selectedClients: '',
-      selectedTypeBilling: ''  // Asegurarse que sea string vacío, no null
+      selectedTypeBilling: '', // Asegurarse que sea string vacío, no null
+      startDate: '',
+      endDate: '',
+      minAmount: null,
+      maxAmount: null
     });
   }
 
@@ -433,48 +484,73 @@ export class InvoicesIssuedListComponent implements OnInit {
   // ==========================================
   // MÉTODOS DE GESTIÓN DE COBROS
   // ==========================================
+
   /**
-   * Prepara los datos para editar el cobro de una factura
+   * Agrega una factura al FormArray para edición
    */
   startEditingCollection(invoice: Invoice): void {
+    // Verificar si ya está en edición
+    if (this.editingCollectionMap.has(invoice.id!)) {
+      return;
+    }
 
-    // Crear FormGroup dinámico para esta factura específica
-    this.editCollectionForm = this.fb.group({
-      collection_status: [invoice.collection_status || 'pending'],
-      collection_method: [invoice.collection_method || 'transfer'],
-      collection_date: [invoice.collection_date || ''],
-      collection_notes: [invoice.collection_notes || ''],
-      collection_reference: [invoice.collection_reference || '']
-    });
+    // Crear FormGroup y agregarlo al FormArray
+    const formGroup = this.validatorService.createCollectionFormGroup(invoice);
+    this.editCollectionFormsArray.push(formGroup);
 
-    // Mantener referencia simple para saber qué factura se está editando
-    this.editingCollection.add(invoice.id!)
+    // Mapear ID de factura con índice del FormArray
+    const newIndex = this.editCollectionFormsArray.length - 1;
+    this.editingCollectionMap.set(invoice.id!, newIndex);
   }
 
   /**
-   * Cancela la edición del cobro
+   * Obtiene el FormGroup de una factura específica
+   */
+  getCollectionFormGroup(invoiceId: number): FormGroup | null {
+    const index = this.editingCollectionMap.get(invoiceId);
+    if (index === undefined) return null;
+
+    return this.editCollectionFormsArray.at(index) as FormGroup;
+  }
+
+  /**
+   * Cancela la edición de una factura específica
    */
   cancelEditingCollection(invoiceId: number): void {
-    this.editingCollection.delete(invoiceId);
-    this.editCollectionForm = null; // Destruir FormGroup
+    const index = this.editingCollectionMap.get(invoiceId);
+    if (index === undefined) return;
+
+    // Remover del FormArray
+    this.editCollectionFormsArray.removeAt(index);
+
+    // Actualizar el mapa (reindexar elementos posteriores)
+    this.editingCollectionMap.delete(invoiceId);
+    this.updateCollectionMapIndices(index);
   }
 
   /**
    * Verifica si una factura está en modo edición de cobro
    */
   isEditingCollection(invoiceId: number): boolean {
-    return this.editingCollection.has(invoiceId);
+    return this.editingCollectionMap.has(invoiceId);
   }
 
   /**
    * Guarda los cambios del estado de cobro
    */
   saveCollectionChanges(invoiceId: number): void {
-    if (!this.editCollectionForm || this.editCollectionForm.invalid) {
+    const formGroup = this.getCollectionFormGroup(invoiceId)
+    if (!formGroup || formGroup.invalid) {
+      if (formGroup) {
+        formGroup.markAllAsTouched();
+      }
       return;
     }
 
-    const formValues = this.editCollectionForm.value;
+    const formValues = formGroup.value;
+
+    // DEBUG: Ver qué datos se están enviando
+    console.log('Datos que se envían:', formValues);
 
     // Validación: Si se marca como cobrado, debe tener fecha
     if (formValues.collection_status === 'collected' && !formValues.collection_date) {
@@ -486,8 +562,14 @@ export class InvoicesIssuedListComponent implements OnInit {
       return;
     }
 
+    // Extraer datos sin el invoiceId interno
+    const {invoiceId: _, ...collectionData} = formValues;
+
+    // DEBUG: Ver datos finales
+    console.log('Datos finales enviados al backend:', collectionData);
+
     // Llamar al servicio para actualizar
-    this.invoicesIssuedService.updateCollectionStatus(invoiceId, formValues).subscribe({
+    this.invoicesIssuedService.updateCollectionStatus(invoiceId, collectionData).subscribe({
       next: (updatedInvoice) => {
         Swal.fire({
           title: '¡Éxito!',
@@ -498,8 +580,7 @@ export class InvoicesIssuedListComponent implements OnInit {
         });
 
         // Limpiar edición y recargar lista
-        this.editingCollection.delete(invoiceId);
-        this.editCollectionForm = null;
+        this.cancelEditingCollection(invoiceId);
         this.getListInvoices();
       },
       error: (e: HttpErrorResponse) => {
@@ -511,7 +592,7 @@ export class InvoicesIssuedListComponent implements OnInit {
   /**
    * Cambio rápido de estado pendiente/cobrado
    */
-  toggleCollectionStatus(invoice: Invoice) {
+  toggleCollectionStatus(invoice: Invoice): void {
     const newStatus = invoice.collection_status === 'collected' ? 'pending' : 'collected';
 
     const collectionData: {
@@ -685,6 +766,34 @@ export class InvoicesIssuedListComponent implements OnInit {
         // Error manejado por interceptor
       }
     });
+  }
+
+  // ==========================================
+  // MÉTODOS DE GESTIÓN DEL FORMARRAY
+  // ==========================================
+  /**
+   * Actualiza los índices del mapa después de una eliminación
+   */
+  private updateCollectionMapIndices(removedIndex: number): void {
+    const updatedMap = new Map<number, number>();
+
+    this.editingCollectionMap.forEach((currentIndex, invoiceId) => {
+      if (currentIndex > removedIndex) {
+        updatedMap.set(invoiceId, currentIndex - 1);
+      } else {
+        updatedMap.set(invoiceId, currentIndex);
+      }
+    });
+
+    this.editingCollectionMap = updatedMap;
+  }
+
+  /**
+   * Limpia todas las ediciones activas del FormArray
+   */
+  private clearAllEditingForms(): void {
+    this.editCollectionFormsArray.clear();
+    this.editingCollectionMap.clear();
   }
 
 }

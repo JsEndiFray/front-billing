@@ -64,7 +64,7 @@
         <th>PROPIETARIO</th>
         <th>PORCENTAJE (%)</th>
         <th>CREADO</th>
-        <th>ACCIONES</th>
+<!--        <th>ACCIONES</th>-->
       </tr>
       </thead>
 
@@ -78,9 +78,10 @@
               <td>{{ item.owner_name }}</td>
               <td>{{ item.ownership_percentage }}%</td>
               <td>{{ item.date_create | dataFormat }}</td>
-              <td>
+
+              <!--<td>
                 <button class="action-btn edit-btn" (click)="editEstateOwners(item.id!)">Editar</button>
-              </td>
+              </td>-->
 
             </tr>
           }

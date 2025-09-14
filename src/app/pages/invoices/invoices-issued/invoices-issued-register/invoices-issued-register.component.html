@@ -168,8 +168,9 @@
             id="is_proportional"
             (change)="onBillingTypeChange()"
             class="form-input billing-type-select">
-            <option value="0">{{ billingTypeLabels[0] }}</option>
-            <option value="1">{{ billingTypeLabels[1] }}</option>
+            @for (type of billingTypeLabels; track type.value){
+              <option [value]="type.value">{{type.label}}</option>
+            }
           </select>
         </div>
         <!-- Mes de Correspondencia - Cambiar: -->
@@ -310,8 +311,28 @@
             formControlName="collection_date"
             id="collection_date"
             class="form-input collection-date-input"
-            [disabled]="invoiceForm.get('collection-status')?.value === 'pending'"
             placeholder="Fecha en que se realizó el pago">
+          @if (invoiceForm.get('collection_status')?.value === 'pending') {
+            <small class="help-text">
+              Se habilitará al marcar como "Pagado"
+            </small>
+          }
+        </div>
+
+        <div class="form-field">
+          <label for="collection_reference" class="form-label">
+            Referencia de Pago
+            @if (invoiceForm.get('collection_status')?.value === 'collected') {
+              <span class="required-indicator">*</span>
+            }
+          </label>
+          <input
+            type="text"
+            formControlName="collection_reference"
+            id="collection_reference"
+            class="form-input collection-reference-input"
+            placeholder="Ej: BIZUM123, TXN123456, REF-2024-001"
+            maxlength="50">
           @if (invoiceForm.get('collection_status')?.value === 'pending') {
             <small class="help-text">
               Se habilitará al marcar como "Pagado"
