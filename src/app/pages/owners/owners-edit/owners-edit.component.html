@@ -6,7 +6,7 @@
   </div>
 
   <!-- Formulario principal -->
-  <form (ngSubmit)="updateOwner()">
+  <form [formGroup]="ownersForm" (ngSubmit)="updateOwner()">
 
     <!-- Sección: Identificación de la propiedad -->
     <div class="section">
@@ -17,8 +17,7 @@
           <label for="name" class="form-label">Nombre *</label>
           <input
             type="text"
-            [(ngModel)]="owner.name"
-            name="name"
+            formControlName="name"
             id="name"
             placeholder="Nombre del propietario"
             class="form-input"
@@ -29,8 +28,7 @@
           <label for="lastname" class="form-label">Apellidos *</label>
           <input
             type="text"
-            [(ngModel)]="owner.lastname"
-            name="lastname"
+            formControlName="lastname"
             id="lastname"
             placeholder="Apellidos del propietario"
             class="form-input"
@@ -41,8 +39,7 @@
           <label for="identification" class="form-label">Identificación (DNI/NIE) *</label>
           <input
             type="text"
-            [(ngModel)]="owner.identification"
-            name="identification"
+            formControlName="identification"
             id="identification"
             placeholder="12345678A"
             class="form-input reference-input"
@@ -60,8 +57,7 @@
           <label for="email" class="form-label">Email *</label>
           <input
             type="email"
-            [(ngModel)]="owner.email"
-            name="email"
+            formControlName="email"
             id="email"
             placeholder="propietario@email.com"
             class="form-input"
@@ -72,8 +68,7 @@
           <label for="phone" class="form-label">Teléfono *</label>
           <input
             type="tel"
-            [(ngModel)]="owner.phone"
-            name="phone"
+            formControlName="phone"
             id="phone"
             placeholder="+34 123 456 789"
             class="form-input"
@@ -90,8 +85,7 @@
           <label for="address" class="form-label">Dirección Completa *</label>
           <input
             type="text"
-            [(ngModel)]="owner.address"
-            name="address"
+           formControlName="address"
             id="address"
             placeholder="Calle Principal 123, 2º A"
             class="form-input"
@@ -102,8 +96,7 @@
           <label for="postal_code" class="form-label">Código Postal *</label>
           <input
             type="text"
-            [(ngModel)]="owner.postal_code"
-            name="postal_code"
+            formControlName="postal_code"
             id="postal_code"
             placeholder="28001"
             class="form-input postal-input"
@@ -116,8 +109,7 @@
           <label for="location" class="form-label">Localidad *</label>
           <input
             type="text"
-            [(ngModel)]="owner.location"
-            name="location"
+            formControlName="location"
             id="location"
             placeholder="Madrid"
             class="form-input"
@@ -128,8 +120,7 @@
           <label for="province" class="form-label">Provincia *</label>
           <input
             type="text"
-            [(ngModel)]="owner.province"
-            name="province"
+            formControlName="province"
             id="province"
             placeholder="Madrid"
             class="form-input"
@@ -140,8 +131,7 @@
           <label for="country" class="form-label">País *</label>
           <input
             type="text"
-            [(ngModel)]="owner.country"
-            name="country"
+            formControlName="country"
             id="country"
             placeholder="España"
             class="form-input"

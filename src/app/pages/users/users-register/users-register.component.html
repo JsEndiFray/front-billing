@@ -6,7 +6,7 @@
   </div>
 
   <!-- Formulario principal -->
-  <form (ngSubmit)="registerUser()">
+  <form [formGroup]="userForm" (ngSubmit)="registerUser()">
 
     <!-- Sección: Datos de acceso -->
     <div class="section">
@@ -18,8 +18,7 @@
           <input
             type="text"
             id="username"
-            [(ngModel)]="user.username"
-            name="username"
+            formControlName="username"
             placeholder="Ingresa el nombre de usuario"
             class="form-input"
             autocomplete="username"
@@ -31,8 +30,7 @@
           <input
             type="email"
             id="email"
-            [(ngModel)]="user.email"
-            name="email"
+            formControlName="email"
             placeholder="ejemplo@correo.com"
             class="form-input"
             autocomplete="email"
@@ -44,8 +42,7 @@
           <input
             type="password"
             id="password"
-            [(ngModel)]="user.password"
-            name="password"
+            formControlName="password"
             placeholder="Mínimo 6 caracteres"
             class="form-input"
             autocomplete="new-password"
@@ -58,8 +55,7 @@
           <input
             type="password"
             id="confirm_password"
-            [(ngModel)]="user.confirm_password"
-            name="confirm_password"
+            formControlName="confirm_password"
             placeholder="Repite la contraseña"
             class="form-input"
             autocomplete="new-password"
@@ -80,8 +76,7 @@
           <input
             type="tel"
             id="phone"
-            [(ngModel)]="user.phone"
-            name="phone"
+            formControlName="phone"
             placeholder="+34 123 456 789"
             class="form-input"
             autocomplete="tel"
@@ -92,8 +87,7 @@
           <label for="role" class="form-label">Rol *</label>
           <select
             id="role"
-            [(ngModel)]="user.role"
-            name="role"
+            formControlName="role"
             class="form-input"
             required>
             <option value="">Selecciona un rol</option>

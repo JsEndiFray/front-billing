@@ -1,11 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {FormsModule} from '@angular/forms';
-import {User} from '../../../interfaces/users-interface';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {UserService} from '../../../core/services/user-services/user.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
-import {UserValidatorService} from '../../../core/services/validator-services/user-validator.service';
+import {ValidatorService} from '../../../core/services/validator-services/validator.service';
 
 /**
  * Componente para editar usuarios existentes
@@ -14,29 +13,33 @@ import {UserValidatorService} from '../../../core/services/validator-services/us
 @Component({
   selector: 'app-user-edit',
   imports: [
-    FormsModule
+    ReactiveFormsModule
   ],
   templateUrl: './user-edit.component.html',
   styleUrl: './user-edit.component.css'
 })
 export class UserEditComponent implements OnInit {
 
-  // Objeto que guarda todos los datos del usuario
-  user: User = {
-    username: '',
-    password: '',
-    confirm_password: '',
-    email: '',
-    phone: '',
-    role: '',
-  }
+  // ==========================================
+  // PROPIEDADES DE FORMULARIOS MÚLTIPLES
+  // ==========================================
+  userForm: FormGroup;
 
   constructor(
     private userService: UserService,
     private route: ActivatedRoute,
     private router: Router,
-    private userValidatorService: UserValidatorService,
+    private validatorService: ValidatorService,
+    private fb: FormBuilder,
   ) {
+    this.userForm = this.fb.group({
+      username: ['', Validators.required],
+      password: ['', Validators.required],
+      confirm_password: ['', Validators.required],
+      email: ['', Validators.required],
+      phone: ['', Validators.required],
+      role: ['', Validators.required],
+    })
   }
 
   /**
@@ -52,7 +55,15 @@ export class UserEditComponent implements OnInit {
         this.userService.getById(id).subscribe({
           next: (data) => {
             if (data && data.length > 0) {
-              this.user = data[0];
+              const user = data[0];
+              this.userForm.patchValue({
+                username: user.username,
+                password: user.password,
+                confirm_password: user.password,
+                email: user.email,
+                phone: user.phone,
+                role: user.role
+              })
             }
           },
           error: (e: HttpErrorResponse) => {
@@ -68,23 +79,26 @@ export class UserEditComponent implements OnInit {
    * Valida información antes de enviar al servidor
    */
   updateUser() {
-    // Verificar que el usuario tenga ID válido
-    if (this.user.id == null) {
+    // Verificar que el formulario sea válido
+    if (!this.userForm.valid) {
+      this.userForm.markAllAsTouched();
       Swal.fire({
-        title: 'Error',
-        text: 'ID de usuario no válido.',
-        icon: 'error',
-        confirmButtonText: 'Ok'
+        title: 'Error!',
+        text: 'Por favor, complete todos los campos requeridos',
+        icon: 'error'
       });
       return;
     }
+    // Aplica transformaciones automáticas al formulario de usuarios:
+    this.validatorService.applyTransformations(this.userForm, 'user');
 
-    // Limpiar espacios y preparar datos
-    const cleanUser = this.userValidatorService.cleanUserData(this.user)
+    // Obtener datos del formulario
+    const userData = this.userForm.value;
 
     // Validar que todos los campos estén correctos
-    const validation = this.userValidatorService.validateUser(cleanUser)
+    const validation = this.validatorService.validateUser(userData);
     if (!validation.isValid) {
+      this.userForm.markAllAsTouched();
       Swal.fire({
         title: 'Error!',
         text: validation.message,
@@ -94,18 +108,25 @@ export class UserEditComponent implements OnInit {
       return;
     }
 
+    //Usar la id de la ruta, no de una propiedad inexistente
+    const userId = this.route.snapshot.params['id'];
+    if (!userId) {
+      Swal.fire({
+        title: 'Error',
+        text: 'ID del usuario no es válido',
+        icon: 'error'
+      });
+      return;
+    }
     // Enviar datos actualizados al servidor
-    this.userService.updateUser(this.user.id, cleanUser).subscribe({
-      next: (data) => {
-        if (data && data.length > 0) {
-          this.user = data[0];
-          Swal.fire({
-            title: '¡Éxito!',
-            text: 'Usuario actualizado correctamente.',
-            icon: 'success',
-            confirmButtonText: 'Ok'
-          });
-        }
+    this.userService.updateUser(userId, userData).subscribe({
+      next: () => {
+        Swal.fire({
+          title: '¡Éxito!',
+          text: 'Usuario actualizado correctamente.',
+          icon: 'success',
+          confirmButtonText: 'Ok'
+        });
         // Regresar a la lista de usuarios
         this.router.navigate(['/dashboards/users/list']);
       }, error: (e: HttpErrorResponse) => {

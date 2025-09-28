@@ -6,7 +6,7 @@
   </div>
 
   <!-- Formulario principal -->
-  <form (ngSubmit)="updateUser()">
+  <form [formGroup]="userForm" (ngSubmit)="updateUser()">
 
     <!-- Sección: Datos de acceso -->
     <div class="section">
@@ -17,8 +17,7 @@
           <label for="username" class="form-label">Usuario *</label>
           <input
             type="text"
-            [(ngModel)]="user.username"
-            name="username"
+            formControlName="username"
             id="username"
             placeholder="Ingresa el nombre de usuario"
             class="form-input"
@@ -30,8 +29,7 @@
           <label for="email" class="form-label">Correo electrónico *</label>
           <input
             type="email"
-            [(ngModel)]="user.email"
-            name="email"
+            formControlName="email"
             id="email"
             placeholder="ejemplo@correo.com"
             class="form-input"
@@ -43,8 +41,7 @@
           <label for="password" class="form-label">Nueva Contraseña *</label>
           <input
             type="password"
-            [(ngModel)]="user.password"
-            name="password"
+            formControlName="password"
             id="password"
             placeholder="Nueva contraseña"
             class="form-input"
@@ -57,8 +54,7 @@
           <label for="confirm-password" class="form-label">Confirmar Contraseña *</label>
           <input
             type="password"
-            [(ngModel)]="user.confirm_password"
-            name="confirm-password"
+            formControlName="confirm_password"
             id="confirm-password"
             placeholder="Repite la nueva contraseña"
             class="form-input"
@@ -79,8 +75,7 @@
           <label for="phone" class="form-label">Teléfono *</label>
           <input
             type="tel"
-            [(ngModel)]="user.phone"
-            name="phone"
+            formControlName="phone"
             id="phone"
             placeholder="+34 123 456 789"
             class="form-input"
@@ -91,8 +86,7 @@
         <div class="form-field">
           <label for="role" class="form-label">Rol *</label>
           <select
-            [(ngModel)]="user.role"
-            name="role"
+            formControlName="role"
             id="role"
             class="form-input"
             required>

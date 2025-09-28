@@ -1,11 +1,10 @@
 import {Component} from '@angular/core';
-import {FormsModule} from '@angular/forms';
-import {Owners} from '../../../interfaces/owners-interface';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {OwnersService} from '../../../core/services/owners-services/owners.service';
-import {OwnersValidatorService} from '../../../core/services/validator-services/owners-validator.service';
 import {Router} from '@angular/router';
 import Swal from 'sweetalert2';
 import {HttpErrorResponse} from '@angular/common/http';
+import {ValidatorService} from '../../../core/services/validator-services/validator.service';
 
 /**
  * Componente para registrar nuevos propietarios
@@ -14,34 +13,39 @@ import {HttpErrorResponse} from '@angular/common/http';
 @Component({
   selector: 'app-owners',
   imports: [
-    FormsModule
+    ReactiveFormsModule
   ],
   templateUrl: './owners-register.component.html',
   styleUrl: './owners-register.component.css'
 })
 export class OwnersRegisterComponent {
 
-  // Objeto que guarda los datos del nuevo propietario
-  owner: Owners = {
-    name: '',
-    lastname: '',
-    email: '',
-    identification: '',
-    phone: '',
-    address: '',
-    postal_code: '',
-    location: '',
-    province: '',
-    country: '',
-    date_create: '',
-    date_update: '',
-  }
+  // ==========================================
+  // PROPIEDADES DE FORMULARIOS MÚLTIPLES
+  // ==========================================
+
+  ownersForm: FormGroup;
 
   constructor(
     private ownersServices: OwnersService,
-    private ownersValidator: OwnersValidatorService,
-    private router: Router
+    private router: Router,
+    private validatorService: ValidatorService,
+    private fb: FormBuilder,
   ) {
+    this.ownersForm = this.fb.group({
+      name: ['', Validators.required],
+      lastname: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      identification: ['', Validators.required],
+      phone: ['', Validators.required],
+      address: ['', Validators.required],
+      postal_code: ['', [Validators.required, Validators.maxLength(5)]],
+      location: ['', Validators.required],
+      province: ['', Validators.required],
+      country: ['ESPAÑA'],
+      date_create: [''],
+      date_update: ['']
+    });
   }
 
   /**
@@ -49,11 +53,24 @@ export class OwnersRegisterComponent {
    * Valida todos los datos antes de enviar al servidor
    */
   createOwners() {
-    // Limpiar espacios y preparar datos
-    const cleanOwners = this.ownersValidator.cleanOwnerData(this.owner);
+
+    if (this.ownersForm.valid) {
+      this.ownersForm.markAllAsTouched();
+      Swal.fire({
+        title: 'Error!',
+        text: 'Por favor, complete todos los campos requeridos',
+        icon: 'error'
+      });
+      return;
+    }
+    // Aplica transformaciones automáticas al formulario de empleado:
+    this.validatorService.applyTransformations(this.ownersForm, 'owner')
+
+    //Usar directamente los valores del FormGroup
+    const ownersData = this.ownersForm.value;
 
     // Validar que todos los campos estén correctos
-    const validation = this.ownersValidator.validateOwners(cleanOwners)
+    const validation = this.validatorService.validateOwner(ownersData);
     if (!validation.isValid) {
       Swal.fire({
         title: 'Error!',
@@ -64,18 +81,16 @@ export class OwnersRegisterComponent {
     }
 
     // Enviar datos al servidor para crear propietario
-    this.ownersServices.createOwners(cleanOwners).subscribe({
+    this.ownersServices.createOwners(ownersData).subscribe({
       next: (data) => {
-        if (data && data.length > 0) {
-          this.owner = data[0];
-          Swal.fire({
-            title: "Propietario registrado correctamente",
-            icon: "success",
-            draggable: true
-          });
-          // Redirigir a la lista después del registro exitoso
-          this.router.navigate(['/dashboards/owners/list']);
-        }
+        Swal.fire({
+          title: "Propietario registrado correctamente",
+          icon: "success",
+          draggable: true
+        });
+        // Redirigir a la lista después del registro exitoso
+        this.router.navigate(['/dashboards/owners/list']);
+
       }, error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
       }

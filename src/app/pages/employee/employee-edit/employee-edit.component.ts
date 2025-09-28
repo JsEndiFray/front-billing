@@ -116,7 +116,7 @@ export class EmployeeEditComponent implements OnInit {
     if (!employeeId) {
       Swal.fire({
         title: 'Error',
-        text: 'ID de empleado no válido',
+        text: 'ID del empleado no es válido',
         icon: 'error'
       });
       return;

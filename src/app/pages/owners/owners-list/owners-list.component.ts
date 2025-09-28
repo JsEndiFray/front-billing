@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Owners} from '../../../interfaces/owners-interface';
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {OwnersService} from '../../../core/services/owners-services/owners.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
@@ -26,14 +26,27 @@ import {PaginationService} from '../../../core/services/shared-services/paginati
 })
 export class OwnersListComponent implements OnInit {
 
+  // ==========================================
+  // PROPIEDADES DE FORMULARIOS MÚLTIPLES
+  // ==========================================
+  // FormGroup para búsqueda de texto
+  searchForm: FormGroup;
+
+  // FormGroup para filtros de selección
+  filtersForm: FormGroup;
+
+  // FormGroup para configuración de paginación
+  paginationForm: FormGroup;
+
+  // ==========================================
+  // PROPIEDADES DE DATOS
+  // ==========================================
+
   // Lista de propietarios que se muestra en la tabla
   owners: Owners[] = [];
 
   // Lista completa de propietarios (datos originales sin filtrar)
   allOwners: Owners[] = [];
-
-  // Texto que escribe el usuario para buscar
-  searchTerm: string = '';
 
   // Lista de clientes filtrados (antes de paginar)
   filteredOwners: Owners[] = [];
@@ -60,7 +73,20 @@ export class OwnersListComponent implements OnInit {
     private searchService: SearchService,
     private router: Router,
     private paginationService: PaginationService,
+    private fb: FormBuilder,
   ) {
+    // FormGroup para búsqueda
+    this.searchForm = this.fb.group({
+      searchTerm: ['']
+    });
+
+    this.filtersForm = this.fb.group({})
+
+    this.paginationForm = this.fb.group({
+      itemsPerPage: [5]
+    })
+
+
   }
 
   /**
@@ -69,6 +95,25 @@ export class OwnersListComponent implements OnInit {
    */
   ngOnInit(): void {
     this.getListOwner();
+    this.setupFormSubscriptions();
+  }
+
+
+  // ==========================================
+  // MÉTODOS DE CONFIGURACIÓN
+  // ==========================================
+
+  setupFormSubscriptions() {
+    this.searchForm.get('searchTerm')?.valueChanges.subscribe(() => {
+      this.applyFilters();
+    })
+
+    // Suscripción para cambios en configuración de paginación
+    this.paginationForm.get('itemsPerPage')?.valueChanges.subscribe((items) => {
+      this.paginationConfig.itemsPerPage = items;
+      this.paginationConfig.currentPage = 1; // Resetear a primera página
+      this.updatePagination();
+    });
   }
 
   /**
@@ -86,17 +131,35 @@ export class OwnersListComponent implements OnInit {
     })
   }
 
+
+  // ==========================================
+  // MÉTODOS DE FILTROS Y BÚSQUEDA
+  // ==========================================
+
+  /**
+   * Limpia el filtro de búsqueda
+   */
+  clearFilters() {
+    this.searchForm.patchValue({
+      searchTerm: ''
+    })
+  };
+
   /**
    * Filtra la lista de propietarios según el texto de búsqueda
    * Busca en: nombre completo, identificación y teléfono
    */
   applyFilters() {
     let filtered = [...this.allOwners];
+
+    // Obtener valores directamente de cada FormGroup independiente
+    const searchTerm = this.searchForm.get('searchTerm')?.value;
+
     // Filtro por búsqueda de texto
-    if (this.searchTerm.trim()) {
+    if (searchTerm) {
       filtered = this.searchService.filterWithFullName(
         filtered,
-        this.searchTerm,
+        searchTerm,
         'name',
         'lastname',
         ['identification', 'phone']
@@ -104,10 +167,13 @@ export class OwnersListComponent implements OnInit {
     }
     this.filteredOwners = filtered;
     this.paginationConfig.totalItems = filtered.length;
-    this.paginationConfig.currentPage = 1;
-
+    this.paginationConfig.currentPage = 1; // Resetear a primera página
     this.updatePagination();
-  }
+  };
+
+  // ==========================================
+  // MÉTODOS DE PAGINACIÓN
+  // ==========================================
 
   /**
    * Actualiza la paginación con los datos filtrados
@@ -120,13 +186,6 @@ export class OwnersListComponent implements OnInit {
     this.owners = this.paginationResult.items;
   }
 
-  /**
-   * Limpia todos los filtros
-   */
-  clearFilters() {
-    this.searchTerm = '';
-    this.applyFilters();
-  }
   /**
    * Navega a una página específica
    */
@@ -176,12 +235,9 @@ export class OwnersListComponent implements OnInit {
     );
   }
 
-  /**
-   * Se ejecuta cada vez que el usuario escribe en el buscador
-   */
-  onSearchChange() {
-    this.applyFilters();
-  }
+  // ==========================================
+  // MÉTODOS DE NAVEGACIÓN Y CRUD
+  // ==========================================
 
   /**a
    * Navega a la página de edición de propietario
@@ -225,5 +281,8 @@ export class OwnersListComponent implements OnInit {
 
   newOwners() {
     this.router.navigate(['/dashboards/owners/register'])
+  }
+
+  exportData() {
   }
 }

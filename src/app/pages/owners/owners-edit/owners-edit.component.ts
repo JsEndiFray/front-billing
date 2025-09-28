@@ -1,11 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {FormsModule} from '@angular/forms';
-import {Owners} from '../../../interfaces/owners-interface';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {OwnersService} from '../../../core/services/owners-services/owners.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
-import {OwnersValidatorService} from '../../../core/services/validator-services/owners-validator.service';
+import {ValidatorService} from '../../../core/services/validator-services/validator.service';
 
 /**
  * Componente para editar propietarios existentes
@@ -14,34 +13,40 @@ import {OwnersValidatorService} from '../../../core/services/validator-services/
 @Component({
   selector: 'app-owners-edit',
   imports: [
-    FormsModule
+    ReactiveFormsModule
   ],
   templateUrl: './owners-edit.component.html',
   styleUrl: './owners-edit.component.css'
 })
 export class OwnersEditComponent implements OnInit {
 
-  // Objeto que guarda todos los datos del propietario
-  owner: Owners = {
-    id: 0,
-    name: '',
-    lastname: '',
-    email: '',
-    identification: '',
-    phone: '',
-    address: '',
-    postal_code: '',
-    location: '',
-    province: '',
-    country: '',
-  }
+  // ==========================================
+  // PROPIEDADES DE FORMULARIOS MÚLTIPLES
+  // ==========================================
+
+  ownersForm: FormGroup;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private ownersService: OwnersService,
-    private ownerValidator: OwnersValidatorService,
+    private validatorService: ValidatorService,
+    private fb: FormBuilder,
   ) {
+    this.ownersForm = this.fb.group({
+      name: ['', Validators.required],
+      lastname: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      identification: ['', Validators.required],
+      phone: ['', Validators.required],
+      address: ['', Validators.required],
+      postal_code: ['', [Validators.required, Validators.maxLength(5)]],
+      location: ['', Validators.required],
+      province: ['', Validators.required],
+      country: ['ESPAÑA'],
+      date_create: [''],
+      date_update: ['']
+    });
   }
 
   /**
@@ -57,7 +62,22 @@ export class OwnersEditComponent implements OnInit {
         this.ownersService.getOwnerById(id).subscribe({
           next: (data) => {
             if (data && data.length > 0) {
-              this.owner = data[0];
+              const owner = data[0];
+
+              this.ownersForm.patchValue({
+                name: owner.name,
+                lastname: owner.lastname,
+                email: owner.email,
+                identification: owner.identification,
+                phone: owner.phone,
+                address: owner.address,
+                postal_code: owner.postal_code,
+                location: owner.location,
+                province: owner.province,
+                country: owner.country,
+                date_update: owner.date_update
+
+              })
             }
           }, error: (e: HttpErrorResponse) => {
             // Error manejado por interceptor
@@ -73,21 +93,24 @@ export class OwnersEditComponent implements OnInit {
    */
   updateOwner() {
     // Verificar que el propietario tenga ID válido
-    if (this.owner.id == null) {
+    if (!this.ownersForm.valid) {
+      this.ownersForm.markAllAsTouched();
       Swal.fire({
-        title: 'Error',
-        text: 'ID de usuario no válido.',
-        icon: 'error',
-        confirmButtonText: 'Ok'
+        title: 'Error!',
+        text: 'Por favor, complete todos los campos requeridos',
+        icon: 'error'
       });
       return;
     }
 
-    // Limpiar espacios y preparar datos
-    const cleanOwners = this.ownerValidator.cleanOwnerData(this.owner);
+    // Aplica transformaciones automáticas al formulario de propiuetarios:
+    this.validatorService.applyTransformations(this.ownersForm, 'owner');
+
+    //Usar directamente los valores del FormGroup
+    const ownersData = this.ownersForm.value;
 
     // Validar que todos los campos estén correctos
-    const validation = this.ownerValidator.validateOwners(cleanOwners);
+    const validation = this.validatorService.validateOwner(ownersData);
     if (!validation.isValid) {
       Swal.fire({
         title: 'Error!',
@@ -98,21 +121,28 @@ export class OwnersEditComponent implements OnInit {
       return;
     }
 
-    // Enviar datos actualizados al servidor
-    this.ownersService.updateOwners(this.owner.id, cleanOwners).subscribe({
-      next: (data) => {
-        if (data && data.length) {
-          this.owner = data[0];
-          Swal.fire({
-            title: '¡Éxito!',
-            text: 'Propietario actualizado correctamente.',
-            icon: 'success',
-            confirmButtonText: 'Ok'
-          });
-          // Regresar a la lista de propietarios
-          this.router.navigate(['/dashboards/owners/list'])
-        }
+    //Usar ID de la ruta, no de una propiedad inexistente
+    const ownersId = this.route.snapshot.params['id'];
+    if (!ownersId) {
+      Swal.fire({
+        title: 'Error',
+        text: 'ID del Propietario no es válido',
+        icon: 'error'
+      });
+      return;
+    }
 
+    // Enviar datos actualizados al servidor
+    this.ownersService.updateOwners(ownersId, ownersData).subscribe({
+      next: (data) => {
+        Swal.fire({
+          title: '¡Éxito!',
+          text: 'Propietario actualizado correctamente.',
+          icon: 'success',
+          confirmButtonText: 'Ok'
+        });
+        // Regresar a la lista de propietarios
+        this.router.navigate(['/dashboards/owners/list'])
       }, error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
       }

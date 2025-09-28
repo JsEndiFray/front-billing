@@ -8,7 +8,6 @@ import {Router} from '@angular/router';
 import {Owners} from '../../../interfaces/owners-interface';
 import {OwnersService} from '../../../core/services/owners-services/owners.service';
 import {EstateOwnersService} from '../../../core/services/estate-owners-services/estate-owners.service';
-import {OwnersValidatorService} from '../../../core/services/validator-services/owners-validator.service';
 import {ValidatorService} from '../../../core/services/validator-services/validator.service';
 import {forkJoin} from 'rxjs';
 
@@ -60,7 +59,6 @@ export class EstatesRegisterComponent {
     private validatorService: ValidatorService,
     private ownersService: OwnersService,
     private estateOwnersService: EstateOwnersService,
-    private ownersValidator: OwnersValidatorService,
     private fb: FormBuilder,
   ) {
     this.estateForm = this.fb.group({
@@ -335,7 +333,7 @@ export class EstatesRegisterComponent {
       // Agregar el ID para la actualización
       const updateData = {...transformedData, id: this.createdEstate.id};
 
-      this.estateService.updateEstate(this.createdEstate.id! ,updateData).subscribe({
+      this.estateService.updateEstate(this.createdEstate.id!, updateData).subscribe({
         next: (data) => {
           Swal.close();
 
@@ -622,7 +620,7 @@ export class EstatesRegisterComponent {
     this.validatorService.applyTransformations(this.newOwnerForm, 'owner');
     const cleanOwner = this.newOwnerForm.value;
 
-    const validation = this.ownersValidator.validateOwners(cleanOwner);
+    const validation = this.validatorService.validateOwner(cleanOwner);
     if (!validation.isValid) {
       Swal.fire({
         title: 'Error de validación',
