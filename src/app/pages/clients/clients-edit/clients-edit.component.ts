@@ -150,7 +150,6 @@ export class ClientsEditComponent implements OnInit {
 
     // Verificar que el formulario sea válido
     if (!this.clientForm.valid) {
-      this.clientForm.markAllAsTouched();
       Swal.fire({
         title: 'Error!',
         text: 'Por favor, complete todos los campos requeridos',

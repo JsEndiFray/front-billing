@@ -81,7 +81,6 @@ export class UserEditComponent implements OnInit {
   updateUser() {
     // Verificar que el formulario sea válido
     if (!this.userForm.valid) {
-      this.userForm.markAllAsTouched();
       Swal.fire({
         title: 'Error!',
         text: 'Por favor, complete todos los campos requeridos',

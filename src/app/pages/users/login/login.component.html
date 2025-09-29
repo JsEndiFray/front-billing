@@ -33,7 +33,7 @@
         <p class="form-subtitle">Accede a tu cuenta</p>
 
         <!-- Formulario de autenticación -->
-        <form class="login-form" (ngSubmit)="login()">
+        <form class="login-form" [formGroup]="userForm" (ngSubmit)="login()">
 
           <!-- Campo de usuario -->
           <div class="input-group">
@@ -42,10 +42,13 @@
               type="text"
               id="username"
               class="input-field"
-              [(ngModel)]="user.username"
-              name="username"
+              formControlName="username"
               placeholder="Ingresa tu usuario"
               required>
+            <!-- Mensaje de error -->
+            @if (userForm.get('username')?.invalid && userForm.get('username')?.touched) {
+              <span class="error-message">El usuario es obligatorio</span>
+            }
           </div>
 
           <!-- Campo de contraseña -->
@@ -55,10 +58,13 @@
               type="password"
               id="password"
               class="input-field"
-              [(ngModel)]="user.password"
-              name="password"
+              formControlName="password"
               placeholder="Ingresa tu contraseña"
               required>
+            <!-- Mensaje de error -->
+            @if (userForm.get('password')?.invalid && userForm.get('password')?.touched) {
+              <span class="error-message">La contraseña es obligatoria</span>
+            }
           </div>
 
           <!-- Botón de inicio de sesión -->

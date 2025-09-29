@@ -17,8 +17,7 @@ import {ValidatorService} from '../../../core/services/validator-services/valida
   imports: [
     ReactiveFormsModule
   ],
-  providers: [
-  ],
+  providers: [],
   templateUrl: './clients-register.component.html',
   styleUrl: './clients-register.component.css'
 })
@@ -178,8 +177,6 @@ export class ClientsRegisterComponent implements OnInit {
 
     // Primero validar que el FormGroup sea válido
     if (!adminForm.valid) {
-      // Marcar todos los campos como tocados para mostrar errores
-      adminForm.markAllAsTouched();
       Swal.fire({
         title: `Error en administrador ${index + 1}`,
         text: 'Por favor, complete todos los campos requeridos',

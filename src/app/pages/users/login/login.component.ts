@@ -1,11 +1,8 @@
 import {Component} from '@angular/core';
 import {Router} from '@angular/router';
 import {AuthService} from '../../../core/services/auth-service/auth.service';
-import Swal from 'sweetalert2';
 import {HttpErrorResponse} from '@angular/common/http';
-import {FormsModule} from '@angular/forms';
-import {UsersLogin} from '../../../interfaces/users-interface';
-
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 /**
  * Componente de autenticación
  * Maneja login de usuarios y redirección a dashboards
@@ -14,19 +11,25 @@ import {UsersLogin} from '../../../interfaces/users-interface';
 @Component({
   selector: 'app-login',
   imports: [
-    FormsModule
+    ReactiveFormsModule
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  // Modelo del formulario
-  user: UsersLogin = {
-    username: '',
-    password: '',
-  }
 
-  constructor(private router: Router, private authService: AuthService) {
+  userForm: FormGroup;
+
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private fb: FormBuilder
+  ) {
+    this.userForm = this.fb.group({
+      username: ['', Validators.required],
+      password: ['', Validators.required]
+    });
+
   }
 
   /**
@@ -34,36 +37,16 @@ export class LoginComponent {
    * Nota: AuthService maneja el guardado de tokens automáticamente
    */
   login() {
-    // Validación básica de campos
-    if (this.user.username == '' || this.user.password == '') {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Todo los campos son obligatorios.',
-        icon: 'error',
-        confirmButtonText: 'Ok'
-      });
+    if (!this.userForm.valid) {
+      this.userForm.markAllAsTouched();
       return;
     }
-
     // Preparar datos para backend
-    const user: UsersLogin = {
-      username: this.user.username,
-      password: this.user.password,
-    }
+    const userData = this.userForm.value;
 
     // Autenticar usuario
-    this.authService.login(user).subscribe({
+    this.authService.login(userData).subscribe({
       next: (login) => {
-        /*localStorage.setItem('token', login.accessToken);
-        localStorage.setItem('refreshToken', login.refreshToken);
-
-        localStorage.setItem('userData', JSON.stringify({
-          id: login.user.id,
-          username: login.user.username,
-          role: login.user.role
-        }));
-
-        this.authService.activateSession();*/
         this.router.navigate(['/dashboards']);
       },
       error: (e: HttpErrorResponse) => {
@@ -72,3 +55,4 @@ export class LoginComponent {
     });
   }
 }
+

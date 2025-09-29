@@ -136,6 +136,15 @@
   color: #9ca3af;
 }
 
+/* Mensaje de error */
+.error-message {
+  color: #ff4444;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+
 /* === BOTÓN DE LOGIN === */
 /* Botón principal de inicio de sesión */
 .login-button {

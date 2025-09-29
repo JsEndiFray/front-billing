@@ -28,6 +28,7 @@ export class EmployeeListComponent implements OnInit {
   // ==========================================
   // PROPIEDADES DE FORMULARIOS MÚLTIPLES
   // ==========================================
+
   // FormGroup para búsqueda de texto
   searchForm: FormGroup;
 
