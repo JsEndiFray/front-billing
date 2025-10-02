@@ -72,3 +72,21 @@ export const CLIENT_TYPES_LABELS = [
   { value: 'autonomo', label: 'Autónomo' },
   { value: 'empresa', label: 'Empresa' }
 ];
+
+
+// ========================================
+// Para suppliers (proveedores)
+// ========================================
+export const ACTIVE_STATUS_LABELS = [
+  { value: true, label: 'Activo' },
+  { value: false, label: 'Inactivo' }
+];
+
+export const PAYMENT_TERMS_LABELS = [
+  { value: 0, label: 'Pago inmediato' },
+  { value: 15, label: '15 días' },
+  { value: 30, label: '30 días' },
+  { value: 45, label: '45 días' },
+  { value: 60, label: '60 días' },
+  { value: 90, label: '90 días' }
+];

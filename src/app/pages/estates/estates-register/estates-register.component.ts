@@ -126,7 +126,6 @@ export class EstatesRegisterComponent {
 
     // Validación básica de formulario Angular
     if (!this.estateForm.valid) {
-      this.estateForm.markAllAsTouched();
       Swal.fire({
         title: 'Error!',
         text: 'Datos incorrectos.',

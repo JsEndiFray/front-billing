@@ -229,8 +229,6 @@ export class ClientsRegisterComponent implements OnInit {
   createClient(): void {
     // Verificar que se haya seleccionado un tipo
     if (!this.clientForm.valid) {
-      // Marcar todos los campos como tocados para mostrar errores
-      this.clientForm.markAllAsTouched();
       Swal.fire({
         title: 'Error!',
         text: 'Debe seleccionar un tipo de cliente',

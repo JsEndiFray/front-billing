@@ -51,7 +51,6 @@ export class EmployeeRegisterComponent {
   createEmployee() {
 
     if (this.employeeForm.invalid) {
-      this.employeeForm.markAllAsTouched();
       Swal.fire({
         title: 'Error!',
         text: 'Por favor, complete todos los campos requeridos',

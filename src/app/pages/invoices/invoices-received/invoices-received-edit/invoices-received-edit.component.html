@@ -1,252 +1,260 @@
 <div class="container">
   <!-- Encabezado -->
   <div class="header">
-    <h1 class="title">Registrar Factura Recibida</h1>
+    <h1 class="title">Editar Factura Recibida</h1>
     <button class="back-btn" (click)="goBack()">← Volver</button>
   </div>
 
   <!-- Formulario -->
   <div class="invoice-form" >
-      <!-- FormGroup para información básica -->
-    <form  [formGroup]="basicInfoForm" (ngSubmit)="onSubmit()">
-      <div class="form-section">
-        <h2 class="section-title">Información Básica</h2>
 
-        <div class="form-row">
-          <div class="form-field">
-            <label class="form-label">Proveedor *</label>
-            <select formControlName="supplier_id" class="form-input"
-                    [class.error]="isFieldInvalid(basicInfoForm, 'supplier_id')">
-              <option value="">Seleccionar proveedor</option>
-              @for (supplier of suppliers; track supplier.id) {
-                <option [value]="supplier.id">{{ supplier.company_name || supplier.name }}</option>
-              }
-            </select>
-            @if (isFieldInvalid(basicInfoForm, 'supplier_id')) {
-              <span class="error-message">El proveedor es obligatorio</span>
-            }
-          </div>
+    <!-- FormGroup para información básica -->
+    <form class="form-section" [formGroup]="basicInfoForm" (ngSubmit)="onSubmit()">
+      <h2 class="section-title">Información Básica</h2>
 
-          <div class="form-field">
-            <label class="form-label">Número de Factura *</label>
-            <input type="text" formControlName="invoice_number" class="form-input"
-                   [class.error]="isFieldInvalid(basicInfoForm, 'invoice_number')" placeholder="FAC-2024-001">
-            @if (isFieldInvalid(basicInfoForm, 'invoice_number')) {
-              <span class="error-message">El número de factura es obligatorio</span>
+      <!-- Proveedor -->
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-label">Proveedor *</label>
+          <select formControlName="supplier_id" class="form-input"
+                  [class.error]="isFieldInvalid(basicInfoForm, 'supplier_id')">
+            <option value="">Seleccionar proveedor</option>
+            @for (supplier of suppliers; track supplier.id) {
+              <option [value]="supplier.id">{{ supplier.company_name || supplier.name }}</option>
             }
-          </div>
+          </select>
+          @if (isFieldInvalid(basicInfoForm, 'supplier_id')) {
+            <span class="error-message">{{ getErrorMessage(basicInfoForm, 'supplier_id') }}</span>
+          }
         </div>
 
-        <div class="form-row">
-          <div class="form-field">
-            <label class="form-label">Fecha de Factura *</label>
-            <input type="date" formControlName="invoice_date" class="form-input"
-                   [class.error]="isFieldInvalid(basicInfoForm, 'invoice_date')">
-            @if (isFieldInvalid(basicInfoForm, 'invoice_date')) {
-              <span class="error-message">La fecha es obligatoria</span>
-            }
-          </div>
 
-          <div class="form-field">
-            <label class="form-label">Fecha de Vencimiento</label>
-            <input type="date" formControlName="due_date" class="form-input">
-          </div>
+        <!-- Factura -->
+        <div class="form-field">
+          <label class="form-label">Número de Factura *</label>
+          <input type="text" formControlName="invoice_number" class="form-input"
+                 [class.error]="isFieldInvalid(basicInfoForm, 'invoice_number')" placeholder="FAC-2024-001">
+          @if (isFieldInvalid(basicInfoForm, 'invoice_number')) {
+            <span class="error-message">{{ getErrorMessage(basicInfoForm, 'invoice_number') }}</span>
+          }
+        </div>
+      </div>
+
+      <!-- Fecha -->
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-label">Fecha de Factura *</label>
+          <input type="date" formControlName="invoice_date" class="form-input"
+                 [class.error]="isFieldInvalid(basicInfoForm, 'invoice_date')">
+          @if (isFieldInvalid(basicInfoForm, 'invoice_date')) {
+            <span class="error-message">{{ getErrorMessage(basicInfoForm, 'invoice_date') }}</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">Fecha de Vencimiento</label>
+          <input type="date" formControlName="due_date" class="form-input">
         </div>
       </div>
     </form>
 
 
+    <!-- FormGroup para importes y cálculos (amountsForm)-->
+    <form class="form-section" [formGroup]="amountsForm">
+      <h2 class="section-title">Importes</h2>
 
-
-      <!-- FormGroup para importes y cálculos -->
-      <form class="form-section" [formGroup]="amountsForm">
-        <h2 class="section-title">Importes</h2>
-
-        <div class="form-row">
-          <div class="form-field">
-            <label class="form-label">Base Imponible *</label>
-            <div class="input-group">
-              <input type="number" formControlName="tax_base" class="form-input"
-                     [class.error]="isFieldInvalid(amountsForm, 'tax_base')" placeholder="0.00"
-                     step="0.01" min="0.01">
-              <span class="input-suffix">€</span>
-            </div>
-            @if (isFieldInvalid(amountsForm, 'tax_base')) {
-              <span class="error-message">La base imponible es obligatoria</span>
-            }
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-label">Base Imponible *</label>
+          <div class="input-group">
+            <input type="number" formControlName="tax_base" class="form-input"
+                   [class.error]="isFieldInvalid(amountsForm, 'tax_base')" placeholder="0.00"
+                   step="0.01" min="0.01">
+            <span class="input-suffix">€</span>
           </div>
-
-          <div class="form-field">
-            <label class="form-label">IVA (%)</label>
-            <div class="input-group">
-              <input type="number" formControlName="iva_percentage" class="form-input"
-                     placeholder="21.00" step="0.01" min="0" max="100">
-              <span class="input-suffix">%</span>
-            </div>
-          </div>
-
-          <div class="form-field">
-            <label class="form-label">IRPF (%)</label>
-            <div class="input-group">
-              <input type="number" formControlName="irpf_percentage" class="form-input"
-                     placeholder="0.00" step="0.01" min="0" max="100">
-              <span class="input-suffix">%</span>
-            </div>
-          </div>
+          @if (isFieldInvalid(amountsForm, 'tax_base')) {
+            <span class="error-message">{{ getErrorMessage(amountsForm, 'tax_base') }}</span>
+          }
         </div>
 
-        <!-- Total calculado -->
-        <div class="total-display">
-          <span class="total-label">Total:</span>
-          <span class="total-amount">{{ calculatedTotal | currency:'EUR':'symbol':'1.2-2' }}</span>
-          <span class="total-label">Total Calculo:</span>
-          <span class="total-amount">{{ amountsForm.get('total_amount')?.value | currency:'EUR':'symbol':'1.2-2' }}</span>
-        </div>
-      </form>
-
-      <!-- FormGroup para categorización -->
-      <form class="form-section" [formGroup]="categoriesForm">
-        <h2 class="section-title">Categorización</h2>
-
-        <div class="form-row">
-          <div class="form-field">
-            <label class="form-label">Categoría *</label>
-            <select formControlName="category" class="form-input"
-                    [class.error]="isFieldInvalid(categoriesForm, 'category')">
-              <option value="">Seleccionar categoría</option>
-              @for (category of categories; track category.value) {
-                <option [value]="category.value">{{ category.label }}</option>
-              }
-            </select>
-            @if (isFieldInvalid(categoriesForm, 'category')) {
-              <span class="error-message">La categoría es obligatoria</span>
-            }
-          </div>
-
-          <div class="form-field">
-            <label class="form-label">Subcategoría</label>
-            <input type="text" formControlName="subcategory" class="form-input"
-                   placeholder="Ej: Consumo oficina">
+        <div class="form-field">
+          <label class="form-label">IVA (%)</label>
+          <div class="input-group">
+            <input type="number" formControlName="iva_percentage" class="form-input"
+                   placeholder="21.00" step="0.01" min="0" max="100">
+            <span class="input-suffix">%</span>
           </div>
         </div>
 
         <div class="form-field">
-          <label class="form-label">Descripción *</label>
-          <textarea formControlName="description" class="form-input"
-                    [class.error]="isFieldInvalid(categoriesForm, 'description')" rows="3"
-                    placeholder="Descripción de la factura..."></textarea>
-          @if (isFieldInvalid(categoriesForm, 'description')) {
-            <span class="error-message">La descripción es obligatoria</span>
-          }
-        </div>
-      </form>
-
-      <!-- Archivo Adjunto -->
-      <div class="form-section">
-        <h2 class="section-title">Archivo Adjunto</h2>
-
-        <div class="form-field">
-          <label class="form-label">Adjuntar PDF de la Factura</label>
-
-          <!-- Zona de arrastrar y soltar -->
-          <div class="file-upload-area"
-               [class.dragover]="isDragOver"
-               [class.has-file]="selectedFile"
-               (dragover)="onDragOver($event)"
-               (dragleave)="onDragLeave($event)"
-               (drop)="onFileDrop($event)"
-               (click)="fileInput.click()">
-
-            @if (!selectedFile) {
-              <div class="upload-content">
-                <div class="upload-icon">📄</div>
-                <p class="upload-text">Arrastra aquí el archivo PDF o haz clic para seleccionar</p>
-                <p class="upload-hint">Formatos permitidos: PDF (máximo 10MB)</p>
-              </div>
-            } @else {
-              <div class="file-preview">
-                <div class="file-info">
-                  <div class="file-icon">📄</div>
-                  <div class="file-details">
-                    <span class="file-name">{{ selectedFile.name }}</span>
-                    <span class="file-size">{{ formatFileSize(selectedFile.size) }}</span>
-                  </div>
-                </div>
-                <button type="button" class="remove-file-btn" (click)="removeFile($event)">
-                  ✕
-                </button>
-              </div>
-            }
+          <label class="form-label">IRPF (%)</label>
+          <div class="input-group">
+            <input type="number" formControlName="irpf_percentage" class="form-input"
+                   placeholder="0.00" step="0.01" min="0" max="100">
+            <span class="input-suffix">%</span>
           </div>
-
-          <!-- Input oculto para seleccionar archivo -->
-          <input #fileInput
-                 type="file"
-                 accept=".pdf"
-                 (change)="onFileSelected($event)"
-                 style="display: none;">
-
-          @if (fileError) {
-            <span class="error-message">{{ fileError }}</span>
-          }
         </div>
       </div>
 
-      <!-- FormGroup para estado de pago -->
-      <form class="form-section" [formGroup]="paymentForm">
-        <h2 class="section-title">Estado de Pago</h2>
+      <!-- Total calculado -->
+      <div class="total-display">
+        <span class="total-label">Total:</span>
+        <span class="total-amount">{{ calculatedTotal | currency:'EUR':'symbol':'1.2-2' }}</span>
+        <span class="total-label">Total Calculo:</span>
+        <span class="total-amount">{{ amountsForm.get('total_amount')?.value | currency:'EUR':'symbol':'1.2-2' }}</span>
+      </div>
+    </form>
 
-        <div class="form-row">
-          <div class="form-field">
-            <label class="form-label">Estado</label>
-            <select formControlName="payment_status" class="form-input">
-              @for (status of paymentStatusLabels; track status.value) {
-                <option [value]="status.value">{{ status.label }}</option>
-              }
-            </select>
-          </div>
 
-          <div class="form-field">
-            <label class="form-label">Método de Pago</label>
-            <select formControlName="payment_method" class="form-input">
-              @for (method of paymentMethodLabels; track method.value) {
-                <option [value]="method.value">{{ method.label }}</option>
-              }
-            </select>
-          </div>
+    <!-- FormGroup para categorización (categoriesForm): -->
+    <form class="form-section" [formGroup]="categoriesForm">
+      <h2 class="section-title">Categorización</h2>
 
-          @if (showPaymentFields) {
-            <div class="form-field">
-              <label class="form-label">Fecha de Pago</label>
-              <input type="date" formControlName="payment_date" class="form-input">
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-label">Categoría *</label>
+          <select formControlName="category" class="form-input"
+                  [class.error]="isFieldInvalid(categoriesForm, 'category')">
+            <option value="">Seleccionar categoría</option>
+            @for (category of categories; track category.value) {
+              <option [value]="category.value">{{ category.label }}</option>
+            }
+          </select>
+          @if (isFieldInvalid(categoriesForm, 'category')) {
+            <span class="error-message">{{ getErrorMessage(categoriesForm, 'category') }}</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">Subcategoría</label>
+          <input type="text" formControlName="subcategory" class="form-input"
+                 placeholder="Ej: Consumo oficina">
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label">Descripción *</label>
+        <textarea formControlName="description" class="form-input"
+                  [class.error]="isFieldInvalid(categoriesForm, 'description')" rows="3"
+                  placeholder="Descripción de la factura..."></textarea>
+        @if (isFieldInvalid(categoriesForm, 'description')) {
+          <span class="error-message">{{ getErrorMessage(categoriesForm, 'description') }}</span>
+        }
+      </div>
+    </form>
+
+    <!-- Archivo Adjunto -->
+    <div class="form-section">
+      <h2 class="section-title">Archivo Adjunto</h2>
+
+      <div class="form-field">
+        <label class="form-label">Adjuntar PDF de la Factura</label>
+
+        <!-- Zona de arrastrar y soltar -->
+        <div class="file-upload-area"
+             [class.dragover]="isDragOver"
+             [class.has-file]="selectedFile"
+             (dragover)="onDragOver($event)"
+             (dragleave)="onDragLeave($event)"
+             (drop)="onFileDrop($event)"
+             (click)="fileInput.click()">
+
+          @if (!selectedFile) {
+            <div class="upload-content">
+              <div class="upload-icon">📄</div>
+              <p class="upload-text">Arrastra aquí el archivo PDF o haz clic para seleccionar</p>
+              <p class="upload-hint">Formatos permitidos: PDF (máximo 10MB)</p>
+            </div>
+          } @else {
+            <div class="file-preview">
+              <div class="file-info">
+                <div class="file-icon">📄</div>
+                <div class="file-details">
+                  <span class="file-name">{{ selectedFile.name }}</span>
+                  <span class="file-size">{{ formatFileSize(selectedFile.size) }}</span>
+                </div>
+              </div>
+              <button type="button" class="remove-file-btn" (click)="removeFile($event)">
+                ✕
+              </button>
             </div>
           }
+        </div>
+
+        <!-- Input oculto para seleccionar archivo -->
+        <input #fileInput
+               type="file"
+               accept=".pdf"
+               (change)="onFileSelected($event)"
+               style="display: none;">
+
+        @if (fileError) {
+          <span class="error-message">{{ fileError }}</span>
+        }
+      </div>
+    </div>
+
+    <!-- Estado de Pago -->
+    <form class="form-section" [formGroup]="paymentForm">
+      <h2 class="section-title">Estado de Pago</h2>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-label">Estado</label>
+          <select formControlName="payment_status" class="form-input">
+            @for (status of paymentStatusLabels; track status.value) {
+              <option [value]="status.value">{{ status.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">Método de Pago</label>
+          <select formControlName="payment_method" class="form-input">
+            @for (method of paymentMethodLabels; track method.value) {
+              <option [value]="method.value">{{ method.label }}</option>
+            }
+          </select>
         </div>
 
         @if (showPaymentFields) {
           <div class="form-field">
-            <label class="form-label">Referencia de Pago</label>
-            <input type="text" formControlName="payment_reference" class="form-input"
-                   placeholder="Ej: TRF-001234">
+            <label class="form-label">Fecha de Pago</label>
+            <input type="date" formControlName="payment_date" class="form-input">
           </div>
         }
-      </form>
-
-      <!-- Botones -->
-      <div class="form-actions">
-        <button type="button" class="btn btn-secondary" (click)="goBack()">
-          Cancelar
-        </button>
-
-        <button type="submit" class="btn btn-primary" [disabled]="!areAllFormsValid() || isSubmitting">
-          @if (isSubmitting) {
-            Guardando...
-          } @else {
-            Registrar Factura
-          }
-        </button>
       </div>
-  </div>
 
+      @if (showPaymentFields) {
+        <div class="form-field">
+          <label class="form-label">Referencia de Pago</label>
+          <input type="text" formControlName="payment_reference" class="form-input"
+                 placeholder="Ej: TRF-001234">
+        </div>
+      }
+    </form>
+
+    <!-- Botones -->
+    <div class="form-actions">
+      <button
+        type="button"
+        class="btn btn-secondary" (click)="goBack()">
+        Cancelar
+      </button>
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+        (click)="onSubmit()"
+        [disabled]="!areAllFormsValid() || isSubmitting">
+        @if (isSubmitting) {
+          Guardando...
+        } @else {
+          Actualizar Factura
+        }
+      </button>
+    </div>
+
+  </div>
 
 </div>

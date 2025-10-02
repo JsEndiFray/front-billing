@@ -56,6 +56,8 @@ export class InvoicesIssuedEditComponent implements OnInit {
   billingTypeLabels = [...BILLING_TYPE_LABELS];
 
   //VARIABLES PARA FACTURACIÓN PROPORCIONAL
+  // Estado de envío
+  isSubmitting: boolean = false;
   isSimulating: boolean = false;
   simulationResult: ProportionalSimulationResponse | null = null;
 
@@ -81,7 +83,6 @@ export class InvoicesIssuedEditComponent implements OnInit {
       estates_id: ['', [Validators.required]],
       clients_id: ['', [Validators.required]],
       owners_id: ['', [Validators.required]],
-      ownership_percent: [null],
 
       // Cálculos financieros
       tax_base: ['', [Validators.required, Validators.min(0.01)]],
@@ -90,8 +91,8 @@ export class InvoicesIssuedEditComponent implements OnInit {
       total: [0],
 
       // Facturación proporcional
-      is_proportional: [0],
-      corresponding_month: [null],
+      is_proportional: ['0'],
+      corresponding_month: [''],
       start_date: [''],
       end_date: [''],
 
@@ -130,7 +131,7 @@ export class InvoicesIssuedEditComponent implements OnInit {
               end_date: this.invoicesUtilService.formatDateForInput(data.end_date),
               // Asegurar que is_proportional sea string como en Register
               is_proportional: data.is_proportional || 0,
-              is_refund: data.is_refund|| 0
+              is_refund: data.is_refund || 0
             });
             // Si es proporcional y las fechas están cargadas, simular para mostrar detalles
             if (data.is_proportional && data.start_date && data.end_date) {
@@ -144,87 +145,28 @@ export class InvoicesIssuedEditComponent implements OnInit {
     });
   };
 
-  // Manejo del cambio de estado de cobro
-  onCollectionStatusChange(): void {
-    const status = this.invoiceForm.get('collection_status')?.value;
-    const dateControl = this.invoiceForm.get('collection_date');
-    const referenceControl = this.invoiceForm.get('collection_reference');
+  // ==========================================
+  // MÉTODOS DE CARGA DE DATOS
+  // ==========================================
 
-    if (status === 'collected') {
-      dateControl?.enable();
-      referenceControl?.enable();
 
-      if (!dateControl?.value) {
-        this.invoiceForm.patchValue({
-          collection_date: this.invoicesUtilService.getCurrentDateForInput()
-        });
+  loadOriginalInvoices() {
+    this.invoicesIssuedService.getAllInvoicesIssued().subscribe({
+      next: (data) => {
+        this.originalInvoices = data.filter(invoice => !invoice.is_refund);
+      }, error: (e: HttpErrorResponse) => {
+        this.originalInvoices = [];
       }
-    } else {
-      dateControl?.disable();
-      referenceControl?.disable();
-      this.invoiceForm.patchValue({
-        collection_date: '',
-        collection_reference: ''
-      });
-    }
+    })
   }
 
-  /**
-   * Se ejecuta cuando cambia el tipo de facturación (normal/proporcional)
-   */
-  onBillingTypeChange(): void {
-    const formValues = this.invoiceForm.value;
-
-    if (formValues.is_proportional === 0) {
-      this.invoiceForm.patchValue({
-        start_date: '',
-        end_date: ''
-      });
-      this.simulationResult = null;
-    }
-    this.calculateTotal();
-  }
-
-  /**
-   * Se ejecuta cuando cambian las fechas proporcionales
-   */
-  onProportionalDatesChange(): void {
-    this.calculateTotal();
-
-  }
-
-  /**
-   * Simula facturación proporcional
-   */
-  simulateProportionalBilling(): void {
-    const formValues = this.invoiceForm.value;
-
-    if (!formValues.start_date || !formValues.end_date || !formValues.tax_base) {
-      return;
-    }
-
-    this.isSimulating = true;
-    const simulation: ProportionalSimulation = {
-      tax_base: parseFloat(formValues.tax_base),
-      iva: parseFloat(formValues.iva) || 0,
-      irpf: parseFloat(formValues.irpf) || 0,
-      start_date: formValues.start_date,
-      end_date: formValues.end_date
-    };
-
-    this.invoicesIssuedService.simulateProportionalBilling(simulation).subscribe({
-      next: (result) => {
-        this.simulationResult = result;
-        this.invoiceForm.patchValue({
-          total: result.total
-        });
-        this.isSimulating = false;
-      },
-      error: (e: HttpErrorResponse) => {
-        this.isSimulating = false;
-        this.simulationResult = null;
+  getListEstate() {
+    this.estatesServices.getAllEstate().subscribe({
+      next: (data) => {
+        this.estates = data;
+      }, error: (e: HttpErrorResponse) => {
       }
-    });
+    })
   }
 
   getListOwners() {
@@ -246,51 +188,9 @@ export class InvoicesIssuedEditComponent implements OnInit {
     })
   }
 
-  getListEstate() {
-    this.estatesServices.getAllEstate().subscribe({
-      next: (data) => {
-        this.estates = data;
-      }, error: (e: HttpErrorResponse) => {
-      }
-    })
-  }
-
-  loadOriginalInvoices() {
-    this.invoicesIssuedService.getAllInvoicesIssued().subscribe({
-      next: (data) => {
-        this.originalInvoices = data.filter(invoice => !invoice.is_refund);
-      }, error: (e: HttpErrorResponse) => {
-        this.originalInvoices = [];
-      }
-    })
-  }
-
-  calculateTotal() {
-    const formValues = this.invoiceForm.value;
-
-    // Crear objeto temporal para el servicio
-    const tempInvoice: CalculableInvoice = {
-      tax_base: formValues.tax_base,
-      iva: formValues.iva,
-      irpf: formValues.irpf,
-      is_proportional: parseInt(formValues.is_proportional) || 0, // Convertir string a number
-      total: formValues.total
-    };
-
-    // Usar el servicio con callback para proporcional
-    this.invoicesUtilService.calculateTotal(tempInvoice, () => {
-      if (formValues.start_date && formValues.end_date) {
-        this.simulateProportionalBilling();
-      }
-    });
-
-    // Si no es proporcional, actualizar el FormGroup con el total calculado
-    if (formValues.is_proportional === 0) {
-      this.invoiceForm.patchValue({
-        total: tempInvoice.total
-      });
-    }
-  };
+  // ==========================================
+  // MÉTODOS DE VALIDACIÓN
+  // ==========================================
 
   /**
    * Verifica si un campo del formulario es inválido y debe mostrar mensaje de error
@@ -302,9 +202,141 @@ export class InvoicesIssuedEditComponent implements OnInit {
     return !!(field && field.invalid && (field.dirty || field.touched));
   }
 
+  getErrorMessage(fieldName: string): string {
+    return this.validatorService.getErrorMessage(this.invoiceForm, fieldName);
+  }
+
+
+  // ==========================================
+  // MÉTODOS DE CÁLCULO
+  // ==========================================
+
+  /**
+   * Calcula automáticamente los importes cuando cambian los valores
+   */
+  calculateAmounts(): void {
+    const formValues = this.invoiceForm.value;
+
+    if (formValues.is_proportional === "1") {
+
+    } else {
+      // Cálculo normal
+      const taxBase = parseFloat(formValues.tax_base) || 0;
+      const ivaPercent = parseFloat(formValues.iva) || 0;
+      const irpfPercent = parseFloat(formValues.irpf) || 0;
+
+      const total = taxBase + (taxBase * ivaPercent / 100) - (taxBase * irpfPercent / 100);
+
+      // Actualizar el FormGroup
+      this.invoiceForm.patchValue({
+        total: parseFloat(total.toFixed(2))
+      });
+    }
+  }
+
+  /**
+   * Se ejecuta cuando cambia el tipo de facturación (normal/proporcional)
+   */
+  onBillingTypeChange(): void {
+    const formValues = this.invoiceForm.value;
+
+
+    if (formValues.is_proportional === "0") {
+      // Si cambia a normal, limpiar campos proporcionales
+      this.invoiceForm.patchValue({
+        start_date: '',
+        end_date: ''
+      });
+      this.simulationResult = null;
+    }
+    this.calculateAmounts();
+  }
+
+
+  /**
+   * Se ejecuta cuando cambian las fechas proporcionales
+   */
+  onProportionalDatesChange(): void {
+    const formValues = this.invoiceForm.value;
+
+    if (formValues.is_proportional === "1" && formValues.start_date && formValues.end_date) {
+      this.simulateProportionalBilling();
+    }
+  }
+
+  /**
+   * Simula facturación proporcional
+   */
+  simulateProportionalBilling(): void {
+    const formValues = this.invoiceForm.value;
+
+    if (!formValues.start_date || !formValues.end_date || !formValues.tax_base) {
+      return;
+    }
+
+    this.isSimulating = true;
+    const simulation: ProportionalSimulation = {
+      tax_base: formValues.tax_base,
+      iva: formValues.iva || 0,
+      irpf: formValues.irpf || 0,
+      start_date: formValues.start_date,
+      end_date: formValues.end_date
+    };
+
+    this.invoicesIssuedService.simulateProportionalBilling(simulation).subscribe({
+      next: (result) => {
+        this.simulationResult = result;
+        // Actualizar el total en el FormGroup
+        this.invoiceForm.patchValue({
+          total: result.total
+        });
+        this.isSimulating = false;
+      },
+      error: (e: HttpErrorResponse) => {
+        this.isSimulating = false;
+        this.simulationResult = null;
+      }
+    });
+  }
+
+  /**
+   * Maneja el cambio de estado de cobro
+   * Si marca como "cobrado" sin fecha, pone la fecha actual
+   */
+  onCollectionStatusChange(): void {
+    const status = this.invoiceForm.get('collection_status')?.value;
+    const dateControl = this.invoiceForm.get('collection_date');
+    const referenceControl = this.invoiceForm.get('collection_reference');
+
+    if (status === 'collected') {
+      // habilitar campos
+      dateControl?.enable();
+      referenceControl?.enable();
+
+      if (!dateControl?.value) {
+        // Si no tiene fecha, asignar la actual
+        this.invoiceForm.patchValue({
+          collection_date: this.invoicesUtilService.getCurrentDateForInput()
+        });
+      }
+    } else {
+      // deshabilitar y limpiar campos
+      dateControl?.disable();
+      this.invoiceForm.patchValue({
+        collection_date: '',
+        collection_notes: '',
+        collection_reference: ''
+      });
+    }
+  }
+
+
+  //========================
+  //CRUD
+  //========================
 
   updateInvoice(): void {
-    const formValues = this.invoiceForm.value;
+    const formValues = this.invoiceForm.getRawValue();
 
     if (!formValues.id) {
       Swal.fire({
@@ -358,12 +390,29 @@ export class InvoicesIssuedEditComponent implements OnInit {
       },
       error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
+        this.invoiceForm.markAllAsTouched();
       }
     });
   }
 
   goBack() {
-    this.router.navigate(['/dashboards/invoices-issued/list'])
+    // Verificar si hay cambios sin guardar
+    if (this.invoiceForm.dirty) {
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: 'Tienes cambios sin guardar que se perderán',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, salir',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.router.navigate(['/dashboards/invoices-issued/list']);
+        }
+      });
+    } else {
+      this.router.navigate(['/dashboards/invoices-issued/list']);
+    }
   }
 
 }

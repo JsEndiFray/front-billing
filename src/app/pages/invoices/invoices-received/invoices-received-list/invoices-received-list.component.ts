@@ -11,8 +11,12 @@ import {PaginationConfig, PaginationResult} from '../../../../interfaces/paginat
 import {InvoicesReceivedService} from '../../../../core/services/invoices-received-services/invoices-received.service';
 import {InvoicesUtilService} from '../../../../core/services/shared-services/invoices-Util.service';
 import {InvoiceReceived} from '../../../../interfaces/invoices-received-interface';
-import {PAYMENT_METHOD_LABELS, PAYMENT_STATUS_LABELS
+import {
+  PAYMENT_METHOD_LABELS, PAYMENT_STATUS_LABELS
 } from '../../../../shared/Collection-Enum/collection-enum';
+import {ExportService} from '../../../../core/services/shared-services/exportar.service';
+import {ExportableListBase} from '../../../../shared/Base/exportable-list.base';
+import {Employee} from '../../../../interfaces/employee-interface';
 
 /**
  * Componente para mostrar y gestionar la lista de facturas recibidas de proveedores.
@@ -29,7 +33,7 @@ import {PAYMENT_METHOD_LABELS, PAYMENT_STATUS_LABELS
   templateUrl: './invoices-received-list.component.html',
   styleUrl: './invoices-received-list.component.css'
 })
-export class InvoicesReceivedListComponent implements OnInit {
+export class InvoicesReceivedListComponent extends ExportableListBase<InvoiceReceived> implements OnInit {
 
   // ==========================================
   // PROPIEDADES DE FORMULARIOS MÚLTIPLES
@@ -116,14 +120,39 @@ export class InvoicesReceivedListComponent implements OnInit {
   // Factura seleccionada para crear abono
   selectedInvoice: InvoiceReceived | null = null;
 
+  //===============================
+  // FUNCIONES PARA LA EXPORTACION
+  //===============================
+  // Implementar propiedades abstractas
+  entityName = 'facturas-recibidas'; //para nombrar los documentos descargados
+  selectedItems: Set<number> = new Set();
+
+  readonly exportColumns = [
+    {key: 'id', title: 'ID', width: 10},
+    {key: 'invoice_number', title: 'Nº Factura', width: 15},
+    {key: 'our_reference', title: 'Referencia', width: 15},
+    {key: 'supplier_name', title: 'Proveedor', width: 25},
+    {key: 'invoice_date', title: 'Fecha Factura', width: 12},
+    {key: 'due_date', title: 'Fecha Vencimiento', width: 12},
+    {key: 'tax_base', title: 'Base', width: 12, formatter: (value: unknown) => value ? `${value} €` : '-'},
+    {key: 'iva_percentage', title: 'IVA (%)', width: 10},
+    {key: 'irpf_percentage', title: 'IRPF (%)', width: 10},
+    {key: 'total_amount', title: 'Total', width: 12, formatter: (value: unknown) => value ? `${value} €` : '-'},
+    {key: 'category', title: 'Categoría', width: 20},
+    {key: 'collection_status', title: 'Estado Pago', width: 15},
+    {key: 'is_refund', title: 'Tipo', width: 12, formatter: (value: unknown) => value ? 'Abono' : 'Factura Normal'}
+  ];
+
   constructor(
     private invoicesReceivedService: InvoicesReceivedService,
     private router: Router,
     private searchService: SearchService,
     private paginationService: PaginationService,
     protected invoicesUtilService: InvoicesUtilService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    public exportService: ExportService,
   ) {
+    super();
     // FormGroup para búsqueda
     this.searchForm = this.fb.group({
       searchTerm: ['']
@@ -146,8 +175,19 @@ export class InvoicesReceivedListComponent implements OnInit {
     this.refundForm = this.fb.group({
       refundReason: ['', Validators.required]
     });
+  }
 
+  // Implementar métodos abstractos
+  getFilteredData(): InvoiceReceived[] {
+    return this.filteredInvoices;
+  }
 
+  getCurrentPageData(): InvoiceReceived[] {
+    return this.invoices;
+  }
+
+  getPaginationConfig(): PaginationConfig {
+    return this.paginationConfig;
   }
 
 
@@ -182,6 +222,7 @@ export class InvoicesReceivedListComponent implements OnInit {
     });
 
   }
+
   // ==========================================
   // MÉTODOS DE CARGA DE DATOS
   // ==========================================
@@ -375,14 +416,6 @@ export class InvoicesReceivedListComponent implements OnInit {
   }
 
   /**
-   * Exporta los datos filtrados
-   */
-  exportData() {
-    // Implementar lógica de exportación aquí
-    console.log('Exportando datos:', this.allInvoices);
-  }
-
-  /**
    * Elimina una factura recibida después de confirmar la acción.
    */
   deleteInvoice(id: number): void {
@@ -438,7 +471,7 @@ export class InvoicesReceivedListComponent implements OnInit {
    * Cancela la edición del pago.
    */
   cancelEditingPayment(invoiceId: number): void {
-     this.editingPayment.delete(invoiceId);
+    this.editingPayment.delete(invoiceId);
     this.editPaymentForm = null; // Destruir FormGroup
   }
 
@@ -543,9 +576,9 @@ export class InvoicesReceivedListComponent implements OnInit {
     this.showRefundModal = true;
 
     // Preparar datos del nuevo abono
-   this.refundForm.patchValue({
-     refundReason: ''
-   })
+    this.refundForm.patchValue({
+      refundReason: ''
+    })
 
   }
 

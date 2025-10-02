@@ -54,8 +54,7 @@ export class OwnersRegisterComponent {
    */
   createOwners() {
 
-    if (this.ownersForm.valid) {
-      this.ownersForm.markAllAsTouched();
+    if (!this.ownersForm.valid) {
       Swal.fire({
         title: 'Error!',
         text: 'Por favor, complete todos los campos requeridos',

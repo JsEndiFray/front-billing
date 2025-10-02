@@ -9,6 +9,8 @@ import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {SearchService} from '../../../core/services/shared-services/search.service';
 import {PaginationConfig, PaginationResult} from '../../../interfaces/pagination-interface';
 import {PaginationService} from '../../../core/services/shared-services/pagination.service';
+import {ExportService} from '../../../core/services/shared-services/exportar.service';
+import {ExportableListBase} from '../../../shared/Base/exportable-list.base';
 
 
 /**
@@ -24,7 +26,7 @@ import {PaginationService} from '../../../core/services/shared-services/paginati
   templateUrl: './estate-owners-list.component.html',
   styleUrl: './estate-owners-list.component.css'
 })
-export class EstateOwnersListComponent implements OnInit {
+export class EstateOwnersListComponent extends ExportableListBase<EstatesOwners> implements OnInit {
 
   // ==========================================
   // PROPIEDADES DE FORMULARIOS MÚLTIPLES
@@ -60,13 +62,35 @@ export class EstateOwnersListComponent implements OnInit {
     endIndex: 0
   };
 
+  //===============================
+  // FUNCIONES PARA LA EXPORTACION
+  //===============================
+  // Implementar propiedades abstractas
+  entityName = 'porcentajes';//para nombrar los documentos descargados
+  selectedItems: Set<number> = new Set();
+
+  readonly exportColumns = [
+    {key: 'id', title: 'ID', width: 10},
+    {key: 'estate_name', title: 'Propiedad', width: 30},
+    {key: 'owner_name', title: 'Propietario', width: 30},
+    {
+      key: 'ownership_percentage',
+      title: 'Porcentaje (%)',
+      width: 15,
+      formatter: (value: unknown) => value ? `${value}%` : '-'
+    }
+  ];
+
   constructor(
     private estateOwnersService: EstateOwnersService,
     private router: Router,
     private searchService: SearchService,
     private paginationService: PaginationService,
     private fb: FormBuilder,
+    public exportService: ExportService,
   ) {
+    super();
+
     this.searchForm = this.fb.group({
       searchTerm: ['']
     });
@@ -74,9 +98,20 @@ export class EstateOwnersListComponent implements OnInit {
     this.paginationForm = this.fb.group({
       itemsPerPage: [5]
     })
+  };
 
-
+  getFilteredData(): EstatesOwners[] {
+    return this.filteredEstateOwners;
   }
+
+  getCurrentPageData(): EstatesOwners[] {
+    return this.estateOwners;
+  }
+
+  getPaginationConfig(): PaginationConfig {
+    return this.paginationConfig;
+  }
+
 
   /**
    * Se ejecuta al cargar el componente
@@ -272,9 +307,8 @@ export class EstateOwnersListComponent implements OnInit {
       }
     })
   }
+
   newEstateOwner() {
     this.router.navigate(['/dashboards/estates/register'])
-  }
-
-  exportData(){}
+  };
 }

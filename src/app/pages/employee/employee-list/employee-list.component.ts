@@ -9,6 +9,8 @@ import Swal from 'sweetalert2';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
 import {PaginationConfig, PaginationResult} from '../../../interfaces/pagination-interface';
 import {PaginationService} from '../../../core/services/shared-services/pagination.service';
+import {ExportableListBase} from '../../../shared/Base/exportable-list.base';
+import {ExportService} from '../../../core/services/shared-services/exportar.service';
 
 /**
  * Componente para mostrar y gestionar la lista de empleados
@@ -23,7 +25,7 @@ import {PaginationService} from '../../../core/services/shared-services/paginati
   templateUrl: './employee-list.component.html',
   styleUrl: './employee-list.component.css'
 })
-export class EmployeeListComponent implements OnInit {
+export class EmployeeListComponent extends ExportableListBase<Employee> implements OnInit {
 
   // ==========================================
   // PROPIEDADES DE FORMULARIOS MÚLTIPLES
@@ -71,13 +73,37 @@ export class EmployeeListComponent implements OnInit {
     endIndex: 0
   };
 
+  //===============================
+  // FUNCIONES PARA LA EXPORTACION
+  //===============================
+  // Implementar propiedades abstractas
+  entityName = 'empleados'; //para nombrar los documentos descargados
+  selectedItems: Set<number> = new Set();
+
+  readonly exportColumns = [
+    {key: 'id', title: 'ID', width: 10},
+    {key: 'name', title: 'Nombre', width: 20},
+    {key: 'lastname', title: 'Apellidos', width: 20},
+    {key: 'email', title: 'Email', width: 25},
+    {key: 'identification', title: 'Identificación', width: 15},
+    {key: 'phone', title: 'Teléfono', width: 15},
+    {key: 'address', title: 'Dirección', width: 30},
+    {key: 'postal_code', title: 'C.P.', width: 10},
+    {key: 'location', title: 'Localidad', width: 20},
+    {key: 'province', title: 'Provincia', width: 20},
+    {key: 'country', title: 'País', width: 15}
+  ];
+
+
   constructor(
     private employeeService: EmployeeService,
     private router: Router,
     private searchService: SearchService,
     private paginationService: PaginationService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    public exportService: ExportService,
   ) {
+    super();
     // FormGroup para búsqueda
     this.searchForm = this.fb.group({
       searchTerm: ['']
@@ -92,9 +118,21 @@ export class EmployeeListComponent implements OnInit {
     this.paginationForm = this.fb.group({
       itemsPerPage: [5]
     });
-
-
   }
+
+  // Implementar métodos abstractos
+  getFilteredData(): Employee[] {
+    return this.filteredEmployee;
+  }
+
+  getCurrentPageData(): Employee[] {
+    return this.employees;
+  }
+
+  getPaginationConfig(): PaginationConfig {
+    return this.paginationConfig;
+  }
+
 
   ngOnInit(): void {
     this.getListEmployee();
@@ -317,9 +355,6 @@ export class EmployeeListComponent implements OnInit {
 
   newEmployee() {
     this.router.navigate(['/dashboards/employee/register'])
-  }
-
-  exportData() {
-  }
+  };
 
 }

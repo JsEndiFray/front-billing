@@ -5,15 +5,16 @@
     <p class="subtitle">Busca, visualiza y administra los usuarios del sistema</p>
   </div>
 
-  <!-- Sección de filtros y búsqueda -->
+  <!-- Sección de búsqueda -->
   <div class="filters-section">
-    <!-- Buscador-->
-    <form [formGroup]="searchForm">
-      <div class="search-container">
-        <input type="text" formControlName="searchTerm"
-               placeholder="Buscar por nombre, email, rol..."
-               class="search-input" autocomplete="off">
-        <!-- Iconos de búsqueda y limpiar -->
+    <form class="search-container" [formGroup]="searchForm">
+      <div class="search-wrapper">
+        <input
+          type="text"
+          formControlName="searchTerm"
+          placeholder="Buscar por nombre, email, rol..."
+          class="search-input"
+          autocomplete="off">
         <div class="search-actions">
           <span class="search-icon">🔍</span>
           @if (searchForm.get('searchTerm')?.value) {
@@ -25,7 +26,7 @@
   </div>
 
   <!-- Filtros -->
-  <div class="filters-section">
+  <div class="filters-container">
     <form [formGroup]="filtersForm">
       <select formControlName="selectUser" class="filter-select">
         <option value="">Todos los usuarios</option>
@@ -35,14 +36,26 @@
       </select>
 
       <!-- Botón limpiar filtros -->
-      <button type="button" (click)="clearFilters()" class="clear-filters-btn" title="Limpiar todos los filtros">
+      <button
+        type="button"
+        (click)="clearFilters()"
+        class="clear-filters-btn"
+        title="Limpiar todos los filtros">
         Limpiar filtros
       </button>
     </form>
 
-    <!-- Botón nuevo usuario -->
+    <!-- Botones de acción -->
     <div class="actions-container">
-      <button type="button" class="export-btn" (click)="exportData()">Exportar</button>
+      <button type="button" class="export-btn" (click)="exportData()">
+        Exportar Todo
+      </button>
+      <button type="button" class="export-btn" (click)="exportCurrentPage()">
+        Exportar Página
+      </button>
+      <button type="button" class="export-btn" (click)="exportSelected()">
+        Exportar Selección ({{ selectedItems.size }})
+      </button>
       <button type="button" class="primary-btn" (click)="newUser()">+ Nuevo Usuario</button>
     </div>
   </div>
@@ -65,11 +78,19 @@
 
   <!-- Tabla de usuarios -->
   <div class="table-container">
-    <table class="clients-table">
+    <table class="data-table">
 
       <!-- Cabecera -->
       <thead>
       <tr>
+
+        <th>
+          <input
+            type="checkbox"
+            (change)="toggleAllSelection()"
+            [checked]="isAllSelected()">
+        </th>
+
         <th>ID</th>
         <th>USUARIO</th>
         <th>EMAIL</th>
@@ -86,15 +107,34 @@
         @if (users && users.length > 0) {
           @for (user of users; track user.id) {
             <tr>
+              <td>
+                <input
+                  type="checkbox"
+                  [checked]="selectedItems.has(user.id!)"
+                  (change)="toggleSelection(user.id!)">
+              </td>
+
               <td>#{{ user.id }}</td>
               <td>{{ user.username }}</td>
-              <td>{{ user.email }}</td>
-              <td>{{ user.phone }}</td>
+              <td class="email-cell">
+                @if (user.email) {
+                  <a [href]="'mailto:' + user.email">{{ user.email }}</a>
+                } @else {
+                  -
+                }
+              </td>
+              <td class="phone-cell">
+                @if (user.phone) {
+                  <a [href]="'tel:' + user.phone">{{ user.phone }}</a>
+                } @else {
+                  -
+                }
+              </td>
               <td>{{ user.role }}</td>
               <td>{{ user.date_create | dataFormat }}</td>
               <td>{{ user.date_update | dataFormat }}</td>
               <td>
-                <button class="action-btn edit-btn" (click)="editUser(user.id!)">
+                <button type="button" class="action-btn edit-btn" (click)="editUser(user.id!)">
                   Editar
                 </button>
               </td>
@@ -104,12 +144,10 @@
           <tr>
             <td colspan="8" class="no-data">
               <div class="empty-state">
-                <div class="empty-state__icon">👤</div>
-                <h3 class="empty-state__title">No se encontraron usuarios</h3>
-                <button class="primary-btn" (click)="newUser()" type="button">
+                <p>No se encontraron usuarios</p>
+                <button type="button" class="primary-btn" (click)="newUser()">
                   + Crear primer usuario
                 </button>
-
               </div>
             </td>
           </tr>
@@ -133,21 +171,21 @@
 
         <!-- Botón anterior -->
         <button
+          type="button"
           class="pagination-btn"
           [class.disabled]="!paginationResult.hasPrevious"
           (click)="previousPage()"
-          [disabled]="!paginationResult.hasPrevious"
-        >
+          [disabled]="!paginationResult.hasPrevious">
           ‹ Anterior
         </button>
 
         <!-- Números de página -->
         @for (page of getVisiblePages(); track page) {
           <button
+            type="button"
             class="pagination-btn"
             [class.active]="page === paginationConfig.currentPage"
-            (click)="goToPage(page)"
-          >
+            (click)="goToPage(page)">
             {{ page }}
           </button>
         }
@@ -155,33 +193,26 @@
         <!-- Puntos suspensivos si hay más páginas -->
         @if (paginationResult.totalPages > 5 && paginationConfig.currentPage < paginationResult.totalPages - 2) {
           <span class="pagination-dots">...</span>
-        }
-
-        <!-- Última página -->
-        @if (paginationResult.totalPages > 5 && paginationConfig.currentPage < paginationResult.totalPages - 2) {
           <button
+            type="button"
             class="pagination-btn"
-            (click)="goToPage(paginationResult.totalPages)"
-          >
+            (click)="goToPage(paginationResult.totalPages)">
             {{ paginationResult.totalPages }}
           </button>
         }
 
         <!-- Botón siguiente -->
         <button
+          type="button"
           class="pagination-btn"
           [class.disabled]="!paginationResult.hasNext"
           (click)="nextPage()"
-          [disabled]="!paginationResult.hasNext"
-        >
+          [disabled]="!paginationResult.hasNext">
           Siguiente ›
         </button>
 
       </div>
     </div>
   }
-
-
-
 
 </div>

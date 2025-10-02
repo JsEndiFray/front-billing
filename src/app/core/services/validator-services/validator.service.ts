@@ -33,7 +33,7 @@ export class ValidatorService {
    * Aplica transformaciones automáticas usando Angular Forms
    * Se puede usar con valueChanges o en el submit en caso  que no transforme demasiado
    */
-  applyTransformations(formGroup: FormGroup, entityType: 'client' | 'employee' | 'owner' | 'user' | 'estate' | 'estate_ownership' | 'invoice'): void {
+  applyTransformations(formGroup: FormGroup, entityType: 'client' | 'employee' | 'owner' | 'user' | 'estate' | 'estate_ownership' | 'invoice' | 'supplier'): void {
     const controls = formGroup.controls;
 
     // Transformaciones comunes para personas
@@ -54,6 +54,9 @@ export class ValidatorService {
         break;
       case 'invoice':
         this.transformInvoiceFields(controls);
+        break;
+      case 'supplier':
+        this.transformSupplierFields(controls);
         break;
     }
   }
@@ -157,6 +160,30 @@ export class ValidatorService {
         controls[field]?.setValue('', {emitEvent: false});
       }
     });
+  }
+
+//Suppliers
+  private transformSupplierFields(controls: { [key: string]: AbstractControl }): void {
+    // Tax ID a mayúsculas
+    if (controls['tax_id']?.value) {
+      controls['tax_id'].setValue(
+        controls['tax_id'].value.toString().toUpperCase().trim(),
+        {emitEvent: false}
+      );
+    }
+
+    // IBAN: limpiar espacios y mayúsculas
+    if (controls['bank_account']?.value) {
+      controls['bank_account'].setValue(
+        controls['bank_account'].value.toString().replace(/\s/g, '').toUpperCase(),
+        {emitEvent: false}
+      );
+    }
+
+    // País por defecto
+    if (!controls['country']?.value) {
+      controls['country'].setValue('España', {emitEvent: false});
+    }
   }
 
   // ========================================
@@ -781,6 +808,30 @@ export class ValidatorService {
     }
 
     return {isValid: true};
+  };
+
+  // ========================================
+  // MENSAJES DE ERROR PARA FORMULARIOS
+  // ========================================
+
+  /**
+   * Obtiene mensaje de error genérico para un FormGroup
+   * Funciona con formularios simples o múltiples FormGroups
+   */
+  getErrorMessage(formGroup: FormGroup, fieldName: string): string {
+    const field = formGroup.get(fieldName);
+
+    if (!field || !field.errors) return '';
+
+    if (field.errors['required']) return 'Este campo es obligatorio';
+    if (field.errors['minlength']) return `Mínimo ${field.errors['minlength'].requiredLength} caracteres`;
+    if (field.errors['maxlength']) return `Máximo ${field.errors['maxlength'].requiredLength} caracteres`;
+    if (field.errors['email']) return 'Email inválido';
+    if (field.errors['min']) return `Valor mínimo: ${field.errors['min'].min}`;
+    if (field.errors['max']) return `Valor máximo: ${field.errors['max'].max}`;
+    if (field.errors['pattern']) return 'Formato inválido';
+
+    return 'Campo inválido';
   }
 
 

@@ -1,50 +1,37 @@
+import jsPDF from 'jspdf';
+import { UserOptions } from 'jspdf-autotable';
+
 /**
  * Configuración para exportación
  */
 export interface ExportConfig<T = Record<string, unknown>> {
-  filename: string;
-  title: string;
-  columns: ExportColumn[];
-  data: T[];
+  filename: string;  // Nombre base del archivo (sin extensión ni fecha)
+  title: string;     // Título que aparece en el documento
+  columns: ExportColumn[]; // Configuración de columnas a exportar
+  data: T[];         // Array de datos a exportar
 }
 
 /**
  * Configuración de columna para exportación
  */
 export interface ExportColumn {
-  key: string;           // Clave del objeto de datos
-  title: string;         // Título de la columna
-  width?: number;        // Ancho para Excel
-  formatter?: (value: unknown) => string; // Función para formatear el valor
-  align?: 'left' | 'center' | 'right'; // Alineación para PDF
+  key: string;           // Clave del objeto de datos (soporta anidación: 'user.name')
+  title: string;         // Título de la columna en el documento exportado
+  width?: number;        // Ancho para Excel (en caracteres)
+  formatter?: (value: unknown) => string; // Función para formatear el valor antes de exportar
+  align?: 'left' | 'center' | 'right';    // Alineación para PDF
 }
 
 /**
- * Interface para jsPDF
+ * Extiende la interfaz oficial de jsPDF para incluir el método del plugin autoTable.
+ * Esto permite que TypeScript reconozca el método autoTable añadido por el plugin.
  */
- export interface JsPDFInstance {
-  setFontSize: (size: number) => void;
-  text: (text: string, x: number, y: number) => void;
-  autoTable: (options: JsPDFAutoTableOptions) => void;
-  save: (filename: string) => void;
+export interface JsPDFInstance extends jsPDF {
+  autoTable: (options: UserOptions) => void;
 }
 
 /**
- * Interface para opciones de autoTable
+ * Usa el tipo oficial 'UserOptions' de jspdf-autotable
+ * Esto garantiza compatibilidad total con todas las opciones disponibles del plugin
  */
- export interface JsPDFAutoTableOptions {
-  startY: number;
-  head: string[][];
-  body: string[][];
-  styles: Record<string, unknown>;
-  headStyles: Record<string, unknown>;
-  alternateRowStyles: Record<string, unknown>;
-  columnStyles: Record<number, { halign: string }>;
-}
-
-/**
- * Interface para el require de jsPDF
- */
- export interface JsPDFRequire {
-  jsPDF: new (orientation?: string) => JsPDFInstance;
-}
+export type JsPDFAutoTableOptions = UserOptions;

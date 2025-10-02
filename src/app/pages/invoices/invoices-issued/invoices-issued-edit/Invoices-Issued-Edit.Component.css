@@ -3,7 +3,7 @@
   box-sizing: border-box;
 }
 
-/* Contenedor principal (igual que otros componentes) */
+/* Contenedor principal */
 .container {
   background: #ffffff;
   border-radius: 0.75rem;
@@ -14,26 +14,47 @@
   box-shadow: 0 0.25rem 0.375rem -0.0625rem rgba(0, 0, 0, 0.1);
 }
 
-/* Título y descripción (igual que otros componentes) */
+/* ==========================================
+   HEADER
+   ========================================== */
+
 .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 0.125rem solid #e5e7eb;
 }
 
 .title {
   color: #1f2937;
   font-size: 1.75rem;
   font-weight: 700;
-  margin: 0 0 0.5rem 0;
-}
-
-.subtitle {
-  color: #6b7280;
-  font-size: 0.875rem;
   margin: 0;
 }
 
-/* Secciones del formulario */
-.section {
+.back-btn {
+  padding: 0.625rem 1.25rem;
+  background: #f3f4f6;
+  color: #374151;
+  border: 0.125rem solid #e5e7eb;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  background: #e5e7eb;
+}
+
+/* ==========================================
+   SECCIONES DEL FORMULARIO
+   ========================================== */
+
+.form-section {
   background: #f9fafb;
   border-radius: 0.5rem;
   padding: 1.5rem;
@@ -50,11 +71,19 @@
   border-bottom: 0.125rem solid #e5e7eb;
 }
 
-/* Grid de formulario */
-.form-grid {
+/* ==========================================
+   GRID Y CAMPOS DEL FORMULARIO
+   ========================================== */
+
+.form-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
   gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-row:last-child {
+  margin-bottom: 0;
 }
 
 .form-field {
@@ -64,24 +93,21 @@
 
 .form-field-full {
   grid-column: 1 / -1;
+  margin-bottom: 1rem;
 }
 
-/* Etiquetas */
+/* ==========================================
+   LABELS Y TEXTOS DE AYUDA
+   ========================================== */
+
 .form-label {
   color: #374151;
   font-size: 0.875rem;
   font-weight: 600;
   margin-bottom: 0.375rem;
+  display: block;
 }
 
-/* Indicador de campo requerido */
-.required-indicator {
-  color: #ef4444;
-  font-weight: 700;
-  margin-left: 0.25rem;
-}
-
-/* Texto de ayuda */
 .help-text {
   color: #6b7280;
   font-size: 0.75rem;
@@ -89,7 +115,17 @@
   font-style: italic;
 }
 
-/* Inputs (estilo igual a otros componentes) */
+.error-message {
+  color: #ef4444;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+/* ==========================================
+   INPUTS Y CONTROLES
+   ========================================== */
+
 .form-input {
   padding: 0.625rem 0.75rem;
   border: 0.125rem solid #e5e7eb;
@@ -97,28 +133,30 @@
   font-size: 0.875rem;
   color: #374151;
   background: #ffffff;
-  transition: border-color 0.2s;
+  transition: all 0.2s;
+  font-family: inherit;
 }
 
 .form-input:focus {
   outline: none;
   border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .form-input::placeholder {
   color: #9ca3af;
 }
 
-/* Estados disabled */
-.form-input:disabled {
-  background: #f9fafb;
-  color: #6b7280;
-  cursor: not-allowed;
-  border-color: #e5e7eb;
+.form-input.error {
+  border-color: #ef4444;
+  background: #fef2f2;
 }
 
-/* Select específico */
-.form-input[role="combobox"],
+.form-input.error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Select especial */
 select.form-input {
   cursor: pointer;
   appearance: none;
@@ -126,298 +164,40 @@ select.form-input {
   background-position: right 0.75rem center;
   background-repeat: no-repeat;
   background-size: 1rem;
+  padding-right: 2.5rem;
 }
 
-/* Textarea específico */
+/* Textarea especial */
 textarea.form-input {
   resize: vertical;
   min-height: 4rem;
   font-family: inherit;
+  line-height: 1.5;
 }
 
-/* ========================================
+/* ==========================================
    INPUTS ESPECIALIZADOS
-   ======================================== */
+   ========================================== */
 
-/* Número de factura */
-.invoice-number-input {
+.tax-id-input {
   font-family: 'Courier New', monospace;
   font-weight: 600;
-  color: #6366f1;
+  color: #4f46e5;
+  text-transform: uppercase;
 }
 
-/* Campos monetarios */
-.currency-input {
-  color: #10b981;
-  font-weight: 600;
-  text-align: right;
+.bank-input {
   font-family: 'Courier New', monospace;
-  background: linear-gradient(45deg, #f0fdf4, #ffffff);
-}
-
-/* Campos de porcentaje */
-.percentage-input {
-  color: #f59e0b;
-  font-weight: 600;
-  text-align: center;
-  font-family: 'Courier New', monospace;
-}
-
-/* Campo total destacado */
-.total-input {
-  color: #10b981;
-  font-weight: 700;
-  text-align: right;
-  font-family: 'Courier New', monospace;
-  font-size: 1.125rem;
-  border-color: #10b981;
-  background: linear-gradient(45deg, #f0fdf4, #ecfdf5) !important;
-}
-
-/* Select tipo de facturación */
-.billing-type-select {
-  font-weight: 600;
-  border-left: 4px solid #3b82f6;
-}
-
-/* Campo mes de correspondencia */
-.month-input {
-  color: #6366f1;
   font-weight: 500;
-  font-family: 'Courier New', monospace;
+  color: #059669;
+  letter-spacing: 0.05em;
 }
 
-/* Campos de fecha proporcional */
-.proportional-date-input {
-  color: #dc2626;
-  font-weight: 600;
-  border-left: 4px solid #dc2626;
-  background: linear-gradient(45deg, #fef2f2, #ffffff);
-}
+/* ==========================================
+   BOTONES DE ACCIÓN
+   ========================================== */
 
-/* ========================================
-   CAMPOS DE PAGO ESPECIALIZADOS
-   ======================================== */
-
-/* Select estado de pago */
-.payment-status-select {
-  font-weight: 600;
-}
-
-/* Select método de pago */
-.collection-method-select {
-  color: #6366f1;
-  font-weight: 500;
-}
-
-/* Campo fecha de pago */
-.collection-date-input {
-  color: #6b7280;
-  font-weight: 500;
-}
-
-/* Textarea notas de pago */
-.collection-notes-textarea {
-  color: #6b7280;
-}
-
-/* ========================================
-   SECCIÓN DE CÁLCULO PROPORCIONAL
-   ======================================== */
-
-.proportional-summary {
-  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-  border: 2px solid #0ea5e9;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  margin-top: 1rem;
-  box-shadow: 0 4px 6px rgba(14, 165, 233, 0.1);
-}
-
-.proportional-summary h4 {
-  color: #0c4a6e;
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  text-align: center;
-  border-bottom: 2px solid #0ea5e9;
-  padding-bottom: 0.5rem;
-}
-
-.proportional-details {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  gap: 0.75rem;
-}
-
-.detail-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 0.5rem;
-  border-left: 4px solid #0ea5e9;
-}
-
-.detail-label {
-  font-weight: 600;
-  color: #374151;
-  font-size: 0.875rem;
-}
-
-.detail-value {
-  font-weight: 700;
-  color: #0c4a6e;
-  font-family: 'Courier New', monospace;
-  font-size: 0.875rem;
-}
-
-/* Línea total destacada */
-.detail-item.total-line {
-  border-left: 4px solid #10b981;
-  background: linear-gradient(45deg, #f0fdf4, #ffffff);
-  box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
-}
-
-.detail-item.total-line .detail-label,
-.detail-item.total-line .detail-value {
-  color: #10b981;
-  font-size: 1rem;
-  font-weight: 800;
-}
-
-/* ========================================
-   ESTADO DE CARGA
-   ======================================== */
-
-.loading-state {
-  text-align: center;
-  padding: 2rem;
-  background: linear-gradient(45deg, #fffbeb, #fef3c7);
-  border: 2px dashed #f59e0b;
-  border-radius: 0.75rem;
-  margin-top: 1rem;
-}
-
-.loading-state span {
-  color: #92400e;
-  font-weight: 600;
-  font-size: 1.125rem;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-/* ========================================
-   RESUMEN DE PAGO
-   ======================================== */
-
-.collection-summary {
-  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: space-around;
-  margin-top: 1rem;
-}
-
-.collection-summary-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.collection-summary-label {
-  font-size: 0.75rem;
-  color: #6b7280;
-  font-weight: 500;
-  margin-bottom: 0.25rem;
-}
-
-.collection-summary-value {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #374151;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  background: white;
-}
-
-/* Estados específicos del resumen */
-.collection-summary-value.status-pending {
-  color: #f59e0b;
-  background: #fffbeb;
-  border: 1px solid #fed7aa;
-}
-
-.collection-summary-value.status-paid {
-  color: #10b981;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-}
-
-/* ========================================
-   RESUMEN DE CÁLCULO
-   ======================================== */
-
-.calculation-summary {
-  background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
-  border: 2px solid #10b981;
-  border-radius: 0.5rem;
-  padding: 1rem;
-}
-
-.calc-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #bbf7d0;
-}
-
-.calc-item:last-child {
-  border-bottom: none;
-}
-
-.calc-label {
-  font-weight: 600;
-  color: #047857;
-  font-size: 0.875rem;
-}
-
-.calc-value {
-  font-weight: 700;
-  color: #047857;
-  font-family: 'Courier New', monospace;
-  font-size: 0.875rem;
-}
-
-/* Línea total destacada en cálculo */
-.calc-item.total-line {
-  border-top: 2px solid #10b981;
-  padding-top: 0.75rem;
-  margin-top: 0.5rem;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 0.25rem;
-}
-
-.calc-item.total-line .calc-label,
-.calc-item.total-line .calc-value {
-  color: #10b981;
-  font-size: 1rem;
-  font-weight: 800;
-}
-
-/* Sección de acciones */
-.actions-section {
+.form-actions {
   display: flex;
   justify-content: center;
   gap: 1rem;
@@ -426,102 +206,208 @@ textarea.form-input {
   border-top: 0.0625rem solid #e5e7eb;
 }
 
-/* Botones principales (estilo igual a otros componentes) */
-.primary-btn {
-  background: #3b82f6;
-  color: #ffffff;
-  border: none;
+.btn {
+  padding: 0.75rem 1.5rem;
   border-radius: 0.375rem;
-  padding: 0.625rem 1rem;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  border: none;
 }
 
-.primary-btn:hover {
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
   background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
 }
 
-.secondary-btn {
+.btn-primary:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-secondary {
   background: #ffffff;
   color: #374151;
   border: 0.125rem solid #e5e7eb;
-  border-radius: 0.375rem;
-  padding: 0.625rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
 }
 
-.secondary-btn:hover {
+.btn-secondary:hover {
   background: #f9fafb;
+  border-color: #d1d5db;
 }
 
-/* ========================================
+/* ==========================================
+   ESTADOS DE INPUTS ESPECIALES
+   ========================================== */
+
+.form-input:disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.form-input:read-only {
+  background: #f9fafb;
+  color: #6b7280;
+}
+
+/* ==========================================
+   RESUMEN PROPORCIONAL
+   ========================================== */
+
+.proportional-summary {
+  background: #eff6ff;
+  border: 0.125rem solid #3b82f6;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.proportional-summary h4 {
+  color: #1e40af;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem 0;
+}
+
+.proportional-details {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  background: white;
+  border-radius: 0.25rem;
+}
+
+.detail-label {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.detail-value {
+  color: #1f2937;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.total-line {
+  border-top: 0.125rem solid #3b82f6;
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+}
+
+.total-line .detail-value {
+  color: #3b82f6;
+  font-size: 1rem;
+}
+
+/* ==========================================
+   ESTADO DE CARGA
+   ========================================== */
+
+.loading-state {
+  text-align: center;
+  padding: 1rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* ==========================================
+   RESUMEN DE COBRO
+   ========================================== */
+
+.collection-summary {
+  display: flex;
+  gap: 2rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+  border: 0.0625rem solid #e5e7eb;
+}
+
+.collection-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.collection-summary-label {
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.collection-summary-value {
+  color: #1f2937;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.status-pending {
+  color: #f59e0b;
+}
+
+.status-paid {
+  color: #10b981;
+}
+
+/* ==========================================
+   INDICADOR REQUERIDO
+   ========================================== */
+
+.required-indicator {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+/* ==========================================
    RESPONSIVE
-   ======================================== */
+   ========================================== */
 
 @media (max-width: 48rem) {
   .container {
     padding: 1rem;
   }
 
-  .section {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .form-section {
     padding: 1rem;
   }
 
-  .form-grid {
+  .form-row {
     grid-template-columns: 1fr;
   }
 
-  .actions-section {
+  .form-actions {
     flex-direction: column;
   }
 
-  /* Responsive proporcional - tablet */
-  .proportional-details {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
+  .btn {
+    width: 100%;
   }
 
-  .detail-item {
-    padding: 0.5rem;
-  }
-
-  .proportional-summary {
-    padding: 1rem;
-  }
-
-  .proportional-summary h4 {
-    font-size: 1.125rem;
-  }
-
-  /* Resumen de pago responsive */
   .collection-summary {
     flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .collection-summary-item {
-    flex-direction: row;
-    justify-content: space-between;
-  }
-
-  /* Cálculo responsive */
-  .calc-item {
-    padding: 0.375rem 0;
-  }
-
-  .calc-label,
-  .calc-value {
-    font-size: 0.75rem;
-  }
-
-  .calc-item.total-line .calc-label,
-  .calc-item.total-line .calc-value {
-    font-size: 0.875rem;
+    gap: 1rem;
   }
 }
 
@@ -535,46 +421,53 @@ textarea.form-input {
     font-size: 1.5rem;
   }
 
-  .section {
+  .form-section {
     padding: 0.75rem;
   }
 
-  /* Responsive proporcional - móvil */
-  .detail-item {
-    flex-direction: column;
-    text-align: center;
-    gap: 0.25rem;
+  .section-title {
+    font-size: 1rem;
   }
 
-  .detail-label,
-  .detail-value {
-    font-size: 0.75rem;
+  .form-input {
+    font-size: 0.8125rem;
   }
+}
 
-  .detail-item.total-line .detail-label,
-  .detail-item.total-line .detail-value {
-    font-size: 0.875rem;
-  }
+/* ==========================================
+   ANIMACIONES
+   ========================================== */
 
-  /* Resumen de pago móvil */
-  .collection-summary {
-    padding: 0.75rem;
-  }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
 
-  .collection-summary-value {
-    font-size: 0.75rem;
-    padding: 0.1875rem 0.375rem;
-  }
+.form-input.error {
+  animation: shake 0.3s ease-in-out;
+}
 
-  /* Cálculo móvil */
-  .calculation-summary {
-    padding: 0.75rem;
-  }
+/* ==========================================
+   UTILIDADES
+   ========================================== */
 
-  .calc-item {
-    flex-direction: column;
-    text-align: center;
-    gap: 0.25rem;
-    padding: 0.25rem 0;
-  }
+.hidden {
+  display: none;
+}
+
+.visible {
+  display: block;
+}
+
+/* Estados de loading en botones */
+.btn-primary:disabled::after {
+  content: '...';
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60%, 100% { content: '...'; }
 }

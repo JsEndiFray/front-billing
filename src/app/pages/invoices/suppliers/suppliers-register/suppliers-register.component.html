@@ -1,1 +1,217 @@
-<p>suppliers-register works!</p>
+<div class="container">
+  <!-- Encabezado -->
+  <div class="header">
+    <h1 class="title">Registrar Proveedor</h1>
+    <button class="back-btn" (click)="goBack()">← Volver</button>
+  </div>
+
+  <!-- Formulario -->
+  <form [formGroup]="supplierForm" (ngSubmit)="onSubmit()">
+
+    <!-- Sección: Información Básica -->
+    <div class="form-section">
+      <h2 class="section-title">📋 Información Básica</h2>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-label">Nombre *</label>
+          <input
+            type="text"
+            formControlName="name"
+            class="form-input"
+            [class.error]="isFieldInvalid('name')"
+            placeholder="Nombre completo o razón social">
+          @if (isFieldInvalid('name')) {
+            <span class="error-message">{{ getErrorMessage('name') }}</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">Empresa</label>
+          <input
+            type="text"
+            formControlName="company_name"
+            class="form-input"
+            placeholder="Nombre comercial (opcional)">
+          <small class="help-text">Si es empresa, indica el nombre comercial</small>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-label">CIF/NIF *</label>
+          <input
+            type="text"
+            formControlName="tax_id"
+            class="form-input tax-id-input"
+            [class.error]="isFieldInvalid('tax_id')"
+            placeholder="B12345678 o 12345678Z"
+            maxlength="20">
+          @if (isFieldInvalid('tax_id')) {
+            <span class="error-message">{{ getErrorMessage('tax_id') }}</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">Términos de Pago *</label>
+          <select
+            formControlName="payment_terms"
+            class="form-input"
+            [class.error]="isFieldInvalid('payment_terms')">
+            @for (term of paymentTermsLabels; track term.value) {
+              <option [value]="term.value">{{ term.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Sección: Dirección -->
+    <div class="form-section">
+      <h2 class="section-title">📍 Dirección</h2>
+
+      <div class="form-field form-field-full">
+        <label class="form-label">Dirección</label>
+        <input
+          type="text"
+          formControlName="address"
+          class="form-input"
+          placeholder="Calle, número, piso...">
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-label">Código Postal</label>
+          <input
+            type="text"
+            formControlName="postal_code"
+            class="form-input"
+            placeholder="28001"
+            maxlength="10">
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">Ciudad</label>
+          <input
+            type="text"
+            formControlName="city"
+            class="form-input"
+            placeholder="Madrid">
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">Provincia</label>
+          <input
+            type="text"
+            formControlName="province"
+            class="form-input"
+            placeholder="Madrid">
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">País</label>
+          <input
+            type="text"
+            formControlName="country"
+            class="form-input"
+            placeholder="España">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Sección: Contacto -->
+    <div class="form-section">
+      <h2 class="section-title">📞 Información de Contacto</h2>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-label">Email</label>
+          <input
+            type="email"
+            formControlName="email"
+            class="form-input"
+            [class.error]="isFieldInvalid('email')"
+            placeholder="proveedor@email.com">
+          @if (isFieldInvalid('email')) {
+            <span class="error-message">{{ getErrorMessage('email') }}</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">Teléfono</label>
+          <input
+            type="text"
+            formControlName="phone"
+            class="form-input"
+            placeholder="600123456"
+            maxlength="20">
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">Persona de Contacto</label>
+          <input
+            type="text"
+            formControlName="contact_person"
+            class="form-input"
+            placeholder="Nombre del contacto">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Sección: Información Bancaria -->
+    <div class="form-section">
+      <h2 class="section-title">🏦 Información Bancaria</h2>
+
+      <div class="form-field">
+        <label class="form-label">Cuenta Bancaria (IBAN)</label>
+        <input
+          type="text"
+          formControlName="bank_account"
+          class="form-input bank-input"
+          placeholder="ES91 2100 0418 4502 0005 1332"
+          maxlength="34">
+        <small class="help-text">Formato IBAN: ES91 2100 0418 4502 0005 1332</small>
+      </div>
+
+    </div>
+
+    <!-- Sección: Notas -->
+    <div class="form-section">
+      <h2 class="section-title">📝 Notas Adicionales</h2>
+
+      <div class="form-field">
+        <label class="form-label">Notas</label>
+        <textarea
+          formControlName="notes"
+          class="form-input"
+          rows="4"
+          maxlength="1000"
+          placeholder="Observaciones, condiciones especiales, etc..."></textarea>
+        <small class="help-text">Máximo 1000 caracteres</small>
+      </div>
+
+    </div>
+
+    <!-- Botones -->
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary" (click)="goBack()">
+        Cancelar
+      </button>
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="!supplierForm.valid || isSubmitting">
+        @if (isSubmitting) {
+          Guardando...
+        } @else {
+          💾 Registrar Proveedor
+        }
+      </button>
+    </div>
+
+  </form>
+</div>

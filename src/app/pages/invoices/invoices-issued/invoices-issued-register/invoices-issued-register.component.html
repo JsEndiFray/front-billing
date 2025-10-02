@@ -2,16 +2,16 @@
   <!-- Título y descripción -->
   <div class="header">
     <h1 class="title">Crear Factura</h1>
-    <p class="subtitle">Registrar nueva factura en el sistema</p>
+    <button class="back-btn" (click)="goBack()">← Volver</button>
   </div>
 
   <!-- Formulario principal -->
   <form [formGroup]="invoiceForm" (ngSubmit)="registerInvoice()">
 
     <!-- Sección: Identificación -->
-    <div class="section">
+    <div class="form-section">
       <h2 class="section-title">📄 Identificación de la Factura</h2>
-      <div class="form-grid">
+      <div class="form-row">
 
         <div class="form-field form-field-full">
           <label for="invoices" class="form-label">Número de Factura (automático)</label>
@@ -19,7 +19,7 @@
             type="text"
             disabled
             id="invoices"
-            class="form-input invoice-number-input"
+            class="form-input"
             placeholder="Se generará automáticamente">
         </div>
 
@@ -32,8 +32,7 @@
             class="form-input"
             [class.error]="isFieldInvalid('invoice_date')">
           @if (isFieldInvalid('invoice_date')) {
-            <span class="error-message">La fecha es obligatoria</span>
-
+            <span class="error-message">{{ getErrorMessage('invoice_date') }}</span>
           }
         </div>
 
@@ -41,16 +40,17 @@
     </div>
 
     <!-- Sección: Selección de entidades -->
-    <div class="section">
+    <div class="form-section">
       <h2 class="section-title">🏢 Entidades Relacionadas</h2>
-      <div class="form-grid">
+      <div class="form-row">
 
         <div class="form-field">
           <label for="estate" class="form-label">Propiedad *</label>
           <select
             formControlName="estates_id"
             id="estate"
-            class="form-input" [class.error]="isFieldInvalid('estates_id')">>
+            class="form-input"
+            [class.error]="isFieldInvalid('estates_id')">
             <option value="" disabled>Selecciona una propiedad</option>
             @for (estate of estates; track estate.id) {
               <option [value]="estate.id">
@@ -58,6 +58,9 @@
               </option>
             }
           </select>
+          @if (isFieldInvalid('estates_id')) {
+            <span class="error-message">{{ getErrorMessage('estates_id') }}</span>
+          }
         </div>
 
         <div class="form-field">
@@ -65,7 +68,8 @@
           <select
             formControlName="clients_id"
             id="clients"
-            class="form-input" [class.error]="isFieldInvalid('clients_id')">
+            class="form-input"
+            [class.error]="isFieldInvalid('clients_id')">
             <option value="" disabled>Selecciona un cliente</option>
             @for (client of clients; track client.id) {
               <option [value]="client.id">
@@ -73,6 +77,9 @@
               </option>
             }
           </select>
+          @if (isFieldInvalid('clients_id')) {
+            <span class="error-message">{{ getErrorMessage('clients_id') }}</span>
+          }
         </div>
 
         <div class="form-field">
@@ -80,7 +87,8 @@
           <select
             formControlName="owners_id"
             id="owners"
-            class="form-input" [class.error]="isFieldInvalid('owners_id')">
+            class="form-input"
+            [class.error]="isFieldInvalid('owners_id')">
             <option value="" disabled>Selecciona un propietario</option>
             @for (owner of owners; track owner.id) {
               <option [value]="owner.id">
@@ -88,16 +96,19 @@
               </option>
             }
           </select>
+          @if (isFieldInvalid('owners_id')) {
+            <span class="error-message">{{ getErrorMessage('owners_id') }}</span>
+          }
         </div>
 
       </div>
     </div>
 
     <!-- Sección: Cálculos financieros -->
-    <div class="section">
+    <div class="form-section">
       <h2 class="section-title">💰 Cálculos Financieros</h2>
-      <div class="form-grid">
-        <!-- Base Imponible - Cambiar: -->
+      <div class="form-row">
+
         <div class="form-field">
           <label for="tax_base" class="form-label">Base Imponible (€) *</label>
           <input
@@ -108,12 +119,13 @@
             step="0.01"
             min="0"
             placeholder="0.00"
-            class="form-input currency-input" [class.error]="isFieldInvalid('tax_base')">
+            class="form-input"
+            [class.error]="isFieldInvalid('tax_base')">
           @if (isFieldInvalid('tax_base')) {
-            <span class="error-message">La base imponible es obligatoria</span>
+            <span class="error-message">{{ getErrorMessage('tax_base') }}</span>
           }
         </div>
-        <!-- IVA - Cambiar: -->
+
         <div class="form-field">
           <label for="iva" class="form-label">IVA (%)</label>
           <input
@@ -125,9 +137,9 @@
             min="0"
             max="100"
             placeholder="21.00"
-            class="form-input percentage-input">
+            class="form-input">
         </div>
-        <!-- IRPF - Cambiar: -->
+
         <div class="form-field">
           <label for="irpf" class="form-label">IRPF (%)</label>
           <input
@@ -139,9 +151,9 @@
             min="0"
             max="100"
             placeholder="15.00"
-            class="form-input percentage-input">
+            class="form-input">
         </div>
-        <!-- Total - Cambiar: -->
+
         <div class="form-field">
           <label for="total" class="form-label">Total (€)</label>
           <input
@@ -149,7 +161,7 @@
             formControlName="total"
             id="total"
             readonly
-            class="form-input total-input"
+            class="form-input"
             placeholder="Calculado automáticamente">
         </div>
 
@@ -157,9 +169,9 @@
     </div>
 
     <!-- Sección: Tipo de Facturación -->
-    <div class="section">
+    <div class="form-section">
       <h2 class="section-title">📊 Tipo de Facturación</h2>
-      <div class="form-grid">
+      <div class="form-row">
 
         <div class="form-field">
           <label for="is_proportional" class="form-label">Tipo de Facturación</label>
@@ -167,28 +179,25 @@
             formControlName="is_proportional"
             id="is_proportional"
             (change)="onBillingTypeChange()"
-            class="form-input billing-type-select">
-            @for (type of billingTypeLabels; track type.value){
-              <option [value]="type.value">{{type.label}}</option>
+            class="form-input">
+            @for (type of billingTypeLabels; track type.value) {
+              <option [value]="type.value">{{ type.label }}</option>
             }
           </select>
         </div>
-        <!-- Mes de Correspondencia - Cambiar: -->
+
         <div class="form-field">
           <label for="corresponding_month" class="form-label">Mes de Correspondencia</label>
           <input
             type="month"
             formControlName="corresponding_month"
             id="corresponding_month"
-            class="form-input month-input"
+            class="form-input"
             placeholder="Ej: 2025-06 para Junio 2025">
           <small class="help-text">
             Opcional: Para indicar a qué mes corresponde esta factura
           </small>
         </div>
-
-
-
 
         <!-- Campos proporcionales (solo si está seleccionado) -->
         @if (invoiceForm.get('is_proportional')?.value === "1") {
@@ -197,13 +206,12 @@
               Fecha de Inicio *
               <span class="required-indicator">*</span>
             </label>
-            <!-- Fecha de Inicio - Cambiar: -->
             <input
               type="date"
               formControlName="start_date"
               id="start_date"
               (change)="onProportionalDatesChange()"
-              class="form-input proportional-date-input">
+              class="form-input">
           </div>
 
           <div class="form-field">
@@ -211,13 +219,12 @@
               Fecha de Fin *
               <span class="required-indicator">*</span>
             </label>
-            <!-- Fecha de Fin - Cambiar: -->
             <input
               type="date"
               formControlName="end_date"
               id="end_date"
               (change)="onProportionalDatesChange()"
-              class="form-input proportional-date-input">
+              class="form-input">
           </div>
         }
 
@@ -268,33 +275,31 @@
     </div>
 
     <!-- Sección: Información de Pago -->
-    <div class="section">
+    <div class="form-section">
       <h2 class="section-title">💳 Información de Pago</h2>
-      <div class="form-grid">
+      <div class="form-row">
 
         <div class="form-field">
           <label for="collection_status" class="form-label">Estado de Pago</label>
-          <!-- Estado de Pago - Cambiar: -->
           <select
             formControlName="collection_status"
             id="collection_status"
             (change)="onCollectionStatusChange()"
-            class="form-input payment-status-select">
-            @for (status of collectionStatusLabels; track status.value){
-              <option [value]="status.value">{{status.label}}</option>
+            class="form-input">
+            @for (status of collectionStatusLabels; track status.value) {
+              <option [value]="status.value">{{ status.label }}</option>
             }
           </select>
         </div>
 
         <div class="form-field">
           <label for="collection_method" class="form-label">Método de Pago</label>
-          <!-- Método de Pago - Cambiar: -->
           <select
             formControlName="collection_method"
             id="collection_method"
-            class="form-input collection-method-select">
-            @for (metho of collectionMethodLabels; track metho.value){
-              <option [value]="metho.value">{{metho.label}}</option>
+            class="form-input">
+            @for (metho of collectionMethodLabels; track metho.value) {
+              <option [value]="metho.value">{{ metho.label }}</option>
             }
           </select>
         </div>
@@ -310,7 +315,7 @@
             type="date"
             formControlName="collection_date"
             id="collection_date"
-            class="form-input collection-date-input"
+            class="form-input"
             placeholder="Fecha en que se realizó el pago">
           @if (invoiceForm.get('collection_status')?.value === 'pending') {
             <small class="help-text">
@@ -330,7 +335,7 @@
             type="text"
             formControlName="collection_reference"
             id="collection_reference"
-            class="form-input collection-reference-input"
+            class="form-input"
             placeholder="Ej: BIZUM123, TXN123456, REF-2024-001"
             maxlength="50">
           @if (invoiceForm.get('collection_status')?.value === 'pending') {
@@ -342,12 +347,11 @@
 
         <div class="form-field form-field-full">
           <label for="collection_notes" class="form-label">Notas del Pago (opcional)</label>
-          <!-- Notas del Pago - Cambiar: -->
           <textarea
             formControlName="collection_notes"
             id="collection_notes"
             rows="3"
-            class="form-input collection-notes-textarea"
+            class="form-input"
             placeholder="Ej: Número de transferencia, referencia del pago, observaciones...">
           </textarea>
         </div>
@@ -358,7 +362,6 @@
       <div class="collection-summary">
         <div class="collection-summary-item">
           <span class="collection-summary-label">Estado:</span>
-          <!-- Estado - Cambiar: -->
           <span class="collection-summary-value"
                 [class.status-pending]="invoiceForm.get('collection_status')?.value === 'pending'"
                 [class.status-paid]="invoiceForm.get('collection_status')?.value === 'collected'">
@@ -367,12 +370,10 @@
         </div>
         <div class="collection-summary-item">
           <span class="collection-summary-label">Método:</span>
-          <!-- Método - Cambiar: -->
           <span class="collection-summary-value">
             {{ invoicesUtilService.getMethodLabel(invoiceForm.get('collection_method')?.value || 'transfer') }}
           </span>
         </div>
-        <!-- Fecha de Pago -->
         @if (invoiceForm.get('collection_date')?.value) {
           <div class="collection-summary-item">
             <span class="collection-summary-label">Fecha de Pago:</span>
@@ -383,12 +384,20 @@
     </div>
 
     <!-- Botones de acción -->
-    <div class="actions-section">
-      <button type="submit" class="primary-btn" [disabled]="invoiceForm.invalid">
-        💰 Crear Factura
-      </button>
-      <button type="button" class="secondary-btn" (click)="goBack()">
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary" (click)="goBack()">
         ← Cancelar
+      </button>
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="!invoiceForm.valid || isSubmitting">
+        @if (isSubmitting) {
+          Guardando...
+        } @else {
+          💰 Registrar Factura
+        }
       </button>
     </div>
 

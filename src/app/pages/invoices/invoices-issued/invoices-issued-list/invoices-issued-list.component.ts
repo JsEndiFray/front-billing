@@ -25,6 +25,8 @@ import {
   COLLECTION_METHOD_LABELS, COLLECTION_STATUS_LABELS,
 } from '../../../../shared/Collection-Enum/collection-enum';
 import {ValidatorService} from '../../../../core/services/validator-services/validator.service';
+import {ExportService} from '../../../../core/services/shared-services/exportar.service';
+import {ExportableListBase} from '../../../../shared/Base/exportable-list.base';
 
 
 /**
@@ -42,7 +44,7 @@ import {ValidatorService} from '../../../../core/services/validator-services/val
   templateUrl: './invoices-issued-list.component.html',
   styleUrl: './invoices-issued-list.component.css'
 })
-export class InvoicesIssuedListComponent implements OnInit {
+export class InvoicesIssuedListComponent extends ExportableListBase<Invoice> implements OnInit {
 
   // ==========================================
   // PROPIEDADES DE FORMULARIOS MÚLTIPLES
@@ -127,6 +129,28 @@ export class InvoicesIssuedListComponent implements OnInit {
   // Factura seleccionada para crear abono
   selectedInvoice: Invoice | null = null;
 
+  //===============================
+  // FUNCIONES PARA LA EXPORTACION
+  //===============================
+  // Implementar propiedades abstractas
+  entityName = 'facturas-emitidas'; //para nombrar los documentos descargados
+  selectedItems: Set<number> = new Set();
+
+  readonly exportColumns = [
+    {key: 'id', title: 'ID', width: 10},
+    {key: 'invoice_number', title: 'Nº Factura', width: 15},
+    {key: 'estate_name', title: 'Propiedad', width: 25},
+    {key: 'client_name', title: 'Cliente', width: 25},
+    {key: 'owner_name', title: 'Propietario', width: 25},
+    {key: 'invoice_date', title: 'Fecha', width: 12},
+    {key: 'tax_base', title: 'Base', width: 12, formatter: (value: unknown) => value ? `${value} €` : '-'},
+    {key: 'iva', title: 'IVA (%)', width: 10},
+    {key: 'irpf', title: 'IRPF (%)', width: 10},
+    {key: 'total', title: 'Total', width: 12, formatter: (value: unknown) => value ? `${value} €` : '-'},
+    {key: 'collection_status', title: 'Estado Cobro', width: 15},
+    {key: 'is_refund', title: 'Tipo', width: 12, formatter: (value: unknown) => value === 1 ? 'Abono' : 'Factura'}
+  ];
+
 
   constructor(
     private invoicesIssuedService: InvoicesIssuedService,
@@ -136,7 +160,9 @@ export class InvoicesIssuedListComponent implements OnInit {
     private paginationService: PaginationService,
     private fb: FormBuilder,
     private validatorService: ValidatorService,
+    public exportService: ExportService,
   ) {
+    super();
 
     // FormGroup para búsqueda
     this.searchForm = this.fb.group({
@@ -172,6 +198,19 @@ export class InvoicesIssuedListComponent implements OnInit {
       collection_method: ['transfer'],
       concept: ['']
     });
+  }
+
+  // Implementar métodos abstractos
+  getFilteredData(): Invoice[] {
+    return this.filteredInvoices;
+  }
+
+  getCurrentPageData(): Invoice[] {
+    return this.invoices;
+  }
+
+  getPaginationConfig(): PaginationConfig {
+    return this.paginationConfig;
   }
 
   /**
@@ -441,14 +480,6 @@ export class InvoicesIssuedListComponent implements OnInit {
    */
   editInvoice(id: number) {
     this.router.navigate(['/dashboards/invoices-issued/edit', id]);
-  }
-
-  /**
-   * Exporta los datos filtrados
-   */
-  exportData() {
-    // Implementar lógica de exportación aquí
-    console.log('Exportando datos:', this.allInvoices);
   }
 
   /**

@@ -83,7 +83,6 @@ export class EmployeeEditComponent implements OnInit {
 
     // Verificar que el formulario sea válido
     if (!this.employeeForm.valid) {
-      this.employeeForm.markAllAsTouched();
       Swal.fire({
         title: 'Error!',
         text: 'Por favor, complete todos los campos requeridos',

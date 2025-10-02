@@ -6,12 +6,13 @@
   </div>
 
   <!-- Formulario -->
-  <div class="invoice-form">
+  <div class="invoice-form" >
 
     <!-- FormGroup para información básica -->
     <form class="form-section" [formGroup]="basicInfoForm" (ngSubmit)="onSubmit()">
       <h2 class="section-title">Información Básica</h2>
 
+      <!-- Proveedor -->
       <div class="form-row">
         <div class="form-field">
           <label class="form-label">Proveedor *</label>
@@ -23,27 +24,30 @@
             }
           </select>
           @if (isFieldInvalid(basicInfoForm, 'supplier_id')) {
-            <span class="error-message">El proveedor es obligatorio</span>
+            <span class="error-message">{{ getErrorMessage(basicInfoForm, 'supplier_id') }}</span>
           }
         </div>
 
+
+        <!-- Factura -->
         <div class="form-field">
           <label class="form-label">Número de Factura *</label>
           <input type="text" formControlName="invoice_number" class="form-input"
                  [class.error]="isFieldInvalid(basicInfoForm, 'invoice_number')" placeholder="FAC-2024-001">
           @if (isFieldInvalid(basicInfoForm, 'invoice_number')) {
-            <span class="error-message">El número de factura es obligatorio</span>
+            <span class="error-message">{{ getErrorMessage(basicInfoForm, 'invoice_number') }}</span>
           }
         </div>
       </div>
 
+      <!-- Fecha -->
       <div class="form-row">
         <div class="form-field">
           <label class="form-label">Fecha de Factura *</label>
           <input type="date" formControlName="invoice_date" class="form-input"
                  [class.error]="isFieldInvalid(basicInfoForm, 'invoice_date')">
           @if (isFieldInvalid(basicInfoForm, 'invoice_date')) {
-            <span class="error-message">La fecha es obligatoria</span>
+            <span class="error-message">{{ getErrorMessage(basicInfoForm, 'invoice_date') }}</span>
           }
         </div>
 
@@ -55,7 +59,7 @@
     </form>
 
 
-    <!-- FormGroup para importes y cálculos -->
+    <!-- FormGroup para importes y cálculos (amountsForm)-->
     <form class="form-section" [formGroup]="amountsForm">
       <h2 class="section-title">Importes</h2>
 
@@ -69,7 +73,7 @@
             <span class="input-suffix">€</span>
           </div>
           @if (isFieldInvalid(amountsForm, 'tax_base')) {
-            <span class="error-message">La base imponible es obligatoria</span>
+            <span class="error-message">{{ getErrorMessage(amountsForm, 'tax_base') }}</span>
           }
         </div>
 
@@ -102,7 +106,7 @@
     </form>
 
 
-    <!-- FormGroup para categorización -->
+    <!-- FormGroup para categorización (categoriesForm): -->
     <form class="form-section" [formGroup]="categoriesForm">
       <h2 class="section-title">Categorización</h2>
 
@@ -117,7 +121,7 @@
             }
           </select>
           @if (isFieldInvalid(categoriesForm, 'category')) {
-            <span class="error-message">La categoría es obligatoria</span>
+            <span class="error-message">{{ getErrorMessage(categoriesForm, 'category') }}</span>
           }
         </div>
 
@@ -134,7 +138,7 @@
                   [class.error]="isFieldInvalid(categoriesForm, 'description')" rows="3"
                   placeholder="Descripción de la factura..."></textarea>
         @if (isFieldInvalid(categoriesForm, 'description')) {
-          <span class="error-message">La descripción es obligatoria</span>
+          <span class="error-message">{{ getErrorMessage(categoriesForm, 'description') }}</span>
         }
       </div>
     </form>
@@ -232,11 +236,17 @@
 
     <!-- Botones -->
     <div class="form-actions">
-      <button type="button" class="btn btn-secondary" (click)="goBack()">
+      <button
+        type="button"
+        class="btn btn-secondary" (click)="goBack()">
         Cancelar
       </button>
 
-      <button type="submit" class="btn btn-primary" [disabled]="!areAllFormsValid() || isSubmitting">
+      <button
+        type="submit"
+        class="btn btn-primary"
+        (click)="onSubmit()"
+        [disabled]="!areAllFormsValid() || isSubmitting">
         @if (isSubmitting) {
           Guardando...
         } @else {

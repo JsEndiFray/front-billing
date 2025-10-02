@@ -50,7 +50,6 @@ export class UsersRegisterComponent {
    */
   registerUser() {
     if (!this.userForm.valid) {
-      this.userForm.markAllAsTouched();
       Swal.fire({
         title: 'Error!',
         text: 'Por favor, complete todos los campos requeridos',

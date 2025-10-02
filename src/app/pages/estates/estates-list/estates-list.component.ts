@@ -9,6 +9,8 @@ import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
 import {SearchService} from '../../../core/services/shared-services/search.service';
 import {PaginationConfig, PaginationResult} from '../../../interfaces/pagination-interface';
 import {PaginationService} from '../../../core/services/shared-services/pagination.service';
+import {ExportService} from '../../../core/services/shared-services/exportar.service';
+import {ExportableListBase} from '../../../shared/Base/exportable-list.base';
 
 /**
  * Componente para mostrar y gestionar la lista de propiedades inmobiliarias
@@ -24,7 +26,7 @@ import {PaginationService} from '../../../core/services/shared-services/paginati
   templateUrl: './estates-list.component.html',
   styleUrl: './estates-list.component.css'
 })
-export class EstatesListComponent implements OnInit {
+export class EstatesListComponent extends ExportableListBase<Estates> implements OnInit {
 
   // ==========================================
   // PROPIEDADES DE FORMULARIOS MÚLTIPLES
@@ -69,13 +71,35 @@ export class EstatesListComponent implements OnInit {
     endIndex: 0
   };
 
+  //===============================
+  // FUNCIONES PARA LA EXPORTACION
+  //===============================
+  // Implementar propiedades abstractas
+  entityName = 'propiedades'; //para nombrar los documentos descargados
+  selectedItems: Set<number> = new Set();
+
+
+  readonly exportColumns = [
+    {key: 'id', title: 'ID', width: 10},
+    {key: 'cadastral_reference', title: 'Ref. Catastral', width: 20},
+    {key: 'price', title: 'Precio (€)', width: 15, formatter: (value: unknown) => value ? `${value} €` : '-'},
+    {key: 'address', title: 'Dirección', width: 30},
+    {key: 'postal_code', title: 'C.P.', width: 10},
+    {key: 'location', title: 'Localidad', width: 20},
+    {key: 'province', title: 'Provincia', width: 20},
+    {key: 'country', title: 'País', width: 15},
+    {key: 'surface', title: 'Superficie (m²)', width: 15, formatter: (value: unknown) => value ? `${value} m²` : '-'}
+  ];
+
   constructor(
     private estateService: EstatesService,
     private router: Router,
     private searchService: SearchService,
     private paginationService: PaginationService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    public exportService: ExportService,
   ) {
+    super();
     this.searchForm = this.fb.group({
       searchTerm: ['']
     });
@@ -87,6 +111,19 @@ export class EstatesListComponent implements OnInit {
     this.paginationForm = this.fb.group({
       itemsPerPage: [5]
     });
+  };
+
+  // Implementar métodos abstractos
+  getFilteredData(): Estates[] {
+    return this.filteredEstates;
+  }
+
+  getCurrentPageData(): Estates[] {
+    return this.estates;
+  }
+
+  getPaginationConfig(): PaginationConfig {
+    return this.paginationConfig;
   }
 
   /**
@@ -185,6 +222,7 @@ export class EstatesListComponent implements OnInit {
     this.paginationConfig.currentPage = 1; // Resetear a primera página
     this.updatePagination();
   }
+
   /**
    * Limpia todos los filtros
    */
@@ -212,6 +250,7 @@ export class EstatesListComponent implements OnInit {
       this.updatePagination();
     }
   }
+
   /**
    * Actualiza la paginación con los datos filtrados
    */
@@ -309,5 +348,5 @@ export class EstatesListComponent implements OnInit {
 
   newEstate() {
     this.router.navigate(['/dashboards/estates/register'])
-  }
+  };
 }

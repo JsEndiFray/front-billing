@@ -2,32 +2,33 @@
   <!-- Título y descripción -->
   <div class="header">
     <h1 class="title">Gestión de Propiedades</h1>
-    <p class="subtitle">Administra el catáleo de propiedades inmobiliarias</p>
+    <p class="subtitle">Administra el catálogo de propiedades inmobiliarias</p>
   </div>
 
-  <!-- Sección de filtros y búsqueda -->
+  <!-- Sección de búsqueda -->
   <div class="filters-section">
-    <!-- Buscador CON ICONOS -->
-    <form [formGroup]="searchForm" class="search-wrapper">
-      <div class="search-container">
-        <div class="search-wrapper">
-          <input type="text" formControlName="searchTerm" placeholder="Buscar propiedades..."
-                 class="search-input" autocomplete="off">
-          <!-- Iconos de búsqueda y limpiar -->
-          <div class="search-actions">
-            <span class="search-icon">🔍</span>
-            @if (searchForm.get('searchTerm')?.value) {
-              <button type="button" (click)="clearFilters()" class="clear-button" title="Limpiar búsqueda">✕</button>
-            }
-          </div>
+    <form class="search-container" [formGroup]="searchForm">
+      <div class="search-wrapper">
+        <input
+          type="text"
+          formControlName="searchTerm"
+          placeholder="Buscar propiedades..."
+          class="search-input"
+          autocomplete="off">
+        <div class="search-actions">
+          <span class="search-icon">🔍</span>
+          @if (searchForm.get('searchTerm')?.value) {
+            <button type="button" (click)="clearFilters()" class="clear-button" title="Limpiar búsqueda">✕</button>
+          }
         </div>
       </div>
     </form>
   </div>
+
   <!-- Filtros -->
   <div class="filters-container">
-    <!-- Filtro por provincia -->
     <form [formGroup]="filtersForm">
+      <!-- Filtro por provincia -->
       <select formControlName="selectedProvince" class="filter-select">
         <option value="">Todas las provincias</option>
         @for (province of provinceOptions; track province) {
@@ -36,15 +37,27 @@
       </select>
 
       <!-- Botón limpiar filtros -->
-      <button type="button" (click)="clearFilters()" class="clear-filters-btn" title="Limpiar todos los filtros">
+      <button
+        type="button"
+        (click)="clearFilters()"
+        class="clear-filters-btn"
+        title="Limpiar todos los filtros">
         Limpiar filtros
       </button>
     </form>
 
-    <!-- Botón exportar y nueva propiedad -->
+    <!-- Botones de acción -->
     <div class="actions-container">
-      <button class="export-btn">Exportar</button>
-      <button class="new-client-btn" (click)="newEstate()">+ Nueva Propiedad</button>
+      <button type="button" class="export-btn" (click)="exportData()">
+        Exportar Todo
+      </button>
+      <button type="button" class="export-btn" (click)="exportCurrentPage()">
+        Exportar Página
+      </button>
+      <button type="button" class="export-btn" (click)="exportSelected()">
+        Exportar Selección ({{ selectedItems.size }})
+      </button>
+      <button type="button" class="primary-btn" (click)="newEstate()">+ Nueva Propiedad</button>
     </div>
   </div>
 
@@ -64,14 +77,19 @@
     </form>
   </div>
 
-
   <!-- Tabla de propiedades -->
   <div class="table-container">
-    <table class="clients-table">
+    <table class="data-table">
 
       <!-- Cabecera -->
       <thead>
       <tr>
+        <th>
+          <input
+            type="checkbox"
+            (change)="toggleAllSelection()"
+            [checked]="isAllSelected()">
+        </th>
         <th>ID</th>
         <th>REF. CATASTRAL</th>
         <th>PRECIO</th>
@@ -92,23 +110,34 @@
         @if (estates && estates.length > 0) {
           @for (estate of estates; track estate.id) {
             <tr>
+
+              <td>
+                <input
+                  type="checkbox"
+                  [checked]="selectedItems.has(estate.id!)"
+                  (change)="toggleSelection(estate.id!)">
+              </td>
+
+
               <td>#{{ estate.id }}</td>
-              <td class="reference-cell">{{ estate.cadastral_reference }}</td>
-              <td class="price-cell">{{ estate.price }} €</td>
+              <td class="tax-id-cell">{{ estate.cadastral_reference }}</td>
+              <td class="payment-terms-cell">{{ estate.price }} €</td>
               <td>{{ estate.address }}</td>
-              <td class="postal-cell">{{ estate.postal_code }}</td>
+              <td>{{ estate.postal_code }}</td>
               <td>{{ estate.location }}</td>
               <td>{{ estate.province }}</td>
               <td>{{ estate.country }}</td>
-              <td class="surface-cell">{{ estate.surface }} m²</td>
+              <td class="payment-terms-cell">{{ estate.surface }} m²</td>
               <td>{{ estate.date_create | dataFormat }}</td>
               <td>{{ estate.date_update | dataFormat }}</td>
-
               <td>
-                <button class="action-btn edit-btn" (click)="editEstate(estate.id!)">Editar</button>
-                <button class="action-btn delete-btn" (click)="deleteEstate(estate.id!)"> Eliminar</button>
+                <button type="button" class="action-btn edit-btn" (click)="editEstate(estate.id!)">
+                  Editar
+                </button>
+                <button type="button" class="action-btn delete-btn" (click)="deleteEstate(estate.id!)">
+                  Eliminar
+                </button>
               </td>
-
             </tr>
           }
         } @else {
@@ -116,7 +145,7 @@
             <td colspan="12" class="no-data">
               <div class="empty-state">
                 <p>No se encontraron propiedades</p>
-                <button class="new-client-btn" (click)="newEstate()">
+                <button type="button" class="primary-btn" (click)="newEstate()">
                   + Nueva Propiedad
                 </button>
               </div>
@@ -142,35 +171,46 @@
 
         <!-- Botón anterior -->
         <button
+          type="button"
           class="pagination-btn"
           [class.disabled]="!paginationResult.hasPrevious"
           (click)="previousPage()"
-          [disabled]="!paginationResult.hasPrevious">‹ Anterior
+          [disabled]="!paginationResult.hasPrevious">
+          ‹ Anterior
         </button>
 
         <!-- Números de página -->
         @for (page of getVisiblePages(); track page) {
-          <button class="pagination-btn" [class.active]="page === paginationConfig.currentPage"
-                  (click)="goToPage(page)">{{ page }}
+          <button
+            type="button"
+            class="pagination-btn"
+            [class.active]="page === paginationConfig.currentPage"
+            (click)="goToPage(page)">
+            {{ page }}
           </button>
         }
 
         <!-- Puntos suspensivos si hay más páginas -->
         @if (paginationResult.totalPages > 5 && paginationConfig.currentPage < paginationResult.totalPages - 2) {
           <span class="pagination-dots">...</span>
-        }
-        <!-- Última página -->
-        @if (paginationResult.totalPages > 5 && paginationConfig.currentPage < paginationResult.totalPages - 2) {
-          <button class="pagination-btn"
-                  (click)="goToPage(paginationResult.totalPages)">{{ paginationResult.totalPages }}
+          <button
+            type="button"
+            class="pagination-btn"
+            (click)="goToPage(paginationResult.totalPages)">
+            {{ paginationResult.totalPages }}
           </button>
         }
+
         <!-- Botón siguiente -->
-        <button class="pagination-btn"
-                [class.disabled]="!paginationResult.hasNext"
-                (click)="nextPage()"
-                [disabled]="!paginationResult.hasNext">Siguiente ›
+        <button
+          type="button"
+          class="pagination-btn"
+          [class.disabled]="!paginationResult.hasNext"
+          (click)="nextPage()"
+          [disabled]="!paginationResult.hasNext">
+          Siguiente ›
         </button>
+
       </div>
     </div>
   }

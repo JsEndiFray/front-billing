@@ -14,6 +14,7 @@ import {
   CATEGORIES_LABELS, PAYMENT_METHOD_LABELS, PAYMENT_STATUS_LABELS
 } from '../../../../shared/Collection-Enum/collection-enum';
 import {InvoiceReceived} from '../../../../interfaces/invoices-received-interface';
+import {ValidatorService} from '../../../../core/services/validator-services/validator.service';
 
 /**
  * Componente para registrar nuevas facturas recibidas de proveedores.
@@ -86,7 +87,8 @@ export class InvoicesRegisterReceivedComponent implements OnInit {
     private router: Router,
     private invoicesUtilService: InvoicesUtilService,
     private suppliersServices: SuppliersService,
-    private fileUploadService: FileUploadService
+    private fileUploadService: FileUploadService,
+    private validatorService: ValidatorService
   ) {
     // FormGroup para información básica
     this.basicInfoForm = this.fb.group({
@@ -130,7 +132,6 @@ export class InvoicesRegisterReceivedComponent implements OnInit {
   // ==========================================
   // MÉTODOS DE CONFIGURACIÓN
   // ==========================================
-
   /**
    * Configura las suscripciones reactivas para los FormGroups
    */
@@ -183,6 +184,10 @@ export class InvoicesRegisterReceivedComponent implements OnInit {
   isFieldInvalid(formGroup: FormGroup, fieldName: string): boolean {
     const field = formGroup.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched));
+  }
+
+  getErrorMessage(formGroup: FormGroup, fieldName: string): string {
+    return this.validatorService.getErrorMessage(formGroup, fieldName);
   }
 
   /**
@@ -321,15 +326,17 @@ export class InvoicesRegisterReceivedComponent implements OnInit {
   /**
    * Procesa el envío del formulario
    */
+
   onSubmit(): void {
     if (this.areAllFormsValid() && !this.isSubmitting) {
-      console.log('Enviando formulario...');
       this.isSubmitting = true;
 
-      // Preparar datos para envío
+      this.validatorService.applyTransformations(this.basicInfoForm, 'invoice');
+      this.validatorService.applyTransformations(this.categoriesForm, 'invoice');
+      this.validatorService.applyTransformations(this.paymentForm, 'invoice');
+
       const formData = this.prepareFormData();
 
-      // Enviar al servidor
       this.invoicesReceivedService.createInvoiceReceived(formData, this.selectedFile || undefined).subscribe({
         next: () => {
           Swal.fire({
@@ -343,7 +350,6 @@ export class InvoicesRegisterReceivedComponent implements OnInit {
         },
         error: (error: HttpErrorResponse) => {
           this.isSubmitting = false;
-          // Error manejado por interceptor
         }
       });
     } else {
@@ -351,6 +357,7 @@ export class InvoicesRegisterReceivedComponent implements OnInit {
       this.markAllFormsTouched();
     }
   }
+
 
   /**
    * Prepara los datos del formulario para envío al servidor
@@ -399,7 +406,7 @@ export class InvoicesRegisterReceivedComponent implements OnInit {
       // Archivos
       has_attachments: this.selectedFile ? 1 : 0
     };
-  }
+  };
 
   /**
    * Marca todos los campos de todos los formularios como tocados
@@ -409,7 +416,7 @@ export class InvoicesRegisterReceivedComponent implements OnInit {
     this.amountsForm.markAllAsTouched();
     this.categoriesForm.markAllAsTouched();
     this.paymentForm.markAllAsTouched();
-  }
+  };
 
   /**
    * Navega de vuelta al listado

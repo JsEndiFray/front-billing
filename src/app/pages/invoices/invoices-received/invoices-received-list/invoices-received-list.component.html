@@ -5,9 +5,8 @@
     <p class="subtitle">Administra el listado completo de facturas de proveedores</p>
   </div>
 
-  <!-- Sección de filtros y búsqueda -->
+  <!-- Sección de búsqueda -->
   <div class="filters-section">
-    <!-- Buscador CON ICONOS -->
     <form class="search-container" [formGroup]="searchForm">
       <div class="search-wrapper">
         <input
@@ -16,8 +15,6 @@
           placeholder="Buscar por número de factura, proveedor, categoría..."
           class="search-input"
           autocomplete="off">
-
-        <!-- Iconos de búsqueda y limpiar -->
         <div class="search-actions">
           <span class="search-icon">🔍</span>
           @if (searchForm.get('searchTerm')?.value) {
@@ -28,10 +25,8 @@
     </form>
   </div>
 
-
-  <!-- Sección de filtros de estado -->
+  <!-- Filtros -->
   <div class="filters-container">
-    <!-- Filtro por estado de pago -->
     <form [formGroup]="filtersForm">
       <!-- Estado de pago -->
       <select formControlName="selectedPaymentStatus" class="filter-select">
@@ -73,17 +68,22 @@
         title="Limpiar todos los filtros">
         Limpiar filtros
       </button>
-
-
     </form>
 
-    <!-- Botones de factura recibida -->
+    <!-- Botones de acción -->
     <div class="actions-container">
-      <button class="export-btn">Exportar</button>
-      <button class="new-invoice-btn" (click)="createNewInvoice()">+ Nueva Factura Recibida</button>
+      <button type="button" class="export-btn" (click)="exportData()">
+        Exportar Todo
+      </button>
+      <button type="button" class="export-btn" (click)="exportCurrentPage()">
+        Exportar Página
+      </button>
+      <button type="button" class="export-btn" (click)="exportSelected()">
+        Exportar Selección ({{ selectedItems.size }})
+      </button>
+      <button type="button" class="primary-btn" (click)="createNewInvoice()">+ Nueva Factura Recibida</button>
     </div>
   </div>
-
 
   <!-- Configuración de paginación -->
   <div class="pagination-config">
@@ -101,13 +101,20 @@
     </form>
   </div>
 
-
   <!-- Tabla de facturas recibidas -->
   <div class="table-container">
-    <table class="invoices-table">
+    <table class="data-table">
       <!-- Cabecera -->
       <thead>
       <tr>
+
+        <th>
+          <input
+            type="checkbox"
+            (change)="toggleAllSelection()"
+            [checked]="isAllSelected()">
+        </th>
+
         <th>ID</th>
         <th>Nº FACTURA</th>
         <th>REFERENCIA</th>
@@ -134,20 +141,28 @@
         @if (invoices && invoices.length > 0) {
           @for (invoice of invoices; track invoice.id) {
             <tr>
+
+              <td>
+                <input
+                  type="checkbox"
+                  [checked]="selectedItems.has(invoice.id!)"
+                  (change)="toggleSelection(invoice.id!)">
+              </td>
+
               <td>#{{ invoice.id }}</td>
-              <td class="invoice-number-cell">{{ invoice.invoice_number }}</td>
-              <td class="reference-cell">{{ invoice.our_reference }}</td>
-              <td class="supplier-cell" title="CIF: {{ invoice.supplier_tax_id }}">
+              <td class="tax-id-cell">{{ invoice.invoice_number }}</td>
+              <td class="tax-id-cell">{{ invoice.our_reference }}</td>
+              <td class="name-cell" title="CIF: {{ invoice.supplier_tax_id }}">
                 {{ invoice.supplier_name }}
               </td>
               <td>{{ invoice.invoice_date | dataFormat }}</td>
-              <td [class.overdue]="invoicesUtilService.isOverdue(invoice)">
+              <td [class.inactive-row]="invoicesUtilService.isOverdue(invoice)">
                 {{ invoice.due_date | dataFormat }}
               </td>
-              <td class="currency-cell">{{ invoice.tax_base | currency:'EUR':'symbol':'1.2-2' }}</td>
-              <td class="tax-cell">{{ invoice.iva_percentage }}%</td>
-              <td class="tax-cell">{{ invoice.irpf_percentage }}%</td>
-              <td class="total-cell">{{ invoice.total_amount | currency:'EUR':'symbol':'1.2-2' }}</td>
+              <td class="payment-terms-cell">{{ invoice.tax_base | currency:'EUR':'symbol':'1.2-2' }}</td>
+              <td class="payment-terms-cell">{{ invoice.iva_percentage }}%</td>
+              <td class="payment-terms-cell">{{ invoice.irpf_percentage }}%</td>
+              <td class="payment-terms-cell">{{ invoice.total_amount | currency:'EUR':'symbol':'1.2-2' }}</td>
 
               <!-- CATEGORÍA -->
               <td>
@@ -157,7 +172,7 @@
               </td>
 
               <!-- DESCRIPCIÓN -->
-              <td class="description-cell" [title]="invoice.description">
+              <td [title]="invoice.description">
                 {{ invoicesUtilService.truncateText(invoice.description, 30) }}
               </td>
 
@@ -170,14 +185,14 @@
                           title="Clic para cambiar estado">
                       {{ invoicesUtilService.getStatusLabel(invoice.collection_status || 'pending') }}
                     </span>
-                    <button class="edit-payment-btn" (click)="startEditingPayment(invoice)"
+                    <button type="button" class="action-btn edit-btn" (click)="startEditingPayment(invoice)"
                             title="Editar detalles">
-                      ✏️
+                      Editar
                     </button>
                   </div>
                 } @else if (editPaymentForm) {
                   <div [formGroup]="editPaymentForm">
-                    <select formControlName="collection_status" class="form-input payment-select">
+                    <select formControlName="collection_status" class="filter-select">
                       @for (status of paymentStatusLabels; track status.value) {
                         <option [value]="status.value">{{ status.label }}</option>
                       }
@@ -189,12 +204,12 @@
               <!-- MÉTODO DE PAGO -->
               <td>
                 @if (!isEditingPayment(invoice.id!)) {
-                  <span class="payment-method-display">
+                  <span>
                     {{ invoicesUtilService.getMethodLabel(invoice.collection_method || 'transfer') }}
                   </span>
                 } @else if (editPaymentForm) {
                   <div [formGroup]="editPaymentForm">
-                    <select formControlName="collection_method" class="form-input payment-select">
+                    <select formControlName="collection_method" class="filter-select">
                       @for (method of paymentMethodLabels; track method.value) {
                         <option [value]="method.value">{{ method.label }}</option>
                       }
@@ -206,13 +221,12 @@
               <!-- FECHA DE PAGO -->
               <td>
                 @if (!isEditingPayment(invoice.id!)) {
-                  <span class="payment-date-display">
+                  <span>
                     {{ invoice.collection_date ? (invoice.collection_date! | dataFormat) : '-' }}
                   </span>
                 } @else if (editPaymentForm) {
                   <div [formGroup]="editPaymentForm">
-                    <input type="date" formControlName="collection_date"
-                           class="form-input payment-date-input">
+                    <input type="date" formControlName="collection_date" class="filter-select">
                   </div>
                 }
               </td>
@@ -220,39 +234,41 @@
               <!-- ABONOS -->
               <td>
                 @if (invoice.is_refund) {
-                  <span class="status-refund">Abono</span>
+                  <span class="inactive-badge">Abono</span>
                 }
               </td>
 
               <!-- FACTURA ORIGINAL -->
-              <td class="original-cell">{{ invoice.original_invoice_number || '-' }}</td>
+              <td>{{ invoice.original_invoice_number || '-' }}</td>
 
               <!-- ACCIONES -->
               <td>
                 @if (!isEditingPayment(invoice.id!)) {
-                  <button class="action-btn pdf-btn" (click)="downloadPdf(invoice.id!)">📄 PDF</button>
+                  <button type="button" class="action-btn edit-btn" (click)="downloadPdf(invoice.id!)">PDF</button>
 
-                  <!-- BOTÓN DE ARCHIVO ADJUNTO -->
                   @if (invoice.has_attachments) {
-                    <button class="action-btn attachment-btn" (click)="viewAttachment(invoice)"
+                    <button type="button" class="action-btn edit-btn" (click)="viewAttachment(invoice)"
                             title="Ver archivo adjunto">
-                      📎 Archivo
+                      Archivo
                     </button>
                   }
-                  <button class="action-btn refund-btn" (click)="openRefundModal(invoice)">💰 Abonar</button>
-                  <button class="action-btn edit-btn" (click)="editInvoice(invoice.id!)">✏️ Editar</button>
+                  <button type="button" class="action-btn activate-btn" (click)="openRefundModal(invoice)">Abonar
+                  </button>
+                  <button type="button" class="action-btn edit-btn" (click)="editInvoice(invoice.id!)">Editar</button>
                 } @else {
                   <button
-                    class="action-btn save-btn"
+                    type="button"
+                    class="action-btn activate-btn"
                     (click)="savePaymentChanges(invoice.id!)"
                     title="Guardar cambios">
-                    ✅ Guardar
+                    Guardar
                   </button>
                   <button
-                    class="action-btn cancel-btn"
+                    type="button"
+                    class="action-btn delete-btn"
                     (click)="cancelEditingPayment(invoice.id!)"
                     title="Cancelar">
-                    ❌ Cancelar
+                    Cancelar
                   </button>
                 }
               </td>
@@ -263,7 +279,7 @@
             <td colspan="18" class="no-data">
               <div class="empty-state">
                 <p>No se encontraron facturas recibidas</p>
-                <button class="new-invoice-btn" (click)="createNewInvoice()">
+                <button type="button" class="primary-btn" (click)="createNewInvoice()">
                   + Nueva Factura Recibida
                 </button>
               </div>
@@ -289,6 +305,7 @@
 
         <!-- Botón anterior -->
         <button
+          type="button"
           class="pagination-btn"
           [class.disabled]="!paginationResult.hasPrevious"
           (click)="previousPage()"
@@ -299,6 +316,7 @@
         <!-- Números de página -->
         @for (page of getVisiblePages(); track page) {
           <button
+            type="button"
             class="pagination-btn"
             [class.active]="page === paginationConfig.currentPage"
             (click)="goToPage(page)">
@@ -309,11 +327,8 @@
         <!-- Puntos suspensivos si hay más páginas -->
         @if (paginationResult.totalPages > 5 && paginationConfig.currentPage < paginationResult.totalPages - 2) {
           <span class="pagination-dots">...</span>
-        }
-
-        <!-- Última página -->
-        @if (paginationResult.totalPages > 5 && paginationConfig.currentPage < paginationResult.totalPages - 2) {
           <button
+            type="button"
             class="pagination-btn"
             (click)="goToPage(paginationResult.totalPages)">
             {{ paginationResult.totalPages }}
@@ -322,6 +337,7 @@
 
         <!-- Botón siguiente -->
         <button
+          type="button"
           class="pagination-btn"
           [class.disabled]="!paginationResult.hasNext"
           (click)="nextPage()"
@@ -340,7 +356,7 @@
 
         <div class="modal-header">
           <h3>💰 Registrar Abono</h3>
-          <button class="close-btn" (click)="closeRefundModal()">×</button>
+          <button type="button" class="close-btn" (click)="closeRefundModal()">×</button>
         </div>
 
         <div class="modal-body">
@@ -355,7 +371,7 @@
                 formControlName="refundReason"
                 rows="3"
                 placeholder="Motivo del abono..."
-                class="form-input"
+                class="filter-select"
                 [class.error]="refundForm.get('refundReason')?.invalid && refundForm.get('refundReason')?.touched">
               </textarea>
               @if (refundForm.get('refundReason')?.invalid && refundForm.get('refundReason')?.touched) {
@@ -364,7 +380,7 @@
             </div>
 
             <div class="modal-buttons">
-              <button type="button" class="secondary-btn" (click)="closeRefundModal()">
+              <button type="button" class="clear-filters-btn" (click)="closeRefundModal()">
                 Cancelar
               </button>
               <button type="submit" class="primary-btn" [disabled]="refundForm.invalid">

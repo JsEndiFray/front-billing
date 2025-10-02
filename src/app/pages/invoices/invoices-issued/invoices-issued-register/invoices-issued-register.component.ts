@@ -47,6 +47,9 @@ export class InvoicesIssuedRegisterComponent implements OnInit {
   // Formulario reactivo principal
   invoiceForm: FormGroup;
 
+  // Estado de envío
+  isSubmitting: boolean = false;
+
 
   // Listas para los selectores del formulario
   estates: Estates[] = [];     // Lista de propiedades disponibles
@@ -167,6 +170,10 @@ export class InvoicesIssuedRegisterComponent implements OnInit {
   isFieldInvalid(fieldName: string): boolean {
     const field = this.invoiceForm.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched));
+  }
+
+  getErrorMessage(fieldName: string): string {
+    return this.validatorService.getErrorMessage(this.invoiceForm, fieldName);
   }
 
   /**
@@ -304,22 +311,21 @@ export class InvoicesIssuedRegisterComponent implements OnInit {
       });
     }
   }
-
-  //=====
+  //========================
   //CRUD
-  //=====
+  //========================
   /**
    * Registra una nueva factura en el sistema
    * Valida los datos antes de enviar al servidor
    */
   registerInvoice(): void {
-    if (this.invoiceForm.valid) {
+    if (this.invoiceForm.valid && !this.isSubmitting) {
+      this.isSubmitting = true;
 
       this.validatorService.applyTransformations(this.invoiceForm, 'invoice');
 
       // Obtener valores del FormGroup
-      const formValues = this.invoiceForm.value;
-
+      const formValues = this.invoiceForm.getRawValue();
       // Crear objeto Invoice para enviar
       const invoiceToSend: Invoice = {
         ...formValues,
@@ -330,13 +336,13 @@ export class InvoicesIssuedRegisterComponent implements OnInit {
         total: parseFloat(formValues.total) || 0,
         is_proportional: parseInt(formValues.is_proportional) || 0
       };
-
       // Limpiar espacios y preparar fechas
       const invoiceFormatted = this.invoicesUtilService.formatInvoiceDatesForBackend(invoiceToSend);
 
       // Validar factura completa
       const validation = this.validatorService.validateInvoice(invoiceFormatted);
       if (!validation.isValid) {
+        this.isSubmitting = false;
         Swal.fire({
           title: 'Error!',
           text: validation.message,
@@ -345,7 +351,6 @@ export class InvoicesIssuedRegisterComponent implements OnInit {
         });
         return;
       }
-
       // Enviar datos al servidor
       this.invoicesIssuedService.createInvoice(invoiceFormatted).subscribe({
         next: (data) => {
@@ -358,6 +363,7 @@ export class InvoicesIssuedRegisterComponent implements OnInit {
           this.router.navigate(['/dashboards/invoices-issued/list']);
         },
         error: (e: HttpErrorResponse) => {
+          this.isSubmitting = false;
           // Error manejado por interceptor
         }
       });

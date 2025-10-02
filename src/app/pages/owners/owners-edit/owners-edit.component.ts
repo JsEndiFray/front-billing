@@ -94,7 +94,6 @@ export class OwnersEditComponent implements OnInit {
   updateOwner() {
     // Verificar que el propietario tenga ID válido
     if (!this.ownersForm.valid) {
-      this.ownersForm.markAllAsTouched();
       Swal.fire({
         title: 'Error!',
         text: 'Por favor, complete todos los campos requeridos',

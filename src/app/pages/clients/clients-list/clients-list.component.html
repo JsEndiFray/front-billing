@@ -5,15 +5,16 @@
     <p class="subtitle">Administra tus clientes y genera facturas de manera eficiente</p>
   </div>
 
-
-  <!--Filtros de busqueda-->
+  <!-- Sección de búsqueda -->
   <div class="filters-section">
-    <!-- FormGroup de búsqueda -->
-    <form [formGroup]="searchForm" class="search-wrapper">
-      <div class="search-container">
-        <input type="text" formControlName="searchTerm" placeholder="Buscar clientes..." class="search-input"
-               autocomplete="off">
-        <!-- Iconos de búsqueda y limpiar -->
+    <form class="search-container" [formGroup]="searchForm">
+      <div class="search-wrapper">
+        <input
+          type="text"
+          formControlName="searchTerm"
+          placeholder="Buscar clientes..."
+          class="search-input"
+          autocomplete="off">
         <div class="search-actions">
           <span class="search-icon">🔍</span>
           @if (searchForm.get('searchTerm')?.value) {
@@ -25,8 +26,7 @@
   </div>
 
   <!-- Filtros -->
-  <div class="filters-section">
-    <!-- FormGroup de filtros -->
+  <div class="filters-container">
     <form [formGroup]="filtersForm">
       <!-- Filtro por tipo -->
       <select formControlName="selectedType" class="filter-select">
@@ -45,18 +45,31 @@
       </select>
 
       <!-- Botón limpiar filtros -->
-      <button type="button" (click)="clearFilters()" class="clear-filters-btn" title="Limpiar todos los filtros">
+      <button
+        type="button"
+        (click)="clearFilters()"
+        class="clear-filters-btn"
+        title="Limpiar todos los filtros">
         Limpiar filtros
       </button>
     </form>
 
     <!-- Botones de acción -->
     <div class="actions-container">
-      <button type="button" class="export-btn" (click)="exportData()">Exportar</button>
-      <button type="button" class="new-client-btn" (click)="newClient()">+ Nuevo Cliente</button>
+      <button type="button" class="export-btn" (click)="exportData()">
+        Exportar Todo
+      </button>
+      <button type="button" class="export-btn" (click)="exportCurrentPage()">
+        Exportar Página
+      </button>
+      <button type="button" class="export-btn" (click)="exportSelected()">
+        Exportar Selección ({{ selectedItems.size }})
+      </button>
+      <button type="button" class="primary-btn" (click)="newClient()">
+        + Nuevo Cliente
+      </button>
     </div>
   </div>
-
 
   <!-- Configuración de paginación -->
   <div class="pagination-config">
@@ -76,11 +89,18 @@
 
   <!-- Tabla de clientes -->
   <div class="table-container">
-    <table class="clients-table">
+    <table class="data-table">
 
       <!-- Cabecera -->
       <thead>
       <tr>
+        <th>
+          <input
+            type="checkbox"
+            (change)="toggleAllSelection()"
+            [checked]="isAllSelected()">
+        </th>
+
         <th>ID</th>
         <th>TIPO</th>
         <th>NOMBRE</th>
@@ -102,6 +122,13 @@
         @if (clients && clients.length > 0) {
           @for (client of clients; track client.id) {
             <tr>
+              <td>
+                <input
+                  type="checkbox"
+                  [checked]="selectedItems.has(client.id!)"
+                  (change)="toggleSelection(client.id!)">
+              </td>
+
               <td>#{{ client.id }}</td>
               <td>
                 <span class="type-badge type-{{ client.type_client }}">
@@ -118,30 +145,37 @@
                   -
                 }
               </td>
-              <td>{{ client.identification }}</td>
-              <td>{{ client.email }}</td>
-              <td>{{ client.phone }}</td>
+              <td class="tax-id-cell">{{ client.identification }}</td>
+              <td class="email-cell">
+                @if (client.email) {
+                  <a [href]="'mailto:' + client.email">{{ client.email }}</a>
+                } @else {
+                  -
+                }
+              </td>
+              <td class="phone-cell">
+                @if (client.phone) {
+                  <a [href]="'tel:' + client.phone">{{ client.phone }}</a>
+                } @else {
+                  -
+                }
+              </td>
               <td>{{ client.location }}</td>
               <td>{{ client.province }}</td>
               <td>{{ client.date_create | dataFormat }}</td>
               <td>
-                <button class="action-btn edit-btn" (click)="editClient(client.id!)">
+                <button type="button" class="action-btn edit-btn" (click)="editClient(client.id!)">
                   Editar
                 </button>
-
-                <!--<button class="action-btn delete-btn" (click)="deleteClient(client.id!)">
-                  Eliminar
-                </button>-->
-
               </td>
             </tr>
           }
         } @else {
           <tr>
-            <td colspan="13" class="no-data">
+            <td colspan="15" class="no-data">
               <div class="empty-state">
                 <p>No se encontraron clientes</p>
-                <button class="new-client-btn" (click)="newClient()">
+                <button type="button" class="primary-btn" (click)="newClient()">
                   + Nuevo Cliente
                 </button>
               </div>
@@ -167,21 +201,21 @@
 
         <!-- Botón anterior -->
         <button
+          type="button"
           class="pagination-btn"
           [class.disabled]="!paginationResult.hasPrevious"
           (click)="previousPage()"
-          [disabled]="!paginationResult.hasPrevious"
-        >
+          [disabled]="!paginationResult.hasPrevious">
           ‹ Anterior
         </button>
 
         <!-- Números de página -->
         @for (page of getVisiblePages(); track $index) {
           <button
+            type="button"
             class="pagination-btn"
             [class.active]="page === paginationConfig.currentPage"
-            (click)="goToPage(page)"
-          >
+            (click)="goToPage(page)">
             {{ page }}
           </button>
         }
@@ -189,30 +223,25 @@
         <!-- Puntos suspensivos si hay más páginas -->
         @if (paginationResult.totalPages > 5 && paginationConfig.currentPage < paginationResult.totalPages - 2) {
           <span class="pagination-dots">...</span>
-        }
-
-        <!-- Última página -->
-        @if (paginationResult.totalPages > 5 && paginationConfig.currentPage < paginationResult.totalPages - 2) {
           <button
+            type="button"
             class="pagination-btn"
-            (click)="goToPage(paginationResult.totalPages)"
-          >
+            (click)="goToPage(paginationResult.totalPages)">
             {{ paginationResult.totalPages }}
           </button>
         }
 
         <!-- Botón siguiente -->
         <button
+          type="button"
           class="pagination-btn"
           [class.disabled]="!paginationResult.hasNext"
           (click)="nextPage()"
-          [disabled]="!paginationResult.hasNext"
-        >
+          [disabled]="!paginationResult.hasNext">
           Siguiente ›
         </button>
 
       </div>
     </div>
   }
-
 </div>

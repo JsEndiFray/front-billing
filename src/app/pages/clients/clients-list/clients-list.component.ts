@@ -10,7 +10,8 @@ import {SearchService} from '../../../core/services/shared-services/search.servi
 import {PaginationConfig, PaginationResult} from '../../../interfaces/pagination-interface';
 import {PaginationService} from '../../../core/services/shared-services/pagination.service';
 import {CLIENT_TYPES_LABELS} from '../../../shared/Collection-Enum/collection-enum';
-
+import {ExportService} from '../../../core/services/shared-services/exportar.service';
+import {ExportableListBase} from '../../../shared/Base/exportable-list.base';
 
 /**
  * Componente para mostrar y gestionar la lista de clientes
@@ -27,7 +28,7 @@ import {CLIENT_TYPES_LABELS} from '../../../shared/Collection-Enum/collection-en
   templateUrl: './clients-list.component.html',
   styleUrl: './clients-list.component.css'
 })
-export class ClientsListComponent implements OnInit {
+export class ClientsListComponent extends ExportableListBase<Clients> implements OnInit {
 
   // ==========================================
   // PROPIEDADES DE FORMULARIOS MÚLTIPLES
@@ -78,13 +79,36 @@ export class ClientsListComponent implements OnInit {
     endIndex: 0
   };
 
+  //===============================
+  // FUNCIONES PARA LA EXPORTACION
+  //===============================
+  // Implementar propiedades abstractas
+  entityName = 'clientes';//para nombrar los documentos descargados
+  selectedItems: Set<number> = new Set();
+
+  readonly exportColumns = [
+    {key: 'id', title: 'ID', width: 10},
+    {key: 'type_client', title: 'Tipo', width: 15},
+    {key: 'name', title: 'Nombre', width: 20},
+    {key: 'lastname', title: 'Apellidos', width: 20},
+    {key: 'company_name', title: 'Empresa', width: 25},
+    {key: 'identification', title: 'Identificación', width: 15},
+    {key: 'email', title: 'Email', width: 25},
+    {key: 'phone', title: 'Teléfono', width: 15},
+    {key: 'location', title: 'Localidad', width: 20},
+    {key: 'province', title: 'Provincia', width: 20}
+  ];
+
+
   constructor(
     private fb: FormBuilder,
     private clientsService: ClientsService,
     private router: Router,
     private searchService: SearchService,
     private paginationService: PaginationService,
+    public exportService: ExportService,
   ) {
+    super();
     // FormGroup para búsqueda
     this.searchForm = this.fb.group({
       searchTerm: ['']
@@ -100,8 +124,21 @@ export class ClientsListComponent implements OnInit {
     this.paginationForm = this.fb.group({
       itemsPerPage: [5]
     });
+  };
 
+  // Implementar métodos abstractos
+  getFilteredData(): Clients[] {
+    return this.filteredClients;
   }
+
+  getCurrentPageData(): Clients[] {
+    return this.clients;
+  }
+
+  getPaginationConfig(): PaginationConfig {
+    return this.paginationConfig;
+  }
+
 
   ngOnInit(): void {
     this.getListClients();
@@ -155,6 +192,7 @@ export class ClientsListComponent implements OnInit {
       }
     });
   }
+
   // ==========================================
   // MÉTODOS DE FILTRADO Y BÚSQUEDA
   // ==========================================
@@ -290,6 +328,7 @@ export class ClientsListComponent implements OnInit {
       this.clients.length
     );
   }
+
   // ==========================================
   // MÉTODOS DE ACCIONES
   // ==========================================
@@ -339,11 +378,4 @@ export class ClientsListComponent implements OnInit {
     this.router.navigate(['/dashboards/clients/register']);
   }
 
-  /**
-   * Exporta los datos filtrados
-   */
-  exportData() {
-    // Implementar lógica de exportación aquí
-    console.log('Exportando datos:', this.filteredClients);
-  }
 }

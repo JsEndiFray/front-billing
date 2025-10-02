@@ -16,6 +16,7 @@ import {
   PAYMENT_METHOD_LABELS,
   PAYMENT_STATUS_LABELS
 } from '../../../../shared/Collection-Enum/collection-enum';
+import {ValidatorService} from '../../../../core/services/validator-services/validator.service';
 
 @Component({
   selector: 'app-invoices-received-edit',
@@ -50,8 +51,6 @@ export class InvoicesReceivedEditComponent implements OnInit {
   // ==========================================
   // PROPIEDADES DEL FORMULARIO------
   // ==========================================
-  isLoading: boolean = false;
-
   // ID de la factura a editar
   invoiceId: number = 0;
 
@@ -97,7 +96,8 @@ export class InvoicesReceivedEditComponent implements OnInit {
     private invoicesUtilService: InvoicesUtilService,
     private router: Router,
     private route: ActivatedRoute,
-    private fileUploadService: FileUploadService
+    private fileUploadService: FileUploadService,
+    protected validatorService: ValidatorService
   ) {
     // FormGroup para información básica
     this.basicInfoForm = this.fb.group({
@@ -137,9 +137,7 @@ export class InvoicesReceivedEditComponent implements OnInit {
     this.loadSuppliers();
     this.loadInvoiceData();
     this.setupFormSubscriptions();
-
   }
-
   // ==========================================
   // MÉTODOS DE CONFIGURACIÓN
   // ==========================================
@@ -157,8 +155,11 @@ export class InvoicesReceivedEditComponent implements OnInit {
     this.paymentForm.get('payment_status')?.valueChanges.subscribe((status) => {
       this.handlePaymentStatusChange(status);
     });
-  }
+  };
 
+  // ==========================================
+  // MÉTODOS DE CARGA DE DATOS
+  // ==========================================
   /**
    * Obtiene el ID de la factura desde los parámetros de la ruta
    */
@@ -195,17 +196,12 @@ export class InvoicesReceivedEditComponent implements OnInit {
       this.router.navigate(['/dashboards/invoices-received/list']);
       return;
     }
-    this.isLoading = true;
-
     this.invoicesReceivedService.getInvoiceById(this.invoiceId).subscribe({
       next: (invoices) => {
         this.currentInvoice = invoices;
         this.populateForm(invoices);
         this.calculateAmounts();
-        this.isLoading = false;
-
       }, error: () => {
-        this.isLoading = false;
         // Error desde interceptores
       }
     });
@@ -260,6 +256,10 @@ export class InvoicesReceivedEditComponent implements OnInit {
   isFieldInvalid(formGroup: FormGroup, fieldName: string): boolean {
     const field = formGroup.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched));
+  }
+
+  getErrorMessage(formGroup: FormGroup, fieldName: string): string {
+    return this.validatorService.getErrorMessage(formGroup, fieldName);
   }
   /**
    * Verifica si todos los formularios son válidos
@@ -402,6 +402,10 @@ export class InvoicesReceivedEditComponent implements OnInit {
   onSubmit(): void {
     if (this.areAllFormsValid() && !this.isSubmitting) {
       this.isSubmitting = true;
+
+      this.validatorService.applyTransformations(this.basicInfoForm, 'invoice');
+      this.validatorService.applyTransformations(this.categoriesForm, 'invoice');
+      this.validatorService.applyTransformations(this.paymentForm, 'invoice');
 
       // Preparar datos para envío
       const formData = this.prepareFormData();

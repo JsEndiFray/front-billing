@@ -9,6 +9,8 @@ import {SearchService} from '../../../core/services/shared-services/search.servi
 import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {PaginationConfig, PaginationResult} from '../../../interfaces/pagination-interface';
 import {PaginationService} from '../../../core/services/shared-services/pagination.service';
+import {ExportService} from '../../../core/services/shared-services/exportar.service';
+import {ExportableListBase} from '../../../shared/Base/exportable-list.base';
 
 /**
  * Componente para mostrar y gestionar la lista de usuarios
@@ -23,7 +25,7 @@ import {PaginationService} from '../../../core/services/shared-services/paginati
   templateUrl: './user-list.component.html',
   styleUrl: './user-list.component.css'
 })
-export class UserListComponent implements OnInit {
+export class UserListComponent extends ExportableListBase<User> implements OnInit {
 
   // ==========================================
   // PROPIEDADES DE FORMULARIOS MÚLTIPLES
@@ -70,6 +72,20 @@ export class UserListComponent implements OnInit {
     endIndex: 0
   };
 
+  //===============================
+  // FUNCIONES PARA LA EXPORTACION
+  //===============================
+  // Implementar propiedades abstractas
+  entityName = 'usuarios'; //para nombrar los documentos descargados
+  selectedItems: Set<number> = new Set();
+
+  readonly exportColumns = [
+    {key: 'id', title: 'ID', width: 10},
+    {key: 'username', title: 'Usuario', width: 20},
+    {key: 'email', title: 'Email', width: 25},
+    {key: 'phone', title: 'Teléfono', width: 15},
+    {key: 'role', title: 'Rol', width: 15}
+  ];
 
   constructor(
     private userService: UserService,
@@ -77,7 +93,9 @@ export class UserListComponent implements OnInit {
     private searchService: SearchService,
     private paginationService: PaginationService,
     private fb: FormBuilder,
+    public exportService: ExportService,
   ) {
+    super();
     // FormGroup para búsqueda
     this.searchForm = this.fb.group({
       searchTerm: ['']
@@ -93,6 +111,20 @@ export class UserListComponent implements OnInit {
       itemsPerPage: [5]
     });
   }
+
+  // Implementar métodos abstractos
+  getFilteredData(): User[] {
+    return this.filteredUser;
+  }
+
+  getCurrentPageData(): User[] {
+    return this.users;
+  }
+
+  getPaginationConfig(): PaginationConfig {
+    return this.paginationConfig;
+  }
+
 
   /**
    * Se ejecuta al cargar el componente
@@ -309,6 +341,4 @@ export class UserListComponent implements OnInit {
   newUser() {
     this.router.navigate(['/dashboards/users/register'])
   }
-
-  exportData(){}
 }

@@ -5,16 +5,16 @@
     <p class="subtitle">Administra los porcentajes de propiedad de inmuebles</p>
   </div>
 
-
-  <!-- Sección de filtros y búsqueda -->
+  <!-- Sección de búsqueda -->
   <div class="filters-section">
-    <!-- Buscador -->
-    <form [formGroup]="searchForm" class="search-wrapper">
-      <div class="search-container">
-        <input type="text" formControlName="searchTerm"
-               placeholder="Buscar por propiedad, propietario o porcentaje..."
-               class="search-input" autocomplete="of">
-        <!-- Iconos de búsqueda y limpiar -->
+    <form class="search-container" [formGroup]="searchForm">
+      <div class="search-wrapper">
+        <input
+          type="text"
+          formControlName="searchTerm"
+          placeholder="Buscar por propiedad, propietario o porcentaje..."
+          class="search-input"
+          autocomplete="off">
         <div class="search-actions">
           <span class="search-icon">🔍</span>
           @if (searchForm.get('searchTerm')?.value) {
@@ -24,17 +24,33 @@
       </div>
     </form>
   </div>
-  <!-- Botón exportar y nuevo empleado limpiar filtros -->
-  <div class="filters-section">
-    <div class="actions-container">
-      <button type="button" (click)="clearFilters()" class="clear-filters-btn" title="Limpiar todos los filtros">Limpiar
-        filtros
+
+  <!-- Filtros y acciones -->
+  <div class="filters-container">
+    <form>
+      <button
+        type="button"
+        (click)="clearFilters()"
+        class="clear-filters-btn"
+        title="Limpiar todos los filtros">
+        Limpiar filtros
       </button>
-      <button type="button" class="export-btn" (click)="exportData()">Exportar</button>
-      <button class="new-client-btn" (click)="newEstateOwner()">+ Nuevo Porcentaje</button>
+    </form>
+
+    <!-- Botones de acción -->
+    <div class="actions-container">
+      <button type="button" class="export-btn" (click)="exportData()">
+        Exportar Todo
+      </button>
+      <button type="button" class="export-btn" (click)="exportCurrentPage()">
+        Exportar Página
+      </button>
+      <button type="button" class="export-btn" (click)="exportSelected()">
+        Exportar Selección ({{ selectedItems.size }})
+      </button>
+      <button type="button" class="primary-btn" (click)="newEstateOwner()">+ Nuevo Porcentaje</button>
     </div>
   </div>
-
 
   <!-- Configuración de paginación -->
   <div class="pagination-config">
@@ -54,43 +70,50 @@
 
   <!-- Tabla de porcentajes -->
   <div class="table-container">
-    <table class="clients-table">
+    <table class="data-table">
 
       <!-- Cabecera -->
       <thead>
       <tr>
+        <th>
+          <input
+            type="checkbox"
+            (change)="toggleAllSelection()"
+            [checked]="isAllSelected()">
+        </th>
         <th>ID</th>
         <th>PROPIEDAD</th>
         <th>PROPIETARIO</th>
         <th>PORCENTAJE (%)</th>
         <th>CREADO</th>
-<!--        <th>ACCIONES</th>-->
       </tr>
       </thead>
 
       <!-- Cuerpo de la tabla -->
       <tbody>
         @if (estateOwners && estateOwners.length > 0) {
-          @for (item of estateOwners; track item.id) {
+          @for (estateOwner of estateOwners; track estateOwner.id) {
             <tr>
-              <td>#{{ item.id }}</td>
-              <td>{{ item.estate_name }}</td>
-              <td>{{ item.owner_name }}</td>
-              <td>{{ item.ownership_percentage }}%</td>
-              <td>{{ item.date_create | dataFormat }}</td>
+              <td>
+                <input
+                  type="checkbox"
+                  [checked]="selectedItems.has(estateOwner.id!)"
+                  (change)="toggleSelection(estateOwner.id!)">
+              </td>
 
-              <!--<td>
-                <button class="action-btn edit-btn" (click)="editEstateOwners(item.id!)">Editar</button>
-              </td>-->
-
+              <td>#{{ estateOwner.id }}</td>
+              <td>{{ estateOwner.estate_name }}</td>
+              <td>{{ estateOwner.owner_name }}</td>
+              <td class="payment-terms-cell">{{ estateOwner.ownership_percentage }}%</td>
+              <td>{{ estateOwner.date_create | dataFormat }}</td>
             </tr>
           }
         } @else {
           <tr>
-            <td colspan="6" class="no-data">
+            <td colspan="5" class="no-data">
               <div class="empty-state">
                 <p>No se encontraron porcentajes de propiedades</p>
-                <button class="new-client-btn" (click)="newEstateOwner()">
+                <button type="button" class="primary-btn" (click)="newEstateOwner()">
                   + Nuevo Porcentaje
                 </button>
               </div>
@@ -101,13 +124,6 @@
 
     </table>
   </div>
-
-  <!-- Información de resultados de búsqueda -->
-  @if (searchForm.get('searchTerm')?.value) {
-    <div class="search-results-info">
-      Mostrando {{ estateOwners.length }} de {{ allEstateOwners.length }} relaciones
-    </div>
-  }
 
   <!-- Paginación -->
   @if (paginationResult.totalPages > 1) {
@@ -123,21 +139,21 @@
 
         <!-- Botón anterior -->
         <button
+          type="button"
           class="pagination-btn"
           [class.disabled]="!paginationResult.hasPrevious"
           (click)="previousPage()"
-          [disabled]="!paginationResult.hasPrevious"
-        >
+          [disabled]="!paginationResult.hasPrevious">
           ‹ Anterior
         </button>
 
         <!-- Números de página -->
         @for (page of getVisiblePages(); track page) {
           <button
+            type="button"
             class="pagination-btn"
             [class.active]="page === paginationConfig.currentPage"
-            (click)="goToPage(page)"
-          >
+            (click)="goToPage(page)">
             {{ page }}
           </button>
         }
@@ -145,30 +161,25 @@
         <!-- Puntos suspensivos si hay más páginas -->
         @if (paginationResult.totalPages > 5 && paginationConfig.currentPage < paginationResult.totalPages - 2) {
           <span class="pagination-dots">...</span>
-        }
-
-        <!-- Última página -->
-        @if (paginationResult.totalPages > 5 && paginationConfig.currentPage < paginationResult.totalPages - 2) {
           <button
+            type="button"
             class="pagination-btn"
-            (click)="goToPage(paginationResult.totalPages)"
-          >
+            (click)="goToPage(paginationResult.totalPages)">
             {{ paginationResult.totalPages }}
           </button>
         }
 
         <!-- Botón siguiente -->
         <button
+          type="button"
           class="pagination-btn"
           [class.disabled]="!paginationResult.hasNext"
           (click)="nextPage()"
-          [disabled]="!paginationResult.hasNext"
-        >
+          [disabled]="!paginationResult.hasNext">
           Siguiente ›
         </button>
 
       </div>
     </div>
   }
-
 </div>

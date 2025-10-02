@@ -1,1 +1,266 @@
-<p>suppliers-list works!</p>
+<div class="container">
+  <!-- Título y descripción -->
+  <div class="header">
+    <h1 class="title">Gestión de Proveedores</h1>
+    <p class="subtitle">Administra el listado completo de proveedores</p>
+  </div>
+
+  <!-- Sección de búsqueda -->
+  <div class="filters-section">
+    <!-- FormGroup de búsqueda -->
+    <form class="search-container" [formGroup]="searchForm">
+      <div class="search-wrapper">
+        <input
+          type="text"
+          formControlName="searchTerm"
+          placeholder="Buscar por nombre, empresa, CIF, email, ciudad..."
+          class="search-input"
+          autocomplete="off">
+        <!-- Iconos de búsqueda y limpiar -->
+        <div class="search-actions">
+          <span class="search-icon">🔍</span>
+          @if (searchForm.get('searchTerm')?.value) {
+            <button type="button" (click)="clearFilters()" class="clear-button" title="Limpiar búsqueda">✕</button>
+          }
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters-container">
+    <form [formGroup]="filtersForm">
+      <!-- Filtro por estado -->
+      <select formControlName="selectedActiveStatus" class="filter-select">
+        <option value="">Todos los estados</option>
+        @for (status of activeStatusLabels; track status.value) {
+          <option [value]="status.value">{{ status.label }}</option>
+        }
+      </select>
+
+      <!-- Filtro por términos de pago -->
+      <select formControlName="selectedPaymentTerms" class="filter-select">
+        <option value="">Todos los términos</option>
+        @for (term of paymentTermsLabels; track term.value) {
+          <option [value]="term.value">{{ term.label }}</option>
+        }
+      </select>
+
+      <!-- Botón limpiar filtros -->
+      <button
+        type="button"
+        (click)="clearFilters()"
+        class="clear-filters-btn"
+        title="Limpiar todos los filtros">
+        Limpiar filtros
+      </button>
+
+    </form>
+
+    <!-- Botones de acción -->
+    <div class="actions-container">
+      <button type="button" class="export-btn" (click)="exportData()">
+        Exportar Todo
+      </button>
+      <button type="button" class="export-btn" (click)="exportCurrentPage()">
+        Exportar Página
+      </button>
+      <button type="button" class="export-btn" (click)="exportSelected()">
+        Exportar Selección ({{ selectedItems.size }})
+      </button>
+      <button type="button" class="primary-btn " (click)="createNewSupplier()">+ Nuevo Proveedor</button>
+    </div>
+  </div>
+
+  <!-- Configuración de paginación -->
+  <div class="pagination-config">
+    <form [formGroup]="paginationForm">
+      <label for="itemsPerPage">Elementos por página:</label>
+      <select
+        id="itemsPerPage"
+        formControlName="itemsPerPage"
+        class="items-per-page-select">
+        <option [value]="5">5</option>
+        <option [value]="10">10</option>
+        <option [value]="25">25</option>
+        <option [value]="50">50</option>
+      </select>
+    </form>
+  </div>
+
+  <!-- Tabla de proveedores -->
+  <div class="table-container">
+    <table class="data-table">
+
+      <!-- Cabecera -->
+      <thead>
+      <tr>
+        <th>
+          <input
+            type="checkbox"
+            (change)="toggleAllSelection()"
+            [checked]="isAllSelected()">
+        </th>
+        <th>ID</th>
+        <th>NOMBRE/EMPRESA</th>
+        <th>CIF/NIF</th>
+        <th>CONTACTO</th>
+        <th>EMAIL</th>
+        <th>TELÉFONO</th>
+        <th>CIUDAD</th>
+        <th>TÉRMINOS PAGO</th>
+        <th>ESTADO</th>
+        <th>ACCIONES</th>
+      </tr>
+      </thead>
+
+      <!-- Cuerpo -->
+      <tbody>
+        @if (suppliers && suppliers.length > 0) {
+          @for (supplier of suppliers; track supplier.id) {
+            <tr [class.inactive-row]="!supplier.active">
+
+              <td>
+                <input
+                  type="checkbox"
+                  [checked]="selectedItems.has(supplier.id!)"
+                  (change)="toggleSelection(supplier.id!)">
+              </td>
+
+              <!-- ID -->
+              <td>#{{ supplier.id }}</td>
+
+              <!-- Nombre/Empresa -->
+              <td class="name-cell">
+                <div class="name-display">
+                  <span class="company-name">{{ getDisplayName(supplier) }}</span>
+                  @if (supplier.company_name) {
+                    <small class="person-name">{{ supplier.name }}</small>
+                  }
+                </div>
+              </td>
+
+              <!-- CIF/NIF -->
+              <td class="tax-id-cell">{{ supplier.tax_id }}</td>
+
+              <!-- Contacto -->
+              <td class="contact-cell">{{ supplier.contact_person || '-' }}</td>
+
+              <!-- Email -->
+              <td class="email-cell">
+                @if (supplier.email) {
+                  <a [href]="'mailto:' + supplier.email">{{ supplier.email }}</a>
+                } @else {
+                  -
+                }
+              </td>
+
+              <!-- Teléfono -->
+              <td class="phone-cell">
+                @if (supplier.phone) {
+                  <a [href]="'tel:' + supplier.phone">{{ supplier.phone }}</a>
+                } @else {
+                  -
+                }
+              </td>
+
+              <!-- Ciudad -->
+              <td>{{ supplier.city || '-' }}</td>
+
+              <!-- Términos de pago -->
+              <td class="payment-terms-cell">{{ supplier.payment_terms }} días</td>
+
+              <!-- Estado -->
+              <td>
+                <span [ngClass]="getActiveStatusClass(supplier.active)">
+                  {{ getActiveLabel(supplier.active) }}
+                </span>
+              </td>
+
+              <!-- Acciones -->
+              <td>
+                <button class="action-btn edit-btn" (click)="editSupplier(supplier.id!)">
+                  ✏️ Editar
+                </button>
+
+                @if (supplier.active) {
+                  <button class="action-btn delete-btn" (click)="deleteSupplier(supplier.id!)">
+                    🚫 Desactivar
+                  </button>
+                } @else {
+                  <button class="action-btn activate-btn" (click)="activateSupplier(supplier.id!)">
+                    ✅ Activar
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        } @else {
+          <tr>
+            <td colspan="10" class="no-data">
+              <div class="empty-state">
+                <p>No se encontraron proveedores</p>
+                <button type="button" class="primary-btn" (click)="createNewSupplier()">+ Nuevo Proveedor</button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+
+    </table>
+  </div>
+
+  <!-- Paginación -->
+  @if (paginationResult.totalPages > 1) {
+    <div class="pagination-container">
+
+      <!-- Información de resultados -->
+      <div class="pagination-info">
+        {{ getPaginationText() }}
+      </div>
+
+      <!-- Controles de paginación -->
+      <div class="pagination-controls">
+
+        <!-- Botón anterior -->
+        <button
+          class="pagination-btn"
+          [class.disabled]="!paginationResult.hasPrevious"
+          (click)="previousPage()"
+          [disabled]="!paginationResult.hasPrevious">
+          ‹ Anterior
+        </button>
+
+        <!-- Números de página -->
+        @for (page of getVisiblePages(); track page) {
+          <button
+            class="pagination-btn"
+            [class.active]="page === paginationConfig.currentPage"
+            (click)="goToPage(page)">
+            {{ page }}
+          </button>
+        }
+
+        <!-- Puntos suspensivos -->
+        @if (paginationResult.totalPages > 5 && paginationConfig.currentPage < paginationResult.totalPages - 2) {
+          <span class="pagination-dots">...</span>
+          <button
+            class="pagination-btn"
+            (click)="goToPage(paginationResult.totalPages)">
+            {{ paginationResult.totalPages }}
+          </button>
+        }
+
+        <!-- Botón siguiente -->
+        <button
+          class="pagination-btn"
+          [class.disabled]="!paginationResult.hasNext"
+          (click)="nextPage()"
+          [disabled]="!paginationResult.hasNext">
+          Siguiente ›
+        </button>
+
+      </div>
+    </div>
+  }
+</div>
