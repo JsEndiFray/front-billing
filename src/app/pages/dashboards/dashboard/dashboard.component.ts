@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import {NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
-import {AuthService} from '../../../core/services/auth-service/auth.service';
+import {AuthService} from '../../../core/services/auth-services/auth.service';
 import {filter} from 'rxjs';
 
 

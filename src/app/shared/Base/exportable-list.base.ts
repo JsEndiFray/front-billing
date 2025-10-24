@@ -5,7 +5,8 @@ import {PaginationConfig} from '../../interfaces/pagination-interface';
 import Swal from 'sweetalert2';
 
 @Directive()
-export abstract class ExportableListBase<T> {
+export abstract class ExportableListBase<T extends { id?: number | null }> {
+  //                                              ⬆️ Cualquier tipo que tenga id
 
   // Propiedades que DEBE proveer el componente hijo
   abstract exportService: ExportService;
@@ -44,8 +45,8 @@ export abstract class ExportableListBase<T> {
    * Exporta solo los elementos seleccionados
    */
   exportSelected(): void {
-    const selectedData = this.getFilteredData().filter((item: any) =>
-      this.selectedItems.has(item.id!)
+    const selectedData = this.getFilteredData().filter((item: T) =>
+      item.id != null && this.selectedItems.has(item.id)
     );
 
     if (selectedData.length === 0) {
@@ -77,26 +78,39 @@ export abstract class ExportableListBase<T> {
    */
   toggleAllSelection(): void {
     const currentPage = this.getCurrentPageData();
-    const allSelected = currentPage.every((item: any) =>
-      this.selectedItems.has(item.id!)
+    const allSelected = currentPage.every((item: T) =>
+      item.id != null && this.selectedItems.has(item.id)
     );
 
     if (allSelected) {
-      currentPage.forEach((item: any) => this.selectedItems.delete(item.id!));
+      currentPage.forEach((item: T) => {
+        if (item.id != null) {
+          this.selectedItems.delete(item.id);
+        }
+      });
     } else {
-      currentPage.forEach((item: any) => this.selectedItems.add(item.id!));
+      currentPage.forEach((item: T) => {
+        if (item.id != null) {
+          this.selectedItems.add(item.id);
+        }
+      });
     }
   }
 
   /**
-   * Verifica si todos están seleccionados
+   * Verifica si todos los elementos de la página actual están seleccionados
    */
   isAllSelected(): boolean {
     const currentPage = this.getCurrentPageData();
     return currentPage.length > 0 &&
-      currentPage.every((item: any) => this.selectedItems.has(item.id!));
+      currentPage.every((item: T) =>
+        item.id != null && this.selectedItems.has(item.id)
+      );
   }
 
+  /**
+   * Capitaliza la primera letra de un string
+   */
   private capitalizeFirst(str: string): string {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }

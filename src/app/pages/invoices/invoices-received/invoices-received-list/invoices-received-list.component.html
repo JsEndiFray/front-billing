@@ -132,6 +132,7 @@
         <th>FECHA PAGO</th>
         <th>ABONOS</th>
         <th>FACTURA ORIGINAL</th>
+        <th>ADJUNTO</th>
         <th>ACCIONES</th>
       </tr>
       </thead>
@@ -159,10 +160,10 @@
               <td [class.inactive-row]="invoicesUtilService.isOverdue(invoice)">
                 {{ invoice.due_date | dataFormat }}
               </td>
-              <td class="payment-terms-cell">{{ invoice.tax_base | currency:'EUR':'symbol':'1.2-2' }}</td>
+              <td class="payment-terms-cell">{{ invoice.tax_base | number:'1.2-2' }}€</td>
               <td class="payment-terms-cell">{{ invoice.iva_percentage }}%</td>
               <td class="payment-terms-cell">{{ invoice.irpf_percentage }}%</td>
-              <td class="payment-terms-cell">{{ invoice.total_amount | currency:'EUR':'symbol':'1.2-2' }}</td>
+              <td class="payment-terms-cell">{{ invoice.total_amount | number:'1.2-2' }}€</td>
 
               <!-- CATEGORÍA -->
               <td>
@@ -241,17 +242,19 @@
               <!-- FACTURA ORIGINAL -->
               <td>{{ invoice.original_invoice_number || '-' }}</td>
 
+              <!-- ADJUNTO -->
+              <td>
+                @if (invoice.has_attachments) {
+                  <button type="button" class="action-btn edit-btn" (click)="viewAttachment(invoice)" title="Ver archivo adjunto">
+                    Ver PDF
+                  </button>
+                }
+              </td>
+
               <!-- ACCIONES -->
               <td>
                 @if (!isEditingPayment(invoice.id!)) {
                   <button type="button" class="action-btn edit-btn" (click)="downloadPdf(invoice.id!)">PDF</button>
-
-                  @if (invoice.has_attachments) {
-                    <button type="button" class="action-btn edit-btn" (click)="viewAttachment(invoice)"
-                            title="Ver archivo adjunto">
-                      Archivo
-                    </button>
-                  }
                   <button type="button" class="action-btn activate-btn" (click)="openRefundModal(invoice)">Abonar
                   </button>
                   <button type="button" class="action-btn edit-btn" (click)="editInvoice(invoice.id!)">Editar</button>
@@ -362,7 +365,7 @@
         <div class="modal-body">
           <p><strong>Factura:</strong> {{ selectedInvoice?.invoice_number }}</p>
           <p><strong>Proveedor:</strong> {{ selectedInvoice?.supplier_name }}</p>
-          <p><strong>Total:</strong> {{ selectedInvoice?.total_amount | currency:'EUR':'symbol':'1.2-2' }}</p>
+          <p><strong>Total:</strong> {{ selectedInvoice?.total_amount | number:'1.2-2' }}€</p>
 
           <form [formGroup]="refundForm" (ngSubmit)="saveRefund()">
             <div class="form-field">

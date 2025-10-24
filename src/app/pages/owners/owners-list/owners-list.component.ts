@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Owners} from '../../../interfaces/owners-interface';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {OwnersService} from '../../../core/services/owners-services/owners.service';
+import {OwnersService} from '../../../core/services/entity-services/owners.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
 import {SearchService} from '../../../core/services/shared-services/search.service';

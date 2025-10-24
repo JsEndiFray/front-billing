@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ClientsService} from '../../../core/services/clients-services/clients.service';
+import {ClientsService} from '../../../core/services/entity-services/clients.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Clients} from '../../../interfaces/clientes-interface';
 import {HttpErrorResponse} from '@angular/common/http';

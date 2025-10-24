@@ -255,72 +255,28 @@
   background: #f9fafb;
 }
 
-.data-table tbody tr.inactive-row {
-  opacity: 0.6;
-  background: #fef2f2;
-}
-
 .data-table td {
   padding: 0.875rem 0.75rem;
   color: #1f2937;
 }
 
-/* Celdas especiales */
-.name-cell {
-  font-weight: 500;
+/* Celdas especiales para Expenses */
+.description-cell {
+  max-width: 250px;
 }
 
-.name-display {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.company-name {
-  color: #1f2937;
-  font-weight: 600;
-}
-
-.person-name {
-  color: #6b7280;
-  font-size: 0.75rem;
-}
-
-.tax-id-cell {
+.amount-cell {
+  text-align: right;
   font-family: 'Courier New', monospace;
   font-weight: 600;
-  color: #4f46e5;
-}
-
-.contact-cell {
-  color: #6b7280;
-}
-
-.email-cell a,
-.phone-cell a {
-  color: #3b82f6;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.email-cell a:hover,
-.phone-cell a:hover {
-  color: #2563eb;
-  text-decoration: underline;
-}
-
-.payment-terms-cell {
-  font-weight: 600;
-  color: #059669;
-  text-align: center;
+  color: #1f2937;
 }
 
 /* ==========================================
-   BADGES DE ESTADO
+   BADGES - CATEGORÍAS
    ========================================== */
 
-.active-badge,
-.inactive-badge {
+.data-table td span[class*="category-"] {
   display: inline-block;
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
@@ -330,14 +286,94 @@
   letter-spacing: 0.05em;
 }
 
-.active-badge {
+.category-office-supplies { background: #dbeafe; color: #1e40af; }
+.category-travel { background: #f3e8ff; color: #6b21a8; }
+.category-utilities { background: #fed7aa; color: #c2410c; }
+.category-maintenance { background: #d1fae5; color: #065f46; }
+.category-professional-services { background: #fce7f3; color: #9f1239; }
+.category-marketing { background: #ccfbf1; color: #115e59; }
+.category-technology { background: #e9d5ff; color: #6b21a8; }
+.category-others { background: #f3f4f6; color: #374151; }
+.category-default { background: #f3f4f6; color: #374151; }
+
+/* ==========================================
+   BADGES - ESTADOS
+   ========================================== */
+
+.pending-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.approved-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.paid-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   background: #d1fae5;
   color: #065f46;
 }
 
-.inactive-badge {
+.rejected-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   background: #fee2e2;
   color: #991b1b;
+}
+
+/* ==========================================
+   BADGES - DEDUCIBLE
+   ========================================== */
+
+.deductible-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.non-deductible-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #f3f4f6;
+  color: #6b7280;
 }
 
 /* ==========================================
@@ -355,31 +391,49 @@
   margin-right: 0.5rem;
 }
 
-.edit-btn {
-  background: #dbeafe;
-  color: #1e40af;
-}
-
-.edit-btn:hover {
-  background: #bfdbfe;
-}
-
-.delete-btn {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.delete-btn:hover {
-  background: #fecaca;
-}
-
-.activate-btn {
+.approve-btn {
   background: #d1fae5;
   color: #065f46;
 }
 
-.activate-btn:hover {
+.approve-btn:hover {
   background: #a7f3d0;
+}
+
+.reject-btn {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.reject-btn:hover {
+  background: #fecaca;
+}
+
+.paid-btn {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.paid-btn:hover {
+  background: #bfdbfe;
+}
+
+.edit-btn {
+  background: #fed7aa;
+  color: #c2410c;
+}
+
+.edit-btn:hover {
+  background: #fdba74;
+}
+
+.delete-btn {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.delete-btn:hover {
+  background: #e5e7eb;
 }
 
 /* ==========================================
@@ -460,6 +514,47 @@
 }
 
 /* ==========================================
+   RESUMEN DE ESTADÍSTICAS
+   ========================================== */
+
+.stats-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.stat-card {
+  background: #f9fafb;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 0.0625rem solid #e5e7eb;
+  transition: all 0.2s;
+}
+
+.stat-card:hover {
+  background: white;
+  box-shadow: 0 0.25rem 0.375rem -0.0625rem rgba(0, 0, 0, 0.1);
+}
+
+.stat-label {
+  display: block;
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  display: block;
+  color: #1f2937;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* ==========================================
    RESPONSIVE
    ========================================== */
 
@@ -490,6 +585,10 @@
   .pagination-container {
     flex-direction: column;
     gap: 1rem;
+  }
+
+  .stats-summary {
+    grid-template-columns: 1fr;
   }
 }
 

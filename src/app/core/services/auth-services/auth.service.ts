@@ -3,7 +3,7 @@ import {Observable, tap, throwError} from 'rxjs';
 import {LoginResponse, User, UsersLogin} from '../../../interfaces/users-interface';
 import {ApiService} from '../api-service/api.service';
 import {Router} from '@angular/router';
-import {UserActivityService} from '../user-services/user-activity.service';
+import {UserActivityService} from './user-activity.service';
 
 /**
  * Servicio de autenticación con renovación automática de tokens
@@ -30,7 +30,7 @@ export class AuthService {
   private getUserActivityService() {
     if (!this.userActivityService) {
       // Importación dinámica para evitar dependencia circular
-      import('../user-services/user-activity.service').then(module => {
+      import('./user-activity.service').then(module => {
         const UserActivityService = module.UserActivityService;
         this.userActivityService = inject(UserActivityService);
       });
@@ -135,7 +135,7 @@ export class AuthService {
       return throwError(() => new Error('No refresh token available'));
     }
 
-    return this.api.post<{ refreshToken: string }, LoginResponse>('auth/refresh-token', { refreshToken }).pipe(
+    return this.api.post<{ refreshToken: string }, LoginResponse>('auth/refresh-token', {refreshToken}).pipe(
       tap((response: LoginResponse) => {
         localStorage.setItem('token', response.accessToken);
         if (response.refreshToken) {
@@ -198,4 +198,29 @@ export class AuthService {
   getToken(): string | null {
     return localStorage.getItem('token');
   }
+
+  /**
+   * Obtiene el rol del usuario actual
+   * ✅ CORREGIDO: Lee de 'userData' (donde realmente se guarda)
+   */
+  getCurrentUserRole(): string {
+    const userData = localStorage.getItem('userData');
+    if (!userData) return 'employee'; // Valor por defecto si no hay datos
+    try {
+      const user = JSON.parse(userData);
+      return user.role || 'employee';
+    } catch (error) {
+      return 'employee';
+    }
+  }
+
+  /**
+   * Verifica si el usuario actual es administrador
+   * ✅ CORREGIDO: Usa getCurrentUserRole() que lee correctamente
+   */
+  isAdmin(): boolean {
+    const role = this.getCurrentUserRole();
+    return role === 'admin';
+  }
+
 }

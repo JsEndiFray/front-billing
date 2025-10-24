@@ -76,7 +76,7 @@ import {SuppliersListComponent} from './pages/invoices/suppliers/suppliers-list/
 import {SuppliersEditComponent} from './pages/invoices/suppliers/suppliers-edit/suppliers-edit.component';
 
 // libro de iva(vat-book) sitema de iva
-import {VatBookComponent} from './pages/vat-book/vat-book/vat-book.component';
+import {VatBookComponent} from './pages/vat-book/vat-book.component';
 
 // Empleados (Employee) - Sistema de empleados
 import {EmployeeListComponent} from './pages/employee/employee-list/employee-list.component';
@@ -211,7 +211,7 @@ export const routes: Routes = [
         children: [
           {path: 'register', component: SuppliersRegisterComponent, title: 'Registar Proeveedor'},
           {path: 'list', component: SuppliersListComponent, title: 'Listado de Proveedores'},
-          {path: 'edit/id', component: SuppliersEditComponent, title: 'Editar Proveedor'}
+          {path: 'edit/:id', component: SuppliersEditComponent, title: 'Editar Proveedor'}
         ]
       },
       // Módulo de libro del iva

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Estates} from '../../../interfaces/estates-interface';
-import {EstatesService} from '../../../core/services/estates-services/estates.service';
+import {EstatesService} from '../../../core/services/entity-services/estates.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {Router} from '@angular/router';

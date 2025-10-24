@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {SuppliersService} from '../../../../core/services/suppliers-services/suppliers.service';
+import {SuppliersService} from '../../../../core/services/entity-services/suppliers.service';
 import {Router} from '@angular/router';
 import {SearchService} from '../../../../core/services/shared-services/search.service';
 import {PaginationService} from '../../../../core/services/shared-services/pagination.service';
@@ -308,6 +308,7 @@ export class SuppliersListComponent extends ExportableListBase<Suppliers> implem
   editSupplier(id: number): void {
     this.router.navigate(['/dashboards/suppliers/edit', id]);
   }
+
 
   /**
    * Elimina un proveedor (borrado lógico)

@@ -60,23 +60,23 @@ Esto levantará:
 
 El frontend se comunica con el backend a través del archivo de entorno Angular.
 
-### 🔧 `src/environments/environment.ts`
+### 🔧 `src/environments/environmentProduction.ts`
 ```ts
-export const environment = {
+export const environmentProduction = {
   production: false,
   apiUrl: 'http://localhost:3600/api'
 };
 ```
 
-### 🔧 `src/environments/environment.prod.ts`
+### 🔧 `src/environments/environmentProduction.prod.ts`
 ```ts
-export const environment = {
+export const environmentProduction = {
   production: true,
   apiUrl: 'https://api.tu-dominio.com/api'
 };
 ```
 
-Asegúrate de usar `environment.apiUrl` en tus servicios Angular para hacer peticiones a la API.
+Asegúrate de usar `environmentProduction.apiUrl` en tus servicios Angular para hacer peticiones a la API.
 
 ## Instalación
 

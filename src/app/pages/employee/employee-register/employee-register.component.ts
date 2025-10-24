@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {EmployeeService} from '../../../core/services/employee-services/employee.service';
+import {EmployeeService} from '../../../core/services/entity-services/employee.service';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import Swal from 'sweetalert2';

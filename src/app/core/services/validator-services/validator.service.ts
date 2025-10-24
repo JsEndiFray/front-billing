@@ -9,6 +9,8 @@ import {User} from '../../../interfaces/users-interface';
 import {Estates} from '../../../interfaces/estates-interface';
 import {Invoice} from '../../../interfaces/invoices-issued-interface';
 import {EstatesOwners} from '../../../interfaces/estates-owners-interface';
+import {InvoiceUtilsHelper} from '../../helpers/invoice-utils.helper';
+import {InternalExpense} from '../../../interfaces/expenses-interface';
 
 /**
  * Servicio de validación unificado para toda la aplicación
@@ -21,7 +23,8 @@ import {EstatesOwners} from '../../../interfaces/estates-owners-interface';
 export class ValidatorService {
 
   constructor(
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private invoicesUtilService: InvoiceUtilsHelper
   ) {
   }
 
@@ -33,7 +36,7 @@ export class ValidatorService {
    * Aplica transformaciones automáticas usando Angular Forms
    * Se puede usar con valueChanges o en el submit en caso  que no transforme demasiado
    */
-  applyTransformations(formGroup: FormGroup, entityType: 'client' | 'employee' | 'owner' | 'user' | 'estate' | 'estate_ownership' | 'invoice' | 'supplier'): void {
+  applyTransformations(formGroup: FormGroup, entityType: 'client' | 'employee' | 'owner' | 'user' | 'estate' | 'estate_ownership' | 'invoice' | 'supplier' | 'expense'): void {
     const controls = formGroup.controls;
 
     // Transformaciones comunes para personas
@@ -57,6 +60,9 @@ export class ValidatorService {
         break;
       case 'supplier':
         this.transformSupplierFields(controls);
+        break;
+      case 'expense':
+        this.transformExpenseFields(controls);
         break;
     }
   }
@@ -184,6 +190,106 @@ export class ValidatorService {
     if (!controls['country']?.value) {
       controls['country'].setValue('España', {emitEvent: false});
     }
+  }
+
+  //Expenses
+  private transformExpenseFields(controls: { [key: string]: AbstractControl }): void {
+    // Proveedor: nombre y dirección a mayúsculas
+    ['supplier_name', 'supplier_address'].forEach(field => {
+      if (controls[field]?.value) {
+        controls[field].setValue(
+          controls[field].value.toString().toUpperCase().trim(),
+          {emitEvent: false}
+        );
+      }
+    });
+
+    // NIF del proveedor: mayúsculas, sin espacios
+    if (controls['supplier_nif']?.value) {
+      controls['supplier_nif'].setValue(
+        controls['supplier_nif'].value.toString().toUpperCase().replace(/\s/g, ''),
+        {emitEvent: false}
+      );
+    }
+
+    // Campos de texto: solo trim
+    ['description', 'subcategory', 'notes', 'receipt_number', 'project_code', 'cost_center'].forEach(field => {
+      if (controls[field]?.value) {
+        controls[field].setValue(
+          controls[field].value.toString().trim(),
+          {emitEvent: false}
+        );
+      }
+    });
+
+    // Status por defecto si está vacío
+    if (!controls['status']?.value) {
+      controls['status']?.setValue('pending', {emitEvent: false});
+    }
+  }
+
+// ========================================
+// VALIDACIÓN COMPLETA PARA GASTOS
+// ========================================
+
+  /**
+   * Validación completa para gastos internos
+   */
+  validateExpense(expense: InternalExpense): { isValid: boolean; message?: string } {
+    // Campos obligatorios básicos
+    if (!expense.expense_date || !expense.category || !expense.description ||
+      !expense.supplier_name || expense.amount === null || expense.amount === undefined) {
+      return {isValid: false, message: 'Todos los campos obligatorios deben estar completos'};
+    }
+
+    // Validar amount
+    if (expense.amount <= 0) {
+      return {isValid: false, message: 'El importe debe ser mayor a 0'};
+    }
+
+    if (expense.amount > 999999) {
+      return {isValid: false, message: 'El importe no puede superar 999,999'};
+    }
+
+    // Validar IVA
+    if (expense.iva_percentage < 0 || expense.iva_percentage > 100) {
+      return {isValid: false, message: 'El IVA debe estar entre 0 y 100%'};
+    }
+
+    // Validar NIF del proveedor si existe
+    if (expense.supplier_nif && expense.supplier_nif.trim() !== '') {
+      const nifValidation = this.validateIdentification(expense.supplier_nif);
+      if (!nifValidation.isValid) {
+        return {isValid: false, message: `NIF del proveedor inválido: ${nifValidation.message}`};
+      }
+    }
+
+    // Validar fecha de recibo no posterior a fecha de gasto
+    if (expense.receipt_date && expense.expense_date) {
+      const receiptDate = new Date(expense.receipt_date);
+      const expenseDate = new Date(expense.expense_date);
+
+      if (receiptDate > expenseDate) {
+        return {isValid: false, message: 'La fecha del recibo no puede ser posterior a la fecha del gasto'};
+      }
+    }
+
+    // Validar recurrencia
+    if (expense.is_recurring) {
+      if (!expense.recurrence_period || !expense.next_occurrence_date) {
+        return {isValid: false, message: 'Los gastos recurrentes deben tener periodo y próxima fecha'};
+      }
+
+      // Validar que next_occurrence_date sea posterior a expense_date
+      const nextDate = new Date(expense.next_occurrence_date);
+      const expenseDate = new Date(expense.expense_date);
+
+      if (nextDate <= expenseDate) {
+        return {isValid: false, message: 'La próxima fecha de recurrencia debe ser posterior a la fecha del gasto'};
+      }
+    }
+
+    return {isValid: true};
   }
 
   // ========================================
@@ -429,15 +535,6 @@ export class ValidatorService {
   // ========================================
 
   /**
-   * Calcula el total de una factura con IVA e IRPF españoles
-   */
-  calculateInvoiceTotal(taxBase: number, ivaPercent: number, irpfPercent: number): number {
-    const iva = (taxBase * ivaPercent) / 100;
-    const irpf = (taxBase * irpfPercent) / 100;
-    return taxBase + iva - irpf;
-  }
-
-  /**
    * Valida campos numéricos de factura
    */
   validateInvoiceNumericFields(invoice: Invoice): { isValid: boolean; message?: string } {
@@ -476,7 +573,7 @@ export class ValidatorService {
     }
 
     // Validar que el total calculado coincida (con margen de error por decimales)
-    const calculatedTotal = this.calculateInvoiceTotal(taxBase, iva, irpf);
+    const calculatedTotal = this.invoicesUtilService.calculateInvoiceTotal(taxBase, iva, irpf);
     if (Math.abs(total - calculatedTotal) > 0.01) {
       return {isValid: false, message: 'El total no coincide con el cálculo de Base + IVA - IRPF.'};
     }

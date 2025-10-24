@@ -17,7 +17,7 @@ export interface Invoice {
   iva?: number | null;
   irpf?: number | null;
   total?: number | null;
-  is_refund?: number | null;
+  is_refund?: 0 | 1;
   original_invoice_id?: number | null;
   original_invoice_number?: string | null;
   // Propiedades de COBRO (antes 'pago')
@@ -30,7 +30,7 @@ export interface Invoice {
   start_date?: string;
   end_date?: string;
   corresponding_month?: string | null;
-  is_proportional?: number | null;
+  is_proportional?: 0 | 1;
   // Metadatos
   created_at?: string;
   updated_at?: string;

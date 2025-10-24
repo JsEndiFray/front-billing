@@ -251,16 +251,16 @@
             <div class="detail-item">
               <span class="detail-label">Base original:</span>
               <span
-                class="detail-value">{{ simulationResult.details.original_base | currency:'EUR':'symbol':'1.2-2' }}</span>
+                class="detail-value">{{ simulationResult.details.original_base | number:'1.2-2' }}€</span>
             </div>
             <div class="detail-item">
               <span class="detail-label">Base proporcional:</span>
               <span
-                class="detail-value">{{ simulationResult.details.proportional_base | currency:'EUR':'symbol':'1.2-2' }}</span>
+                class="detail-value">{{ simulationResult.details.proportional_base | number:'1.2-2' }}€</span>
             </div>
             <div class="detail-item total-line">
               <span class="detail-label">Total proporcional:</span>
-              <span class="detail-value">{{ simulationResult.total | currency:'EUR':'symbol':'1.2-2' }}</span>
+              <span class="detail-value">{{ simulationResult.total | number:'1.2-2'}}€</span>
             </div>
           </div>
         </div>

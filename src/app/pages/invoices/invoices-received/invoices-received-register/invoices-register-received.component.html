@@ -99,9 +99,9 @@
       <!-- Total calculado -->
       <div class="total-display">
         <span class="total-label">Total:</span>
-        <span class="total-amount">{{ calculatedTotal | currency:'EUR':'symbol':'1.2-2' }}</span>
+        <span class="total-amount">{{ calculatedTotal | number:'1.2-2' }}€</span>
         <span class="total-label">Total Calculo:</span>
-        <span class="total-amount">{{ amountsForm.get('total_amount')?.value | currency:'EUR':'symbol':'1.2-2' }}</span>
+        <span class="total-amount">{{ amountsForm.get('total_amount')?.value | number:'1.2-2' }}€</span>
       </div>
     </form>
 

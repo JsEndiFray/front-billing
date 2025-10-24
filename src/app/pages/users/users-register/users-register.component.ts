@@ -1,9 +1,9 @@
-import {Component} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 
 import Swal from 'sweetalert2';
 import {Router} from '@angular/router';
-import {AuthService} from '../../../core/services/auth-service/auth.service';
+import {AuthService} from '../../../core/services/auth-services/auth.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {User} from '../../../interfaces/users-interface';
 import {ValidatorService} from '../../../core/services/validator-services/validator.service';
@@ -26,7 +26,7 @@ export class UsersRegisterComponent {
   // PROPIEDADES DE FORMULARIOS MÚLTIPLES
   // ==========================================
   userForm: FormGroup;
-
+  isSubmitting = signal(false);
 
   constructor(
     private router: Router,

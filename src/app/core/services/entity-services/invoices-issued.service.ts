@@ -11,8 +11,10 @@ import {
   RefundInvoice,
 } from '../../../interfaces/invoices-issued-interface';
 import {HttpClient} from '@angular/common/http';
+//import {MonthlySummary} from '../../../interfaces/expenses-interface';
 import {ClientStats, InvoiceStats, OwnerStats} from '../../../interfaces/stats-interface';
-import {IncomeStatementEntry, MonthlySummary, VATBookDataEntry} from '../../../interfaces/vat-book-interface';
+
+
 
 /**
  * Servicio de Angular para interactuar con el backend de facturas emitidas.
@@ -188,7 +190,7 @@ export class InvoicesIssuedService {
     return this.api.get<OwnerStats[]>('invoices-issued/stats/owner');
   }
 
-  //Obtiene datos para el libro de IVA repercutido.
+ /* //Obtiene datos para el libro de IVA repercutido.
   getVATBookData(year: number, month?: number): Observable<VATBookDataEntry[]> {
     let endpoint = `invoices-issued/vat-book/${year}`;
     if (month) {
@@ -214,5 +216,5 @@ export class InvoicesIssuedService {
   //Obtiene facturas emitidas pendientes con envejecimiento (aging).
   getPendingInvoicesAging(): Observable<Invoice[]> {
     return this.api.get<Invoice[]>(`invoices-issued/aging`);
-  }
+  }*/
 }

@@ -1,16 +1,16 @@
 import {Injectable} from '@angular/core';
-import {Invoice} from '../../../interfaces/invoices-issued-interface';
-import {CalculableInvoice} from '../../../interfaces/calculate-interface';
+import {Invoice} from '../../interfaces/invoices-issued-interface';
+import {CalculableInvoice} from '../../interfaces/calculate-interface';
 import {
   CATEGORIES_LABELS,
   COLLECTION_METHOD_LABELS,
   COLLECTION_STATUS_LABELS
-} from '../../../shared/Collection-Enum/collection-enum';
+} from '../../shared/Collection-Enum/collection-enum';
 
 @Injectable({
   providedIn: 'root'
 })
-export class InvoicesUtilService {
+export class InvoiceUtilsHelper {
 
   constructor() {
   }
@@ -82,8 +82,6 @@ export class InvoicesUtilService {
 */
 
 
-
-
   /**
    * Formatea todas las fechas de una factura para enviar al backend
    * Esto es necesario porque el backend espera fechas en formato YYYY-MM-DD
@@ -103,7 +101,6 @@ export class InvoicesUtilService {
 
     return formattedInvoice;
   }
-
 
 
   /**
@@ -182,20 +179,26 @@ export class InvoicesUtilService {
    */
   getCurrentDateForInput(): string {
     return new Date().toISOString().split('T')[0];
+  };
+
+  /**
+   * Cálculo matemático puro de factura
+   */
+  calculateInvoiceTotal(taxBase: number, ivaPercent: number, irpfPercent: number): number {
+    const iva = (taxBase * ivaPercent) / 100;
+    const irpf = (taxBase * irpfPercent) / 100;
+    return taxBase + iva - irpf;
   }
+
 
   /**
    * Calcula el total de una factura (normal o proporcional)
    * @param invoice - La factura a calcular
-   * @param onProportionalDatesChangeCallback - Función del componente para manejar cálculo proporcional
    * SE UTILIZA EN RECEIVED Y ISSUED
    */
-  calculateTotal(invoice: CalculableInvoice, onProportionalDatesChangeCallback?: () => void): void {
+  calculateTotal(invoice: CalculableInvoice, callback?: () => void): void {
     if (invoice.is_proportional === 1) {
-      // Si es proporcional, llamar al callback del componente
-      if (onProportionalDatesChangeCallback) {
-        onProportionalDatesChangeCallback();
-      }
+      if (callback) callback();
     } else {
       // Si es normal, usar cálculo estándar
       const base = parseFloat(invoice.tax_base?.toString() || '0') || 0;
@@ -203,7 +206,7 @@ export class InvoicesUtilService {
       const ivaPercent = parseFloat((invoice.iva || invoice.iva_percentage)?.toString() || '0') || 0;
       const irpfPercent = parseFloat((invoice.irpf || invoice.irpf_percentage)?.toString() || '0') || 0;
 
-      const total = base + (base * ivaPercent / 100) - (base * irpfPercent / 100);
+      const total = this.calculateInvoiceTotal(base, ivaPercent, irpfPercent)
 
       // Asigna a ambas propiedades para compatibilidad
       invoice.total = parseFloat(total.toFixed(2));

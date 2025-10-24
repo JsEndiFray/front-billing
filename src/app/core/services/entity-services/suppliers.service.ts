@@ -26,7 +26,7 @@ export class SuppliersService {
    * Obtiene todos los proveedores (incluyendo inactivos)
    */
   getAllSuppliersIncludingInactive(): Observable<Suppliers[]> {
-    return this.api.get<Suppliers[]>('suppliers/all');
+    return this.api.get<Suppliers[]>('suppliers');
   }
 
   /**

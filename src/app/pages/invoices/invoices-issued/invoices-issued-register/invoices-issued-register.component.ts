@@ -8,17 +8,17 @@ import {
 import {Estates} from '../../../../interfaces/estates-interface';
 import {Clients} from '../../../../interfaces/clientes-interface';
 import {Owners} from '../../../../interfaces/owners-interface';
-import {EstatesService} from '../../../../core/services/estates-services/estates.service';
+import {EstatesService} from '../../../../core/services/entity-services/estates.service';
 import {HttpErrorResponse} from '@angular/common/http';
-import {ClientsService} from '../../../../core/services/clients-services/clients.service';
-import {InvoicesIssuedService} from '../../../../core/services/invoices-issued-service/invoices-issued.service';
+import {ClientsService} from '../../../../core/services/entity-services/clients.service';
+import {InvoicesIssuedService} from '../../../../core/services/entity-services/invoices-issued.service';
 import Swal from 'sweetalert2';
-import {OwnersService} from '../../../../core/services/owners-services/owners.service';
+import {OwnersService} from '../../../../core/services/entity-services/owners.service';
 import {Router} from '@angular/router';
 import {
-  InvoicesUtilService
-} from '../../../../core/services/shared-services/invoices-Util.service';
-import {CurrencyPipe} from '@angular/common';
+  InvoiceUtilsHelper
+} from '../../../../core/helpers/invoice-utils.helper';
+import {DecimalPipe} from '@angular/common';
 import {
   BILLING_TYPE_LABELS,
   COLLECTION_METHOD_LABELS, COLLECTION_STATUS_LABELS,
@@ -33,7 +33,7 @@ import {ValidatorService} from '../../../../core/services/validator-services/val
   selector: 'app-invoices-issued-register',
   imports: [
     ReactiveFormsModule,
-    CurrencyPipe
+    DecimalPipe
   ],
   templateUrl: './invoices-issued-register.component.html',
   styleUrl: './invoices-issued-register.component.css'
@@ -72,7 +72,7 @@ export class InvoicesIssuedRegisterComponent implements OnInit {
     private ownerServices: OwnersService,
     private invoicesIssuedService: InvoicesIssuedService,
     private router: Router,
-    protected invoicesUtilService: InvoicesUtilService,
+    protected invoicesUtilService: InvoiceUtilsHelper,
     private fb: FormBuilder,
   ) {
     this.invoiceForm = this.fb.group({

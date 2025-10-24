@@ -1,16 +1,16 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Suppliers} from '../../../../interfaces/suppliers-interface';
-import {InvoicesReceivedService} from '../../../../core/services/invoices-received-services/invoices-received.service';
-import {SuppliersService} from '../../../../core/services/suppliers-services/suppliers.service';
-import {InvoicesUtilService} from '../../../../core/services/shared-services/invoices-Util.service';
+import {InvoicesReceivedService} from '../../../../core/services/entity-services/invoices-received.service';
+import {SuppliersService} from '../../../../core/services/entity-services/suppliers.service';
+import {InvoiceUtilsHelper} from '../../../../core/helpers/invoice-utils.helper';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import {InvoiceReceived} from '../../../../interfaces/invoices-received-interface';
 import {CalculableInvoice} from '../../../../interfaces/calculate-interface';
 import Swal from 'sweetalert2';
-import {CurrencyPipe} from '@angular/common';
-import {FileUploadService} from '../../../../core/services/file-upload/file-upload.service';
+import {DecimalPipe} from '@angular/common';
+import {FileUploadService} from '../../../../core/services/shared-services/file-upload.service';
 import {
   CATEGORIES_LABELS,
   PAYMENT_METHOD_LABELS,
@@ -22,7 +22,7 @@ import {ValidatorService} from '../../../../core/services/validator-services/val
   selector: 'app-invoices-received-edit',
   imports: [
     ReactiveFormsModule,
-    CurrencyPipe
+    DecimalPipe
   ],
   templateUrl: './invoices-received-edit.component.html',
   styleUrl: './invoices-received-edit.component.css'
@@ -93,7 +93,7 @@ export class InvoicesReceivedEditComponent implements OnInit {
     private fb: FormBuilder,
     private invoicesReceivedService: InvoicesReceivedService,
     private suppliersService: SuppliersService,
-    private invoicesUtilService: InvoicesUtilService,
+    private invoicesUtilService: InvoiceUtilsHelper,
     private router: Router,
     private route: ActivatedRoute,
     private fileUploadService: FileUploadService,

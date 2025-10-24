@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {Employee} from '../../../interfaces/employee-interface';
-import {EmployeeService} from '../../../core/services/employee-services/employee.service';
+import {EmployeeService} from '../../../core/services/entity-services/employee.service';
 import {Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import {SearchService} from '../../../core/services/shared-services/search.service';

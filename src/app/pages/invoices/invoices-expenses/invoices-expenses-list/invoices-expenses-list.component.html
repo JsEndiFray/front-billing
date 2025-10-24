@@ -1,1 +1,359 @@
-<p>invoice-expenses-list works!</p>
+<div class="container">
+  <!-- Título y descripción -->
+  <div class="header">
+    <h1 class="title">Gestión de Gastos Internos</h1>
+    <p class="subtitle">Administra el listado completo de gastos</p>
+  </div>
+
+  <!-- LOADING STATE -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando gastos...</p>
+    </div>
+  }
+
+  <!-- ERROR STATE -->
+  @if (error()) {
+    <div class="alert alert-error">
+      <span>{{ error() }}</span>
+      <button type="button" (click)="reloadExpenses()" class="retry-btn">Reintentar</button>
+    </div>
+  }
+
+  @if (!isLoading()) {
+    <!-- Sección de búsqueda -->
+    <div class="filters-section">
+      <!-- FormGroup de búsqueda -->
+      <form class="search-container" [formGroup]="searchForm">
+        <div class="search-wrapper">
+          <input
+            type="text"
+            formControlName="searchTerm"
+            placeholder="Buscar por descripción, proveedor, NIF, categoría..."
+            class="search-input"
+            autocomplete="off">
+          <!-- Iconos de búsqueda y limpiar -->
+          <div class="search-actions">
+            <span class="search-icon">🔍</span>
+            @if (searchTerm()) {
+              <button type="button" (click)="clearFilters()" class="clear-button" title="Limpiar búsqueda">✕</button>
+            }
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filters-container">
+      <form [formGroup]="filtersForm">
+        <!-- Filtro por categoría -->
+        <select formControlName="selectedCategory" class="filter-select">
+          <option value="">Todas las categorías</option>
+          @for (cat of categoryLabels(); track cat.value) {
+            <option [value]="cat.value">{{ cat.label }}</option>
+          }
+        </select>
+
+        <!-- Filtro por estado -->
+        <select formControlName="selectedStatus" class="filter-select">
+          <option value="">Todos los estados</option>
+          @for (status of statusLabels(); track status.value) {
+            <option [value]="status.value">{{ status.label }}</option>
+          }
+        </select>
+
+        <!-- Filtro por deducible -->
+        <select formControlName="selectedDeductible" class="filter-select">
+          <option value="">Todos</option>
+          @for (ded of deductibleLabels(); track ded.value) {
+            <option [value]="ded.value">{{ ded.label }}</option>
+          }
+        </select>
+
+        <!-- Botón limpiar filtros -->
+        <button
+          type="button"
+          (click)="clearFilters()"
+          class="clear-filters-btn"
+          title="Limpiar todos los filtros">
+          Limpiar filtros
+        </button>
+      </form>
+
+      <!-- Botones de acción -->
+      <div class="actions-container">
+        <button type="button" class="export-btn" (click)="exportData()">
+          Exportar Todo
+        </button>
+        <button type="button" class="export-btn" (click)="exportCurrentPage()">
+          Exportar Página
+        </button>
+        <button type="button" class="export-btn" (click)="exportSelected()">
+          Exportar Selección ({{ selectedItems.size }})
+        </button>
+        <button type="button" class="primary-btn" (click)="createNewExpense()">+ Nuevo Gasto</button>
+      </div>
+    </div>
+
+    <!-- Configuración de paginación -->
+    <div class="pagination-config">
+      <form [formGroup]="paginationForm">
+        <label for="itemsPerPage">Elementos por página:</label>
+        <select
+          id="itemsPerPage"
+          formControlName="itemsPerPage"
+          class="items-per-page-select">
+          <option [value]="5">5</option>
+          <option [value]="10">10</option>
+          <option [value]="25">25</option>
+          <option [value]="50">50</option>
+        </select>
+      </form>
+    </div>
+
+    <!-- Tabla de gastos -->
+    <div class="table-container">
+      <table class="data-table">
+
+        <!-- Cabecera -->
+        <thead>
+        <tr>
+          <th>
+            <input
+              type="checkbox"
+              (change)="toggleAllSelection()"
+              [checked]="isAllSelected()">
+          </th>
+          <th>ID</th>
+          <th>FECHA</th>
+          <th>CATEGORÍA</th>
+          <th>DESCRIPCIÓN</th>
+          <th>PROVEEDOR</th>
+          <th>BASE</th>
+          <th>IVA</th>
+          <th>TOTAL</th>
+          <th>DEDUCIBLE</th>
+          <th>ESTADO</th>
+          <th>ADJUNTO</th>
+          <!-- ✅ SOLO MOSTRAR SI ES ADMIN -->
+          @if (authServices.isAdmin()) {
+            <th>ACCIONES</th>
+          }
+        </tr>
+        </thead>
+
+        <!-- Cuerpo -->
+        <tbody>
+        <!-- ✅ USA SIGNAL currentPageExpenses() -->
+          @if (currentPageExpenses() && currentPageExpenses().length > 0) {
+            @for (expense of currentPageExpenses(); track expense.id) {
+              <tr>
+
+                <td>
+                  <input
+                    type="checkbox"
+                    [checked]="selectedItems.has(expense.id!)"
+                    (change)="toggleSelection(expense.id!)">
+                </td>
+
+                <!-- ID -->
+                <td>#{{ expense.id }}</td>
+
+                <!-- Fecha -->
+                <td>{{ utilService.formatDate(expense.expense_date) }}</td>
+
+                <!-- Categoría -->
+                <td>
+                  <span [ngClass]="utilService.getCategoryClass(expense.category)">
+                    {{ utilService.getCategoryLabel(expense.category) }}
+                  </span>
+                </td>
+
+                <!-- Descripción -->
+                <td class="description-cell">
+                  {{ utilService.truncateText(expense.description, 40) }}
+                </td>
+
+                <!-- Proveedor -->
+                <td>{{ expense.supplier_name || '-' }}</td>
+
+                <!-- Base -->
+                <td class="amount-cell">{{ utilService.formatAmount(expense.amount) }}</td>
+
+                <!-- IVA -->
+                <td class="amount-cell">{{ utilService.formatAmount(expense.iva_amount) }}</td>
+
+                <!-- Total -->
+                <td class="amount-cell">{{ utilService.formatAmount(expense.total_amount) }}</td>
+
+                <!-- Deducible -->
+                <td>
+                  <span [ngClass]="utilService.getDeductibleClass(expense.is_deductible)">
+                    {{ utilService.getDeductibleLabel(expense.is_deductible) }}
+                  </span>
+                </td>
+
+                <!-- Estado -->
+                <td>
+                  <span [ngClass]="utilService.getStatusClass(expense.status)">
+                    {{ utilService.getStatusLabel(expense.status) }}
+                  </span>
+                </td>
+
+                <!--ADJUNTOS-->
+                <td>
+                  @if (expense.has_attachments && expense.pdf_path) {
+                    <button class="action-btn view-btn" (click)="viewAttachment(expense.pdf_path!)" title="Ver archivo">
+                      📄 Ver PDF
+                    </button>
+                  } @else {
+                    <span class="no-attachment">Sin archivo</span>
+                  }
+                </td>
+
+                <!-- Acciones -->
+                <!--SOLO MOSTRAR SI ES ADMIN -->
+                @if (authServices.isAdmin()) {
+                  <td>
+                    <!-- Aprobar -->
+                    @if (utilService.canApproveReject(expense)) {
+                      <button class="action-btn approve-btn" (click)="approveExpense(expense.id!)" title="Aprobar">
+                        ✅ Aprobar
+                      </button>
+                    }
+
+                    <!-- Rechazar -->
+                    @if (utilService.canApproveReject(expense)) {
+                      <button class="action-btn reject-btn" (click)="rejectExpense(expense.id!)" title="Rechazar">
+                        ❌ Rechazar
+                      </button>
+                    }
+
+                    <!-- Marcar como Pagado -->
+                    @if (utilService.canMarkAsPaid(expense)) {
+                      <button class="action-btn paid-btn" (click)="markAsPaid(expense.id!)" title="Marcar como pagado">
+                        💰 Pagado
+                      </button>
+                    }
+
+                    <!-- Editar -->
+                    @if (utilService.canEdit(expense)) {
+                      <button class="action-btn edit-btn" (click)="editExpense(expense.id!)">
+                        ✏️ Editar
+                      </button>
+                    }
+
+                    <!-- Eliminar -->
+                    @if (utilService.canDelete(expense)) {
+                      <button class="action-btn delete-btn" (click)="deleteExpense(expense.id!)">
+                        🗑️ Eliminar
+                      </button>
+                    }
+                  </td>
+                }
+
+              </tr>
+            }
+          } @else {
+            <tr>
+              <td colspan="13" class="no-data">
+                <div class="empty-state">
+                  <p>No se encontraron gastos</p>
+                  <button type="button" class="primary-btn" (click)="createNewExpense()">+ Nuevo Gasto</button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+
+      </table>
+    </div>
+
+    <!-- Paginación -->
+      <!-- ✅ USA SIGNAL paginationInfo() -->
+    @if (paginationInfo().totalPages > 1) {
+      <div class="pagination-container">
+
+        <!-- Información de resultados -->
+        <div class="pagination-info">
+          {{ getPaginationText() }}
+        </div>
+
+        <!-- Controles de paginación -->
+        <div class="pagination-controls">
+
+          <!-- Botón anterior -->
+          <button
+            class="pagination-btn"
+            [class.disabled]="!paginationInfo().hasPrevious"
+            (click)="previousPage()"
+            [disabled]="!paginationInfo().hasPrevious">
+            ‹ Anterior
+          </button>
+
+          <!-- Números de página -->
+          @for (page of visiblePages(); track page) {
+            <button
+              class="pagination-btn"
+              [class.active]="page === currentPage()"
+              (click)="goToPage(page)">
+              {{ page }}
+            </button>
+          }
+
+          <!-- Puntos suspensivos -->
+          @if (paginationInfo().totalPages > 5 && currentPage() < paginationInfo().totalPages - 2) {
+            <span class="pagination-dots">...</span>
+            <button
+              class="pagination-btn"
+              (click)="goToPage(paginationInfo().totalPages)">
+              {{ paginationInfo().totalPages }}
+            </button>
+          }
+
+          <!-- Botón siguiente -->
+          <button
+            class="pagination-btn"
+            [class.disabled]="!paginationInfo().hasNext"
+            (click)="nextPage()"
+            [disabled]="!paginationInfo().hasNext">
+            Siguiente ›
+          </button>
+
+        </div>
+      </div>
+    }
+
+    <!-- Resumen de estadísticas -->
+      <!-- ✅ USA SIGNALS -->
+    @if (currentPageExpenses() && currentPageExpenses().length > 0) {
+      <div class="stats-summary">
+        <div class="stat-card">
+          <span class="stat-label">Total Gastos:</span>
+          <span class="stat-value">{{ totalFilteredItems() }}</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Monto Total:</span>
+          <span class="stat-value">{{ utilService.formatAmount(expenseStats().totalAmount) }}</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Pendientes:</span>
+          <span class="stat-value">{{ pendingCount() }}</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Aprobados:</span>
+          <span class="stat-value">{{ approvedCount() }}</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Pagados:</span>
+          <span class="stat-value">{{ paidCount() }}</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Rechazados:</span>
+          <span class="stat-value">{{ rejectedCount() }}</span>
+        </div>
+      </div>
+    }
+  }
+</div>

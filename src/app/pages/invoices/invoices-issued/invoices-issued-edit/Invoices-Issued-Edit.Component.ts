@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {CurrencyPipe} from '@angular/common';
+import {DecimalPipe} from '@angular/common';
 import {
   Invoice,
   ProportionalSimulation,
@@ -10,27 +10,24 @@ import {
 import {Owners} from '../../../../interfaces/owners-interface';
 import {Clients} from '../../../../interfaces/clientes-interface';
 import {Estates} from '../../../../interfaces/estates-interface';
-import {InvoicesIssuedService} from '../../../../core/services/invoices-issued-service/invoices-issued.service';
+import {InvoicesIssuedService} from '../../../../core/services/entity-services/invoices-issued.service';
 import {HttpErrorResponse} from '@angular/common/http';
-import {OwnersService} from '../../../../core/services/owners-services/owners.service';
-import {ClientsService} from '../../../../core/services/clients-services/clients.service';
-import {EstatesService} from '../../../../core/services/estates-services/estates.service';
+import {OwnersService} from '../../../../core/services/entity-services/owners.service';
+import {ClientsService} from '../../../../core/services/entity-services/clients.service';
+import {EstatesService} from '../../../../core/services/entity-services/estates.service';
 import Swal from 'sweetalert2';
-import {DataFormatPipe} from '../../../../shared/pipe/data-format.pipe';
-import {InvoicesUtilService} from '../../../../core/services/shared-services/invoices-Util.service';
+import {InvoiceUtilsHelper} from '../../../../core/helpers/invoice-utils.helper';
 import {
   BILLING_TYPE_LABELS,
   COLLECTION_METHOD_LABELS, COLLECTION_STATUS_LABELS
 } from '../../../../shared/Collection-Enum/collection-enum';
 import {ValidatorService} from '../../../../core/services/validator-services/validator.service';
-import {CalculableInvoice} from '../../../../interfaces/calculate-interface';
 
 @Component({
   selector: 'app-invoices-issued-edit',
   imports: [
-    CurrencyPipe,
-    DataFormatPipe,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    DecimalPipe
   ],
   templateUrl: './Invoices-Issued-Edit.Component.html',
   styleUrl: './Invoices-Issued-Edit.Component.css'
@@ -70,7 +67,7 @@ export class InvoicesIssuedEditComponent implements OnInit {
     private clientsServices: ClientsService,
     private estatesServices: EstatesService,
     private validatorService: ValidatorService,
-    protected invoicesUtilService: InvoicesUtilService,
+    protected invoicesUtilService: InvoiceUtilsHelper,
     private fb: FormBuilder,
   ) {
     this.invoiceForm = this.fb.group({

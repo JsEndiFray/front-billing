@@ -1,0 +1,580 @@
+/* Reset y estilos base */
+* {
+  box-sizing: border-box;
+}
+
+/* ==========================================
+   CONTENEDOR PRINCIPAL
+   ========================================== */
+
+.vat-book-container {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 87.5rem;
+  box-shadow: 0 0.25rem 0.375rem -0.0625rem rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================================
+   HEADER
+   ========================================== */
+
+.header-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 0.125rem solid #e5e7eb;
+}
+
+.title-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.page-title {
+  color: #1f2937;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.period-badge {
+  padding: 0.375rem 0.75rem;
+  background: #dbeafe;
+  color: #1e40af;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* ==========================================
+   SECCIÓN DE FILTROS
+   ========================================== */
+
+.filters-section {
+  background: #f9fafb;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 0.0625rem solid #e5e7eb;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-item label {
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.375rem;
+  display: block;
+}
+
+.search-item {
+  grid-column: span 2;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* ==========================================
+   INPUTS Y CONTROLES
+   ========================================== */
+
+.form-input,
+.form-select {
+  padding: 0.625rem 0.75rem;
+  border: 0.125rem solid #e5e7eb;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  color: #374151;
+  background: #ffffff;
+  transition: all 0.2s;
+  font-family: inherit;
+  width: 100%;
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-input::placeholder {
+  color: #9ca3af;
+}
+
+.form-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem;
+  padding-right: 2.5rem;
+}
+
+/* ==========================================
+   BOTONES
+   ========================================== */
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+}
+
+.btn-secondary {
+  background: #ffffff;
+  color: #374151;
+  border: 0.125rem solid #e5e7eb;
+}
+
+.btn-secondary:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.btn-success {
+  background: #10b981;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);
+}
+
+/* ==========================================
+   ESTADOS: LOADING Y ERROR
+   ========================================== */
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 0.25rem solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-container p {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-top: 1rem;
+}
+
+.error-container {
+  padding: 2rem;
+  text-align: center;
+}
+
+.error-message {
+  background: #fef2f2;
+  border: 0.125rem solid #fecaca;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.error-icon {
+  font-size: 2rem;
+}
+
+.error-message p {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* ==========================================
+   SECCIÓN DE CONTENIDO
+   ========================================== */
+
+.content-section {
+  margin-top: 1.5rem;
+}
+
+/* ==========================================
+   ESTADÍSTICAS
+   ========================================== */
+
+.stats-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: #f9fafb;
+  border: 0.0625rem solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stat-label {
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-value {
+  color: #1f2937;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* ==========================================
+   SECCIÓN DE EXPORTACIÓN
+   ========================================== */
+
+.export-section {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* ==========================================
+   TABS
+   ========================================== */
+
+.tabs-container {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 0.125rem solid #e5e7eb;
+  margin-bottom: 1.5rem;
+}
+
+.tab-button {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  color: #6b7280;
+  border: none;
+  border-bottom: 0.125rem solid transparent;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  bottom: -0.125rem;
+}
+
+.tab-button:hover {
+  color: #3b82f6;
+  background: #f9fafb;
+}
+
+.tab-button.active {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+}
+
+/* ==========================================
+   CONTENIDO DE TABS
+   ========================================== */
+
+.tab-content {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(0.5rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================
+   TABLAS
+   ========================================== */
+
+.table-container {
+  overflow-x: auto;
+  border-radius: 0.5rem;
+  border: 0.0625rem solid #e5e7eb;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.data-table thead {
+  background: #f9fafb;
+  border-bottom: 0.125rem solid #e5e7eb;
+}
+
+.data-table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  color: #374151;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.data-table td {
+  padding: 0.75rem 1rem;
+  color: #6b7280;
+  border-bottom: 0.0625rem solid #f3f4f6;
+}
+
+.data-table tbody tr:hover {
+  background: #fafafa;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Columnas especiales */
+.data-table td.amount {
+  text-align: right;
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: #374151;
+}
+
+.data-table td.total {
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.data-table td.positive {
+  color: #059669;
+}
+
+.data-table td.negative {
+  color: #dc2626;
+}
+
+/* Mensaje cuando no hay datos */
+.empty-message {
+  text-align: center;
+  color: #9ca3af;
+  font-style: italic;
+  padding: 2rem !important;
+}
+
+/* ==========================================
+   BADGES
+   ========================================== */
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Badges de tipo de IVA */
+.vat-rate-general {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.vat-rate-reduced {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.vat-rate-super-reduced {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.vat-rate-exempt {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.vat-rate-other {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+/* Badges de deducible */
+.deductible-badge {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.non-deductible-badge {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Badges de IVA neto */
+.net-vat-positive {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.net-vat-negative {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.net-vat-zero {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 64rem) {
+  .filters-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .search-item {
+    grid-column: span 2;
+  }
+
+  .filter-actions {
+    grid-column: span 2;
+  }
+
+  .stats-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 48rem) {
+  .vat-book-container {
+    padding: 1rem;
+  }
+
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .search-item {
+    grid-column: span 1;
+  }
+
+  .filter-actions {
+    grid-column: span 1;
+    flex-direction: column;
+  }
+
+  .filter-actions .btn {
+    width: 100%;
+  }
+
+  .stats-section {
+    grid-template-columns: 1fr;
+  }
+
+  .export-section {
+    flex-direction: column;
+  }
+
+  .export-section .btn {
+    width: 100%;
+  }
+
+  .tabs-container {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+
+  .tab-button {
+    white-space: nowrap;
+    font-size: 0.8125rem;
+    padding: 0.625rem 1rem;
+  }
+}
+
+@media (max-width: 30rem) {
+  .vat-book-container {
+    padding: 0.75rem;
+    margin: 0.5rem auto;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .filters-section {
+    padding: 1rem;
+  }
+
+  .data-table {
+    font-size: 0.8125rem;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 0.5rem;
+  }
+}
+
+/* ==========================================
+   UTILIDADES
+   ========================================== */
+
+.hidden {
+  display: none;
+}
+
+.visible {
+  display: block;
+}

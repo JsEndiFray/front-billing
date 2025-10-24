@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {EstatesOwners} from '../../../interfaces/estates-owners-interface';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
-import {EstateOwnersService} from '../../../core/services/estate-owners-services/estate-owners.service';
+import {EstateOwnersService} from '../../../core/services/entity-services/estate-owners.service';
 import {Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';

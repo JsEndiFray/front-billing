@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {Clients} from '../../../interfaces/clientes-interface';
-import {ClientsService} from '../../../core/services/clients-services/clients.service';
+import {ClientsService} from '../../../core/services/entity-services/clients.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
 import Swal from 'sweetalert2';

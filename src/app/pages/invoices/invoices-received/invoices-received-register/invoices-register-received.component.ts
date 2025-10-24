@@ -1,15 +1,15 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {InvoicesReceivedService} from '../../../../core/services/invoices-received-services/invoices-received.service';
+import {InvoicesReceivedService} from '../../../../core/services/entity-services/invoices-received.service';
 import {Router} from '@angular/router';
 import Swal from 'sweetalert2';
 import {HttpErrorResponse} from '@angular/common/http';
-import {CurrencyPipe} from '@angular/common';
-import {InvoicesUtilService} from '../../../../core/services/shared-services/invoices-Util.service';
+import {DecimalPipe} from '@angular/common';
+import {InvoiceUtilsHelper} from '../../../../core/helpers/invoice-utils.helper';
 import {Suppliers} from '../../../../interfaces/suppliers-interface';
-import {SuppliersService} from '../../../../core/services/suppliers-services/suppliers.service';
+import {SuppliersService} from '../../../../core/services/entity-services/suppliers.service';
 import {CalculableInvoice} from '../../../../interfaces/calculate-interface';
-import {FileUploadService} from '../../../../core/services/file-upload/file-upload.service';
+import {FileUploadService} from '../../../../core/services/shared-services/file-upload.service';
 import {
   CATEGORIES_LABELS, PAYMENT_METHOD_LABELS, PAYMENT_STATUS_LABELS
 } from '../../../../shared/Collection-Enum/collection-enum';
@@ -24,7 +24,7 @@ import {ValidatorService} from '../../../../core/services/validator-services/val
   selector: 'app-invoices-received-register',
   imports: [
     ReactiveFormsModule,
-    CurrencyPipe
+    DecimalPipe
   ],
   templateUrl: './invoices-register-received.component.html',
   styleUrl: './invoices-register-received.component.css'
@@ -85,7 +85,7 @@ export class InvoicesRegisterReceivedComponent implements OnInit {
     private fb: FormBuilder,
     private invoicesReceivedService: InvoicesReceivedService,
     private router: Router,
-    private invoicesUtilService: InvoicesUtilService,
+    private invoicesUtilService: InvoiceUtilsHelper,
     private suppliersServices: SuppliersService,
     private fileUploadService: FileUploadService,
     private validatorService: ValidatorService
@@ -253,6 +253,16 @@ export class InvoicesRegisterReceivedComponent implements OnInit {
   // ==========================================
 
   /**
+   * Maneja la selección de archivo mediante input
+   */
+  onFileSelected(event: Event): void {
+    const file = this.fileUploadService.onFileSelected(event);
+    if (file) {
+      this.processFile(file);
+    }
+  }
+
+  /**
    * Maneja el evento de drag over
    */
   onDragOver(event: DragEvent): void {
@@ -280,15 +290,7 @@ export class InvoicesRegisterReceivedComponent implements OnInit {
     }
   }
 
-  /**
-   * Maneja la selección de archivo mediante input
-   */
-  onFileSelected(event: Event): void {
-    const file = this.fileUploadService.onFileSelected(event);
-    if (file) {
-      this.processFile(file);
-    }
-  }
+
 
   /**
    * Procesa y valida el archivo seleccionado

@@ -3,7 +3,7 @@ import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/
 import {Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
-import {SuppliersService} from '../../../../core/services/suppliers-services/suppliers.service';
+import {SuppliersService} from '../../../../core/services/entity-services/suppliers.service';
 import {Suppliers} from '../../../../interfaces/suppliers-interface';
 import {PAYMENT_TERMS_LABELS} from '../../../../shared/Collection-Enum/collection-enum';
 import {ValidatorService} from '../../../../core/services/validator-services/validator.service';

@@ -1,6 +1,6 @@
-import {Component} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {Router} from '@angular/router';
-import {AuthService} from '../../../core/services/auth-service/auth.service';
+import {AuthService} from '../../../core/services/auth-services/auth.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 /**
@@ -19,6 +19,7 @@ import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/
 export class LoginComponent {
 
   userForm: FormGroup;
+  isSubmitting = signal(false);
 
   constructor(
     private router: Router,
@@ -42,6 +43,7 @@ export class LoginComponent {
       return;
     }
     // Preparar datos para backend
+    this.isSubmitting.set(true);
     const userData = this.userForm.value;
 
     // Autenticar usuario

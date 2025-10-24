@@ -1,0 +1,312 @@
+<div class="vat-book-container">
+
+  <!-- ==========================================================
+       HEADER CON TÍTULO Y PERÍODO
+       ========================================================== -->
+  <div class="header-section">
+    <div class="title-container">
+      <h1 class="page-title">📊 Libro de IVA</h1>
+      <span class="period-badge">{{ periodLabel() }}</span>
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       SECCIÓN DE FILTROS
+       ========================================================== -->
+  <div class="filters-section" [formGroup]="filtersForm">
+    <div class="filters-grid">
+
+      <!-- Año -->
+      <div class="filter-item">
+        <label for="year">Año</label>
+        <select
+          id="year"
+          formControlName="year"
+          class="form-select">
+          <option *ngFor="let year of availableYears" [value]="year">
+            {{ year }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Trimestre -->
+      <div class="filter-item">
+        <label for="quarter">Trimestre</label>
+        <select
+          id="quarter"
+          formControlName="quarter"
+          (change)="onQuarterChange()"
+          class="form-select">
+          <option *ngFor="let q of quarters" [value]="q.value">
+            {{ q.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Mes (solo si NO hay trimestre) -->
+      <div class="filter-item" *ngIf="showMonthSelector()">
+        <label for="month">Mes</label>
+        <select
+          id="month"
+          formControlName="month"
+          class="form-select">
+          <option [value]="null">Selecciona mes</option>
+          <option *ngFor="let m of months" [value]="m.value">
+            {{ m.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Buscador -->
+      <div class="filter-item search-item">
+        <label for="search">Buscar</label>
+        <input
+          id="search"
+          type="text"
+          formControlName="searchText"
+          placeholder="Buscar factura, entidad, NIF..."
+          class="form-input">
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="filter-actions">
+        <button
+          type="button"
+          (click)="applyFilters()"
+          class="btn btn-primary">
+          🔍 Buscar
+        </button>
+        <button
+          type="button"
+          (click)="resetFilters()"
+          class="btn btn-secondary">
+          🔄 Resetear
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       ESTADOS: LOADING Y ERROR
+       ========================================================== -->
+
+  <!-- Loading -->
+  <div *ngIf="loading()" class="loading-container">
+    <div class="spinner"></div>
+    <p>Cargando datos del libro de IVA...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error()" class="error-container">
+    <div class="error-message">
+      <span class="error-icon">⚠️</span>
+      <p>{{ error() }}</p>
+      <button (click)="loadData()" class="btn btn-secondary">
+        🔄 Reintentar
+      </button>
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       CONTENIDO PRINCIPAL (Solo si hay datos)
+       ========================================================== -->
+  <div *ngIf="!loading() && !error() && vatData()" class="content-section">
+
+    <!-- Estadísticas rápidas -->
+    <div class="stats-section">
+      <div class="stat-card">
+        <span class="stat-label">Total Registros</span>
+        <span class="stat-value">{{ currentStats().totalEntries }}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Base Imponible</span>
+        <span class="stat-value">{{ formatAmount(currentStats().totalBase) }}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Total IVA</span>
+        <span class="stat-value">{{ formatAmount(currentStats().totalVAT) }}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Total Facturas</span>
+        <span class="stat-value">{{ formatAmount(currentStats().totalInvoices) }}</span>
+      </div>
+    </div>
+
+    <!-- Botones de exportación -->
+    <div class="export-section">
+      <button
+        (click)="exportCurrentTab()"
+        class="btn btn-success">
+        📄 Exportar Pestaña Actual
+      </button>
+      <button
+        (click)="exportAllTabs()"
+        class="btn btn-success">
+        📊 Exportar Todo
+      </button>
+      <!--<button
+        (click)="downloadExcel()"
+        class="btn btn-success">
+        📥 Descargar Excel
+      </button>-->
+    </div>
+
+    <!-- ==========================================================
+         TABS NAVIGATION
+         ========================================================== -->
+    <div class="tabs-container">
+      <button
+        [class.active]="activeTab() === 0"
+        (click)="setActiveTab(0)"
+        class="tab-button">
+        📥 IVA Soportado ({{ filteredSupported().length }})
+      </button>
+      <button
+        [class.active]="activeTab() === 1"
+        (click)="setActiveTab(1)"
+        class="tab-button">
+        📤 IVA Repercutido ({{ filteredCharged().length }})
+      </button>
+      <button
+        [class.active]="activeTab() === 2"
+        (click)="setActiveTab(2)"
+        class="tab-button">
+        👥 Por Propietario ({{ filteredOwners().length }})
+      </button>
+    </div>
+
+    <!-- ==========================================================
+         TAB 0: IVA SOPORTADO
+         ========================================================== -->
+    <div *ngIf="activeTab() === 0" class="tab-content">
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+          <tr>
+            <th>Nº Factura</th>
+            <th>Fecha</th>
+            <th>Proveedor</th>
+            <th>NIF</th>
+            <th>Base Imponible</th>
+            <th>Tipo IVA</th>
+            <th>Cuota IVA</th>
+            <th>Total</th>
+            <th>Deducible</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let entry of filteredSupported()">
+            <td>{{ entry.numeroFactura }}</td>
+            <td>{{ formatDate(entry.fechaFactura) }}</td>
+            <td>{{ truncateText(entry.nombreProveedor, 30) }}</td>
+            <td>{{ entry.nifProveedor }}</td>
+            <td class="amount">{{ formatAmount(entry.baseImponible) }}</td>
+            <td>
+                <span [class]="getVatRateClass(entry.tipoIVA)" class="badge">
+                  {{ getVatRateLabel(entry.tipoIVA) }}
+                </span>
+            </td>
+            <td class="amount">{{ formatAmount(entry.cuotaIVA) }}</td>
+            <td class="amount total">{{ formatAmount(entry.importeTotal || entry.totalFactura) }}</td>
+            <td>
+                <span [class]="getDeductibleClass(entry.deducible)" class="badge">
+                  {{ getDeductibleLabel(entry.deducible) }}
+                </span>
+            </td>
+          </tr>
+          <tr *ngIf="filteredSupported().length === 0">
+            <td colspan="9" class="empty-message">
+              No hay registros para mostrar
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ==========================================================
+         TAB 1: IVA REPERCUTIDO
+         ========================================================== -->
+    <div *ngIf="activeTab() === 1" class="tab-content">
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+          <tr>
+            <th>Nº Factura</th>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>NIF</th>
+            <th>Base Imponible</th>
+            <th>Tipo IVA</th>
+            <th>Cuota IVA</th>
+            <th>Total</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let entry of filteredCharged()">
+            <td>{{ entry.numeroFactura }}</td>
+            <td>{{ formatDate(entry.fechaFactura) }}</td>
+            <td>{{ truncateText(entry.nombreCliente, 30) }}</td>
+            <td>{{ entry.nifCliente }}</td>
+            <td class="amount">{{ formatAmount(entry.baseImponible) }}</td>
+            <td>
+                <span [class]="getVatRateClass(entry.tipoIVA)" class="badge">
+                  {{ getVatRateLabel(entry.tipoIVA) }}
+                </span>
+            </td>
+            <td class="amount">{{ formatAmount(entry.cuotaIVA) }}</td>
+            <td class="amount total">{{ formatAmount(entry.importeTotal || entry.totalFactura) }}</td>
+          </tr>
+          <tr *ngIf="filteredCharged().length === 0">
+            <td colspan="8" class="empty-message">
+              No hay registros para mostrar
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ==========================================================
+         TAB 2: RESUMEN POR PROPIETARIO
+         ========================================================== -->
+    <div *ngIf="activeTab() === 2" class="tab-content">
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+          <tr>
+            <th>Propietario</th>
+            <th>% Propiedad</th>
+            <th>IVA Repercutido</th>
+            <th>IVA Soportado</th>
+            <th>IVA Neto</th>
+            <th>Estado</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let owner of filteredOwners()">
+            <td>{{ owner.owner_name }}</td>
+            <td>{{ owner.ownership_percent }}%</td>
+            <td class="amount positive">{{ formatAmount(owner.vat_charged) }}</td>
+            <td class="amount negative">{{ formatAmount(owner.vat_supported) }}</td>
+            <td class="amount total">{{ formatAmount(owner.net_vat) }}</td>
+            <td>
+                <span [class]="getNetVATClass(owner.net_vat)" class="badge">
+                  {{ getNetVATLabel(owner.net_vat) }}
+                </span>
+            </td>
+          </tr>
+          <tr *ngIf="filteredOwners().length === 0">
+            <td colspan="6" class="empty-message">
+              No hay registros para mostrar
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+</div>

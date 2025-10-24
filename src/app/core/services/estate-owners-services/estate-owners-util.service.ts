@@ -3,7 +3,7 @@ import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import Swal from 'sweetalert2';
 import { Router} from '@angular/router';
 import {EstatesOwners} from '../../../interfaces/estates-owners-interface';
-import {EstateOwnersService} from './estate-owners.service';
+import {EstateOwnersService} from '../entity-services/estate-owners.service';
 import {HttpErrorResponse} from '@angular/common/http';
 
 

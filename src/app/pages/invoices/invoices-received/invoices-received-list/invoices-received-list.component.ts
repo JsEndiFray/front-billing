@@ -2,21 +2,20 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
-import {CurrencyPipe, NgClass} from '@angular/common';
+import {DecimalPipe, NgClass} from '@angular/common';
 import Swal from 'sweetalert2';
 import {DataFormatPipe} from '../../../../shared/pipe/data-format.pipe';
 import {SearchService} from '../../../../core/services/shared-services/search.service';
 import {PaginationService} from '../../../../core/services/shared-services/pagination.service';
 import {PaginationConfig, PaginationResult} from '../../../../interfaces/pagination-interface';
-import {InvoicesReceivedService} from '../../../../core/services/invoices-received-services/invoices-received.service';
-import {InvoicesUtilService} from '../../../../core/services/shared-services/invoices-Util.service';
+import {InvoicesReceivedService} from '../../../../core/services/entity-services/invoices-received.service';
+import {InvoiceUtilsHelper} from '../../../../core/helpers/invoice-utils.helper';
 import {InvoiceReceived} from '../../../../interfaces/invoices-received-interface';
 import {
   PAYMENT_METHOD_LABELS, PAYMENT_STATUS_LABELS
 } from '../../../../shared/Collection-Enum/collection-enum';
 import {ExportService} from '../../../../core/services/shared-services/exportar.service';
 import {ExportableListBase} from '../../../../shared/Base/exportable-list.base';
-import {Employee} from '../../../../interfaces/employee-interface';
 
 /**
  * Componente para mostrar y gestionar la lista de facturas recibidas de proveedores.
@@ -28,7 +27,7 @@ import {Employee} from '../../../../interfaces/employee-interface';
   imports: [
     DataFormatPipe,
     ReactiveFormsModule,
-    NgClass, CurrencyPipe
+    NgClass, DecimalPipe
   ],
   templateUrl: './invoices-received-list.component.html',
   styleUrl: './invoices-received-list.component.css'
@@ -148,7 +147,7 @@ export class InvoicesReceivedListComponent extends ExportableListBase<InvoiceRec
     private router: Router,
     private searchService: SearchService,
     private paginationService: PaginationService,
-    protected invoicesUtilService: InvoicesUtilService,
+    protected invoicesUtilService: InvoiceUtilsHelper,
     private fb: FormBuilder,
     public exportService: ExportService,
   ) {

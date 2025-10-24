@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {User} from '../../../interfaces/users-interface';
-import {UserService} from '../../../core/services/user-services/user.service';
+import {UserService} from '../../../core/services/entity-services/user.service';
 import {Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';

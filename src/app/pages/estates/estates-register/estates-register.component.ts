@@ -2,12 +2,12 @@ import {Component} from '@angular/core';
 import {Estates} from '../../../interfaces/estates-interface';
 import {FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import Swal from 'sweetalert2';
-import {EstatesService} from '../../../core/services/estates-services/estates.service';
+import {EstatesService} from '../../../core/services/entity-services/estates.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {Owners} from '../../../interfaces/owners-interface';
-import {OwnersService} from '../../../core/services/owners-services/owners.service';
-import {EstateOwnersService} from '../../../core/services/estate-owners-services/estate-owners.service';
+import {OwnersService} from '../../../core/services/entity-services/owners.service';
+import {EstateOwnersService} from '../../../core/services/entity-services/estate-owners.service';
 import {ValidatorService} from '../../../core/services/validator-services/validator.service';
 import {forkJoin} from 'rxjs';
 

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {UserService} from '../../../core/services/user-services/user.service';
+import {UserService} from '../../../core/services/entity-services/user.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';

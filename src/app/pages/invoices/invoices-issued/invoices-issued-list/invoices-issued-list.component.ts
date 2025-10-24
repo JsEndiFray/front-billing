@@ -7,8 +7,7 @@ import {
   Validators
 } from '@angular/forms';
 import {Invoice, RefundInvoice} from '../../../../interfaces/invoices-issued-interface';
-import {DataFormatPipe} from '../../../../shared/pipe/data-format.pipe';
-import {InvoicesIssuedService} from '../../../../core/services/invoices-issued-service/invoices-issued.service';
+import {InvoicesIssuedService} from '../../../../core/services/entity-services/invoices-issued.service';
 import {Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import {NgClass} from '@angular/common';
@@ -18,8 +17,8 @@ import {CommonModule} from '@angular/common';
 import {PaginationConfig, PaginationResult} from '../../../../interfaces/pagination-interface';
 import {PaginationService} from '../../../../core/services/shared-services/pagination.service';
 import {
-  InvoicesUtilService
-} from '../../../../core/services/shared-services/invoices-Util.service';
+  InvoiceUtilsHelper
+} from '../../../../core/helpers/invoice-utils.helper';
 import {
   BILLING_TYPE_LABELS,
   COLLECTION_METHOD_LABELS, COLLECTION_STATUS_LABELS,
@@ -27,6 +26,7 @@ import {
 import {ValidatorService} from '../../../../core/services/validator-services/validator.service';
 import {ExportService} from '../../../../core/services/shared-services/exportar.service';
 import {ExportableListBase} from '../../../../shared/Base/exportable-list.base';
+import {DataFormatPipe} from '../../../../shared/pipe/data-format.pipe';
 
 
 /**
@@ -36,10 +36,10 @@ import {ExportableListBase} from '../../../../shared/Base/exportable-list.base';
 @Component({
   selector: 'app-invoices-issued-list',
   imports: [
-    DataFormatPipe,
     ReactiveFormsModule,
     NgClass,
     CommonModule,
+    DataFormatPipe,
   ],
   templateUrl: './invoices-issued-list.component.html',
   styleUrl: './invoices-issued-list.component.css'
@@ -154,7 +154,7 @@ export class InvoicesIssuedListComponent extends ExportableListBase<Invoice> imp
 
   constructor(
     private invoicesIssuedService: InvoicesIssuedService,
-    protected invoicesUtilService: InvoicesUtilService,
+    protected invoicesUtilService: InvoiceUtilsHelper,
     private router: Router,
     private searchService: SearchService,
     private paginationService: PaginationService,

@@ -190,10 +190,10 @@
               <td class="name-cell" title="ID: {{invoice.clients_id}}">{{ invoice.client_name }}</td>
               <td class="name-cell" title="ID: {{invoice.owners_id}}">{{ invoice.owner_name }}</td>
               <td>{{ invoice.invoice_date | dataFormat }}</td>
-              <td class="payment-terms-cell">{{ invoice.tax_base | currency:'EUR':'symbol':'1.2-2' }}</td>
+              <td class="payment-terms-cell">{{ invoice.tax_base | number:'1.2-2' }}€</td>
               <td class="payment-terms-cell">{{ invoice.iva }}%</td>
               <td class="payment-terms-cell">{{ invoice.irpf }}%</td>
-              <td class="payment-terms-cell">{{ invoice.total | currency:'EUR':'symbol':'1.2-2' }}</td>
+              <td class="payment-terms-cell">{{ invoice.total | number:'1.2-2' }}€</td>
 
               <!-- TIPO DE FACTURACIÓN -->
               <td>

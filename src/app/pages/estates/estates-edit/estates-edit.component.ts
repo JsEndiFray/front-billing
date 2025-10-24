@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {EstatesService} from '../../../core/services/estates-services/estates.service';
+import {EstatesService} from '../../../core/services/entity-services/estates.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import Swal from 'sweetalert2';
 import {HttpErrorResponse} from '@angular/common/http';

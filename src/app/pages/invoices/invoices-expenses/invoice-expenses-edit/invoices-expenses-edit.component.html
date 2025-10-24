@@ -1,1 +1,440 @@
-<p>invoice-expenses-edit works!</p>
+<div class="container">
+  <!-- HEADER -->
+  <div class="header">
+    <h1 class="title">Editar Gasto Interno</h1>
+    <button type="button" class="back-btn" (click)="goBack()">← Volver</button>
+  </div>
+
+  <!-- LOADING -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando gasto...</p>
+    </div>
+  }
+
+  <!-- ERROR -->
+  @if (error()) {
+    <div class="alert alert-error">
+      <span>{{ error() }}</span>
+    </div>
+  }
+
+  <!-- FORMULARIO -->
+  @if (!isLoading()) {
+    <form [formGroup]="expenseForm" (ngSubmit)="updateExpense()" class="expense-form">
+
+      <!-- SECCIÓN 1: INFORMACIÓN BÁSICA -->
+      <div class="form-section">
+        <h2 class="section-title">📋 Información Básica</h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="expense_date" class="form-label required">Fecha del Gasto</label>
+            <input
+              type="date"
+              id="expense_date"
+              formControlName="expense_date"
+              class="form-input"
+              [class.invalid]="isFieldInvalid('expense_date')">
+            @if (isFieldInvalid('expense_date')) {
+              <span class="error-message">{{ getErrorMessage('expense_date') }}</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="category" class="form-label required">Categoría</label>
+            <select
+              id="category"
+              formControlName="category"
+              class="form-select"
+              [class.invalid]="isFieldInvalid('category')">
+              <option value="">Seleccione una categoría</option>
+              @for (cat of categoryLabels(); track cat.value) {
+                <option [value]="cat.value">{{ cat.label }}</option>
+              }
+            </select>
+            @if (isFieldInvalid('category')) {
+              <span class="error-message">{{ getErrorMessage('category') }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="subcategory" class="form-label">Subcategoría</label>
+            <input
+              type="text"
+              id="subcategory"
+              formControlName="subcategory"
+              class="form-input"
+              placeholder="Opcional: ej. Material de escritorio">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="description" class="form-label required">Descripción</label>
+            <textarea
+              id="description"
+              formControlName="description"
+              class="form-textarea"
+              rows="3"
+              placeholder="Describe el gasto detalladamente..."
+              [class.invalid]="isFieldInvalid('description')"></textarea>
+            @if (isFieldInvalid('description')) {
+              <span class="error-message">{{ getErrorMessage('description') }}</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 2: PROVEEDOR -->
+      <div class="form-section">
+        <h2 class="section-title">🏢 Datos del Proveedor</h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="supplier_name" class="form-label required">Nombre del Proveedor</label>
+            <input
+              type="text"
+              id="supplier_name"
+              formControlName="supplier_name"
+              class="form-input"
+              placeholder="Ej: Amazon Business"
+              [class.invalid]="isFieldInvalid('supplier_name')">
+            @if (isFieldInvalid('supplier_name')) {
+              <span class="error-message">{{ getErrorMessage('supplier_name') }}</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="supplier_nif" class="form-label">NIF/CIF</label>
+            <input
+              type="text"
+              id="supplier_nif"
+              formControlName="supplier_nif"
+              class="form-input"
+              placeholder="Ej: B12345678">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="supplier_address" class="form-label">Dirección</label>
+            <input
+              type="text"
+              id="supplier_address"
+              formControlName="supplier_address"
+              class="form-input"
+              placeholder="Dirección completa del proveedor">
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 3: IMPORTES E IVA -->
+      <div class="form-section">
+        <h2 class="section-title">💰 Importes e IVA</h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="amount" class="form-label required">Importe Base (sin IVA)</label>
+            <input
+              type="number"
+              id="amount"
+              formControlName="amount"
+              class="form-input"
+              placeholder="0.00"
+              step="0.01"
+              min="0"
+              [class.invalid]="isFieldInvalid('amount')">
+            @if (isFieldInvalid('amount')) {
+              <span class="error-message">{{ getErrorMessage('amount') }}</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="iva_percentage" class="form-label required">% IVA</label>
+            <select
+              id="iva_percentage"
+              formControlName="iva_percentage"
+              class="form-select"
+              [class.invalid]="isFieldInvalid('iva_percentage')">
+              <option [value]="0">0%</option>
+              <option [value]="4">4%</option>
+              <option [value]="10">10%</option>
+              <option [value]="21">21%</option>
+            </select>
+            @if (isFieldInvalid('iva_percentage')) {
+              <span class="error-message">{{ getErrorMessage('iva_percentage') }}</span>
+            }
+          </div>
+        </div>
+
+        <!-- Cálculos Automáticos -->
+        <div class="calculations-box">
+          <div class="calculation-row">
+            <span class="calculation-label">IVA Calculado:</span>
+            <span class="calculation-value">{{ getFormattedIVA() }}€</span>
+          </div>
+          <div class="calculation-row total">
+            <span class="calculation-label">Total con IVA:</span>
+            <span class="calculation-value">{{ getFormattedTotal() }}€</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 4: DETALLES DEL PAGO -->
+      <div class="form-section">
+        <h2 class="section-title">💳 Detalles del Pago</h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="payment_method" class="form-label required">Método de Pago</label>
+            <select
+              id="payment_method"
+              formControlName="payment_method"
+              class="form-select"
+              [class.invalid]="isFieldInvalid('payment_method')">
+              @for (method of paymentMethodLabels(); track method.value) {
+                <option [value]="method.value">{{ method.label }}</option>
+              }
+            </select>
+            @if (isFieldInvalid('payment_method')) {
+              <span class="error-message">{{ getErrorMessage('payment_method') }}</span>
+            }
+          </div>
+
+          <div class="form-group checkbox-group full-width">
+            <label class="checkbox-label">
+              <input
+                type="checkbox"
+                formControlName="is_deductible"
+                class="form-checkbox">
+              <span>✓ Este gasto es fiscalmente deducible</span>
+            </label>
+            <small class="form-hint">Los gastos deducibles pueden descontarse en impuestos</small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="receipt_number" class="form-label">Nº Recibo/Factura</label>
+            <input
+              type="text"
+              id="receipt_number"
+              formControlName="receipt_number"
+              class="form-input"
+              placeholder="Ej: F-2024-001">
+          </div>
+
+          <div class="form-group">
+            <label for="receipt_date" class="form-label">Fecha del Recibo</label>
+            <input
+              type="date"
+              id="receipt_date"
+              formControlName="receipt_date"
+              class="form-input">
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN: ARCHIVO ADJUNTO -->
+      <div class="form-section">
+        <h2 class="section-title">📎 Archivo Adjunto</h2>
+
+        <div class="form-group full-width">
+          <label class="form-label">Adjuntar PDF del Recibo/Factura</label>
+
+          <div class="file-upload-area"
+               [class.dragover]="isDragOver()"
+               [class.has-file]="selectedFile()"
+               (dragover)="onDragOver($event)"
+               (dragleave)="onDragLeave($event)"
+               (drop)="onFileDrop($event)"
+               (click)="fileInput.click()">
+
+            @if (!selectedFile() && !existingFileUrl()) {
+              <div class="upload-content">
+                <div class="upload-icon">📄</div>
+                <p class="upload-text">Arrastra aquí el archivo PDF o haz clic para seleccionar</p>
+                <p class="upload-hint">Formatos permitidos: PDF (máximo 10MB)</p>
+              </div>
+            } @else if (selectedFile()) {
+              <div class="file-preview">
+                <div class="file-info">
+                  <div class="file-icon">📄</div>
+                  <div class="file-details">
+                    <span class="file-name">{{ selectedFile()?.name }}</span>
+                    <span class="file-size">{{ formatFileSize(selectedFile()?.size || 0) }}</span>
+                  </div>
+                </div>
+                <button type="button" class="remove-file-btn" (click)="removeFile($event)">✕</button>
+              </div>
+            } @else if (existingFileUrl()) {
+              <div class="file-preview">
+                <div class="file-info">
+                  <div class="file-icon">📄</div>
+                  <div class="file-details">
+                    <span class="file-name">{{ existingFileUrl() }}</span>
+                    <span class="file-size" style="color: #059669; font-style: italic;">Archivo actual</span>
+                  </div>
+                </div>
+                <button type="button" class="remove-file-btn" (click)="removeExistingFile($event)">✕</button>
+              </div>
+            }
+          </div>
+
+          <input #fileInput
+                 type="file"
+                 accept=".pdf"
+                 (change)="onFileSelected($event)"
+                 style="display: none;">
+
+          @if (fileError()) {
+            <span class="error-message">{{ fileError() }}</span>
+          }
+        </div>
+      </div>
+
+      <!-- SECCIÓN 5: ASOCIACIONES OPCIONALES -->
+      <div class="form-section">
+        <h2 class="section-title">🔗 Asociaciones (Opcional)</h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="property_id" class="form-label">ID Propiedad</label>
+            <input
+              type="number"
+              id="property_id"
+              formControlName="property_id"
+              class="form-input"
+              placeholder="ID de la propiedad asociada">
+          </div>
+
+          <div class="form-group">
+            <label for="project_code" class="form-label">Código de Proyecto</label>
+            <input
+              type="text"
+              id="project_code"
+              formControlName="project_code"
+              class="form-input"
+              placeholder="Ej: PROJ-2024-001">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cost_center" class="form-label">Centro de Coste</label>
+            <input
+              type="text"
+              id="cost_center"
+              formControlName="cost_center"
+              class="form-input"
+              placeholder="Ej: ADMIN">
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 6: GASTO RECURRENTE -->
+      <div class="form-section">
+        <h2 class="section-title">🔄 Gasto Recurrente</h2>
+
+        <div class="form-row">
+          <div class="form-group checkbox-group">
+            <label class="checkbox-label">
+              <input
+                type="checkbox"
+                formControlName="is_recurring"
+                class="form-checkbox">
+              <span>Este gasto es recurrente</span>
+            </label>
+          </div>
+        </div>
+
+        @if (showRecurrenceFields()) {
+          <div class="recurrence-fields">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="recurrence_period" class="form-label required">Período</label>
+                <select
+                  id="recurrence_period"
+                  formControlName="recurrence_period"
+                  class="form-select"
+                  [class.invalid]="isFieldInvalid('recurrence_period')">
+                  <option value="">Seleccione período</option>
+                  @for (period of recurrenceLabels(); track period.value) {
+                    <option [value]="period.value">{{ period.label }}</option>
+                  }
+                </select>
+                @if (isFieldInvalid('recurrence_period')) {
+                  <span class="error-message">{{ getErrorMessage('recurrence_period') }}</span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="next_occurrence_date" class="form-label required">Próxima Fecha</label>
+                <input
+                  type="date"
+                  id="next_occurrence_date"
+                  formControlName="next_occurrence_date"
+                  class="form-input"
+                  [class.invalid]="isFieldInvalid('next_occurrence_date')">
+                @if (isFieldInvalid('next_occurrence_date')) {
+                  <span class="error-message">{{ getErrorMessage('next_occurrence_date') }}</span>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- SECCIÓN 7: NOTAS ADICIONALES -->
+      <div class="form-section">
+        <h2 class="section-title">📝 Notas Adicionales</h2>
+
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="notes" class="form-label">Observaciones</label>
+            <textarea
+              id="notes"
+              formControlName="notes"
+              class="form-textarea"
+              rows="4"
+              placeholder="Añade cualquier observación relevante sobre este gasto..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTONES DE ACCIÓN -->
+      <div class="form-actions">
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="goBack()"
+          [disabled]="isSubmitting()">
+          ← Volver
+        </button>
+
+        <button
+          type="button"
+          class="btn-outline"
+          (click)="resetForm()"
+          [disabled]="isSubmitting()">
+          🔄 Restaurar
+        </button>
+
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="expenseForm.invalid || isSubmitting()">
+          @if (isSubmitting()) {
+            <span class="spinner"></span> Guardando...
+          } @else {
+            💾 Actualizar Gasto
+          }
+        </button>
+      </div>
+    </form>
+  }
+</div>

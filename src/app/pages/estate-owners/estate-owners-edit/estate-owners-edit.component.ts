@@ -3,9 +3,9 @@ import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/
 import {Estates} from '../../../interfaces/estates-interface';
 import {Owners} from '../../../interfaces/owners-interface';
 import {ActivatedRoute, Router} from '@angular/router';
-import {EstatesService} from '../../../core/services/estates-services/estates.service';
-import {OwnersService} from '../../../core/services/owners-services/owners.service';
-import {EstateOwnersService} from '../../../core/services/estate-owners-services/estate-owners.service';
+import {EstatesService} from '../../../core/services/entity-services/estates.service';
+import {OwnersService} from '../../../core/services/entity-services/owners.service';
+import {EstateOwnersService} from '../../../core/services/entity-services/estate-owners.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
 import {ValidatorService} from '../../../core/services/validator-services/validator.service';

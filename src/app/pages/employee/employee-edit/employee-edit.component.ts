@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {EmployeeService} from '../../../core/services/employee-services/employee.service';
+import {EmployeeService} from '../../../core/services/entity-services/employee.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
 import {ValidatorService} from '../../../core/services/validator-services/validator.service';
