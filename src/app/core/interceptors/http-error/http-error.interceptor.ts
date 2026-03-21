@@ -12,8 +12,10 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
       let message = 'Ha ocurrido un error en el servidor';
       let title = 'Error';
 
-      // Extraer mensaje del backend (strings directos)
-      if (e.error && typeof e.error === 'string') {
+      // Extraer mensaje del backend
+      if (e.error?.message) {
+        message = e.error.message;
+      } else if (typeof e.error === 'string') {
         message = e.error;
       }
 
