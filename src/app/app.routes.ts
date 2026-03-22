@@ -14,6 +14,7 @@ import {UserEditComponent} from './pages/users/user-edit/user-edit.component';
 import {DashboardComponent} from './pages/dashboards/dashboard/dashboard.component';
 import {DashboardHomeComponent} from './pages/dashboards/dashboard-home/dashboard-home.component';
 import {authGuard} from './core/guards/auth.guard';
+import {publicGuard} from './core/guards/public.guard';
 
 // Clientes - Gestión de clientes del negocio
 import {ClientsRegisterComponent} from './pages/clients/clients-register/clients-register.component';
@@ -106,6 +107,7 @@ export const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
+    canActivate: [publicGuard],
     title: 'Login'
   },
 
