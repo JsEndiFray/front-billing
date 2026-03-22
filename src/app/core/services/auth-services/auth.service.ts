@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, tap, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, filter, map, take, tap, throwError } from 'rxjs';
 import { LoginResponse, User, UsersLogin } from '../../../interfaces/users-interface';
 import { ApiService } from '../api-service/api.service';
 import { Router } from '@angular/router';
@@ -10,6 +10,8 @@ import { UserActivityService } from './user-activity.service';
 })
 export class AuthService {
   private refreshTimer: number | null = null;
+  private isRefreshing = false;
+  private refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
   constructor(
     private api: ApiService,
@@ -48,7 +50,7 @@ export class AuthService {
     this.refreshTimer = window.setInterval(() => {
       this.refreshAccessToken().subscribe({
         next: () => console.log('Token renovado automáticamente'),
-        error: () => this.logout()
+        error: () => {} // logout ya gestionado dentro de refreshAccessToken
       });
     }, 5 * 60 * 1000);
   }
@@ -60,19 +62,41 @@ export class AuthService {
     }
   }
 
-  refreshAccessToken(): Observable<LoginResponse> {
-    const refreshToken = localStorage.getItem('refreshToken');
-
-    if (!refreshToken) {
-      return throwError(() => new Error('No refresh token available'));
+  refreshAccessToken(): Observable<string> {
+    // Si ya hay un refresh en curso, encolar: esperar el token emitido por el primero
+    if (this.isRefreshing) {
+      return this.refreshTokenSubject.pipe(
+        filter((token): token is string => token !== null),
+        take(1)
+      );
     }
 
-    return this.api.post<{ refreshToken: string }, LoginResponse>('auth/refresh-token', { refreshToken }).pipe(
-      tap((response: LoginResponse) => {
+    const storedRefreshToken = localStorage.getItem('refreshToken');
+    if (!storedRefreshToken) {
+      this.logout();
+      return throwError(() => new Error('No hay refresh token disponible'));
+    }
+
+    this.isRefreshing = true;
+    this.refreshTokenSubject.next(null); // bloquear colas hasta recibir el nuevo token
+
+    return this.api.post<{ refreshToken: string }, LoginResponse>(
+      'auth/refresh-token',
+      { refreshToken: storedRefreshToken }
+    ).pipe(
+      map((response: LoginResponse) => {
         localStorage.setItem('token', response.accessToken);
         if (response.refreshToken) {
           localStorage.setItem('refreshToken', response.refreshToken);
         }
+        this.refreshTokenSubject.next(response.accessToken); // desbloquear colas
+        this.isRefreshing = false;
+        return response.accessToken;
+      }),
+      catchError((error) => {
+        this.isRefreshing = false;
+        this.logout();
+        return throwError(() => error);
       })
     );
   }
