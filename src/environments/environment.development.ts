@@ -10,5 +10,6 @@
 
 export const environment = {
   production: false,  // false = modo desarrollo (con sourcemaps, logs, etc.)
-  apiUrl: 'http://localhost:3600/api'  // Backend local de desarrollo
+  //apiUrl: 'http://localhost:3600/api'  // Backend local de desarrollo
+  apiUrl: 'http://100.101.51.18:3600/api'
 };

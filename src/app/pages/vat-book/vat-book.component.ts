@@ -1,15 +1,12 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { VatBookUtilsHelper } from '../../core/helpers/vat-book-utils.helper';
 import { ExportService } from '../../core/services/shared-services/exportar.service';
 import { ExportColumn } from '../../interfaces/exportar-interface';
-import {VatBookService} from '../../core/services/vat-services/vat-book.service';
+import { VatBookService } from '../../core/services/vat-services/vat-book.service';
 
-/**
- * Componente para el Libro de IVA
- * Muestra IVA Soportado, Repercutido y Resumen por Propietario
- */
 @Component({
   selector: 'app-vat-book',
   standalone: true,
@@ -19,340 +16,216 @@ import {VatBookService} from '../../core/services/vat-services/vat-book.service'
 })
 export class VatBookComponent {
 
-  // Servicios y helpers
+  // ── Servicios ────────────────────────────────────────────────────────────
   private vatBookService = inject(VatBookService);
-  private fb = inject(FormBuilder);
-  vatBookUtils = inject(VatBookUtilsHelper);
-  exportService = inject(ExportService);
+  private fb             = inject(FormBuilder);
+  vatBookUtils           = inject(VatBookUtilsHelper);
+  exportService          = inject(ExportService);
 
-  // ==========================================================
-  // FORMGROUP PARA FILTROS
-  // ==========================================================
+  // ── Formulario ───────────────────────────────────────────────────────────
+  // Inicializado como class field para que formValues pueda depender de él
+  filtersForm = this.fb.group({
+    year:       [new Date().getFullYear(), Validators.required],
+    quarter:    [null as number | null],
+    month:      [null as number | null],
+    searchText: ['']
+  });
 
-  filtersForm!: FormGroup;
+  // ── Bridge FormGroup → Signal ─────────────────────────────────────────────
+  // toSignal suscribe a valueChanges y expone el valor actual como signal.
+  // initialValue evita el tipo `| undefined` y garantiza valor desde el primer render.
+  private formValues = toSignal(this.filtersForm.valueChanges, {
+    initialValue: this.filtersForm.value
+  });
 
-  // ==========================================================
-  // SIGNALS PARA ESTADO
-  // ==========================================================
-
-  // Tab activo (0 = Soportado, 1 = Repercutido, 2 = Por Propietario)
+  // ── Estado UI ─────────────────────────────────────────────────────────────
   activeTab = signal<number>(0);
 
-  // ==========================================================
-  // COMPUTED SIGNALS (Datos reactivos)
-  // ==========================================================
-
-  // Datos del servicio
+  // ── Datos del servicio ────────────────────────────────────────────────────
   vatData = computed(() => this.vatBookService.vatData());
   loading = computed(() => this.vatBookService.loading());
-  error = computed(() => this.vatBookService.error());
+  error   = computed(() => this.vatBookService.error());
 
-  // Entradas filtradas por búsqueda según tab activo
+  // ── Computed reactivos ────────────────────────────────────────────────────
+
   filteredSupported = computed(() => {
-    const data = this.vatData()?.supported || [];
-    const searchText = this.filtersForm.get('searchText')?.value || '';
+    const data       = this.vatData()?.supported || [];
+    const searchText = this.formValues().searchText || '';
     return this.vatBookUtils.filterBySearch(data, searchText);
   });
 
   filteredCharged = computed(() => {
-    const data = this.vatData()?.charged || [];
-    const searchText = this.filtersForm.get('searchText')?.value || '';
+    const data       = this.vatData()?.charged || [];
+    const searchText = this.formValues().searchText || '';
     return this.vatBookUtils.filterBySearch(data, searchText);
   });
 
   filteredOwners = computed(() => {
-    const data = this.vatData()?.summaryByOwner || [];
-    const searchText = this.filtersForm.get('searchText')?.value || '';
-    const search = searchText.toLowerCase().trim();
-
+    const data   = this.vatData()?.summaryByOwner || [];
+    const search = (this.formValues().searchText || '').toLowerCase().trim();
     if (!search) return data;
-
-    return data.filter(owner =>
-      owner.owner_name?.toLowerCase().includes(search)
-    );
+    return data.filter(owner => owner.owner_name?.toLowerCase().includes(search));
   });
 
-  // Datos actuales según el tab activo
   currentTabData = computed(() => {
     switch (this.activeTab()) {
-      case 0:
-        return this.filteredSupported();
-      case 1:
-        return this.filteredCharged();
-      default:
-        return [];
+      case 0:  return this.filteredSupported();
+      case 1:  return this.filteredCharged();
+      default: return [];
     }
   });
 
-  // Label del período actual
+  currentStats = computed(() => this.vatBookUtils.calculateBookStats(this.currentTabData()));
+
   periodLabel = computed(() => {
-    const year = this.filtersForm.get('year')?.value;
-    const quarter = this.filtersForm.get('quarter')?.value;
-    const month = this.filtersForm.get('month')?.value;
-
-    return this.vatBookUtils.getPeriodLabel(year, quarter, month);
+    const { year, quarter, month } = this.formValues();
+    // year tiene Validators.required → nunca es null/undefined en runtime
+    // quarter/month son opcionales: null (sin selección) se convierte a undefined
+    return this.vatBookUtils.getPeriodLabel(year!, quarter ?? undefined, month ?? undefined);
   });
 
-  // Estadísticas del tab activo
-  currentStats = computed(() => {
-    const data = this.currentTabData();
-    return this.vatBookUtils.calculateBookStats(data);
-  });
-
-  // Mostrar selector de mes solo si NO hay trimestre seleccionado
   showMonthSelector = computed(() => {
-    const quarter = this.filtersForm.get('quarter')?.value;
+    const { quarter } = this.formValues();
     return quarter === null || quarter === undefined;
   });
 
-  // ==========================================================
-  // OPCIONES PARA SELECTORES
-  // ==========================================================
-
+  // ── Opciones para selectores ──────────────────────────────────────────────
   availableYears = this.vatBookUtils.getAvailableYears();
-  quarters = this.vatBookUtils.getQuarters();
-  months = this.vatBookUtils.getMonths();
+  quarters       = this.vatBookUtils.getQuarters();
+  months         = this.vatBookUtils.getMonths();
 
-  // ==========================================================
-  // CONSTRUCTOR - Cargar datos iniciales
-  // ==========================================================
-
-  constructor() {
-    // Inicializar FormGroup
-    this.filtersForm = this.fb.group({
-      year: [new Date().getFullYear(), Validators.required],
-      quarter: [null as number | null],
-      month: [null as number | null],
-      searchText: ['']
-    });
-
-    this.loadData();
-  }
-
-  // ==========================================================
-  // CONFIGURACIÓN PARA EXPORTACIÓN
-  // ==========================================================
-
+  // ── Columnas de exportación ───────────────────────────────────────────────
   exportColumns: ExportColumn[] = [
     { key: 'numeroFactura', title: 'Nº Factura' },
-    { key: 'fechaFactura', title: 'Fecha' },
+    { key: 'fechaFactura',  title: 'Fecha' },
     { key: 'nombreProveedor', title: 'Proveedor' },
     { key: 'nombreCliente', title: 'Cliente' },
-    { key: 'nifProveedor', title: 'NIF Proveedor' },
-    { key: 'nifCliente', title: 'NIF Cliente' },
+    { key: 'nifProveedor',  title: 'NIF Proveedor' },
+    { key: 'nifCliente',    title: 'NIF Cliente' },
     { key: 'baseImponible', title: 'Base Imponible' },
-    { key: 'tipoIVA', title: 'Tipo IVA (%)' },
-    { key: 'cuotaIVA', title: 'Cuota IVA' },
-    { key: 'importeTotal', title: 'Total' }
+    { key: 'tipoIVA',       title: 'Tipo IVA (%)' },
+    { key: 'cuotaIVA',      title: 'Cuota IVA' },
+    { key: 'importeTotal',  title: 'Total' }
   ];
 
   exportColumnsOwners: ExportColumn[] = [
-    { key: 'owner_name', title: 'Propietario' },
+    { key: 'owner_name',        title: 'Propietario' },
     { key: 'ownership_percent', title: '% Propiedad' },
-    { key: 'vat_charged', title: 'IVA Repercutido' },
-    { key: 'vat_supported', title: 'IVA Soportado' },
-    { key: 'net_vat', title: 'IVA Neto' }
+    { key: 'vat_charged',       title: 'IVA Repercutido' },
+    { key: 'vat_supported',     title: 'IVA Soportado' },
+    { key: 'net_vat',           title: 'IVA Neto' }
   ];
 
-  // ==========================================================
-  // MÉTODOS REQUERIDOS POR ExportableListBase
-  // ==========================================================
-  // ==========================================================
-  // ACCIONES PRINCIPALES
-  // ==========================================================
-
-  /**
-   * Carga los datos del libro de IVA
-   */
-  loadData(): void {
-    const year = this.filtersForm.get('year')?.value;
-    const quarter = this.filtersForm.get('quarter')?.value;
-    const month = this.filtersForm.get('month')?.value;
-
-    this.vatBookService.getConsolidatedBook(year, quarter, month);
-  }
-
-  /**
-   * Aplica los filtros seleccionados
-   */
-  applyFilters(): void {
-    // Si selecciona trimestre, limpiar mes
-    if (this.filtersForm.get('quarter')?.value !== null) {
-      this.filtersForm.patchValue({ month: null }, { emitEvent: false });
-    }
-
+  constructor() {
     this.loadData();
   }
 
-  /**
-   * Maneja el cambio de trimestre
-   */
+  // ── Acciones principales ──────────────────────────────────────────────────
+
+  loadData(): void {
+    const { year, quarter, month } = this.filtersForm.value;
+    this.vatBookService.getConsolidatedBook(year!, quarter ?? undefined, month ?? undefined);
+  }
+
+  applyFilters(): void {
+    if (this.filtersForm.get('quarter')?.value !== null) {
+      // emitEvent: true (por defecto) para que formValues reciba el valor actualizado
+      this.filtersForm.patchValue({ month: null });
+    }
+    this.loadData();
+  }
+
   onQuarterChange(): void {
     const quarter = this.filtersForm.get('quarter')?.value;
-
-    // Si selecciona un trimestre, limpiar el mes
     if (quarter !== null && quarter !== undefined) {
-      this.filtersForm.patchValue({ month: null }, { emitEvent: false });
+      // emitEvent: true para que formValues y showMonthSelector reaccionen
+      this.filtersForm.patchValue({ month: null });
     }
   }
 
-  /**
-   * Resetea todos los filtros
-   */
   resetFilters(): void {
     this.filtersForm.reset({
-      year: new Date().getFullYear(),
-      quarter: null,
-      month: null,
+      year:       new Date().getFullYear(),
+      quarter:    null,
+      month:      null,
       searchText: ''
     });
     this.loadData();
   }
 
-  /**
-   * Cambia el tab activo
-   */
   setActiveTab(tabIndex: number): void {
     this.activeTab.set(tabIndex);
-    this.filtersForm.patchValue({ searchText: '' }, { emitEvent: false });
+    // emitEvent: true para que formValues actualice searchText y los computed reaccionen
+    this.filtersForm.patchValue({ searchText: '' });
   }
 
-  // ==========================================================
-  // EXPORTACIÓN PERSONALIZADA
-  // ==========================================================
+  // ── Exportación ───────────────────────────────────────────────────────────
 
-  /**
-   * Exporta el tab activo
-   */
   exportCurrentTab(): void {
-    const tabNames = ['Soportado', 'Repercutido', 'Propietarios'];
+    const tabNames      = ['Soportado', 'Repercutido', 'Propietarios'];
     const currentTabName = tabNames[this.activeTab()];
-    const period = this.periodLabel().replace(/\s+/g, '-'); // Quitar espacios
+    const period         = this.periodLabel().replace(/\s+/g, '-');
 
     if (this.activeTab() === 2) {
-      // Exportar resumen por propietario
       this.exportService.exportData({
-        data: this.filteredOwners(),
+        data:     this.filteredOwners(),
         filename: `IVA-${currentTabName}-${period}`,
-        title: `Libro IVA - ${currentTabName}`,
-        columns: this.exportColumnsOwners
+        title:    `Libro IVA - ${currentTabName}`,
+        columns:  this.exportColumnsOwners
       });
     } else {
-      // Exportar soportado o repercutido
       this.exportService.exportData({
-        data: this.currentTabData(),
+        data:     this.currentTabData(),
         filename: `IVA-${currentTabName}-${period}`,
-        title: `Libro IVA - ${currentTabName}`,
-        columns: this.exportColumns
+        title:    `Libro IVA - ${currentTabName}`,
+        columns:  this.exportColumns
       });
     }
   }
 
-  /**
-   * Exporta todos los tabs en un solo archivo
-   */
   exportAllTabs(): void {
-    // Por ahora exporta el primero como ejemplo
-    // Puedes extender para multi-sheet si tu ExportService lo soporta
     this.exportService.exportData({
-      data: this.filteredSupported(),
+      data:     this.filteredSupported(),
       filename: `libro-iva-completo-${this.periodLabel()}`,
-      title: `Libro de IVA Completo - ${this.periodLabel()}`,
-      columns: this.exportColumns
+      title:    `Libro de IVA Completo - ${this.periodLabel()}`,
+      columns:  this.exportColumns
     });
   }
 
- /* /!**
-   * Descarga Excel desde el backend
-   *!/
-  downloadExcel(): void {
-    const year = this.filtersForm.get('year')?.value;
-    const quarter = this.filtersForm.get('quarter')?.value;
-    const month = this.filtersForm.get('month')?.value;
+  // ── Helpers para el template ──────────────────────────────────────────────
 
-    const bookType = this.activeTab() === 0 ? 'supported' :
-      this.activeTab() === 1 ? 'charged' : 'both';
-
-    this.vatBookService.downloadExcel(year, quarter, month, bookType);
-  }
-
-  /!**
-   * Descarga PDF desde el backend
-   *!/
-  downloadPDF(): void {
-    const year = this.filtersForm.get('year')?.value;
-    const quarter = this.filtersForm.get('quarter')?.value;
-    const month = this.filtersForm.get('month')?.value;
-
-    const bookType = this.activeTab() === 0 ? 'supported' :
-      this.activeTab() === 1 ? 'charged' : 'both';
-
-    this.vatBookService.downloadPDF(year, quarter, month, bookType);
-  }*/
-
-  // ==========================================================
-  // MÉTODOS AUXILIARES PARA EL HTML
-  // ==========================================================
-
-  /**
-   * Formatea un monto
-   */
   formatAmount(amount: unknown): string {
     return this.vatBookUtils.formatAmount(amount);
   }
 
-  /**
-   * Formatea una fecha
-   */
   formatDate(date: unknown): string {
     return this.vatBookUtils.formatDate(date);
   }
 
-  /**
-   * Obtiene la clase CSS para un tipo de IVA
-   */
   getVatRateClass(rate: number | undefined): string {
     return this.vatBookUtils.getVatRateClass(rate);
   }
 
-  /**
-   * Obtiene el label para un tipo de IVA
-   */
   getVatRateLabel(rate: number | undefined): string {
     return this.vatBookUtils.getVatRateLabel(rate);
   }
 
-  /**
-   * Obtiene clase CSS para deducible
-   */
   getDeductibleClass(isDeductible: boolean | undefined): string {
     return this.vatBookUtils.getDeductibleClass(isDeductible);
   }
 
-  /**
-   * Obtiene label para deducible
-   */
   getDeductibleLabel(isDeductible: boolean | undefined): string {
     return this.vatBookUtils.getDeductibleLabel(isDeductible);
   }
 
-  /**
-   * Obtiene clase CSS para IVA neto
-   */
   getNetVATClass(netVAT: number): string {
     return this.vatBookUtils.getNetVATClass(netVAT);
   }
 
-  /**
-   * Obtiene label para IVA neto
-   */
   getNetVATLabel(netVAT: number): string {
     return this.vatBookUtils.getNetVATLabel(netVAT);
   }
 
-  /**
-   * Trunca texto largo
-   */
   truncateText(text: unknown, maxLength: number = 30): string {
     return this.vatBookUtils.truncateText(text, maxLength);
   }
