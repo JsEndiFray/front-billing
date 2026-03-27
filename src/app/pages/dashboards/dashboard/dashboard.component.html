@@ -46,13 +46,13 @@
               @for (notif of notifications().slice(0, 5); track notif.id) {
                 <div class="notif-item"
                      [class.unread]="!notif.read"
-                     [class.type-warning]="notif.type === 'warning'"
-                     [class.type-success]="notif.type === 'success'"
-                     [class.type-info]="notif.type === 'info'"
+                     [class.type-warning]="getNotificationSeverity(notif.type) === 'warning'"
+                     [class.type-success]="getNotificationSeverity(notif.type) === 'success'"
+                     [class.type-info]="getNotificationSeverity(notif.type) === 'info'"
                      (click)="markAsRead(notif, $event)">
                   <span class="notif-icon">
-                    @if (notif.type === 'warning') { ⚠️ }
-                    @else if (notif.type === 'success') { ✅ }
+                    @if (getNotificationSeverity(notif.type) === 'warning') { ⚠️ }
+                    @else if (getNotificationSeverity(notif.type) === 'success') { ✅ }
                     @else { ℹ️ }
                   </span>
                   <div class="notif-body">

@@ -12,16 +12,22 @@ export interface Settings {
   currency: string;
 }
 
+export type NotificationType =
+  | 'pending_invoices'
+  | 'overdue_invoices'
+  | 'new_clients';
+
 /**
- * Notificación del sistema
+ * Notificación del sistema computada desde el backend.
+ * La capa de presentación (rutas, iconos) se resuelve en el frontend mediante mappers.
  */
 export interface AppNotification {
   id: number;
+  type: NotificationType;
   message: string;
-  type: 'info' | 'warning' | 'success';
   read: boolean;
   createdAt: string;
-  route: string;
+  metadata?: Record<string, unknown>;
 }
 
 /**

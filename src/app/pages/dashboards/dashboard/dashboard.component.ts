@@ -4,6 +4,7 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } fro
 import { filter } from 'rxjs';
 import { AuthService } from '../../../core/services/auth-services/auth.service';
 import { NotificationsService } from '../../../core/services/entity-services/notifications.service';
+import { getNotificationRoute, getNotificationSeverity } from '../../../core/mappers/notification-route.mapper';
 import { AppNotification } from '../../../interfaces/stats-interface';
 
 @Component({
@@ -18,6 +19,8 @@ export class DashboardComponent implements OnInit {
   private authService = inject(AuthService);
   private notificationsService = inject(NotificationsService);
   private destroyRef = inject(DestroyRef);
+
+  readonly getNotificationSeverity = getNotificationSeverity;
 
   sidebarCollapsed = false;
   currentPageTitle = 'Home';
@@ -73,12 +76,23 @@ export class DashboardComponent implements OnInit {
   markAsRead(notification: AppNotification, event: MouseEvent): void {
     event.stopPropagation();
     this.showNotificationsDropdown.set(false);
+
+    const route = getNotificationRoute(notification.type);
+
     if (!notification.read) {
       this.notificationsService.markAsRead(notification.id).subscribe({
-        next: () => this.notificationsService.refresh()
+        next: () => {
+          this.notificationsService.refresh();
+          this.router.navigate([route]);
+        },
+        error: () => {
+          this.router.navigate([route]);
+        }
       });
+      return;
     }
-    this.router.navigate([notification.route]);
+
+    this.router.navigate([route]);
   }
 
   @HostListener('document:click')
