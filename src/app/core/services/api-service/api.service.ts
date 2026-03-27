@@ -46,6 +46,13 @@ export class ApiService {
       .pipe(map((response) => response.data));
   }
 
+  // Método PATCH genérico
+  patch<T, R = T>(endpoint: string, data?: T): Observable<R> {
+    return this.http
+      .patch<ApiResponse<R>>(`${this.apiUrl}/${endpoint}`, data ?? {})
+      .pipe(map((response) => response.data));
+  }
+
   // Método DELETE genérico
   delete<T>(endpoint: string): Observable<T> {
     return this.http

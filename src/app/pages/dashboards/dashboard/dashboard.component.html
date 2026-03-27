@@ -18,8 +18,56 @@
       <div class="search-box">
         <input type="text" placeholder="Buscar..." class="search-input">
       </div>
-      <button class="header-btn">⚙️</button>
-      <button class="header-btn">🔔</button>
+
+      <!-- Botón Configuración -->
+      <a [routerLink]="['settings']" class="header-btn" title="Configuración">⚙️</a>
+
+      <!-- Botón Notificaciones -->
+      <div class="notifications-wrapper">
+        <button class="header-btn notif-btn" (click)="toggleNotifications($event)" title="Notificaciones">
+          🔔
+          @if (unreadCount() > 0) {
+            <span class="notif-badge">{{ unreadCount() }}</span>
+          }
+        </button>
+
+        @if (showNotificationsDropdown()) {
+          <div class="notif-dropdown" (click)="$event.stopPropagation()">
+            <div class="notif-header">
+              <span>Notificaciones</span>
+              @if (unreadCount() > 0) {
+                <span class="notif-unread-label">{{ unreadCount() }} sin leer</span>
+              }
+            </div>
+
+            @if (notifications().length === 0) {
+              <div class="notif-empty">Sin notificaciones</div>
+            } @else {
+              @for (notif of notifications().slice(0, 5); track notif.id) {
+                <div class="notif-item"
+                     [class.unread]="!notif.read"
+                     [class.type-warning]="notif.type === 'warning'"
+                     [class.type-success]="notif.type === 'success'"
+                     [class.type-info]="notif.type === 'info'"
+                     (click)="markAsRead(notif, $event)">
+                  <span class="notif-icon">
+                    @if (notif.type === 'warning') { ⚠️ }
+                    @else if (notif.type === 'success') { ✅ }
+                    @else { ℹ️ }
+                  </span>
+                  <div class="notif-body">
+                    <p class="notif-message">{{ notif.message }}</p>
+                    @if (!notif.read) {
+                      <span class="notif-dot"></span>
+                    }
+                  </div>
+                </div>
+              }
+            }
+          </div>
+        }
+      </div>
+
       <button class="logout-btn" (click)="logout()">Cerrar sesión</button>
     </div>
   </header>
@@ -43,7 +91,6 @@
         </a>
       </div>
 
-
       <!-- Gestión de Clientes -->
       <div class="nav-group">
         <div class="nav-group-title">💼 Gestión de Clientes</div>
@@ -56,50 +103,39 @@
       <!-- Gestión de Propietarios -->
       <div class="nav-group">
         <div class="nav-group-title">🏠 Gestión de Propietarios</div>
-        <!--Listado de propietarios-->
         <a [routerLink]="['owners/list']" routerLinkActive="active" class="nav-item">
           <span class="nav-icon">👨‍💼</span>
           <span class="nav-text">Propietarios</span>
         </a>
-        <!--Listado de propiedades-->
         <a [routerLink]="['estates/list']" routerLinkActive="active" class="nav-item">
           <span class="nav-icon">🏢</span>
           <span class="nav-text">Propiedades</span>
         </a>
-        <!--Listado de porcentaje-->
         <a [routerLink]="['estates-owners/list']" routerLinkActive="active" class="nav-item">
           <span class="nav-icon">📊</span>
           <span class="nav-text">Porcentajes</span>
         </a>
-
-        <!-- Libro de IVA con submenús -->
         <a [routerLink]="['books-vat/vat-book']" routerLinkActive="active" class="nav-item">
           <span class="nav-icon">📚</span>
           <span class="nav-text">Libro de IVA</span>
         </a>
-
       </div>
-
 
       <!-- Gestión de Facturas-->
       <div class="nav-group">
         <div class="nav-group-title">🧾 Gestión de Facturas</div>
-        <!--Listado de facturas emitidas-->
         <a [routerLink]="['invoices-issued/list']" routerLinkActive="active" class="nav-item">
           <span class="nav-icon">🧾</span>
           <span class="nav-text">Facturas Emitidas</span>
         </a>
-        <!--Listado de facturas recibidas-->
         <a [routerLink]="['invoices-received/list']" routerLinkActive="active" class="nav-item">
           <span class="nav-icon">📥</span>
           <span class="nav-text">Facturas Recibidas</span>
         </a>
-        <!--Listado de facturas proveedores-->
         <a [routerLink]="['suppliers/list']" routerLinkActive="active" class="nav-item">
           <span class="nav-icon">🏪</span>
           <span class="nav-text">Proveedores</span>
         </a>
-        <!--Listado de facturas de gastos-->
         <a [routerLink]="['internal-expenses/list']" routerLinkActive="active" class="nav-item">
           <span class="nav-icon">💸</span>
           <span class="nav-text">Gastos Internos</span>
@@ -113,7 +149,6 @@
           <span class="nav-icon">👤</span>
           <span class="nav-text">Usuarios</span>
         </a>
-
         <a [routerLink]="['employee/list']" routerLinkActive="active" class="nav-item">
           <span class="nav-icon">👔</span>
           <span class="nav-text">Empleados</span>

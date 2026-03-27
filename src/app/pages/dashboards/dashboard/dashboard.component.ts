@@ -1,81 +1,89 @@
-import { Component } from '@angular/core';
-import {NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
-import {AuthService} from '../../../core/services/auth-services/auth.service';
-import {filter} from 'rxjs';
-
-
+import { Component, DestroyRef, HostListener, OnInit, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
+import { AuthService } from '../../../core/services/auth-services/auth.service';
+import { NotificationsService } from '../../../core/services/entity-services/notifications.service';
+import { AppNotification } from '../../../interfaces/stats-interface';
 
 @Component({
   selector: 'app-dashboards',
-  imports: [
-    RouterOutlet,
-    RouterLink,
-    RouterLinkActive,
-
-  ],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
 
+  private router = inject(Router);
+  private authService = inject(AuthService);
+  private notificationsService = inject(NotificationsService);
+  private destroyRef = inject(DestroyRef);
 
   sidebarCollapsed = false;
   currentPageTitle = 'Home';
 
-  // Mapeo de rutas a títulos
+  // Notificaciones
+  readonly notifications = signal<AppNotification[]>([]);
+  readonly showNotificationsDropdown = signal(false);
+  readonly unreadCount = computed(() =>
+    this.notifications().filter(n => !n.read).length
+  );
+
   private routeTitles: { [key: string]: string } = {
     '/dashboards': 'Home',
+    '/dashboards/settings': 'Configuración',
     '/dashboards/clients/list': 'Clientes',
     '/dashboards/owners/list': 'Propietarios',
     '/dashboards/estates/list': 'Propiedades',
     '/dashboards/estates-owners/list': 'Porcentajes',
-    //libro iva
     '/dashboards/invoices-issued/list': 'Facturas Emitidas',
-    //facturas recibidas
-    //proveedores
-    //gastos internos
+    '/dashboards/invoices-received/list': 'Facturas Recibidas',
     '/dashboards/users/list': 'Usuarios',
     '/dashboards/employee/list': 'Empleados',
   };
 
-  constructor(
-    private router: Router,
-    private authService: AuthService
-  ) {}
-
   ngOnInit(): void {
-    // Escuchar cambios de ruta para actualizar breadcrumb
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         this.updatePageTitle(event.urlAfterRedirects);
       });
-
-    // Establecer título inicial
     this.updatePageTitle(this.router.url);
+
+    // Cargar notificaciones reactivamente
+    this.notificationsService.getNotifications()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(data => this.notifications.set(data));
   }
 
-  /**
-   * Toggle del sidebar
-   */
   toggleSidebar(): void {
     this.sidebarCollapsed = !this.sidebarCollapsed;
   }
 
-  /**
-   * Logout del usuario
-   */
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
   }
 
-  /**
-   * Actualiza el título de la página actual
-   */
+  toggleNotifications(event: MouseEvent): void {
+    event.stopPropagation();
+    this.showNotificationsDropdown.update(v => !v);
+  }
+
+  markAsRead(notification: AppNotification, event: MouseEvent): void {
+    event.stopPropagation();
+    if (notification.read) return;
+    this.notificationsService.markAsRead(notification.id).subscribe({
+      next: () => this.notificationsService.refresh()
+    });
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.showNotificationsDropdown.set(false);
+  }
+
   private updatePageTitle(url: string): void {
     this.currentPageTitle = this.routeTitles[url] || 'Dashboard';
   }
-
-
 }

@@ -84,6 +84,9 @@ import {EmployeeListComponent} from './pages/employee/employee-list/employee-lis
 import {EmployeeEditComponent} from './pages/employee/employee-edit/employee-edit.component';
 import {EmployeeRegisterComponent} from './pages/employee/employee-register/employee-register.component';
 
+// Configuración
+import {SettingsComponent} from './pages/settings/settings.component';
+
 
 
 /**
@@ -224,6 +227,13 @@ export const routes: Routes = [
         ]
 
       },
+      // Configuración
+      {
+        path: 'settings',
+        component: SettingsComponent,
+        title: 'Configuración'
+      },
+
       // Módulo: Empleados
       {
         path: 'employee',

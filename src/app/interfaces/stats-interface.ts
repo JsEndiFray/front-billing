@@ -1,5 +1,29 @@
 
 /**
+ * Configuración del usuario + empresa
+ */
+export interface Settings {
+  userName: string;
+  email: string;
+  companyName: string;
+  cif: string;
+  address: string;
+  defaultTax: number;
+  currency: string;
+}
+
+/**
+ * Notificación del sistema
+ */
+export interface AppNotification {
+  id: number;
+  message: string;
+  type: 'info' | 'warning' | 'success';
+  read: boolean;
+  createdAt: string;
+}
+
+/**
  * Estadísticas del panel de control principal
  */
 export interface DashboardStats {

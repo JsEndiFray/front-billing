@@ -1,0 +1,96 @@
+<div class="settings-container">
+
+  <div class="settings-header">
+    <h1>⚙️ Configuración</h1>
+    <button class="back-btn" (click)="goBack()">← Volver</button>
+  </div>
+
+  @if (!settingsData()) {
+    <p class="loading">Cargando configuración...</p>
+  } @else {
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <!-- Sección: Perfil -->
+      <div class="settings-section">
+        <h2 class="section-title">👤 Perfil de Usuario</h2>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label class="form-label">Usuario</label>
+            <input type="text" formControlName="userName" class="form-input disabled" readonly>
+            <small class="help-text">El nombre de usuario no se puede modificar</small>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Email *</label>
+            <input type="email" formControlName="email" class="form-input"
+              [class.error]="form.get('email')?.invalid && form.get('email')?.touched">
+            @if (form.get('email')?.invalid && form.get('email')?.touched) {
+              <span class="error-msg">Email inválido</span>
+            }
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Sección: Empresa -->
+      <div class="settings-section">
+        <h2 class="section-title">🏢 Datos de Empresa</h2>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label class="form-label">Nombre de empresa</label>
+            <input type="text" formControlName="companyName" class="form-input" placeholder="Mi Empresa S.L.">
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">CIF/NIF</label>
+            <input type="text" formControlName="cif" class="form-input" placeholder="B12345678">
+          </div>
+
+          <div class="form-field form-field-full">
+            <label class="form-label">Dirección fiscal</label>
+            <input type="text" formControlName="address" class="form-input" placeholder="Calle, número, ciudad">
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Sección: Facturación -->
+      <div class="settings-section">
+        <h2 class="section-title">🧾 Facturación</h2>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label class="form-label">IVA por defecto (%)</label>
+            <input type="number" formControlName="defaultTax" class="form-input"
+              min="0" max="100" step="0.5"
+              [class.error]="form.get('defaultTax')?.invalid && form.get('defaultTax')?.touched">
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Moneda</label>
+            <select formControlName="currency" class="form-input">
+              <option value="EUR">EUR — Euro</option>
+              <option value="USD">USD — Dólar</option>
+              <option value="GBP">GBP — Libra</option>
+            </select>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="goBack()">Cancelar</button>
+        <button type="submit" class="btn-primary" [disabled]="form.invalid || isSubmitting">
+          @if (isSubmitting) { Guardando... } @else { 💾 Guardar cambios }
+        </button>
+      </div>
+
+    </form>
+
+  }
+
+</div>
