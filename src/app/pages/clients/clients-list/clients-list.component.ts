@@ -119,11 +119,7 @@ export class ClientsListComponent extends ExportableListBase<Clients> implements
 
   readonly paginationText = computed(() =>
     this.paginationService.getPaginationText(
-      {
-        currentPage: this.currentPage(),
-        itemsPerPage: this._itemsPerPage() ?? 5,
-        totalItems: this.filteredClients().length
-      },
+      this.getPaginationConfig(),
       this.paginationInfo().items.length
     )
   );

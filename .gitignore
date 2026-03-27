@@ -43,3 +43,6 @@ Thumbs.db
 
 # personales
 .env
+MIGRATION_STATUS.md
+MIGRATION_FORMARRAY_STATUS.md
+dasboard.md

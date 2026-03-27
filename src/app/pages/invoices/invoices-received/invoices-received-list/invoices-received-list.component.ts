@@ -169,11 +169,7 @@ export class InvoicesReceivedListComponent extends ExportableListBase<InvoiceRec
 
   readonly paginationText = computed(() =>
     this.paginationService.getPaginationText(
-      {
-        currentPage: this.currentPage(),
-        itemsPerPage: this._itemsPerPage() ?? 5,
-        totalItems: this.filteredInvoices().length
-      },
+      this.getPaginationConfig(),
       this.paginationInfo().items.length
     )
   );
