@@ -21,6 +21,7 @@ export interface AppNotification {
   type: 'info' | 'warning' | 'success';
   read: boolean;
   createdAt: string;
+  route: string;
 }
 
 /**

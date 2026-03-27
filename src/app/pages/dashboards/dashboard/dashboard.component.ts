@@ -72,10 +72,13 @@ export class DashboardComponent implements OnInit {
 
   markAsRead(notification: AppNotification, event: MouseEvent): void {
     event.stopPropagation();
-    if (notification.read) return;
-    this.notificationsService.markAsRead(notification.id).subscribe({
-      next: () => this.notificationsService.refresh()
-    });
+    this.showNotificationsDropdown.set(false);
+    if (!notification.read) {
+      this.notificationsService.markAsRead(notification.id).subscribe({
+        next: () => this.notificationsService.refresh()
+      });
+    }
+    this.router.navigate([notification.route]);
   }
 
   @HostListener('document:click')
