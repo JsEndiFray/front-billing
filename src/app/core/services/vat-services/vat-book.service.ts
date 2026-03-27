@@ -11,168 +11,165 @@ import {
 
 /**
  * Servicio para el Libro de IVA
- * Usa signals de Angular 19 para estado reactivo
+ * Usa signals de Angular 19 para estado reactivo.
+ * Los WritableSignals son privados — los componentes acceden
+ * solo a los signals de solo lectura expuestos públicamente.
  */
 @Injectable({
   providedIn: 'root'
 })
 export class VatBookService {
-  private apiService = inject(ApiService);
+  private readonly apiService = inject(ApiService);
 
-  // Signals para el estado
-  vatData = signal<ConsolidatedVATBook | null>(null);
-  loading = signal<boolean>(false);
-  error = signal<string | null>(null);
+  // ── WritableSignals privados (solo este servicio puede mutar) ─────────────
+  private readonly _vatData = signal<ConsolidatedVATBook | null>(null);
+  private readonly _loading = signal<boolean>(false);
+  private readonly _error   = signal<string | null>(null);
+
+  // ── Signals de solo lectura (API pública para componentes) ────────────────
+  readonly vatData = this._vatData.asReadonly();
+  readonly loading = this._loading.asReadonly();
+  readonly error   = this._error.asReadonly();
 
   /**
    * Obtiene el libro consolidado (soportado + repercutido + resumen por propietario)
    */
   getConsolidatedBook(year: number, quarter?: number, month?: number): void {
-    this.loading.set(true);
-    this.error.set(null);
+    this._loading.set(true);
+    this._error.set(null);
 
-    // Construir endpoint dinámicamente
     let endpoint = `vat-book/consolidated/${year}`;
     if (quarter) endpoint += `/${quarter}`;
-    if (month) endpoint += `/${month}`;
+    if (month)   endpoint += `/${month}`;
 
     this.apiService.get<ApiResponse<ConsolidatedVATBook>>(endpoint)
       .subscribe({
         next: (response) => {
-          this.vatData.set(response.data);
-          this.loading.set(false);
+          this._vatData.set(response.data);
+          this._loading.set(false);
         },
         error: (err) => {
-          this.error.set(err.message || 'Error al cargar datos');
-          this.loading.set(false);
+          this._error.set(err.message || 'Error al cargar datos');
+          this._loading.set(false);
         }
       });
   }
 
   /**
    * Obtiene estadísticas anuales
+   * TODO (deuda técnica): resultado no se almacena en signal — ver deuda técnica #4
    */
   getAnnualStats(year: number): void {
-    this.loading.set(true);
-    this.error.set(null);
+    this._loading.set(true);
+    this._error.set(null);
 
     this.apiService.get<ApiResponse<AnnualVATStats>>(`vat-book/stats/${year}`)
       .subscribe({
-        next: (response) => {
-          // Aquí podrías guardar en otro signal si lo necesitas
-          console.log('Stats:', response.data);
-          this.loading.set(false);
+        next: () => {
+          this._loading.set(false);
         },
         error: (err) => {
-          this.error.set(err.message || 'Error al cargar estadísticas');
-          this.loading.set(false);
+          this._error.set(err.message || 'Error al cargar estadísticas');
+          this._loading.set(false);
         }
       });
   }
 
   /**
    * Obtiene comparación trimestral
+   * TODO (deuda técnica): resultado no se almacena en signal — ver deuda técnica #4
    */
   getQuarterlyComparison(year: number): void {
-    this.loading.set(true);
-    this.error.set(null);
+    this._loading.set(true);
+    this._error.set(null);
 
     this.apiService.get<ApiResponse<QuarterlyVATComparison>>(`vat-book/comparison/${year}`)
       .subscribe({
-        next: (response) => {
-          console.log('Comparación:', response.data);
-          this.loading.set(false);
+        next: () => {
+          this._loading.set(false);
         },
         error: (err) => {
-          this.error.set(err.message || 'Error al cargar comparación');
-          this.loading.set(false);
+          this._error.set(err.message || 'Error al cargar comparación');
+          this._loading.set(false);
         }
       });
   }
 
   /**
    * Obtiene liquidación trimestral
+   * TODO (deuda técnica): resultado no se almacena en signal — ver deuda técnica #4
    */
   getQuarterlyLiquidation(year: number, quarter: number): void {
-    this.loading.set(true);
-    this.error.set(null);
+    this._loading.set(true);
+    this._error.set(null);
 
     this.apiService.get<ApiResponse<QuarterlyVATLiquidation>>(`vat-book/liquidation/${year}/${quarter}`)
       .subscribe({
-        next: (response) => {
-          console.log('Liquidación:', response.data);
-          this.loading.set(false);
+        next: () => {
+          this._loading.set(false);
         },
         error: (err) => {
-          this.error.set(err.message || 'Error al cargar liquidación');
-          this.loading.set(false);
+          this._error.set(err.message || 'Error al cargar liquidación');
+          this._loading.set(false);
         }
       });
   }
 
   /**
    * Obtiene configuración disponible
+   * TODO (deuda técnica): resultado no se almacena en signal — ver deuda técnica #4
    */
   getConfig(): void {
-    this.loading.set(true);
-    this.error.set(null);
+    this._loading.set(true);
+    this._error.set(null);
 
     this.apiService.get<ApiResponse<VATBookConfig>>('vat-book/config')
       .subscribe({
-        next: (response) => {
-          console.log('Config:', response.data);
-          this.loading.set(false);
+        next: () => {
+          this._loading.set(false);
         },
         error: (err) => {
-          this.error.set(err.message || 'Error al cargar configuración');
-          this.loading.set(false);
+          this._error.set(err.message || 'Error al cargar configuración');
+          this._loading.set(false);
         }
       });
   }
 
   /**
    * Descarga Excel del libro de IVA desde el backend
+   * TODO (deuda técnica): no gestiona blob ni estado loading — ver deuda técnica #3
    */
   downloadExcel(year: number, quarter?: number, month?: number, bookType: 'supported' | 'charged' | 'both' = 'both'): void {
     const body = {
       year,
       quarter: quarter || null,
-      month: month || null,
+      month:   month   || null,
       bookType
     };
 
-    // Llamada al backend que devuelve el archivo
     this.apiService.post('vat-book/download/excel', body)
       .subscribe({
-        next: (response: unknown) => {
-          console.log('Excel descargado correctamente', response);
-        },
-        error: (err) => {
-          console.error('Error al descargar Excel:', err);
-        }
+        next:  () => { /* descarga pendiente de implementar — deuda técnica #3 */ },
+        error: () => { /* error manejado por interceptor */ }
       });
   }
 
   /**
    * Descarga PDF del libro de IVA desde el backend
+   * TODO (deuda técnica): no gestiona blob ni estado loading — ver deuda técnica #3
    */
   downloadPDF(year: number, quarter?: number, month?: number, bookType: 'supported' | 'charged' | 'both' = 'both'): void {
     const body = {
       year,
       quarter: quarter || null,
-      month: month || null,
+      month:   month   || null,
       bookType
     };
 
-    // Llamada al backend que devuelve el archivo
     this.apiService.post('vat-book/download/pdf', body)
       .subscribe({
-        next: (response: unknown) => {
-          console.log('PDF descargado correctamente', response);
-        },
-        error: (err) => {
-          console.error('Error al descargar PDF:', err);
-        }
+        next:  () => { /* descarga pendiente de implementar — deuda técnica #3 */ },
+        error: () => { /* error manejado por interceptor */ }
       });
   }
 
@@ -180,7 +177,7 @@ export class VatBookService {
    * Limpia los datos del signal
    */
   clearData(): void {
-    this.vatData.set(null);
-    this.error.set(null);
+    this._vatData.set(null);
+    this._error.set(null);
   }
 }

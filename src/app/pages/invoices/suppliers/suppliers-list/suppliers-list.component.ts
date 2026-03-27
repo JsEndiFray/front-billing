@@ -1,13 +1,14 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, signal, computed, effect, inject, DestroyRef} from '@angular/core';
+import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {SuppliersService} from '../../../../core/services/entity-services/suppliers.service';
 import {Router} from '@angular/router';
 import {SearchService} from '../../../../core/services/shared-services/search.service';
 import {PaginationService} from '../../../../core/services/shared-services/pagination.service';
 import {ExportService} from '../../../../core/services/shared-services/exportar.service';
-import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {Suppliers} from '../../../../interfaces/suppliers-interface';
 import {ACTIVE_STATUS_LABELS, PAYMENT_TERMS_LABELS} from '../../../../shared/Collection-Enum/collection-enum';
-import {PaginationConfig, PaginationResult} from '../../../../interfaces/pagination-interface';
+import {PaginationConfig} from '../../../../interfaces/pagination-interface';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
 import {NgClass} from '@angular/common';
@@ -25,48 +26,131 @@ import {ExportableListBase} from '../../../../shared/Base/exportable-list.base';
 export class SuppliersListComponent extends ExportableListBase<Suppliers> implements OnInit {
 
   // ==========================================
-  // PROPIEDADES DE FORMULARIOS
+  // INYECCIÓN DE DEPENDENCIAS
   // ==========================================
-  searchForm: FormGroup;
-  filtersForm: FormGroup;
-  paginationForm: FormGroup;
+  private readonly suppliersService = inject(SuppliersService);
+  private readonly router = inject(Router);
+  private readonly searchService = inject(SearchService);
+  private readonly paginationService = inject(PaginationService);
+  public readonly exportService = inject(ExportService);
+  private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
 
   // ==========================================
-  // PROPIEDADES DE DATOS
+  // SIGNALS - DATOS PRINCIPALES
   // ==========================================
-  suppliers: Suppliers[] = [];
-  allSuppliers: Suppliers[] = [];
-  filteredSuppliers: Suppliers[] = [];
+  readonly allSuppliers = signal<Suppliers[]>([]);
+
+  // ==========================================
+  // SIGNALS - FILTROS
+  // ==========================================
+  readonly searchTerm = signal<string>('');
+  readonly selectedActiveStatus = signal<string>('');
+  readonly selectedPaymentTerms = signal<string>('');
+
+  // ==========================================
+  // SIGNALS - PAGINACIÓN
+  // ==========================================
+  readonly currentPage = signal<number>(1);
+  readonly itemsPerPage = signal<number>(5);
+
+  // ==========================================
+  // COMPUTED - CÁLCULOS REACTIVOS
+  // ==========================================
+
+  /**
+   * Proveedores filtrados según búsqueda y filtros
+   */
+  readonly filteredSuppliers = computed(() => {
+    let filtered = [...this.allSuppliers()];
+
+    const search = this.searchTerm().trim();
+    if (search) {
+      filtered = this.searchService.filterData(
+        filtered,
+        search,
+        ['name', 'company_name', 'tax_id', 'email', 'city', 'contact_person']
+      );
+    }
+
+    const activeStatus = this.selectedActiveStatus();
+    if (activeStatus !== '') {
+      const isActive = activeStatus === 'true';
+      filtered = filtered.filter(supplier => supplier.active === isActive);
+    }
+
+    const paymentTerms = this.selectedPaymentTerms();
+    if (paymentTerms !== '') {
+      filtered = filtered.filter(supplier =>
+        supplier.payment_terms === Number(paymentTerms)
+      );
+    }
+
+    return filtered;
+  });
+
+  /**
+   * Total de items filtrados
+   */
+  readonly totalFilteredItems = computed(() => this.filteredSuppliers().length);
+
+  /**
+   * Total de páginas
+   */
+  readonly totalPages = computed(() =>
+    Math.ceil(this.totalFilteredItems() / this.itemsPerPage())
+  );
+
+  /**
+   * Proveedores de la página actual
+   */
+  readonly currentPageSuppliers = computed(() => {
+    const filtered = this.filteredSuppliers();
+    const page = this.currentPage();
+    const perPage = this.itemsPerPage();
+    const startIndex = (page - 1) * perPage;
+    return filtered.slice(startIndex, startIndex + perPage);
+  });
+
+  /**
+   * Información de paginación
+   */
+  readonly paginationInfo = computed(() => {
+    const page = this.currentPage();
+    const perPage = this.itemsPerPage();
+    const total = this.totalFilteredItems();
+    const totalPgs = this.totalPages();
+    const startIndex = (page - 1) * perPage;
+    const endIndex = Math.min(startIndex + perPage, total);
+
+    return {
+      currentPage: page,
+      totalPages: totalPgs,
+      startIndex: startIndex + 1,
+      endIndex,
+      totalItems: total,
+      hasNext: page < totalPgs,
+      hasPrevious: page > 1
+    };
+  });
+
+  /**
+   * Páginas visibles para navegación
+   */
+  readonly visiblePages = computed(() =>
+    this.paginationService.getVisiblePages(this.currentPage(), this.totalPages(), 5)
+  );
 
   // ==========================================
   // LABELS (enums importados)
   // ==========================================
-  activeStatusLabels = ACTIVE_STATUS_LABELS;
-  paymentTermsLabels = PAYMENT_TERMS_LABELS;
+  readonly activeStatusLabels = ACTIVE_STATUS_LABELS;
+  readonly paymentTermsLabels = PAYMENT_TERMS_LABELS;
 
   // ==========================================
-  // PAGINACIÓN
+  // EXPORTACIÓN (ExportableListBase)
   // ==========================================
-  paginationConfig: PaginationConfig = {
-    currentPage: 1,
-    itemsPerPage: 5,
-    totalItems: 0
-  };
-
-  paginationResult: PaginationResult<Suppliers> = {
-    items: [],
-    totalPages: 0,
-    hasNext: false,
-    hasPrevious: false,
-    startIndex: 0,
-    endIndex: 0
-  };
-
-  //===============================
-  // FUNCIONES PARA LA EXPORTACION
-  //===============================
-  // Implementar propiedades abstractas
-  entityName = 'proveedores'; //para nombrar los documentos descargados
+  readonly entityName = 'proveedores';
   selectedItems: Set<number> = new Set();
 
   readonly exportColumns = [
@@ -83,16 +167,16 @@ export class SuppliersListComponent extends ExportableListBase<Suppliers> implem
     }
   ];
 
+  // ==========================================
+  // FORMULARIOS (puente UI → Signals)
+  // ==========================================
+  readonly searchForm: FormGroup;
+  readonly filtersForm: FormGroup;
+  readonly paginationForm: FormGroup;
 
-  constructor(
-    private suppliersService: SuppliersService,
-    private router: Router,
-    private searchService: SearchService,
-    private paginationService: PaginationService,
-    public exportService: ExportService,
-    private fb: FormBuilder
-  ) {
+  constructor() {
     super();
+
     this.searchForm = this.fb.group({
       searchTerm: ['']
     });
@@ -105,51 +189,60 @@ export class SuppliersListComponent extends ExportableListBase<Suppliers> implem
     this.paginationForm = this.fb.group({
       itemsPerPage: [5]
     });
-  };
 
-  // Implementar métodos abstractos
+    // ==========================================
+    // SUSCRIPCIONES - SINCRONIZAR FORMULARIOS CON SIGNALS
+    // ==========================================
+
+    this.searchForm.get('searchTerm')!.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(value => this.searchTerm.set(value || ''));
+
+    this.filtersForm.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(values => {
+        this.selectedActiveStatus.set(values.selectedActiveStatus || '');
+        this.selectedPaymentTerms.set(values.selectedPaymentTerms || '');
+      });
+
+    this.paginationForm.get('itemsPerPage')!.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(value => {
+        this.itemsPerPage.set(value);
+        this.currentPage.set(1);
+      });
+
+    // Resetear página cuando cambian los filtros
+    effect(() => {
+      this.searchTerm();
+      this.selectedActiveStatus();
+      this.selectedPaymentTerms();
+      this.currentPage.set(1);
+    });
+  }
+
+  ngOnInit(): void {
+    this.loadSuppliers();
+  }
+
+  // ==========================================
+  // IMPLEMENTAR MÉTODOS ABSTRACTOS (ExportableListBase)
+  // ==========================================
+
   getFilteredData(): Suppliers[] {
-    return this.filteredSuppliers;
+    return this.filteredSuppliers();
   }
 
   getCurrentPageData(): Suppliers[] {
-    return this.suppliers;
+    return this.currentPageSuppliers();
   }
 
   getPaginationConfig(): PaginationConfig {
-    return this.paginationConfig;
-  }
-
-
-  ngOnInit(): void {
-    this.getListSuppliers();
-    this.setupFormSubscriptions();
-  }
-
-  // ==========================================
-  // MÉTODOS DE CONFIGURACIÓN
-  // ==========================================
-
-  /**
-   * Configura las suscripciones reactivas
-   */
-  setupFormSubscriptions(): void {
-    // Búsqueda en tiempo real
-    this.searchForm.get('searchTerm')?.valueChanges.subscribe(() => {
-      this.applyFilters();
-    });
-
-    // Filtros en tiempo real
-    this.filtersForm.valueChanges.subscribe(() => {
-      this.applyFilters();
-    });
-
-    // Cambios en paginación
-    this.paginationForm.get('itemsPerPage')?.valueChanges.subscribe((items) => {
-      this.paginationConfig.itemsPerPage = items;
-      this.paginationConfig.currentPage = 1;
-      this.updatePagination();
-    });
+    return {
+      currentPage: this.currentPage(),
+      itemsPerPage: this.itemsPerPage(),
+      totalItems: this.totalFilteredItems()
+    };
   }
 
   // ==========================================
@@ -157,74 +250,36 @@ export class SuppliersListComponent extends ExportableListBase<Suppliers> implem
   // ==========================================
 
   /**
-   * Obtiene todos los proveedores del servidor
+   * Carga todos los proveedores del servidor
    */
-  getListSuppliers(): void {
-    this.suppliersService.getAllSuppliersIncludingInactive().subscribe({
-      next: (suppliersList) => {
-        this.allSuppliers = suppliersList;
-        this.applyFilters();
-      },
-      error: (e: HttpErrorResponse) => {
-        // Error manejado por interceptor
-      }
-    });
-  };
-
-  // ==========================================
-  // MÉTODOS DE FILTROS Y BÚSQUEDA
-  // ==========================================
-
-  /**
-   * Aplica todos los filtros activos
-   */
-  applyFilters(): void {
-    let filtered = [...this.allSuppliers];
-
-    const search = this.searchForm.get('searchTerm')?.value;
-    const activeStatus = this.filtersForm.get('selectedActiveStatus')?.value;
-    const paymentTerms = this.filtersForm.get('selectedPaymentTerms')?.value;
-
-    // Filtro por búsqueda de texto
-    if (search?.trim()) {
-      filtered = this.searchService.filterData(
-        filtered,
-        search,
-        ['name', 'company_name', 'tax_id', 'email', 'city', 'contact_person']
-      );
-    }
-
-    // Filtro por estado activo/inactivo
-    if (activeStatus !== '') {
-      const isActive = activeStatus === 'true';
-      filtered = filtered.filter(supplier => supplier.active === isActive);
-    }
-
-    // Filtro por términos de pago
-    if (paymentTerms !== '') {
-      filtered = filtered.filter(supplier =>
-        supplier.payment_terms === Number(paymentTerms)
-      );
-    }
-
-    this.filteredSuppliers = filtered;
-    this.paginationConfig.totalItems = filtered.length;
-    this.paginationConfig.currentPage = 1;
-    this.updatePagination();
+  loadSuppliers(): void {
+    this.suppliersService.getAllSuppliersIncludingInactive()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => this.allSuppliers.set(data),
+        error: (e: HttpErrorResponse) => {
+          // Error manejado por interceptor
+        }
+      });
   }
+
+  // ==========================================
+  // MÉTODOS DE FILTROS
+  // ==========================================
 
   /**
    * Limpia todos los filtros
    */
   clearFilters(): void {
-    this.searchForm.patchValue({
-      searchTerm: ''
-    });
+    this.searchTerm.set('');
+    this.selectedActiveStatus.set('');
+    this.selectedPaymentTerms.set('');
 
+    this.searchForm.patchValue({searchTerm: ''}, {emitEvent: false});
     this.filtersForm.patchValue({
       selectedActiveStatus: '',
       selectedPaymentTerms: ''
-    });
+    }, {emitEvent: false});
   }
 
   // ==========================================
@@ -232,23 +287,11 @@ export class SuppliersListComponent extends ExportableListBase<Suppliers> implem
   // ==========================================
 
   /**
-   * Actualiza la paginación con los datos filtrados
-   */
-  updatePagination(): void {
-    this.paginationResult = this.paginationService.paginate(
-      this.filteredSuppliers,
-      this.paginationConfig
-    );
-    this.suppliers = this.paginationResult.items;
-  }
-
-  /**
    * Navega a una página específica
    */
   goToPage(page: number): void {
-    if (this.paginationService.isValidPage(page, this.paginationResult.totalPages)) {
-      this.paginationConfig.currentPage = page;
-      this.updatePagination();
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
     }
   }
 
@@ -256,8 +299,8 @@ export class SuppliersListComponent extends ExportableListBase<Suppliers> implem
    * Navega a la página anterior
    */
   previousPage(): void {
-    if (this.paginationResult.hasPrevious) {
-      this.goToPage(this.paginationConfig.currentPage - 1);
+    if (this.paginationInfo().hasPrevious) {
+      this.currentPage.set(this.currentPage() - 1);
     }
   }
 
@@ -265,33 +308,21 @@ export class SuppliersListComponent extends ExportableListBase<Suppliers> implem
    * Navega a la página siguiente
    */
   nextPage(): void {
-    if (this.paginationResult.hasNext) {
-      this.goToPage(this.paginationConfig.currentPage + 1);
+    if (this.paginationInfo().hasNext) {
+      this.currentPage.set(this.currentPage() + 1);
     }
-  }
-
-  /**
-   * Obtiene las páginas visibles para la navegación
-   */
-  getVisiblePages(): number[] {
-    return this.paginationService.getVisiblePages(
-      this.paginationConfig.currentPage,
-      this.paginationResult.totalPages,
-      5
-    );
   }
 
   /**
    * Obtiene el texto informativo de paginación
    */
   getPaginationText(): string {
-    return this.paginationService.getPaginationText(
-      this.paginationConfig,
-      this.suppliers.length
-    );
+    const info = this.paginationInfo();
+    if (info.totalItems === 0) return 'No hay elementos';
+    return `Mostrando ${info.startIndex}-${info.endIndex} de ${info.totalItems}`;
   }
 
-// ==========================================
+  // ==========================================
   // MÉTODOS DE NAVEGACIÓN Y CRUD
   // ==========================================
 
@@ -309,9 +340,8 @@ export class SuppliersListComponent extends ExportableListBase<Suppliers> implem
     this.router.navigate(['/dashboards/suppliers/edit', id]);
   }
 
-
   /**
-   * Elimina un proveedor (borrado lógico)
+   * Desactiva un proveedor (borrado lógico)
    */
   deleteSupplier(id: number): void {
     Swal.fire({
@@ -323,20 +353,22 @@ export class SuppliersListComponent extends ExportableListBase<Suppliers> implem
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.suppliersService.deleteSupplier(id).subscribe({
-          next: () => {
-            Swal.fire({
-              title: 'Desactivado',
-              text: 'El proveedor se ha desactivado correctamente',
-              icon: 'success',
-              confirmButtonText: 'Ok'
-            });
-            this.getListSuppliers();
-          },
-          error: (e: HttpErrorResponse) => {
-            // Error manejado por interceptor
-          }
-        });
+        this.suppliersService.deleteSupplier(id)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: () => {
+              Swal.fire({
+                title: 'Desactivado',
+                text: 'El proveedor se ha desactivado correctamente',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+              });
+              this.loadSuppliers();
+            },
+            error: (e: HttpErrorResponse) => {
+              // Error manejado por interceptor
+            }
+          });
       }
     });
   }
@@ -354,23 +386,25 @@ export class SuppliersListComponent extends ExportableListBase<Suppliers> implem
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.suppliersService.activateSupplier(id).subscribe({
-          next: () => {
-            Swal.fire({
-              title: 'Reactivado',
-              text: 'El proveedor se ha reactivado correctamente',
-              icon: 'success',
-              confirmButtonText: 'Ok'
-            });
-            this.getListSuppliers();
-          },
-          error: (e: HttpErrorResponse) => {
-            // Error manejado por interceptor
-          }
-        });
+        this.suppliersService.activateSupplier(id)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: () => {
+              Swal.fire({
+                title: 'Reactivado',
+                text: 'El proveedor se ha reactivado correctamente',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+              });
+              this.loadSuppliers();
+            },
+            error: (e: HttpErrorResponse) => {
+              // Error manejado por interceptor
+            }
+          });
       }
     });
-  };
+  }
 
   // ==========================================
   // MÉTODOS AUXILIARES
@@ -396,6 +430,4 @@ export class SuppliersListComponent extends ExportableListBase<Suppliers> implem
   getActiveStatusClass(active: boolean | undefined): string {
     return active ? 'active-badge' : 'inactive-badge';
   }
-
-
 }

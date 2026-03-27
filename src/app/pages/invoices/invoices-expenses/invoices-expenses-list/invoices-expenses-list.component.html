@@ -50,7 +50,7 @@
         <!-- Filtro por categoría -->
         <select formControlName="selectedCategory" class="filter-select">
           <option value="">Todas las categorías</option>
-          @for (cat of categoryLabels(); track cat.value) {
+          @for (cat of categoryLabels; track cat.value) {
             <option [value]="cat.value">{{ cat.label }}</option>
           }
         </select>
@@ -58,7 +58,7 @@
         <!-- Filtro por estado -->
         <select formControlName="selectedStatus" class="filter-select">
           <option value="">Todos los estados</option>
-          @for (status of statusLabels(); track status.value) {
+          @for (status of statusLabels; track status.value) {
             <option [value]="status.value">{{ status.label }}</option>
           }
         </select>
@@ -66,7 +66,7 @@
         <!-- Filtro por deducible -->
         <select formControlName="selectedDeductible" class="filter-select">
           <option value="">Todos</option>
-          @for (ded of deductibleLabels(); track ded.value) {
+          @for (ded of deductibleLabels; track ded.value) {
             <option [value]="ded.value">{{ ded.label }}</option>
           }
         </select>

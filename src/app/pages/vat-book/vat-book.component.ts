@@ -16,15 +16,15 @@ import { VatBookService } from '../../core/services/vat-services/vat-book.servic
 })
 export class VatBookComponent {
 
-  // ── Servicios ────────────────────────────────────────────────────────────
-  private vatBookService = inject(VatBookService);
-  private fb             = inject(FormBuilder);
-  vatBookUtils           = inject(VatBookUtilsHelper);
-  exportService          = inject(ExportService);
+  // ── Servicios ─────────────────────────────────────────────────────────────
+  private readonly vatBookService = inject(VatBookService);
+  private readonly fb             = inject(FormBuilder);
+  readonly vatBookUtils           = inject(VatBookUtilsHelper);
+  readonly exportService          = inject(ExportService);
 
-  // ── Formulario ───────────────────────────────────────────────────────────
+  // ── Formulario ────────────────────────────────────────────────────────────
   // Inicializado como class field para que formValues pueda depender de él
-  filtersForm = this.fb.group({
+  readonly filtersForm = this.fb.group({
     year:       [new Date().getFullYear(), Validators.required],
     quarter:    [null as number | null],
     month:      [null as number | null],
@@ -34,17 +34,19 @@ export class VatBookComponent {
   // ── Bridge FormGroup → Signal ─────────────────────────────────────────────
   // toSignal suscribe a valueChanges y expone el valor actual como signal.
   // initialValue evita el tipo `| undefined` y garantiza valor desde el primer render.
-  private formValues = toSignal(this.filtersForm.valueChanges, {
+  private readonly formValues = toSignal(this.filtersForm.valueChanges, {
     initialValue: this.filtersForm.value
   });
 
   // ── Estado UI ─────────────────────────────────────────────────────────────
   activeTab = signal<number>(0);
 
-  // ── Datos del servicio ────────────────────────────────────────────────────
-  vatData = computed(() => this.vatBookService.vatData());
-  loading = computed(() => this.vatBookService.loading());
-  error   = computed(() => this.vatBookService.error());
+  // ── Signals del servicio (referencias directas — sin computed redundante) ──
+  // El servicio expone Signal<T> readonly: asignar la referencia es equivalente
+  // a computed(() => service.x()) pero sin crear un nodo extra en el grafo reactivo.
+  readonly vatData = this.vatBookService.vatData;
+  readonly loading = this.vatBookService.loading;
+  readonly error   = this.vatBookService.error;
 
   // ── Computed reactivos ────────────────────────────────────────────────────
 
@@ -90,25 +92,25 @@ export class VatBookComponent {
   });
 
   // ── Opciones para selectores ──────────────────────────────────────────────
-  availableYears = this.vatBookUtils.getAvailableYears();
-  quarters       = this.vatBookUtils.getQuarters();
-  months         = this.vatBookUtils.getMonths();
+  readonly availableYears = this.vatBookUtils.getAvailableYears();
+  readonly quarters       = this.vatBookUtils.getQuarters();
+  readonly months         = this.vatBookUtils.getMonths();
 
   // ── Columnas de exportación ───────────────────────────────────────────────
-  exportColumns: ExportColumn[] = [
-    { key: 'numeroFactura', title: 'Nº Factura' },
-    { key: 'fechaFactura',  title: 'Fecha' },
+  readonly exportColumns: ExportColumn[] = [
+    { key: 'numeroFactura',   title: 'Nº Factura' },
+    { key: 'fechaFactura',    title: 'Fecha' },
     { key: 'nombreProveedor', title: 'Proveedor' },
-    { key: 'nombreCliente', title: 'Cliente' },
-    { key: 'nifProveedor',  title: 'NIF Proveedor' },
-    { key: 'nifCliente',    title: 'NIF Cliente' },
-    { key: 'baseImponible', title: 'Base Imponible' },
-    { key: 'tipoIVA',       title: 'Tipo IVA (%)' },
-    { key: 'cuotaIVA',      title: 'Cuota IVA' },
-    { key: 'importeTotal',  title: 'Total' }
+    { key: 'nombreCliente',   title: 'Cliente' },
+    { key: 'nifProveedor',    title: 'NIF Proveedor' },
+    { key: 'nifCliente',      title: 'NIF Cliente' },
+    { key: 'baseImponible',   title: 'Base Imponible' },
+    { key: 'tipoIVA',         title: 'Tipo IVA (%)' },
+    { key: 'cuotaIVA',        title: 'Cuota IVA' },
+    { key: 'importeTotal',    title: 'Total' }
   ];
 
-  exportColumnsOwners: ExportColumn[] = [
+  readonly exportColumnsOwners: ExportColumn[] = [
     { key: 'owner_name',        title: 'Propietario' },
     { key: 'ownership_percent', title: '% Propiedad' },
     { key: 'vat_charged',       title: 'IVA Repercutido' },
@@ -162,7 +164,7 @@ export class VatBookComponent {
   // ── Exportación ───────────────────────────────────────────────────────────
 
   exportCurrentTab(): void {
-    const tabNames      = ['Soportado', 'Repercutido', 'Propietarios'];
+    const tabNames       = ['Soportado', 'Repercutido', 'Propietarios'];
     const currentTabName = tabNames[this.activeTab()];
     const period         = this.periodLabel().replace(/\s+/g, '-');
 

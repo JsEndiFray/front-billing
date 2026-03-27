@@ -34,7 +34,7 @@
             class="form-select"
             [class.invalid]="isFieldInvalid('category')">
             <option value="">Seleccione una categoría</option>
-            @for (cat of categoryLabels(); track cat.value) {
+            @for (cat of categoryLabels; track cat.value) {
               <option [value]="cat.value">{{ cat.label }}</option>
             }
           </select>
@@ -180,7 +180,7 @@
             formControlName="payment_method"
             class="form-select"
             [class.invalid]="isFieldInvalid('payment_method')">
-            @for (method of paymentMethodLabels(); track method.value) {
+            @for (method of paymentMethodLabels; track method.value) {
               <option [value]="method.value">{{ method.label }}</option>
             }
           </select>
@@ -336,7 +336,7 @@
                 class="form-select"
                 [class.invalid]="isFieldInvalid('recurrence_period')">
                 <option value="">Seleccione período</option>
-                @for (period of recurrenceLabels(); track period.value) {
+                @for (period of recurrenceLabels; track period.value) {
                   <option [value]="period.value">{{ period.label }}</option>
                 }
               </select>

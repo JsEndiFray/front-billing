@@ -31,7 +31,7 @@ import {ExpensesUtilHelper} from '../../../../core/helpers/expense-utils.helper'
   templateUrl: './invoices-expenses-list.component.html',
   styleUrl: './invoices-expenses-list.component.css'
 })
-export class InvoicesExpensesListComponent extends ExportableListBase<InternalExpense>{
+export class InvoicesExpensesListComponent extends ExportableListBase<InternalExpense> implements OnInit {
 
   // ==========================================
   // INYECCIÓN DE DEPENDENCIAS
@@ -49,23 +49,23 @@ export class InvoicesExpensesListComponent extends ExportableListBase<InternalEx
   // ==========================================
   // SIGNALS - DATOS PRINCIPALES
   // ==========================================
-  allExpenses = signal<InternalExpense[]>([]);
-  isLoading = signal<boolean>(false);
-  error = signal<string | null>(null);
+  readonly allExpenses = signal<InternalExpense[]>([]);
+  readonly isLoading = signal<boolean>(false);
+  readonly error = signal<string | null>(null);
 
   // ==========================================
   // SIGNALS - FILTROS
   // ==========================================
-  searchTerm = signal<string>('');
-  selectedCategory = signal<string>('');
-  selectedStatus = signal<string>('');
-  selectedDeductible = signal<string>('');
+  readonly searchTerm = signal<string>('');
+  readonly selectedCategory = signal<string>('');
+  readonly selectedStatus = signal<string>('');
+  readonly selectedDeductible = signal<string>('');
 
   // ==========================================
   // SIGNALS - PAGINACIÓN
   // ==========================================
-  currentPage = signal<number>(1);
-  itemsPerPage = signal<number>(10);
+  readonly currentPage = signal<number>(1);
+  readonly itemsPerPage = signal<number>(10);
 
   // ==========================================
   // COMPUTED - CÁLCULOS REACTIVOS
@@ -74,7 +74,7 @@ export class InvoicesExpensesListComponent extends ExportableListBase<InternalEx
   /**
    * Gastos filtrados según búsqueda y filtros
    */
-  filteredExpenses = computed(() => {
+  readonly filteredExpenses = computed(() => {
     let filtered = [...this.allExpenses()];
 
     // Filtro por búsqueda de texto
@@ -112,19 +112,19 @@ export class InvoicesExpensesListComponent extends ExportableListBase<InternalEx
   /**
    * Total de items filtrados
    */
-  totalFilteredItems = computed(() => this.filteredExpenses().length);
+  readonly totalFilteredItems = computed(() => this.filteredExpenses().length);
 
   /**
    * Total de páginas
    */
-  totalPages = computed(() =>
+  readonly totalPages = computed(() =>
     Math.ceil(this.totalFilteredItems() / this.itemsPerPage())
   );
 
   /**
    * Gastos de la página actual
    */
-  currentPageExpenses = computed(() => {
+  readonly currentPageExpenses = computed(() => {
     const filtered = this.filteredExpenses();
     const page = this.currentPage();
     const perPage = this.itemsPerPage();
@@ -138,7 +138,7 @@ export class InvoicesExpensesListComponent extends ExportableListBase<InternalEx
   /**
    * Información de paginación
    */
-  paginationInfo = computed(() => {
+  readonly paginationInfo = computed(() => {
     const page = this.currentPage();
     const perPage = this.itemsPerPage();
     const total = this.totalFilteredItems();
@@ -161,7 +161,7 @@ export class InvoicesExpensesListComponent extends ExportableListBase<InternalEx
   /**
    * Páginas visibles para navegación
    */
-  visiblePages = computed(() => {
+  readonly visiblePages = computed(() => {
     const current = this.currentPage();
     const total = this.totalPages();
     const maxVisible = 5;
@@ -172,34 +172,34 @@ export class InvoicesExpensesListComponent extends ExportableListBase<InternalEx
   /**
    * Estadísticas de gastos filtrados
    */
-  expenseStats = computed(() => {
+  readonly expenseStats = computed(() => {
     return this.utilService.getExpenseStats(this.filteredExpenses());
   });
 
   /**
    * Total de gastos pendientes
    */
-  pendingCount = computed(() => this.expenseStats().byStatus.pending);
+  readonly pendingCount = computed(() => this.expenseStats().byStatus.pending);
 
   /**
    * Total de gastos aprobados
    */
-  approvedCount = computed(() => this.expenseStats().byStatus.approved);
+  readonly approvedCount = computed(() => this.expenseStats().byStatus.approved);
 
   /**
    * Total de gastos pagados
    */
-  paidCount = computed(() => this.expenseStats().byStatus.paid);
+  readonly paidCount = computed(() => this.expenseStats().byStatus.paid);
 
   /**
    * Total de gastos rechazados
    */
-  rejectedCount = computed(() => this.expenseStats().byStatus.rejected);
+  readonly rejectedCount = computed(() => this.expenseStats().byStatus.rejected);
 
   // ==========================================
   // SIGNALS - EXPORTACIÓN
   // ==========================================
-  entityName = 'gastos-internos';
+  readonly entityName = 'gastos-internos';
   selectedItems: Set<number> = new Set();
 
   readonly exportColumns = [
@@ -233,17 +233,17 @@ export class InvoicesExpensesListComponent extends ExportableListBase<InternalEx
   // ==========================================
   // LABELS (enums importados)
   // ==========================================
-  categoryLabels = signal(EXPENSE_CATEGORY_LABELS);
-  statusLabels = signal(EXPENSE_STATUS_LABELS);
-  paymentMethodLabels = signal(EXPENSE_PAYMENT_METHOD_LABELS);
-  deductibleLabels = signal(DEDUCTIBLE_LABELS);
+  readonly categoryLabels = EXPENSE_CATEGORY_LABELS;
+  readonly statusLabels = EXPENSE_STATUS_LABELS;
+  readonly paymentMethodLabels = EXPENSE_PAYMENT_METHOD_LABELS;
+  readonly deductibleLabels = DEDUCTIBLE_LABELS;
 
   // ==========================================
   // PROPIEDADES DE FORMULARIOS (Legacy para ExportableListBase)
   // ==========================================
-  searchForm: FormGroup;
-  filtersForm: FormGroup;
-  paginationForm: FormGroup;
+  readonly searchForm: FormGroup;
+  readonly filtersForm: FormGroup;
+  readonly paginationForm: FormGroup;
 
   constructor() {
     super();
@@ -264,36 +264,30 @@ export class InvoicesExpensesListComponent extends ExportableListBase<InternalEx
     });
 
     // ==========================================
-    // EFFECTS - SINCRONIZAR FORMULARIOS CON SIGNALS
+    // SUSCRIPCIONES - SINCRONIZAR FORMULARIOS CON SIGNALS
     // ==========================================
 
     // Sincronizar búsqueda
-    effect(() => {
-      this.searchForm.get('searchTerm')?.valueChanges
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(value => this.searchTerm.set(value || ''));
-    });
+    this.searchForm.get('searchTerm')!.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(value => this.searchTerm.set(value || ''));
 
     // Sincronizar filtros
-    effect(() => {
-      this.filtersForm.valueChanges
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(values => {
-          this.selectedCategory.set(values.selectedCategory || '');
-          this.selectedStatus.set(values.selectedStatus || '');
-          this.selectedDeductible.set(values.selectedDeductible || '');
-        });
-    });
+    this.filtersForm.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(values => {
+        this.selectedCategory.set(values.selectedCategory || '');
+        this.selectedStatus.set(values.selectedStatus || '');
+        this.selectedDeductible.set(values.selectedDeductible || '');
+      });
 
     // Sincronizar paginación
-    effect(() => {
-      this.paginationForm.get('itemsPerPage')?.valueChanges
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(value => {
-          this.itemsPerPage.set(value);
-          this.currentPage.set(1); // Reset a primera página
-        });
-    });
+    this.paginationForm.get('itemsPerPage')!.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(value => {
+        this.itemsPerPage.set(value);
+        this.currentPage.set(1); // Reset a primera página
+      });
 
     // Resetear página cuando cambian los filtros
     effect(() => {
@@ -370,34 +364,6 @@ export class InvoicesExpensesListComponent extends ExportableListBase<InternalEx
   // ==========================================
 
   /**
-   * Actualiza el término de búsqueda
-   */
-  updateSearchTerm(term: string): void {
-    this.searchTerm.set(term);
-  }
-
-  /**
-   * Actualiza el filtro de categoría
-   */
-  updateCategoryFilter(category: string): void {
-    this.selectedCategory.set(category);
-  }
-
-  /**
-   * Actualiza el filtro de estado
-   */
-  updateStatusFilter(status: string): void {
-    this.selectedStatus.set(status);
-  }
-
-  /**
-   * Actualiza el filtro de deducible
-   */
-  updateDeductibleFilter(deductible: string): void {
-    this.selectedDeductible.set(deductible);
-  }
-
-  /**
    * Limpia todos los filtros
    */
   clearFilters(): void {
@@ -446,20 +412,6 @@ export class InvoicesExpensesListComponent extends ExportableListBase<InternalEx
     if (info.hasNext) {
       this.currentPage.set(this.currentPage() + 1);
     }
-  }
-
-  /**
-   * Actualiza items por página
-   */
-  updateItemsPerPage(items: number): void {
-    this.itemsPerPage.set(items);
-  }
-
-  /**
-   * Obtiene las páginas visibles para la navegación
-   */
-  getVisiblePages(): number[] {
-    return this.visiblePages();
   }
 
   /**
@@ -643,35 +595,4 @@ export class InvoicesExpensesListComponent extends ExportableListBase<InternalEx
       });
   }
 
-  // ==========================================
-  // MÉTODOS AUXILIARES PARA EL RESUMEN
-  // ==========================================
-
-  /**
-   * Obtiene el total de gastos pendientes
-   */
-  getPendingCount(): number {
-    return this.pendingCount();
-  }
-
-  /**
-   * Obtiene el total de gastos aprobados
-   */
-  getApprovedCount(): number {
-    return this.approvedCount();
-  }
-
-  /**
-   * Obtiene el total de gastos pagados
-   */
-  getPaidCount(): number {
-    return this.paidCount();
-  }
-
-  /**
-   * Obtiene el total de gastos rechazados
-   */
-  getRejectedCount(): number {
-    return this.rejectedCount();
-  }
 }

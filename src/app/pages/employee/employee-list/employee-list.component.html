@@ -17,7 +17,7 @@
           autocomplete="off">
         <div class="search-actions">
           <span class="search-icon">🔍</span>
-          @if (searchForm.get('searchTerm')?.value) {
+          @if (searchTerm()) {
             <button type="button" (click)="clearFilters()" class="clear-button" title="Limpiar búsqueda">✕</button>
           }
         </div>
@@ -31,7 +31,7 @@
       <!-- Filtro por provincia -->
       <select formControlName="selectedProvince" class="filter-select">
         <option value="">Todas las provincias</option>
-        @for (province of provinceOptions; track province) {
+        @for (province of provinceOptions(); track province) {
           <option [value]="province">{{ province }}</option>
         }
       </select>
@@ -111,8 +111,8 @@
 
       <!-- Cuerpo de la tabla -->
       <tbody>
-        @if (employees && employees.length > 0) {
-          @for (employee of employees; track employee.id) {
+        @if (currentPageEmployees() && currentPageEmployees().length > 0) {
+          @for (employee of currentPageEmployees(); track employee.id) {
             <tr>
 
               <td>
@@ -173,7 +173,7 @@
   </div>
 
   <!-- Paginación -->
-  @if (paginationResult.totalPages > 1) {
+  @if (paginationInfo().totalPages > 1) {
     <div class="pagination-container">
 
       <!-- Información de resultados -->
@@ -188,31 +188,31 @@
         <button
           type="button"
           class="pagination-btn"
-          [class.disabled]="!paginationResult.hasPrevious"
+          [class.disabled]="!paginationInfo().hasPrevious"
           (click)="previousPage()"
-          [disabled]="!paginationResult.hasPrevious">
+          [disabled]="!paginationInfo().hasPrevious">
           ‹ Anterior
         </button>
 
         <!-- Números de página -->
-        @for (page of getVisiblePages(); track page) {
+        @for (page of visiblePages(); track page) {
           <button
             type="button"
             class="pagination-btn"
-            [class.active]="page === paginationConfig.currentPage"
+            [class.active]="page === currentPage()"
             (click)="goToPage(page)">
             {{ page }}
           </button>
         }
 
         <!-- Puntos suspensivos si hay más páginas -->
-        @if (paginationResult.totalPages > 5 && paginationConfig.currentPage < paginationResult.totalPages - 2) {
+        @if (paginationInfo().totalPages > 5 && currentPage() < paginationInfo().totalPages - 2) {
           <span class="pagination-dots">...</span>
           <button
             type="button"
             class="pagination-btn"
-            (click)="goToPage(paginationResult.totalPages)">
-            {{ paginationResult.totalPages }}
+            (click)="goToPage(paginationInfo().totalPages)">
+            {{ paginationInfo().totalPages }}
           </button>
         }
 
@@ -220,9 +220,9 @@
         <button
           type="button"
           class="pagination-btn"
-          [class.disabled]="!paginationResult.hasNext"
+          [class.disabled]="!paginationInfo().hasNext"
           (click)="nextPage()"
-          [disabled]="!paginationResult.hasNext">
+          [disabled]="!paginationInfo().hasNext">
           Siguiente ›
         </button>
 

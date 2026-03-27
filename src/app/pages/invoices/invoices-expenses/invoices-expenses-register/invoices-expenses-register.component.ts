@@ -1,8 +1,9 @@
-import {Component, signal, effect, inject, DestroyRef} from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {Router} from '@angular/router';
-import {HttpErrorResponse} from '@angular/common/http';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import { Component, computed, inject, signal, DestroyRef } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import { toSignal, takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
 import Swal from 'sweetalert2';
 import {
   DEDUCTIBLE_LABELS,
@@ -10,11 +11,10 @@ import {
   EXPENSE_PAYMENT_METHOD_LABELS,
   EXPENSE_RECURRENCE_LABELS
 } from '../../../../shared/Collection-Enum/collection-enum';
-import {ExpensesService} from '../../../../core/services/entity-services/expenses.service';
-import {ExpenseFormValues, ExpensesUtilHelper} from '../../../../core/helpers/expense-utils.helper';
-import {FormValidationHelper} from '../../../../core/helpers/form-validation.helper';
-import {FileUploadService} from '../../../../core/services/shared-services/file-upload.service';
-
+import { ExpensesService } from '../../../../core/services/entity-services/expenses.service';
+import { ExpenseFormValues, ExpensesUtilHelper } from '../../../../core/helpers/expense-utils.helper';
+import { FormValidationHelper } from '../../../../core/helpers/form-validation.helper';
+import { FileUploadService } from '../../../../core/services/shared-services/file-upload.service';
 
 @Component({
   selector: 'app-invoices-expenses-register',
@@ -25,130 +25,103 @@ import {FileUploadService} from '../../../../core/services/shared-services/file-
 })
 export class InvoicesExpensesRegisterComponent {
 
-  // ==========================================
-  // INYECCIÓN DE DEPENDENCIAS
-  // ==========================================
-  private readonly fb = inject(FormBuilder);
-  private readonly expensesServices = inject(ExpensesService);
-  private readonly router = inject(Router);
+  // ── Inyección de dependencias ─────────────────────────────────────────────
+  private readonly fb                    = inject(FormBuilder);
+  private readonly expensesServices      = inject(ExpensesService);
+  private readonly router                = inject(Router);
   protected readonly expensesUtilService = inject(ExpensesUtilHelper);
   private readonly formValidationService = inject(FormValidationHelper);
-  private readonly fileUploadService = inject(FileUploadService);
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly fileUploadService     = inject(FileUploadService);
+  private readonly destroyRef            = inject(DestroyRef);
 
-  // ==========================================
-  // SIGNALS - ESTADO DEL COMPONENTE
-  // ==========================================
-  isSubmitting = signal<boolean>(false);
-  showRecurrenceFields = signal<boolean>(false);
-  selectedFile = signal<File | null>(null);
-  isDragOver = signal<boolean>(false);
-  fileError = signal<string>('');
-  calculatedIVA = signal<number>(0);
-  calculatedTotal = signal<number>(0);
+  // ── Formulario (class field — permite que toSignal y computed sean class fields) ──
+  readonly expenseForm = this.fb.group({
+    expense_date:         [this.expensesUtilService.getCurrentDateForInput(), [Validators.required]],
+    category:             ['', [Validators.required]],
+    description:          ['', [Validators.required, Validators.minLength(3)]],
+    amount:               [0, [Validators.required, Validators.min(0.01)]],
+    supplier_name:        ['', [Validators.required, Validators.minLength(2)]],
+    subcategory:          [''],
+    supplier_nif:         [''],
+    supplier_address:     [''],
+    iva_percentage:       [21, [Validators.required, Validators.min(0), Validators.max(100)]],
+    is_deductible:        [true],
+    payment_method:       ['card', [Validators.required]],
+    receipt_number:       [''],
+    receipt_date:         [''],
+    property_id:          [null as number | null],
+    project_code:         [''],
+    cost_center:          [''],
+    notes:                [''],
+    is_recurring:         [false],
+    recurrence_period:    [''],
+    next_occurrence_date: ['']
+  });
 
-  // ==========================================
-  // SIGNALS - ETIQUETAS DE ENUM
-  // ==========================================
-  categoryLabels = signal(EXPENSE_CATEGORY_LABELS);
-  paymentMethodLabels = signal(EXPENSE_PAYMENT_METHOD_LABELS);
-  recurrenceLabels = signal(EXPENSE_RECURRENCE_LABELS);
-  deductibleLabels = signal(DEDUCTIBLE_LABELS);
+  // ── Puente FormGroup → Signal ─────────────────────────────────────────────
+  // toSignal suscribe a valueChanges y expone el valor actual como Signal.
+  // initialValue garantiza que computed() tenga valor desde el primer render.
+  private readonly formValues = toSignal(this.expenseForm.valueChanges, {
+    initialValue: this.expenseForm.value
+  });
 
-  // ==========================================
-  // PROPIEDADES NORMALES
-  // ==========================================
-  expenseForm: FormGroup;
+  // ── Estado UI ─────────────────────────────────────────────────────────────
+  readonly isSubmitting = signal(false);
+  readonly selectedFile = signal<File | null>(null);
+  readonly isDragOver   = signal(false);
+  readonly fileError    = signal('');
+
+  // ── Computed reactivos ────────────────────────────────────────────────────
+  // Valores derivados del formulario: se recalculan automáticamente cuando
+  // amount o iva_percentage cambian. updateCalculations() ya no existe.
+
+  readonly calculatedIVA = computed(() => {
+    const { amount, iva_percentage } = this.formValues();
+    return this.expensesUtilService.calculateIVAAmount(amount ?? 0, iva_percentage ?? 0);
+  });
+
+  readonly calculatedTotal = computed(() => {
+    const { amount, iva_percentage } = this.formValues();
+    return this.expensesUtilService.calculateTotal(amount ?? 0, iva_percentage ?? 0);
+  });
+
+  // Derivado de is_recurring — no necesita signal() manual ni .set()
+  readonly showRecurrenceFields = computed(() =>
+    this.formValues().is_recurring === true
+  );
+
+  // ── Constantes estáticas (nunca cambian → readonly, no signal()) ──────────
+  readonly categoryLabels      = EXPENSE_CATEGORY_LABELS;
+  readonly paymentMethodLabels = EXPENSE_PAYMENT_METHOD_LABELS;
+  readonly recurrenceLabels    = EXPENSE_RECURRENCE_LABELS;
+  readonly deductibleLabels    = DEDUCTIBLE_LABELS;
 
   constructor() {
-    this.expenseForm = this.fb.group({
-      expense_date: [this.expensesUtilService.getCurrentDateForInput(), [Validators.required]],
-      category: ['', [Validators.required]],
-      description: ['', [Validators.required, Validators.minLength(3)]],
-      amount: [0, [Validators.required, Validators.min(0.01)]],
-      supplier_name: ['', [Validators.required, Validators.minLength(2)]],
-      subcategory: [''],
-      supplier_nif: [''],
-      supplier_address: [''],
-      iva_percentage: [21, [Validators.required, Validators.min(0), Validators.max(100)]],
-      is_deductible: [true],
-      payment_method: ['card', [Validators.required]],
-      receipt_number: [''],
-      receipt_date: [''],
-      property_id: [null],
-      project_code: [''],
-      cost_center: [''],
-      notes: [''],
-      is_recurring: [false],
-      recurrence_period: [''],
-      next_occurrence_date: ['']
-    });
-
-    // ==========================================
-    // EFFECTS - LÓGICA REACTIVA
-    // ==========================================
-
-    // EFFECT: Recalcular IVA y total cuando cambian amount o iva_percentage
-    effect(() => {
-      this.expenseForm.get('amount')?.valueChanges
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(() => this.updateCalculations());
-
-      this.expenseForm.get('iva_percentage')?.valueChanges
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(() => this.updateCalculations());
-    });
-
-    // EFFECT: Mostrar/ocultar campos de recurrencia
-    effect(() => {
-      this.expenseForm.get('is_recurring')?.valueChanges
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((isRecurring) => {
-          this.showRecurrenceFields.set(isRecurring === true);
-          // DELEGADO: Ahora usa FormValidationHelper
-          this.formValidationService.updateRecurrenceValidators(this.expenseForm, isRecurring === true);
-        });
-    });
-
-    // Calcular inicial
-    this.updateCalculations();
+    // Único efecto secundario no declarable: actualizar validators condicionales.
+    // updateRecurrenceValidators() muta el FormGroup — no es un valor derivado.
+    // Suscripción directa con takeUntilDestroyed: el Observable es la fuente,
+    // no hace falta effect() porque no hay signals que rastrear aquí.
+    this.expenseForm.get('is_recurring')!.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(isRecurring => {
+        this.formValidationService.updateRecurrenceValidators(
+          this.expenseForm,
+          isRecurring === true
+        );
+      });
   }
 
-  // ==========================================
-  // CÁLCULOS AUTOMÁTICOS
-  // ==========================================
+  // ── Helpers de formato (leen computed → sin lógica de cálculo) ───────────
 
-  /**
-   * Actualiza los cálculos de IVA y Total
-   * DELEGADO: Los cálculos están en ExpensesUtilService
-   */
-  private updateCalculations(): void {
-    const amount = this.expenseForm.get('amount')?.value || 0;
-    const ivaPercentage = this.expenseForm.get('iva_percentage')?.value || 0;
-
-    this.calculatedIVA.set(this.expensesUtilService.calculateIVAAmount(amount, ivaPercentage));
-    this.calculatedTotal.set(this.expensesUtilService.calculateTotal(amount, ivaPercentage));
-  }
-
-  /**
-   * Obtiene IVA formateado para mostrar
-   * DELEGADO: Formato en ExpensesUtilService
-   */
   getFormattedIVA(): string {
     return this.expensesUtilService.formatAmountPlain(this.calculatedIVA());
   }
 
-  /**
-   * Obtiene Total formateado para mostrar
-   * DELEGADO: Formato en ExpensesUtilService
-   */
   getFormattedTotal(): string {
     return this.expensesUtilService.formatAmountPlain(this.calculatedTotal());
   }
 
-  // ==========================================
-  // VALIDACIÓN DE CAMPOS
-  // ==========================================
+  // ── Validación de campos ──────────────────────────────────────────────────
 
   isFieldInvalid(fieldName: string): boolean {
     const field = this.expenseForm.get(fieldName);
@@ -160,15 +133,11 @@ export class InvoicesExpensesRegisterComponent {
     return this.formValidationService.getErrorMessage(field);
   }
 
-  // ==========================================
-  // MANEJO DE ARCHIVOS
-  // ==========================================
+  // ── Manejo de archivos ────────────────────────────────────────────────────
 
   onFileSelected(event: Event): void {
     const file = this.fileUploadService.onFileSelected(event);
-    if (file) {
-      this.processFile(file);
-    }
+    if (file) this.processFile(file);
   }
 
   onDragOver(event: DragEvent): void {
@@ -184,18 +153,13 @@ export class InvoicesExpensesRegisterComponent {
   onFileDrop(event: DragEvent): void {
     const file = this.fileUploadService.onFileDrop(event);
     this.isDragOver.set(false);
-    if (file) {
-      this.processFile(file);
-    }
+    if (file) this.processFile(file);
   }
 
   processFile(file: File): void {
     const error = this.fileUploadService.validateFile(file);
     this.fileError.set(error);
-
-    if (!error) {
-      this.selectedFile.set(file);
-    }
+    if (!error) this.selectedFile.set(file);
   }
 
   removeFile(event: Event): void {
@@ -208,9 +172,7 @@ export class InvoicesExpensesRegisterComponent {
     return this.fileUploadService.formatFileSize(bytes);
   }
 
-  // ==========================================
-  // CRUD - CREAR GASTO
-  // ==========================================
+  // ── CRUD ──────────────────────────────────────────────────────────────────
 
   registerExpense(): void {
     if (!this.expenseForm.valid || this.isSubmitting()) {
@@ -220,46 +182,44 @@ export class InvoicesExpensesRegisterComponent {
 
     this.isSubmitting.set(true);
 
-    // DELEGADO: Preparación de datos ahora en ExpensesUtilService
     const expenseData = this.expensesUtilService.prepareExpenseData(
       this.expenseForm.value as ExpenseFormValues
     );
 
     this.expensesServices
-      .createExpense(expenseData, this.selectedFile() || undefined)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .createExpense(expenseData, this.selectedFile() ?? undefined)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.isSubmitting.set(false))
+      )
       .subscribe({
         next: () => {
           Swal.fire({
-            title: "Gasto registrado correctamente",
-            text: this.selectedFile() ? "El archivo se ha adjuntado correctamente" : "",
-            icon: "success",
+            title: 'Gasto registrado correctamente',
+            text:  this.selectedFile() ? 'El archivo se ha adjuntado correctamente' : '',
+            icon:  'success',
             draggable: true
           });
           this.router.navigate(['/dashboards/internal-expenses/list']);
-          this.isSubmitting.set(false);
         },
-        error: (e: HttpErrorResponse) => {
-          this.isSubmitting.set(false);
+        error: (_e: HttpErrorResponse) => {
           // Error manejado por interceptor
         }
       });
   }
 
-  // ==========================================
-  // NAVEGACIÓN
-  // ==========================================
+  // ── Navegación ────────────────────────────────────────────────────────────
 
   goBack(): void {
     if (this.expenseForm.dirty) {
       Swal.fire({
-        title: '¿Estás seguro?',
-        text: 'Tienes cambios sin guardar que se perderán',
-        icon: 'warning',
-        showCancelButton: true,
+        title:             '¿Estás seguro?',
+        text:              'Tienes cambios sin guardar que se perderán',
+        icon:              'warning',
+        showCancelButton:  true,
         confirmButtonText: 'Sí, salir',
-        cancelButtonText: 'Cancelar'
-      }).then((result) => {
+        cancelButtonText:  'Cancelar'
+      }).then(result => {
         if (result.isConfirmed) {
           this.router.navigate(['/dashboards/internal-expenses']);
         }
@@ -271,24 +231,25 @@ export class InvoicesExpensesRegisterComponent {
 
   resetForm(): void {
     Swal.fire({
-      title: '¿Limpiar formulario?',
-      text: 'Se perderán todos los datos ingresados',
-      icon: 'question',
-      showCancelButton: true,
+      title:             '¿Limpiar formulario?',
+      text:              'Se perderán todos los datos ingresados',
+      icon:              'question',
+      showCancelButton:  true,
       confirmButtonText: 'Sí, limpiar',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
+      cancelButtonText:  'Cancelar'
+    }).then(result => {
       if (result.isConfirmed) {
         this.expenseForm.reset({
-          expense_date: this.expensesUtilService.getCurrentDateForInput(),
+          expense_date:   this.expensesUtilService.getCurrentDateForInput(),
           iva_percentage: 21,
-          is_deductible: true,
+          is_deductible:  true,
           payment_method: 'card',
-          is_recurring: false
+          is_recurring:   false
         });
         this.selectedFile.set(null);
         this.fileError.set('');
-        this.updateCalculations();
+        // calculatedIVA y calculatedTotal se recalculan automáticamente
+        // cuando el form emite valueChanges tras el reset — no hay llamada manual
       }
     });
   }

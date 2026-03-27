@@ -1,16 +1,17 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, signal, computed, effect, inject, DestroyRef} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Employee} from '../../../interfaces/employee-interface';
 import {EmployeeService} from '../../../core/services/entity-services/employee.service';
 import {Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import {SearchService} from '../../../core/services/shared-services/search.service';
-import Swal from 'sweetalert2';
-import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
-import {PaginationConfig, PaginationResult} from '../../../interfaces/pagination-interface';
 import {PaginationService} from '../../../core/services/shared-services/pagination.service';
 import {ExportableListBase} from '../../../shared/Base/exportable-list.base';
 import {ExportService} from '../../../core/services/shared-services/exportar.service';
+import {PaginationConfig} from '../../../interfaces/pagination-interface';
+import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
+import Swal from 'sweetalert2';
 
 /**
  * Componente para mostrar y gestionar la lista de empleados
@@ -28,56 +29,128 @@ import {ExportService} from '../../../core/services/shared-services/exportar.ser
 export class EmployeeListComponent extends ExportableListBase<Employee> implements OnInit {
 
   // ==========================================
-  // PROPIEDADES DE FORMULARIOS MÚLTIPLES
+  // INYECCIÓN DE DEPENDENCIAS
   // ==========================================
-
-  // FormGroup para búsqueda de texto
-  searchForm: FormGroup;
-
-  // FormGroup para filtros de selección
-  filtersForm: FormGroup;
-
-  // FormGroup para configuración de paginación
-  paginationForm: FormGroup;
+  private readonly employeeService = inject(EmployeeService);
+  private readonly router = inject(Router);
+  private readonly searchService = inject(SearchService);
+  private readonly paginationService = inject(PaginationService);
+  public readonly exportService = inject(ExportService);
+  private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
 
   // ==========================================
-  // PROPIEDADES DE DATOS
+  // SIGNALS - DATOS PRINCIPALES
+  // ==========================================
+  readonly allEmployees = signal<Employee[]>([]);
+
+  // ==========================================
+  // SIGNALS - FILTROS
+  // ==========================================
+  readonly searchTerm = signal<string>('');
+  readonly selectedProvince = signal<string>('');
+
+  // ==========================================
+  // SIGNALS - PAGINACIÓN
+  // ==========================================
+  readonly currentPage = signal<number>(1);
+  readonly itemsPerPage = signal<number>(5);
+
+  // ==========================================
+  // COMPUTED - CÁLCULOS REACTIVOS
   // ==========================================
 
-  // Lista de propietarios que se muestra en la tabla
-  employees: Employee[] = [];
+  /**
+   * Opciones de provincia únicas extraídas de los datos cargados
+   */
+  readonly provinceOptions = computed(() =>
+    this.allEmployees()
+      .map(e => e.province)
+      .filter((province, index, array) => province && array.indexOf(province) === index)
+      .sort() as string[]
+  );
 
-  // Lista completa de propietarios (datos originales sin filtrar)
-  allEmployees: Employee[] = [];
+  /**
+   * Empleados filtrados según búsqueda y provincia
+   */
+  readonly filteredEmployees = computed(() => {
+    let filtered = [...this.allEmployees()];
 
-  // Lista de clientes filtrados (antes de paginar)
-  filteredEmployee: Employee[] = [];
+    const search = this.searchTerm().trim();
+    if (search) {
+      filtered = this.searchService.filterWithFullName(
+        filtered,
+        search,
+        'name',
+        'lastname',
+        ['phone', 'identification']
+      );
+    }
 
-  // Opciones para filtros
-  provinceOptions: string[] = [];
+    const province = this.selectedProvince();
+    if (province) {
+      filtered = filtered.filter(e => e.province === province);
+    }
 
-  // Configuración de paginación
-  paginationConfig: PaginationConfig = {
-    currentPage: 1,
-    itemsPerPage: 3,
-    totalItems: 0
-  };
+    return filtered;
+  });
 
-// Resultado de paginación
-  paginationResult: PaginationResult<Employee> = {
-    items: [],
-    totalPages: 0,
-    hasNext: false,
-    hasPrevious: false,
-    startIndex: 0,
-    endIndex: 0
-  };
+  /**
+   * Total de items filtrados
+   */
+  readonly totalFilteredItems = computed(() => this.filteredEmployees().length);
 
-  //===============================
-  // FUNCIONES PARA LA EXPORTACION
-  //===============================
-  // Implementar propiedades abstractas
-  entityName = 'empleados'; //para nombrar los documentos descargados
+  /**
+   * Total de páginas
+   */
+  readonly totalPages = computed(() =>
+    Math.ceil(this.totalFilteredItems() / this.itemsPerPage())
+  );
+
+  /**
+   * Empleados de la página actual
+   */
+  readonly currentPageEmployees = computed(() => {
+    const filtered = this.filteredEmployees();
+    const page = this.currentPage();
+    const perPage = this.itemsPerPage();
+    const startIndex = (page - 1) * perPage;
+    return filtered.slice(startIndex, startIndex + perPage);
+  });
+
+  /**
+   * Información de paginación
+   */
+  readonly paginationInfo = computed(() => {
+    const page = this.currentPage();
+    const perPage = this.itemsPerPage();
+    const total = this.totalFilteredItems();
+    const totalPgs = this.totalPages();
+    const startIndex = (page - 1) * perPage;
+    const endIndex = Math.min(startIndex + perPage, total);
+
+    return {
+      currentPage: page,
+      totalPages: totalPgs,
+      startIndex: startIndex + 1,
+      endIndex,
+      totalItems: total,
+      hasNext: page < totalPgs,
+      hasPrevious: page > 1
+    };
+  });
+
+  /**
+   * Páginas visibles para navegación
+   */
+  readonly visiblePages = computed(() =>
+    this.paginationService.getVisiblePages(this.currentPage(), this.totalPages(), 5)
+  );
+
+  // ==========================================
+  // EXPORTACIÓN (ExportableListBase)
+  // ==========================================
+  readonly entityName = 'empleados';
   selectedItems: Set<number> = new Set();
 
   readonly exportColumns = [
@@ -94,156 +167,110 @@ export class EmployeeListComponent extends ExportableListBase<Employee> implemen
     {key: 'country', title: 'País', width: 15}
   ];
 
+  // ==========================================
+  // FORMULARIOS (puente UI → Signals)
+  // ==========================================
+  readonly searchForm: FormGroup;
+  readonly filtersForm: FormGroup;
+  readonly paginationForm: FormGroup;
 
-  constructor(
-    private employeeService: EmployeeService,
-    private router: Router,
-    private searchService: SearchService,
-    private paginationService: PaginationService,
-    private fb: FormBuilder,
-    public exportService: ExportService,
-  ) {
+  constructor() {
     super();
-    // FormGroup para búsqueda
+
     this.searchForm = this.fb.group({
       searchTerm: ['']
     });
 
-    // FormGroup para filtros
     this.filtersForm = this.fb.group({
       selectedProvince: ['']
     });
 
-    // FormGroup para paginación
     this.paginationForm = this.fb.group({
       itemsPerPage: [5]
     });
+
+    // ==========================================
+    // SUSCRIPCIONES - SINCRONIZAR FORMULARIOS CON SIGNALS
+    // ==========================================
+
+    this.searchForm.get('searchTerm')!.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(value => this.searchTerm.set(value || ''));
+
+    this.filtersForm.get('selectedProvince')!.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(value => this.selectedProvince.set(value || ''));
+
+    this.paginationForm.get('itemsPerPage')!.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(value => {
+        this.itemsPerPage.set(value);
+        this.currentPage.set(1);
+      });
+
+    // Resetear página cuando cambian los filtros
+    effect(() => {
+      this.searchTerm();
+      this.selectedProvince();
+      this.currentPage.set(1);
+    });
   }
 
-  // Implementar métodos abstractos
+  ngOnInit(): void {
+    this.loadEmployees();
+  }
+
+  // ==========================================
+  // IMPLEMENTAR MÉTODOS ABSTRACTOS (ExportableListBase)
+  // ==========================================
+
   getFilteredData(): Employee[] {
-    return this.filteredEmployee;
+    return this.filteredEmployees();
   }
 
   getCurrentPageData(): Employee[] {
-    return this.employees;
+    return this.currentPageEmployees();
   }
 
   getPaginationConfig(): PaginationConfig {
-    return this.paginationConfig;
-  }
-
-
-  ngOnInit(): void {
-    this.getListEmployee();
-    this.setupFormSubscriptions();
-  }
-
-  // ==========================================
-  // MÉTODOS DE CONFIGURACIÓN
-  // ==========================================
-
-
-  setupFormSubscriptions() {
-    this.searchForm.get('searchTerm')?.valueChanges.subscribe(() => {
-      this.applyFilters()
-    });
-
-    this.filtersForm.valueChanges.subscribe(() => {
-      this.applyFilters();
-    });
-
-    // Suscripción para cambios en configuración de paginación
-    this.paginationForm.get('itemsPerPage')?.valueChanges.subscribe((items) => {
-      this.paginationConfig.itemsPerPage = items;
-      this.paginationConfig.currentPage = 1; // Resetear a primera página
-      this.updatePagination();
-    });
-
-
+    return {
+      currentPage: this.currentPage(),
+      itemsPerPage: this.itemsPerPage(),
+      totalItems: this.totalFilteredItems()
+    };
   }
 
   // ==========================================
   // MÉTODOS DE CARGA DE DATOS
   // ==========================================
+
   /**
-   * Obtiene todos los empleados del servidor
-   * Guarda una copia original para los filtros de búsqueda
+   * Carga todos los empleados del servidor
    */
-  getListEmployee() {
-    this.employeeService.getEmployee().subscribe({
-      next: (employeeList) => {
-        this.allEmployees = employeeList;
-        this.extractProvinceOptions();
-        this.applyFilters();
-      }, error: (e: HttpErrorResponse) => {
-      }
-    })
+  loadEmployees(): void {
+    this.employeeService.getEmployee()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => this.allEmployees.set(data),
+        error: (e: HttpErrorResponse) => {
+          // Error manejado por interceptor
+        }
+      });
   }
 
   // ==========================================
-  // MÉTODOS DE FILTROS Y BÚSQUEDA
+  // MÉTODOS DE FILTROS
   // ==========================================
 
   /**
-   * Extrae las provincias únicas de los clientes para el filtro
+   * Limpia todos los filtros
    */
-  extractProvinceOptions() {
-    // Toma todos los clientes y extrae solo las provincias
-    const provinces = this.allEmployees
-      .map(employee => employee.province)
-      // Elimina duplicados y valores vacíos
-      .filter((province, index, array) => province && array.indexOf(province) === index)
-      // Ordena alfabéticamente
-      .sort();
+  clearFilters(): void {
+    this.searchTerm.set('');
+    this.selectedProvince.set('');
 
-    this.provinceOptions = provinces;
-  }
-
-  /**
-   * Limpia el filtro de búsqueda
-   */
-  clearFilters() {
-    this.searchForm.patchValue({
-      searchTerm: ''
-    });
-    this.filtersForm.patchValue({
-      selectedProvince: ''
-    })
-  }
-
-
-  /**
-   * Filtra la lista de empleados según el texto de búsqueda
-   * Busca en: nombre completo, identificación y teléfono
-   */
-  applyFilters() {
-    let filtered = [...this.allEmployees];
-
-
-    // Obtener valores directamente de cada FormGroup independiente
-    const searchTerm = this.searchForm.get('searchTerm')?.value;
-    const selectedProvince = this.filtersForm.get('selectedProvince')?.value;
-
-    // Filtro por búsqueda de texto
-    if (searchTerm) {
-      filtered = this.searchService.filterWithFullName(
-        filtered,
-        searchTerm,
-        `name`,
-        'lastname',
-        ['phone', 'identification']
-      );
-    }
-    // Filtro por provincia
-    if (selectedProvince) {
-      filtered = filtered.filter(employee => employee.province === selectedProvince);
-    }
-
-    this.filteredEmployee = filtered;
-    this.paginationConfig.totalItems = filtered.length;
-    this.paginationConfig.currentPage = 1; // Resetear a primera página
-    this.updatePagination();
+    this.searchForm.patchValue({searchTerm: ''}, {emitEvent: false});
+    this.filtersForm.patchValue({selectedProvince: ''}, {emitEvent: false});
   }
 
   // ==========================================
@@ -251,82 +278,63 @@ export class EmployeeListComponent extends ExportableListBase<Employee> implemen
   // ==========================================
 
   /**
-   * Actualiza la paginación con los datos filtrados
-   */
-  updatePagination() {
-    this.paginationResult = this.paginationService.paginate(
-      this.filteredEmployee,
-      this.paginationConfig
-    );
-    this.employees = this.paginationResult.items;
-  }
-
-  /**
    * Navega a una página específica
    */
-  goToPage(page: number) {
-    if (this.paginationService.isValidPage(page, this.paginationResult.totalPages)) {
-      this.paginationConfig.currentPage = page;
-      this.updatePagination();
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
     }
   }
 
   /**
    * Navega a la página anterior
    */
-  previousPage() {
-    if (this.paginationResult.hasPrevious) {
-      this.goToPage(this.paginationConfig.currentPage - 1);
-    }
-  };
-
-  /**
-   * Navega a la página siguiente
-   */
-  nextPage() {
-    if (this.paginationResult.hasNext) {
-      this.goToPage(this.paginationConfig.currentPage + 1);
+  previousPage(): void {
+    if (this.paginationInfo().hasPrevious) {
+      this.currentPage.set(this.currentPage() - 1);
     }
   }
 
   /**
-   * Obtiene las páginas visibles para la navegación
+   * Navega a la página siguiente
    */
-  getVisiblePages(): number[] {
-    return this.paginationService.getVisiblePages(
-      this.paginationConfig.currentPage,
-      this.paginationResult.totalPages,
-      5
-    );
+  nextPage(): void {
+    if (this.paginationInfo().hasNext) {
+      this.currentPage.set(this.currentPage() + 1);
+    }
   }
 
   /**
    * Obtiene el texto informativo de paginación
    */
   getPaginationText(): string {
-    return this.paginationService.getPaginationText(
-      this.paginationConfig,
-      this.employees.length
-    );
+    const info = this.paginationInfo();
+    if (info.totalItems === 0) return 'No hay elementos';
+    return `Mostrando ${info.startIndex}-${info.endIndex} de ${info.totalItems}`;
   }
 
   // ==========================================
   // MÉTODOS DE NAVEGACIÓN Y CRUD
   // ==========================================
 
-
   /**
    * Navega a la página de edición del empleado
    */
-  editEmployee(id: number) {
-    this.router.navigate(['/dashboards/employee/edit', id])
+  editEmployee(id: number): void {
+    this.router.navigate(['/dashboards/employee/edit', id]);
+  }
+
+  /**
+   * Navega a la página de registro
+   */
+  newEmployee(): void {
+    this.router.navigate(['/dashboards/employee/register']);
   }
 
   /**
    * Elimina un empleado después de confirmar la acción
-   * Muestra mensaje de confirmación antes de eliminar
    */
-  deleteEmployee(id: number) {
+  deleteEmployee(id: number): void {
     Swal.fire({
       title: '¿Estás seguro?',
       text: 'Esta acción no se puede deshacer',
@@ -336,25 +344,23 @@ export class EmployeeListComponent extends ExportableListBase<Employee> implemen
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.employeeService.deleteEmployee(id).subscribe({
-          next: () => {
-            Swal.fire({
-              title: 'Eliminado.',
-              text: 'Empleado eliminado correctamente',
-              icon: 'success',
-              confirmButtonText: 'Ok'
-            });
-            // Recargar la lista para mostrar cambios
-            this.getListEmployee();
-          }, error: (e: HttpErrorResponse) => {
-          }
-        })
+        this.employeeService.deleteEmployee(id)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: () => {
+              Swal.fire({
+                title: 'Eliminado.',
+                text: 'Empleado eliminado correctamente',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+              });
+              this.loadEmployees();
+            },
+            error: (e: HttpErrorResponse) => {
+              // Error manejado por interceptor
+            }
+          });
       }
-    })
+    });
   }
-
-  newEmployee() {
-    this.router.navigate(['/dashboards/employee/register'])
-  };
-
 }

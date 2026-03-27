@@ -1,17 +1,17 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, signal, computed, effect, inject, DestroyRef} from '@angular/core';
+import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Owners} from '../../../interfaces/owners-interface';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {OwnersService} from '../../../core/services/entity-services/owners.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
 import {SearchService} from '../../../core/services/shared-services/search.service';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
 import {Router} from '@angular/router';
-import {PaginationConfig, PaginationResult} from '../../../interfaces/pagination-interface';
+import {PaginationConfig} from '../../../interfaces/pagination-interface';
 import {PaginationService} from '../../../core/services/shared-services/pagination.service';
 import {ExportService} from '../../../core/services/shared-services/exportar.service';
 import {ExportableListBase} from '../../../shared/Base/exportable-list.base';
-import {Employee} from '../../../interfaces/employee-interface';
 
 /**
  * Componente para mostrar y gestionar la lista de propietarios
@@ -21,7 +21,6 @@ import {Employee} from '../../../interfaces/employee-interface';
   selector: 'app-owners-list',
   imports: [
     ReactiveFormsModule,
-    FormsModule,
     DataFormatPipe
   ],
   templateUrl: './owners-list.component.html',
@@ -30,52 +29,112 @@ import {Employee} from '../../../interfaces/employee-interface';
 export class OwnersListComponent extends ExportableListBase<Owners> implements OnInit {
 
   // ==========================================
-  // PROPIEDADES DE FORMULARIOS MÚLTIPLES
+  // INYECCIÓN DE DEPENDENCIAS
   // ==========================================
-  // FormGroup para búsqueda de texto
-  searchForm: FormGroup;
-
-  // FormGroup para filtros de selección
-  filtersForm: FormGroup;
-
-  // FormGroup para configuración de paginación
-  paginationForm: FormGroup;
+  private readonly ownersService = inject(OwnersService);
+  private readonly searchService = inject(SearchService);
+  private readonly router = inject(Router);
+  private readonly paginationService = inject(PaginationService);
+  public readonly exportService = inject(ExportService);
+  private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
 
   // ==========================================
-  // PROPIEDADES DE DATOS
+  // SIGNALS - DATOS PRINCIPALES
+  // ==========================================
+  readonly allOwners = signal<Owners[]>([]);
+
+  // ==========================================
+  // SIGNALS - FILTROS
+  // ==========================================
+  readonly searchTerm = signal<string>('');
+
+  // ==========================================
+  // SIGNALS - PAGINACIÓN
+  // ==========================================
+  readonly currentPage = signal<number>(1);
+  readonly itemsPerPage = signal<number>(5);
+
+  // ==========================================
+  // COMPUTED - CÁLCULOS REACTIVOS
   // ==========================================
 
-  // Lista de propietarios que se muestra en la tabla
-  owners: Owners[] = [];
+  /**
+   * Propietarios filtrados según búsqueda
+   */
+  readonly filteredOwners = computed(() => {
+    let filtered = [...this.allOwners()];
 
-  // Lista completa de propietarios (datos originales sin filtrar)
-  allOwners: Owners[] = [];
+    const search = this.searchTerm().trim();
+    if (search) {
+      filtered = this.searchService.filterWithFullName(
+        filtered,
+        search,
+        'name',
+        'lastname',
+        ['identification', 'phone']
+      );
+    }
 
-  // Lista de clientes filtrados (antes de paginar)
-  filteredOwners: Owners[] = [];
+    return filtered;
+  });
 
-  // Configuración de paginación
-  paginationConfig: PaginationConfig = {
-    currentPage: 1,
-    itemsPerPage: 3,
-    totalItems: 0
-  };
+  /**
+   * Total de items filtrados
+   */
+  readonly totalFilteredItems = computed(() => this.filteredOwners().length);
 
-  // Resultado de paginación
-  paginationResult: PaginationResult<Owners> = {
-    items: [],
-    totalPages: 0,
-    hasNext: false,
-    hasPrevious: false,
-    startIndex: 0,
-    endIndex: 0
-  };
+  /**
+   * Total de páginas
+   */
+  readonly totalPages = computed(() =>
+    Math.ceil(this.totalFilteredItems() / this.itemsPerPage())
+  );
 
-  //===============================
-  // FUNCIONES PARA LA EXPORTACION
-  //===============================
-  // Implementar propiedades abstractas
-  entityName = 'propietarios'; //para nombrar los documentos descargados
+  /**
+   * Propietarios de la página actual
+   */
+  readonly currentPageOwners = computed(() => {
+    const filtered = this.filteredOwners();
+    const page = this.currentPage();
+    const perPage = this.itemsPerPage();
+    const startIndex = (page - 1) * perPage;
+    return filtered.slice(startIndex, startIndex + perPage);
+  });
+
+  /**
+   * Información de paginación
+   */
+  readonly paginationInfo = computed(() => {
+    const page = this.currentPage();
+    const perPage = this.itemsPerPage();
+    const total = this.totalFilteredItems();
+    const totalPgs = this.totalPages();
+    const startIndex = (page - 1) * perPage;
+    const endIndex = Math.min(startIndex + perPage, total);
+
+    return {
+      currentPage: page,
+      totalPages: totalPgs,
+      startIndex: startIndex + 1,
+      endIndex,
+      totalItems: total,
+      hasNext: page < totalPgs,
+      hasPrevious: page > 1
+    };
+  });
+
+  /**
+   * Páginas visibles para navegación
+   */
+  readonly visiblePages = computed(() =>
+    this.paginationService.getVisiblePages(this.currentPage(), this.totalPages(), 5)
+  );
+
+  // ==========================================
+  // EXPORTACIÓN (ExportableListBase)
+  // ==========================================
+  readonly entityName = 'propietarios';
   selectedItems: Set<number> = new Set();
 
   readonly exportColumns = [
@@ -92,203 +151,164 @@ export class OwnersListComponent extends ExportableListBase<Owners> implements O
     {key: 'country', title: 'País', width: 15}
   ];
 
-  constructor(
-    private ownersService: OwnersService,
-    private searchService: SearchService,
-    private router: Router,
-    private paginationService: PaginationService,
-    private fb: FormBuilder,
-    public exportService: ExportService,
-  ) {
+  // ==========================================
+  // FORMULARIOS (puente UI → Signals)
+  // ==========================================
+  readonly searchForm: FormGroup;
+  readonly filtersForm: FormGroup;   // vacío — solo referenciado por el template
+  readonly paginationForm: FormGroup;
+
+  constructor() {
     super();
-    // FormGroup para búsqueda
+
     this.searchForm = this.fb.group({
       searchTerm: ['']
     });
 
-    this.filtersForm = this.fb.group({})
+    this.filtersForm = this.fb.group({});
 
     this.paginationForm = this.fb.group({
       itemsPerPage: [5]
-    })
-  }
+    });
 
-  // Implementar métodos abstractos
-  getFilteredData(): Owners[] {
-    return this.filteredOwners;
-  }
+    // ==========================================
+    // SUSCRIPCIONES - SINCRONIZAR FORMULARIOS CON SIGNALS
+    // ==========================================
 
-  getCurrentPageData(): Owners[] {
-    return this.owners;
-  }
+    this.searchForm.get('searchTerm')!.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(value => this.searchTerm.set(value || ''));
 
-  getPaginationConfig(): PaginationConfig {
-    return this.paginationConfig;
-  }
+    this.paginationForm.get('itemsPerPage')!.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(value => {
+        this.itemsPerPage.set(value);
+        this.currentPage.set(1);
+      });
 
-
-  /**
-   * Se ejecuta al cargar el componente
-   * Carga la lista de propietarios automáticamente
-   */
-  ngOnInit(): void {
-    this.getListOwner();
-    this.setupFormSubscriptions();
-  }
-
-
-  // ==========================================
-  // MÉTODOS DE CONFIGURACIÓN
-  // ==========================================
-
-  setupFormSubscriptions() {
-    this.searchForm.get('searchTerm')?.valueChanges.subscribe(() => {
-      this.applyFilters();
-    })
-
-    // Suscripción para cambios en configuración de paginación
-    this.paginationForm.get('itemsPerPage')?.valueChanges.subscribe((items) => {
-      this.paginationConfig.itemsPerPage = items;
-      this.paginationConfig.currentPage = 1; // Resetear a primera página
-      this.updatePagination();
+    // Resetear página cuando cambia la búsqueda
+    effect(() => {
+      this.searchTerm();
+      this.currentPage.set(1);
     });
   }
 
-  /**
-   * Obtiene todos los propietarios del servidor
-   * Guarda una copia original para los filtros de búsqueda
-   */
-  getListOwner() {
-    this.ownersService.getOwners().subscribe({
-      next: (ownersList) => {
-        this.allOwners = ownersList;
-        this.applyFilters();
-      }, error: (e: HttpErrorResponse) => {
-        // Error manejado por interceptor
-      }
-    })
+  ngOnInit(): void {
+    this.loadOwners();
   }
 
+  // ==========================================
+  // IMPLEMENTAR MÉTODOS ABSTRACTOS (ExportableListBase)
+  // ==========================================
+
+  getFilteredData(): Owners[] {
+    return this.filteredOwners();
+  }
+
+  getCurrentPageData(): Owners[] {
+    return this.currentPageOwners();
+  }
+
+  getPaginationConfig(): PaginationConfig {
+    return {
+      currentPage: this.currentPage(),
+      itemsPerPage: this.itemsPerPage(),
+      totalItems: this.totalFilteredItems()
+    };
+  }
 
   // ==========================================
-  // MÉTODOS DE FILTROS Y BÚSQUEDA
+  // MÉTODOS DE CARGA DE DATOS
+  // ==========================================
+
+  /**
+   * Carga todos los propietarios del servidor
+   */
+  loadOwners(): void {
+    this.ownersService.getOwners()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => this.allOwners.set(data),
+        error: (e: HttpErrorResponse) => {
+          // Error manejado por interceptor
+        }
+      });
+  }
+
+  // ==========================================
+  // MÉTODOS DE FILTROS
   // ==========================================
 
   /**
    * Limpia el filtro de búsqueda
    */
-  clearFilters() {
-    this.searchForm.patchValue({
-      searchTerm: ''
-    })
-  };
-
-  /**
-   * Filtra la lista de propietarios según el texto de búsqueda
-   * Busca en: nombre completo, identificación y teléfono
-   */
-  applyFilters() {
-    let filtered = [...this.allOwners];
-
-    // Obtener valores directamente de cada FormGroup independiente
-    const searchTerm = this.searchForm.get('searchTerm')?.value;
-
-    // Filtro por búsqueda de texto
-    if (searchTerm) {
-      filtered = this.searchService.filterWithFullName(
-        filtered,
-        searchTerm,
-        'name',
-        'lastname',
-        ['identification', 'phone']
-      );
-    }
-    this.filteredOwners = filtered;
-    this.paginationConfig.totalItems = filtered.length;
-    this.paginationConfig.currentPage = 1; // Resetear a primera página
-    this.updatePagination();
-  };
+  clearFilters(): void {
+    this.searchTerm.set('');
+    this.searchForm.patchValue({searchTerm: ''}, {emitEvent: false});
+  }
 
   // ==========================================
   // MÉTODOS DE PAGINACIÓN
   // ==========================================
 
   /**
-   * Actualiza la paginación con los datos filtrados
-   */
-  updatePagination() {
-    this.paginationResult = this.paginationService.paginate(
-      this.filteredOwners,
-      this.paginationConfig
-    );
-    this.owners = this.paginationResult.items;
-  }
-
-  /**
    * Navega a una página específica
    */
-  goToPage(page: number) {
-    if (this.paginationService.isValidPage(page, this.paginationResult.totalPages)) {
-      this.paginationConfig.currentPage = page;
-      this.updatePagination();
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
     }
   }
 
   /**
    * Navega a la página anterior
    */
-  previousPage() {
-    if (this.paginationResult.hasPrevious) {
-      this.goToPage(this.paginationConfig.currentPage - 1);
-    }
-  };
-
-  /**
-   * Navega a la página siguiente
-   */
-  nextPage() {
-    if (this.paginationResult.hasNext) {
-      this.goToPage(this.paginationConfig.currentPage + 1);
+  previousPage(): void {
+    if (this.paginationInfo().hasPrevious) {
+      this.currentPage.set(this.currentPage() - 1);
     }
   }
 
   /**
-   * Obtiene las páginas visibles para la navegación
+   * Navega a la página siguiente
    */
-  getVisiblePages(): number[] {
-    return this.paginationService.getVisiblePages(
-      this.paginationConfig.currentPage,
-      this.paginationResult.totalPages,
-      5
-    );
+  nextPage(): void {
+    if (this.paginationInfo().hasNext) {
+      this.currentPage.set(this.currentPage() + 1);
+    }
   }
 
   /**
    * Obtiene el texto informativo de paginación
    */
   getPaginationText(): string {
-    return this.paginationService.getPaginationText(
-      this.paginationConfig,
-      this.owners.length
-    );
+    const info = this.paginationInfo();
+    if (info.totalItems === 0) return 'No hay elementos';
+    return `Mostrando ${info.startIndex}-${info.endIndex} de ${info.totalItems}`;
   }
 
   // ==========================================
   // MÉTODOS DE NAVEGACIÓN Y CRUD
   // ==========================================
 
-  /**a
+  /**
    * Navega a la página de edición de propietario
    */
-  editOwner(id: number) {
+  editOwner(id: number): void {
     this.router.navigate(['/dashboards/owners/edit', id]);
   }
 
   /**
-   * Elimina un propietario después de confirmar la acción
-   * Muestra mensaje de confirmación antes de eliminar
+   * Navega a la página de registro
    */
-  deleteOwner(id: number) {
+  newOwners(): void {
+    this.router.navigate(['/dashboards/owners/register']);
+  }
+
+  /**
+   * Elimina un propietario después de confirmar la acción
+   */
+  deleteOwner(id: number): void {
     Swal.fire({
       title: '¿Estás seguro?',
       text: 'Esta acción no se puede deshacer',
@@ -298,26 +318,23 @@ export class OwnersListComponent extends ExportableListBase<Owners> implements O
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        // Usuario confirmó, proceder a eliminar
-        this.ownersService.deleteOwner(id).subscribe({
-          next: () => {
-            Swal.fire({
-              title: 'Eliminado.',
-              text: 'Propietario eliminado correctamente',
-              icon: 'success',
-              confirmButtonText: 'Ok'
-            });
-            // Recargar la lista para mostrar cambios
-            this.getListOwner();
-          }, error: (e: HttpErrorResponse) => {
-            // Error manejado por interceptor
-          }
-        })
+        this.ownersService.deleteOwner(id)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: () => {
+              Swal.fire({
+                title: 'Eliminado.',
+                text: 'Propietario eliminado correctamente',
+                icon: 'success',
+                confirmButtonText: 'Ok'
+              });
+              this.loadOwners();
+            },
+            error: (e: HttpErrorResponse) => {
+              // Error manejado por interceptor
+            }
+          });
       }
-    })
-  }
-
-  newOwners() {
-    this.router.navigate(['/dashboards/owners/register'])
+    });
   }
 }
