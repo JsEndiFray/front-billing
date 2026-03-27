@@ -1,9 +1,13 @@
-import {ApplicationConfig, provideZoneChangeDetection} from '@angular/core';
+import {ApplicationConfig, LOCALE_ID, provideZoneChangeDetection} from '@angular/core';
 import {provideRouter} from '@angular/router';
 import {routes} from './app.routes';
 import {provideHttpClient, withInterceptors} from '@angular/common/http';
 import {httpErrorInterceptor} from './core/interceptors/http-error/http-error.interceptor';
 import {tokenInterceptor} from './core/interceptors/token/token.interceptor';
+import {registerLocaleData} from '@angular/common';
+import localeEs from '@angular/common/locales/es';
+
+registerLocaleData(localeEs);
 
 /**
  * Configuración principal de la aplicación
@@ -18,5 +22,8 @@ export const appConfig: ApplicationConfig = {
 
     // HTTP client con interceptors (token + manejo de errores)
     provideHttpClient(withInterceptors([tokenInterceptor, httpErrorInterceptor])),
+
+    // Locale español
+    {provide: LOCALE_ID, useValue: 'es'},
   ]
 };
