@@ -1,4 +1,5 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, DestroyRef, OnInit, computed, effect, inject, signal} from '@angular/core';
+import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -7,7 +8,7 @@ import Swal from 'sweetalert2';
 import {DataFormatPipe} from '../../../../shared/pipe/data-format.pipe';
 import {SearchService} from '../../../../core/services/shared-services/search.service';
 import {PaginationService} from '../../../../core/services/shared-services/pagination.service';
-import {PaginationConfig, PaginationResult} from '../../../../interfaces/pagination-interface';
+import {PaginationConfig} from '../../../../interfaces/pagination-interface';
 import {InvoicesReceivedService} from '../../../../core/services/entity-services/invoices-received.service';
 import {InvoiceUtilsHelper} from '../../../../core/helpers/invoice-utils.helper';
 import {InvoiceReceived} from '../../../../interfaces/invoices-received-interface';
@@ -34,97 +35,155 @@ import {ExportableListBase} from '../../../../shared/Base/exportable-list.base';
 })
 export class InvoicesReceivedListComponent extends ExportableListBase<InvoiceReceived> implements OnInit {
 
+  private readonly invoicesReceivedService = inject(InvoicesReceivedService);
+  private readonly router = inject(Router);
+  private readonly searchService = inject(SearchService);
+  private readonly paginationService = inject(PaginationService);
+  protected readonly invoicesUtilService = inject(InvoiceUtilsHelper);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly fb = inject(FormBuilder);
+  readonly exportService = inject(ExportService);
+
   // ==========================================
-  // PROPIEDADES DE FORMULARIOS MÚLTIPLES
+  // FORMULARIOS
   // ==========================================
 
-  // FormGroup para búsqueda de texto
-  searchForm: FormGroup;
+  readonly searchForm = this.fb.group({searchTerm: ['']});
 
-  //todos los filtos
-  filtersForm: FormGroup;
+  readonly filtersForm = this.fb.group({
+    selectedPaymentStatus: [''],
+    selectedRefundStatus: [''],
+    selectedCategory: [''],
+    selectedSupplier: ['']
+  });
 
-  // FormGroup para configuración de paginación
-  paginationForm: FormGroup;
+  readonly paginationForm = this.fb.group({itemsPerPage: [5]});
 
-  // Sección de edición inline
+  readonly refundForm = this.fb.group({
+    refundReason: ['', Validators.required]
+  });
+
+  // FormGroup nullable para edición inline de una factura a la vez (estado imperativo)
   editPaymentForm: FormGroup | null = null;
 
-  // Sección de modal
-  refundForm: FormGroup;
-
   // ==========================================
-  // PROPIEDADES DE DATOS
+  // SIGNALS DE FORMULARIO
   // ==========================================
 
-  // Lista de facturas que se muestra en la tabla
-  invoices: InvoiceReceived[] = [];
+  readonly searchTerm = toSignal(
+    this.searchForm.controls.searchTerm.valueChanges,
+    {initialValue: ''}
+  );
 
-  // Lista completa de facturas (datos originales sin filtrar)
-  allInvoices: InvoiceReceived[] = [];
+  private readonly _filtersValue = toSignal(
+    this.filtersForm.valueChanges,
+    {initialValue: this.filtersForm.value}
+  );
 
-  // Lista de facturas filtradas (antes de paginar)
-  filteredInvoices: InvoiceReceived[] = [];
-
-  // ==========================================
-  // PROPIEDADES DE FILTROS Y BÚSQUEDA
-  // ==========================================
-
-  // Categorías extraídas dinámicamente de las facturas
-  categoryOptions: string[] = [];
-
-  // Proveedores extraídos dinámicamente de las facturas
-  suppliersOptions: string[] = [];
-
-  //Opciones de filtro para abonos
-  refundStatusOptions: { value: string, label: string }[] = [];
-  //========================================
-  //LABELS PARA LOS NUEVOS CAMPOS DE PAGO
-  //========================================
-  paymentStatusLabels = PAYMENT_STATUS_LABELS;
-  paymentMethodLabels = PAYMENT_METHOD_LABELS;
-
+  private readonly _itemsPerPage = toSignal(
+    this.paginationForm.controls.itemsPerPage.valueChanges,
+    {initialValue: 5}
+  );
 
   // ==========================================
-  // PROPIEDADES DE PAGINACIÓN
+  // ESTADO REACTIVO
   // ==========================================
 
-  // Configuración de paginación
-  paginationConfig: PaginationConfig = {
-    currentPage: 1,
-    itemsPerPage: 5,
-    totalItems: 0
-  };
+  private readonly allInvoices = signal<InvoiceReceived[]>([]);
+  readonly currentPage = signal(1);
+  readonly showRefundModal = signal(false);
+  readonly selectedInvoice = signal<InvoiceReceived | null>(null);
 
-  // Resultado de paginación
-  paginationResult: PaginationResult<InvoiceReceived> = {
-    items: [],
-    totalPages: 0,
-    hasNext: false,
-    hasPrevious: false,
-    startIndex: 0,
-    endIndex: 0
-  };
+  // Estado imperativo de edición de pago (una factura a la vez)
+  editingPayment = new Set<number>();
+
+  readonly categoryOptions = computed(() =>
+    this.allInvoices()
+      .map(inv => inv.category)
+      .filter(Boolean)
+      .filter((cat, i, arr) => arr.indexOf(cat) === i)
+      .sort() as string[]
+  );
+
+  readonly suppliersOptions = computed(() =>
+    this.allInvoices()
+      .map(inv => inv.supplier_name)
+      .filter((s): s is string => !!s)
+      .filter((s, i, arr) => arr.indexOf(s) === i)
+      .sort()
+  );
+
+  readonly refundStatusOptions = [
+    {value: 'true', label: 'Abono'},
+    {value: 'false', label: 'Factura Normal'}
+  ];
+
+  private readonly filteredInvoices = computed(() => {
+    let filtered = [...this.allInvoices()];
+    const fv = this._filtersValue();
+
+    const search = this.searchTerm() ?? '';
+    const paymentStatus = fv.selectedPaymentStatus ?? '';
+    const refundStatus = fv.selectedRefundStatus ?? '';
+    const category = fv.selectedCategory ?? '';
+    const supplier = fv.selectedSupplier ?? '';
+
+    if (search.trim()) {
+      filtered = this.searchService.filterData(
+        filtered, search,
+        ['invoice_number', 'our_reference', 'supplier_name', 'category']
+      );
+    }
+    if (paymentStatus) {
+      filtered = filtered.filter(inv => inv.collection_status === paymentStatus);
+    }
+    if (category) {
+      filtered = filtered.filter(inv => inv.category === category);
+    }
+    if (supplier) {
+      filtered = filtered.filter(inv => inv.supplier_name === supplier);
+    }
+    if (refundStatus !== '') {
+      const isRefund = refundStatus === 'true';
+      filtered = filtered.filter(inv => Boolean(inv.is_refund) === isRefund);
+    }
+    return filtered;
+  });
+
+  readonly paginationInfo = computed(() => {
+    const filtered = this.filteredInvoices();
+    return this.paginationService.paginate(filtered, {
+      currentPage: this.currentPage(),
+      itemsPerPage: this._itemsPerPage() ?? 5,
+      totalItems: filtered.length
+    });
+  });
+
+  readonly visiblePages = computed(() =>
+    this.paginationService.getVisiblePages(
+      this.currentPage(),
+      this.paginationInfo().totalPages,
+      5
+    )
+  );
+
+  readonly paginationText = computed(() =>
+    this.paginationService.getPaginationText(
+      {
+        currentPage: this.currentPage(),
+        itemsPerPage: this._itemsPerPage() ?? 5,
+        totalItems: this.filteredInvoices().length
+      },
+      this.paginationInfo().items.length
+    )
+  );
 
   // ==========================================
-  // PROPIEDADES DE MODALES Y EDICIÓN
+  // EXPORTACIÓN (ExportableListBase)
   // ==========================================
 
-  // Datos temporales para edición rápida de pagos
-  editingPayment: Set<number> = new Set();
-
-  // Control de visibilidad del modal de abonos
-  showRefundModal: boolean = false;
-
-  // Factura seleccionada para crear abono
-  selectedInvoice: InvoiceReceived | null = null;
-
-  //===============================
-  // FUNCIONES PARA LA EXPORTACION
-  //===============================
-  // Implementar propiedades abstractas
-  entityName = 'facturas-recibidas'; //para nombrar los documentos descargados
-  selectedItems: Set<number> = new Set();
+  readonly entityName = 'facturas-recibidas';
+  readonly selectedItems = new Set<number>();
 
   readonly exportColumns = [
     {key: 'id', title: 'ID', width: 10},
@@ -142,100 +201,44 @@ export class InvoicesReceivedListComponent extends ExportableListBase<InvoiceRec
     {key: 'is_refund', title: 'Tipo', width: 12, formatter: (value: unknown) => value ? 'Abono' : 'Factura Normal'}
   ];
 
-  constructor(
-    private invoicesReceivedService: InvoicesReceivedService,
-    private router: Router,
-    private searchService: SearchService,
-    private paginationService: PaginationService,
-    protected invoicesUtilService: InvoiceUtilsHelper,
-    private fb: FormBuilder,
-    public exportService: ExportService,
-  ) {
+  readonly paymentStatusLabels = PAYMENT_STATUS_LABELS;
+  readonly paymentMethodLabels = PAYMENT_METHOD_LABELS;
+
+  constructor() {
     super();
-    // FormGroup para búsqueda
-    this.searchForm = this.fb.group({
-      searchTerm: ['']
-    });
-
-    // Todos los filtros en uno solo
-    this.filtersForm = this.fb.group({
-      selectedPaymentStatus: [''],
-      selectedRefundStatus: [''],
-      selectedCategory: [''],
-      selectedSupplier: ['']
-    });
-
-    // FormGroup para paginación
-    this.paginationForm = this.fb.group({
-      itemsPerPage: [5]
-    });
-
-    // FormGroup para modal de abonos
-    this.refundForm = this.fb.group({
-      refundReason: ['', Validators.required]
-    });
+    effect(() => {
+      this.searchTerm();
+      this._filtersValue();
+      this.currentPage.set(1);
+    }, {allowSignalWrites: true});
   }
 
-  // Implementar métodos abstractos
-  getFilteredData(): InvoiceReceived[] {
-    return this.filteredInvoices;
-  }
+  // ==========================================
+  // MÉTODOS ABSTRACTOS (ExportableListBase)
+  // ==========================================
 
-  getCurrentPageData(): InvoiceReceived[] {
-    return this.invoices;
-  }
-
+  getFilteredData(): InvoiceReceived[] {return this.filteredInvoices();}
+  getCurrentPageData(): InvoiceReceived[] {return this.paginationInfo().items;}
   getPaginationConfig(): PaginationConfig {
-    return this.paginationConfig;
+    return {
+      currentPage: this.currentPage(),
+      itemsPerPage: this._itemsPerPage() ?? 5,
+      totalItems: this.filteredInvoices().length
+    };
   }
 
-
-  /**
-   * Se ejecuta al cargar el componente.
-   * Carga la lista de facturas automáticamente.
-   */
   ngOnInit(): void {
-    this.getListInvoices();
-    this.setupFormSubscriptions();
-
-  }
-
-  /**
-   * Configura las suscripciones reactivas para los FormGroups
-   */
-  setupFormSubscriptions(): void {
-    // Suscripción para búsqueda en tiempo real
-    this.searchForm.get('searchTerm')?.valueChanges.subscribe(() => {
-      this.applyFilters();
-    });
-
-    // Suscripción para cambios en filtros
-    this.filtersForm.valueChanges.subscribe(() => {
-      this.applyFilters();
-    });
-
-    this.paginationForm.get('itemsPerPage')?.valueChanges.subscribe((items) => {
-      this.paginationConfig.itemsPerPage = items;
-      this.paginationConfig.currentPage = 1;
-      this.updatePagination();
-    });
-
+    this.loadInvoices();
   }
 
   // ==========================================
-  // MÉTODOS DE CARGA DE DATOS
+  // CARGA DE DATOS
   // ==========================================
 
-  /**
-   * Obtiene todas las facturas recibidas del servidor.
-   * Guarda una copia original para los filtros de búsqueda.
-   */
-  getListInvoices(): void {
+  loadInvoices(): void {
     this.invoicesReceivedService.getAllInvoicesReceived().subscribe({
       next: (invoicesList) => {
-        this.allInvoices = invoicesList;
-        this.extractFilterOptions();
-        this.applyFilters();
+        this.allInvoices.set(invoicesList);
       },
       error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
@@ -244,179 +247,53 @@ export class InvoicesReceivedListComponent extends ExportableListBase<InvoiceRec
   }
 
   // ==========================================
-  // MÉTODOS DE FILTROS Y BÚSQUEDA
+  // FILTROS
   // ==========================================
 
-  /**
-   * Extrae las opciones únicas para todos los filtros basándose en los datos cargados.
-   */
-  extractFilterOptions(): void {
-
-    // Extraer categorías únicas
-    const categories = this.allInvoices
-      .map((invoice: InvoiceReceived) => invoice.category)
-      .filter(Boolean) // Elimina undefined, null, '', etc.
-      .filter((category, index, array) => array.indexOf(category) === index)
-      .sort() as string[];
-    this.categoryOptions = categories;
-
-    // Extraer proveedores únicos
-    const suppliers = this.allInvoices
-      .map((invoice: InvoiceReceived) => invoice.supplier_name)
-      .filter((supplier): supplier is string => !!supplier)
-      .filter((supplier, index, array) => supplier && array.indexOf(supplier) === index)
-      .sort();
-    this.suppliersOptions = suppliers;
-
-    // Extraer opciones de abonos
-    this.refundStatusOptions = [
-      {value: 'true', label: 'Abono'},
-      {value: 'false', label: 'Factura Normal'}
-    ];
-  }
-
-  /**
-   * Aplica todos los filtros activos a la lista de facturas.
-   */
-  applyFilters(): void {
-    let filtered = [...this.allInvoices];
-
-    const search = this.searchForm.get('searchTerm')?.value;
-    const paymentStatus = this.filtersForm.get('selectedPaymentStatus')?.value;
-    const refundStatus = this.filtersForm.get('selectedRefundStatus')?.value;
-    const category = this.filtersForm.get('selectedCategory')?.value;
-    const supplier = this.filtersForm.get('selectedSupplier')?.value;
-
-    if (search?.trim()) {
-      filtered = this.searchService.filterData(
-        filtered, search,
-        ['invoice_number', 'our_reference', 'supplier_name', 'category']);
-    }
-
-    if (paymentStatus) {
-      filtered = filtered.filter(invoice => invoice.collection_status === paymentStatus);
-    }
-
-    if (category) {
-      filtered = filtered.filter(invoice => invoice.category === category);
-    }
-
-    if (supplier) {
-      filtered = filtered.filter(invoice => invoice.supplier_name === supplier);
-    }
-
-    if (refundStatus !== '') {
-      const isRefund = refundStatus === 'true';
-      filtered = filtered.filter(invoice => Boolean(invoice.is_refund) === isRefund);
-    }
-
-    this.filteredInvoices = filtered;
-    this.paginationConfig.totalItems = filtered.length;
-    this.paginationConfig.currentPage = 1;
-    this.updatePagination();
-  }
-
-  /**
-   * Limpia todos los filtros y muestra todas las facturas.
-   */
   clearFilters(): void {
-    // Resetear cada FormGroup por separado con valores explícitos
-    this.searchForm.patchValue({
-      searchTerm: ''
-    });
+    this.searchForm.patchValue({searchTerm: ''});
     this.filtersForm.patchValue({
       selectedPaymentStatus: '',
       selectedRefundStatus: '',
       selectedCategory: '',
       selectedSupplier: ''
-    })
+    });
   }
 
-  // ========================
-  // MÉTODOS DE PAGINACIÓN
-  // ========================
+  // ==========================================
+  // PAGINACIÓN
+  // ==========================================
 
-  /**
-   * Actualiza la paginación con los datos filtrados.
-   */
-  updatePagination(): void {
-    this.paginationResult = this.paginationService.paginate(
-      this.filteredInvoices,
-      this.paginationConfig
-    );
-    this.invoices = this.paginationResult.items;
-  }
-
-  /**
-   * Navega a una página específica.
-   */
   goToPage(page: number): void {
-    if (this.paginationService.isValidPage(page, this.paginationResult.totalPages)) {
-      this.paginationConfig.currentPage = page;
-      this.updatePagination();
+    if (this.paginationService.isValidPage(page, this.paginationInfo().totalPages)) {
+      this.currentPage.set(page);
     }
   }
 
-  /**
-   * Navega a la página anterior.
-   */
   previousPage(): void {
-    if (this.paginationResult.hasPrevious) {
-      this.goToPage(this.paginationConfig.currentPage - 1);
+    if (this.paginationInfo().hasPrevious) {
+      this.currentPage.set(this.currentPage() - 1);
     }
   }
 
-  /**
-   * Navega a la página siguiente.
-   */
   nextPage(): void {
-    if (this.paginationResult.hasNext) {
-      this.goToPage(this.paginationConfig.currentPage + 1);
+    if (this.paginationInfo().hasNext) {
+      this.currentPage.set(this.currentPage() + 1);
     }
   }
 
-  /**
-   * Obtiene las páginas visibles para la navegación.
-   */
-  getVisiblePages(): number[] {
-    return this.paginationService.getVisiblePages(
-      this.paginationConfig.currentPage,
-      this.paginationResult.totalPages,
-      5
-    );
-  }
-
-  /**
-   * Obtiene el texto informativo de paginación.
-   */
-  getPaginationText(): string {
-    return this.paginationService.getPaginationText(
-      this.paginationConfig,
-      this.invoices.length
-    );
-  }
-
   // ==========================================
-  // MÉTODOS DE NAVEGACIÓN Y CRUD
+  // CRUD
   // ==========================================
 
-  /**
-   * Navega a la página de registro de nueva factura recibida.
-   */
   createNewInvoice(): void {
     this.router.navigate(['/dashboards/invoices-received/register']);
   }
 
-  /**
-   * Navega a la página de edición de factura recibida.
-   */
   editInvoice(id: number) {
     this.router.navigate(['/dashboards/invoices-received/edit', id]);
   }
 
-  /**
-   * Elimina una factura recibida después de confirmar la acción.
-   */
   deleteInvoice(id: number): void {
     Swal.fire({
       title: '¿Estás seguro?',
@@ -427,7 +304,9 @@ export class InvoicesReceivedListComponent extends ExportableListBase<InvoiceRec
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.invoicesReceivedService.deleteInvoiceReceived(id).subscribe({
+        this.invoicesReceivedService.deleteInvoiceReceived(id).pipe(
+          takeUntilDestroyed(this.destroyRef)
+        ).subscribe({
           next: () => {
             Swal.fire({
               title: 'Eliminada',
@@ -435,7 +314,7 @@ export class InvoicesReceivedListComponent extends ExportableListBase<InvoiceRec
               icon: 'success',
               confirmButtonText: 'Ok'
             });
-            this.getListInvoices();
+            this.loadInvoices();
           },
           error: (e: HttpErrorResponse) => {
             // Error manejado por interceptor
@@ -446,15 +325,10 @@ export class InvoicesReceivedListComponent extends ExportableListBase<InvoiceRec
   }
 
   // ==========================================
-  // MÉTODOS DE GESTIÓN DE PAGOS
+  // GESTIÓN DE PAGOS (FormGroup inline nullable)
   // ==========================================
 
-  /**
-   * Prepara los datos para editar el pago de una factura.
-   */
   startEditingPayment(invoice: InvoiceReceived): void {
-
-    // Crear FormGroup dinámico para esta factura
     this.editPaymentForm = this.fb.group({
       collection_status: [invoice.collection_status || 'pending'],
       collection_method: [invoice.collection_method || 'transfer'],
@@ -463,27 +337,17 @@ export class InvoicesReceivedListComponent extends ExportableListBase<InvoiceRec
       collection_notes: [invoice.collection_notes || '']
     });
     this.editingPayment.add(invoice.id!);
-  };
-
-
-  /**
-   * Cancela la edición del pago.
-   */
-  cancelEditingPayment(invoiceId: number): void {
-    this.editingPayment.delete(invoiceId);
-    this.editPaymentForm = null; // Destruir FormGroup
   }
 
-  /**
-   * Verifica si una factura está en modo edición de pago.
-   */
+  cancelEditingPayment(invoiceId: number): void {
+    this.editingPayment.delete(invoiceId);
+    this.editPaymentForm = null;
+  }
+
   isEditingPayment(invoiceId: number): boolean {
     return this.editingPayment.has(invoiceId);
   }
 
-  /**
-   * Guarda los cambios del estado de pago.
-   */
   savePaymentChanges(invoiceId: number): void {
     if (!this.editPaymentForm || this.editPaymentForm.invalid) {
       return;
@@ -491,7 +355,6 @@ export class InvoicesReceivedListComponent extends ExportableListBase<InvoiceRec
 
     const formValues = this.editPaymentForm.value;
 
-    // Validación: Si se marca como pagada, debe tener fecha
     if (formValues.collection_status === 'paid' && !formValues.collection_date) {
       Swal.fire({
         title: 'Error',
@@ -501,9 +364,10 @@ export class InvoicesReceivedListComponent extends ExportableListBase<InvoiceRec
       return;
     }
 
-    // Llamar al servicio para actualizar
-    this.invoicesReceivedService.updatePaymentStatus(invoiceId, formValues).subscribe({
-      next: (response) => {
+    this.invoicesReceivedService.updatePaymentStatus(invoiceId, formValues).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: () => {
         Swal.fire({
           title: '¡Éxito!',
           text: 'Estado de pago actualizado correctamente',
@@ -511,11 +375,9 @@ export class InvoicesReceivedListComponent extends ExportableListBase<InvoiceRec
           timer: 1500,
           showConfirmButton: false
         });
-
-        // Limpiar edición y recargar lista
         this.editingPayment.delete(invoiceId);
         this.editPaymentForm = null;
-        this.getListInvoices();
+        this.loadInvoices();
       },
       error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
@@ -523,12 +385,8 @@ export class InvoicesReceivedListComponent extends ExportableListBase<InvoiceRec
     });
   }
 
-  /**
-   * Cambio rápido de estado pendiente/pagado.
-   */
   togglePaymentStatus(invoice: InvoiceReceived): void {
     const newStatus = invoice.collection_status === 'paid' ? 'pending' : 'paid';
-
     const paymentData: {
       collection_status: 'pending' | 'paid' | 'overdue' | 'disputed';
       collection_method: 'transfer' | 'direct_debit' | 'cash' | 'card' | 'check';
@@ -542,12 +400,12 @@ export class InvoicesReceivedListComponent extends ExportableListBase<InvoiceRec
       collection_reference: invoice.collection_reference,
       collection_notes: invoice.collection_notes
     };
-    this.invoicesReceivedService.updatePaymentStatus(invoice.id!, paymentData).subscribe({
-      next: (response) => {
-        // Actualizar localmente para respuesta inmediata
+    this.invoicesReceivedService.updatePaymentStatus(invoice.id!, paymentData).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: () => {
         invoice.collection_status = newStatus;
         invoice.collection_date = paymentData.collection_date;
-
         const statusText = newStatus === 'paid' ? 'pagado' : 'pendiente';
         Swal.fire({
           title: '¡Actualizado!',
@@ -564,39 +422,24 @@ export class InvoicesReceivedListComponent extends ExportableListBase<InvoiceRec
   }
 
   // ==========================================
-  // MÉTODOS DE ABONOS
+  // MODAL DE ABONOS
   // ==========================================
 
-  /**
-   * Abre el modal para registrar un abono.
-   */
   openRefundModal(invoice: InvoiceReceived): void {
-    this.selectedInvoice = invoice;
-    this.showRefundModal = true;
-
-    // Preparar datos del nuevo abono
-    this.refundForm.patchValue({
-      refundReason: ''
-    })
-
+    this.selectedInvoice.set(invoice);
+    this.showRefundModal.set(true);
+    this.refundForm.patchValue({refundReason: ''});
   }
 
-  /**
-   * Cierra el modal de abonos.
-   */
   closeRefundModal(): void {
-    this.showRefundModal = false;
-    this.selectedInvoice = null;
-    this.refundForm.reset(); //esto para limpiar el formulario
+    this.showRefundModal.set(false);
+    this.selectedInvoice.set(null);
+    this.refundForm.reset();
   }
 
-  /**
-   * Guarda el nuevo abono.
-   */
   saveRefund(): void {
-    // Usar FormGroup para validación
     if (this.refundForm.invalid) {
-      this.refundForm.markAllAsTouched(); // Mostrar errores
+      this.refundForm.markAllAsTouched();
       Swal.fire({
         title: 'Error',
         text: 'El motivo del abono es obligatorio',
@@ -605,21 +448,22 @@ export class InvoicesReceivedListComponent extends ExportableListBase<InvoiceRec
       return;
     }
 
-    //Obtener valor del FormGroup
-    const refundReason = this.refundForm.get('refundReason')?.value;
-    // Crear el abono
+    const refundReason = this.refundForm.getRawValue().refundReason ?? '';
+
     this.invoicesReceivedService.createRefund(
-      this.selectedInvoice?.id!,
-      refundReason // ← Usar valor del FormGroup
+      this.selectedInvoice()?.id!,
+      refundReason
+    ).pipe(
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
-      next: (data) => {
+      next: () => {
         Swal.fire({
           title: 'Éxito!',
           text: 'Abono registrado correctamente',
           icon: 'success'
         });
         this.closeRefundModal();
-        this.getListInvoices();
+        this.loadInvoices();
       },
       error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
@@ -628,14 +472,11 @@ export class InvoicesReceivedListComponent extends ExportableListBase<InvoiceRec
   }
 
   // ==========================================
-  // MÉTODOS DE DESCARGA PDF
+  // DESCARGA PDF Y ADJUNTOS
   // ==========================================
 
-  /**
-   * Descarga una factura recibida en formato PDF.
-   */
   downloadPdf(invoiceId: number): void {
-    const invoice = this.invoices.find(inv => inv.id === invoiceId);
+    const invoice = this.paginationInfo().items.find(inv => inv.id === invoiceId);
     const isRefund = invoice?.is_refund;
 
     Swal.fire({
@@ -647,43 +488,30 @@ export class InvoicesReceivedListComponent extends ExportableListBase<InvoiceRec
       }
     });
 
-    let downloadMethod;
-    if (isRefund) {
-      downloadMethod = this.invoicesReceivedService.downloadRefundInvoicePdf(invoiceId);
-    } else {
-      downloadMethod = this.invoicesReceivedService.downloadInvoicePdf(invoiceId);
-    }
+    const downloadMethod = isRefund
+      ? this.invoicesReceivedService.downloadRefundInvoicePdf(invoiceId)
+      : this.invoicesReceivedService.downloadInvoicePdf(invoiceId);
 
-    downloadMethod.subscribe({
+    downloadMethod.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next: (pdfBlob) => {
         Swal.close();
         if (pdfBlob.size === 0) {
-          Swal.fire({
-            icon: 'warning',
-            title: 'Archivo vacío',
-            text: 'El PDF generado está vacío'
-          });
+          Swal.fire({icon: 'warning', title: 'Archivo vacío', text: 'El PDF generado está vacío'});
           return;
         }
-
         const url = window.URL.createObjectURL(pdfBlob);
         const link = document.createElement('a');
         link.href = url;
-
-        const fileName = isRefund
+        link.download = isRefund
           ? `abono-recibido-${invoice?.invoice_number || invoiceId}.pdf`
           : `factura-recibida-${invoice?.invoice_number || invoiceId}.pdf`;
-        link.download = fileName;
-
         link.style.display = 'none';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-
-        setTimeout(() => {
-          window.URL.revokeObjectURL(url);
-        }, 100);
-
+        setTimeout(() => window.URL.revokeObjectURL(url), 100);
         Swal.fire({
           icon: 'success',
           title: '¡Descarga exitosa!',
@@ -691,7 +519,6 @@ export class InvoicesReceivedListComponent extends ExportableListBase<InvoiceRec
           timer: 2000,
           showConfirmButton: false
         });
-
       },
       error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
@@ -699,19 +526,11 @@ export class InvoicesReceivedListComponent extends ExportableListBase<InvoiceRec
     });
   }
 
-  /**
-   * Descarga el archivo adjunto de una factura con autenticación
-   */
   viewAttachment(invoice: InvoiceReceived): void {
     if (!invoice.has_attachments || !invoice.pdf_path) {
-      Swal.fire({
-        title: 'Sin archivo',
-        text: 'Esta factura no tiene archivo adjunto',
-        icon: 'info'
-      });
+      Swal.fire({title: 'Sin archivo', text: 'Esta factura no tiene archivo adjunto', icon: 'info'});
       return;
     }
-    // Mostrar loading
     Swal.fire({
       title: 'Cargando archivo...',
       text: 'Por favor espera',
@@ -721,29 +540,19 @@ export class InvoicesReceivedListComponent extends ExportableListBase<InvoiceRec
       }
     });
 
-    // Usar el servicio HTTP con autenticación
-    this.invoicesReceivedService.downloadAttachment(invoice.pdf_path).subscribe({
+    this.invoicesReceivedService.downloadAttachment(invoice.pdf_path).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next: (blob) => {
         Swal.close();
-
-        // Crear URL temporal para visualizar
         const url = window.URL.createObjectURL(blob);
-
-        // Abrir en nueva pestaña para visualizar (no descargar)
         window.open(url, '_blank');
-
-        // Limpiar URL temporal después de un tiempo
-        setTimeout(() => window.URL.revokeObjectURL(url), 10000); // 10 segundos
+        setTimeout(() => window.URL.revokeObjectURL(url), 10000);
       },
-      error: (error) => {
+      error: () => {
         Swal.close();
-        Swal.fire({
-          title: 'Error',
-          text: 'No se pudo cargar el archivo',
-          icon: 'error'
-        });
+        Swal.fire({title: 'Error', text: 'No se pudo cargar el archivo', icon: 'error'});
       }
     });
   }
-
 }
