@@ -1,5 +1,18 @@
 
 /**
+ * Estadísticas del panel de control principal
+ */
+export interface DashboardStats {
+  todayIncome: number;
+  activeClients: number;
+  newClients: number;
+  totalSales: number;
+  pendingInvoices: number;
+  activeProperties: number;
+  activeEmployees: number;
+}
+
+/**
  * Interfaz para estadísticas generales de facturas emitidas
  */
 export interface InvoiceStats {

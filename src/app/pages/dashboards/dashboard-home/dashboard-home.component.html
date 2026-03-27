@@ -7,115 +7,120 @@
     <p>Bienvenido al sistema de facturación. Gestiona tu negocio de forma eficiente.</p>
   </div>
 
-  <!-- Tarjetas de Estadísticas -->
-  <div class="stats-grid">
-
-    <!-- Ingresos del Día -->
-    <div class="stat-card revenue">
-      <div class="stat-icon">💰</div>
-      <div class="stat-content">
-        <h3>Ingresos de Hoy</h3>
-        <div class="stat-value">€2,347</div>
-        <div class="stat-change positive">+12% desde ayer</div>
-      </div>
+  @if (!stats()) {
+    <div class="loading-state">
+      <p>Cargando datos...</p>
     </div>
+  } @else {
 
-    <!-- Clientes Activos -->
-    <div class="stat-card clients">
-      <div class="stat-icon">👥</div>
-      <div class="stat-content">
-        <h3>Clientes Activos</h3>
-        <div class="stat-value">156</div>
-        <div class="stat-change positive">+3% este mes</div>
-      </div>
-    </div>
+    <!-- Tarjetas de Estadísticas -->
+    <div class="stats-grid">
 
-    <!-- Nuevos Clientes -->
-    <div class="stat-card new-clients">
-      <div class="stat-icon">🆕</div>
-      <div class="stat-content">
-        <h3>Nuevos Clientes</h3>
-        <div class="stat-value">12</div>
-        <div class="stat-change negative">-2% desde ayer</div>
-      </div>
-    </div>
-
-    <!-- Ventas Totales -->
-    <div class="stat-card sales">
-      <div class="stat-icon">📊</div>
-      <div class="stat-content">
-        <h3>Ventas Totales</h3>
-        <div class="stat-value">€45,230</div>
-        <div class="stat-change positive">+8% este mes</div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- Accesos Rápidos -->
-  <div class="quick-actions">
-    <h2>Accesos Rápidos</h2>
-    <div class="actions-grid">
-
-      <a [routerLink]="['clients/register']" class="action-card">
-        <div class="action-icon">➕</div>
-        <div class="action-content">
-          <h3>Nuevo Cliente</h3>
-          <p>Registrar un cliente nuevo</p>
+      <!-- Ingresos del Día -->
+      <div class="stat-card revenue">
+        <div class="stat-icon">💰</div>
+        <div class="stat-content">
+          <h3>Ingresos de Hoy</h3>
+          <div class="stat-value">{{ stats()!.todayIncome | currency:'EUR':'symbol':'1.2-2':'es' }}</div>
         </div>
-      </a>
-
-      <a [routerLink]="['invoices-issued/register']" class="action-card">
-        <div class="action-icon">🧾</div>
-        <div class="action-content">
-          <h3>Nueva Factura</h3>
-          <p>Crear una factura</p>
-        </div>
-      </a>
-
-      <a [routerLink]="['clients/list']" class="action-card">
-        <div class="action-icon">📋</div>
-        <div class="action-content">
-          <h3>Ver Clientes</h3>
-          <p>Listado completo</p>
-        </div>
-      </a>
-
-      <a [routerLink]="['owners/register']" class="action-card">
-        <div class="action-icon">🏠</div>
-        <div class="action-content">
-          <h3>Nuevo Propietario</h3>
-          <p>Registrar propietario</p>
-        </div>
-      </a>
-
-    </div>
-  </div>
-
-  <!-- Resumen Rápido -->
-  <div class="summary-section">
-    <h2>Actividad Reciente</h2>
-    <div class="summary-grid">
-
-      <div class="summary-card">
-        <h4>Facturas Pendientes</h4>
-        <div class="summary-value">8</div>
-        <p>Facturas por cobrar</p>
       </div>
 
-      <div class="summary-card">
-        <h4>Propiedades Activas</h4>
-        <div class="summary-value">23</div>
-        <p>Propiedades en gestión</p>
+      <!-- Clientes Activos -->
+      <div class="stat-card clients">
+        <div class="stat-icon">👥</div>
+        <div class="stat-content">
+          <h3>Clientes Activos</h3>
+          <div class="stat-value">{{ stats()!.activeClients }}</div>
+        </div>
       </div>
 
-      <div class="summary-card">
-        <h4>Empleados</h4>
-        <div class="summary-value">7</div>
-        <p>Personal activo</p>
+      <!-- Nuevos Clientes -->
+      <div class="stat-card new-clients">
+        <div class="stat-icon">🆕</div>
+        <div class="stat-content">
+          <h3>Nuevos Clientes</h3>
+          <div class="stat-value">{{ stats()!.newClients }}</div>
+          <div class="stat-change">Este mes</div>
+        </div>
+      </div>
+
+      <!-- Ventas Totales -->
+      <div class="stat-card sales">
+        <div class="stat-icon">📊</div>
+        <div class="stat-content">
+          <h3>Ventas Totales</h3>
+          <div class="stat-value">{{ stats()!.totalSales | currency:'EUR':'symbol':'1.2-2':'es' }}</div>
+        </div>
       </div>
 
     </div>
-  </div>
+
+    <!-- Accesos Rápidos -->
+    <div class="quick-actions">
+      <h2>Accesos Rápidos</h2>
+      <div class="actions-grid">
+
+        <a [routerLink]="['clients/register']" class="action-card">
+          <div class="action-icon">➕</div>
+          <div class="action-content">
+            <h3>Nuevo Cliente</h3>
+            <p>Registrar un cliente nuevo</p>
+          </div>
+        </a>
+
+        <a [routerLink]="['invoices-issued/register']" class="action-card">
+          <div class="action-icon">🧾</div>
+          <div class="action-content">
+            <h3>Nueva Factura</h3>
+            <p>Crear una factura</p>
+          </div>
+        </a>
+
+        <a [routerLink]="['clients/list']" class="action-card">
+          <div class="action-icon">📋</div>
+          <div class="action-content">
+            <h3>Ver Clientes</h3>
+            <p>Listado completo</p>
+          </div>
+        </a>
+
+        <a [routerLink]="['owners/register']" class="action-card">
+          <div class="action-icon">🏠</div>
+          <div class="action-content">
+            <h3>Nuevo Propietario</h3>
+            <p>Registrar propietario</p>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- Resumen Rápido -->
+    <div class="summary-section">
+      <h2>Actividad Reciente</h2>
+      <div class="summary-grid">
+
+        <div class="summary-card">
+          <h4>Facturas Pendientes</h4>
+          <div class="summary-value">{{ stats()!.pendingInvoices }}</div>
+          <p>Facturas por cobrar</p>
+        </div>
+
+        <div class="summary-card">
+          <h4>Propiedades Activas</h4>
+          <div class="summary-value">{{ stats()!.activeProperties }}</div>
+          <p>Propiedades en gestión</p>
+        </div>
+
+        <div class="summary-card">
+          <h4>Empleados</h4>
+          <div class="summary-value">{{ stats()!.activeEmployees }}</div>
+          <p>Personal activo</p>
+        </div>
+
+      </div>
+    </div>
+
+  }
 
 </div>
