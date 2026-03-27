@@ -1,13 +1,14 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, DestroyRef, OnInit, computed, effect, inject, signal} from '@angular/core';
+import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
 import {EstatesOwners} from '../../../interfaces/estates-owners-interface';
 import {DataFormatPipe} from '../../../shared/pipe/data-format.pipe';
 import {EstateOwnersService} from '../../../core/services/entity-services/estate-owners.service';
 import {Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import Swal from 'sweetalert2';
-import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {SearchService} from '../../../core/services/shared-services/search.service';
-import {PaginationConfig, PaginationResult} from '../../../interfaces/pagination-interface';
+import {PaginationConfig} from '../../../interfaces/pagination-interface';
 import {PaginationService} from '../../../core/services/shared-services/pagination.service';
 import {ExportService} from '../../../core/services/shared-services/exportar.service';
 import {ExportableListBase} from '../../../shared/Base/exportable-list.base';
@@ -28,46 +29,88 @@ import {ExportableListBase} from '../../../shared/Base/exportable-list.base';
 })
 export class EstateOwnersListComponent extends ExportableListBase<EstatesOwners> implements OnInit {
 
+  private readonly estateOwnersService = inject(EstateOwnersService);
+  private readonly router = inject(Router);
+  private readonly searchService = inject(SearchService);
+  private readonly paginationService = inject(PaginationService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly fb = inject(FormBuilder);
+  readonly exportService = inject(ExportService);
+
   // ==========================================
-  // PROPIEDADES DE FORMULARIOS MÚLTIPLES
+  // FORMULARIOS
   // ==========================================
-  // FormGroup para búsqueda de texto
-  searchForm: FormGroup;
 
-  // FormGroup para configuración de paginación
-  paginationForm: FormGroup;
+  readonly searchForm = this.fb.group({searchTerm: ['']});
+  readonly paginationForm = this.fb.group({itemsPerPage: [5]});
 
-  // Lista de relaciones inmueble-propietario que se muestra en la tabla
-  filteredEstateOwners: EstatesOwners[] = [];
+  // ==========================================
+  // SIGNALS DE FORMULARIO
+  // ==========================================
 
-// Lista completa de propietarios y propiedades (datos originales sin filtrar)
-  allEstateOwners: EstatesOwners[] = [];
+  readonly searchTerm = toSignal(
+    this.searchForm.controls.searchTerm.valueChanges,
+    {initialValue: ''}
+  );
 
-  estateOwners: EstatesOwners[] = [];
+  private readonly _itemsPerPage = toSignal(
+    this.paginationForm.controls.itemsPerPage.valueChanges,
+    {initialValue: 5}
+  );
 
-  // Configuración de paginación
-  paginationConfig: PaginationConfig = {
-    currentPage: 1,
-    itemsPerPage: 5,
-    totalItems: 0
-  };
+  // ==========================================
+  // ESTADO REACTIVO
+  // ==========================================
 
-// Resultado de paginación
-  paginationResult: PaginationResult<EstatesOwners> = {
-    items: [],
-    totalPages: 0,
-    hasNext: false,
-    hasPrevious: false,
-    startIndex: 0,
-    endIndex: 0
-  };
+  private readonly allEstateOwners = signal<EstatesOwners[]>([]);
+  readonly currentPage = signal(1);
 
-  //===============================
-  // FUNCIONES PARA LA EXPORTACION
-  //===============================
-  // Implementar propiedades abstractas
-  entityName = 'porcentajes';//para nombrar los documentos descargados
-  selectedItems: Set<number> = new Set();
+  private readonly filteredEstateOwners = computed(() => {
+    let filtered = [...this.allEstateOwners()];
+    const searchTerm = this.searchTerm() ?? '';
+    if (searchTerm) {
+      filtered = this.searchService.filterData(
+        filtered, searchTerm,
+        ['owner_name', 'estate_name', 'ownership_percentage']
+      );
+    }
+    return filtered;
+  });
+
+  readonly paginationInfo = computed(() => {
+    const filtered = this.filteredEstateOwners();
+    return this.paginationService.paginate(filtered, {
+      currentPage: this.currentPage(),
+      itemsPerPage: this._itemsPerPage() ?? 5,
+      totalItems: filtered.length
+    });
+  });
+
+  readonly visiblePages = computed(() =>
+    this.paginationService.getVisiblePages(
+      this.currentPage(),
+      this.paginationInfo().totalPages,
+      5
+    )
+  );
+
+  readonly paginationText = computed(() =>
+    this.paginationService.getPaginationText(
+      {
+        currentPage: this.currentPage(),
+        itemsPerPage: this._itemsPerPage() ?? 5,
+        totalItems: this.filteredEstateOwners().length
+      },
+      this.paginationInfo().items.length
+    )
+  );
+
+  // ==========================================
+  // EXPORTACIÓN (ExportableListBase)
+  // ==========================================
+
+  readonly entityName = 'porcentajes';
+  readonly selectedItems = new Set<number>();
 
   readonly exportColumns = [
     {key: 'id', title: 'ID', width: 10},
@@ -81,203 +124,85 @@ export class EstateOwnersListComponent extends ExportableListBase<EstatesOwners>
     }
   ];
 
-  constructor(
-    private estateOwnersService: EstateOwnersService,
-    private router: Router,
-    private searchService: SearchService,
-    private paginationService: PaginationService,
-    private fb: FormBuilder,
-    public exportService: ExportService,
-  ) {
+  constructor() {
     super();
-
-    this.searchForm = this.fb.group({
-      searchTerm: ['']
-    });
-
-    this.paginationForm = this.fb.group({
-      itemsPerPage: [5]
-    })
-  };
-
-  getFilteredData(): EstatesOwners[] {
-    return this.filteredEstateOwners;
+    effect(() => {
+      this.searchTerm();
+      this.currentPage.set(1);
+    }, {allowSignalWrites: true});
   }
 
-  getCurrentPageData(): EstatesOwners[] {
-    return this.estateOwners;
-  }
+  // ==========================================
+  // MÉTODOS ABSTRACTOS (ExportableListBase)
+  // ==========================================
 
+  getFilteredData(): EstatesOwners[] {return this.filteredEstateOwners();}
+  getCurrentPageData(): EstatesOwners[] {return this.paginationInfo().items;}
   getPaginationConfig(): PaginationConfig {
-    return this.paginationConfig;
+    return {
+      currentPage: this.currentPage(),
+      itemsPerPage: this._itemsPerPage() ?? 5,
+      totalItems: this.filteredEstateOwners().length
+    };
   }
 
-
-  /**
-   * Se ejecuta al cargar el componente
-   * Carga automáticamente la lista de relaciones
-   */
   ngOnInit(): void {
-    this.getAllEstateOwners();
-    this.setupFormSubscriptions();
-  }
-
-
-// ==========================================
-  // MÉTODOS DE CONFIGURACIÓN
-  // ==========================================
-
-  setupFormSubscriptions() {
-    this.searchForm.get('searchTerm')?.valueChanges.subscribe(() => {
-      this.applyFilters()
-    })
-
-    this.paginationForm.get('itemsPerPage')?.valueChanges.subscribe((items) => {
-      this.paginationConfig.itemsPerPage = items;
-      this.paginationConfig.currentPage = 1;
-      this.updatePagination();
-    });
-
+    this.loadEstateOwners();
   }
 
   // ==========================================
-  // MÉTODOS DE CARGA DE DATOS
+  // CARGA DE DATOS
   // ==========================================
 
-  /**
-   * Obtiene todas las relaciones inmueble-propietario del servidor
-   * Incluye nombres de inmuebles y propietarios para mostrar en la tabla
-   */
-  getAllEstateOwners() {
+  loadEstateOwners() {
     this.estateOwnersService.getAllEstateOwners().subscribe({
       next: (data) => {
-        this.allEstateOwners = data;
-        this.applyFilters();
-      }, error: (e: HttpErrorResponse) => {
+        this.allEstateOwners.set(data);
+      },
+      error: (e: HttpErrorResponse) => {
         // Error manejado por interceptor
       }
-    })
+    });
   }
 
   // ==========================================
-  // MÉTODOS DE FILTROS Y BÚSQUEDA
+  // FILTROS
   // ==========================================
 
-  /**
-   * Limpia el filtro de búsqueda y muestra todo el porcentajes
-   */
   clearFilters() {
-    this.searchForm.patchValue({
-      searchTerm: ''
-    })
+    this.searchForm.patchValue({searchTerm: ''});
   }
 
-  /**
-   * Filtra la lista de empleados según el texto de búsqueda
-   * Busca en: nombre completo, identificación y teléfono
-   */
-  applyFilters() {
-    let filtered = [...this.allEstateOwners];
-
-    // Obtener valores directamente de cada FormGroup independiente
-    const searchTerm = this.searchForm.get('searchTerm')?.value;
-
-    // Filtro por búsqueda de texto
-    if (searchTerm) {
-      filtered = this.searchService.filterData(
-        filtered,
-        searchTerm,
-        ['owner_name', 'estate_name', 'ownership_percentage']
-      )
-    }
-
-
-    this.filteredEstateOwners = filtered;
-    this.paginationConfig.totalItems = filtered.length;
-    this.paginationConfig.currentPage = 1;
-    this.updatePagination();
-
-
-  };
-
   // ==========================================
-  // MÉTODOS DE PAGINACIÓN
+  // PAGINACIÓN
   // ==========================================
-  /**
-   * Actualiza la paginación con los datos filtrados
-   */
-  updatePagination() {
-    this.paginationResult = this.paginationService.paginate(
-      this.filteredEstateOwners,
-      this.paginationConfig
-    );
-    this.estateOwners = this.paginationResult.items;
-  }
 
-  /**
-   * Navega a una página específica
-   */
   goToPage(page: number) {
-    if (this.paginationService.isValidPage(page, this.paginationResult.totalPages)) {
-      this.paginationConfig.currentPage = page;
-      this.updatePagination();
+    if (this.paginationService.isValidPage(page, this.paginationInfo().totalPages)) {
+      this.currentPage.set(page);
     }
   }
 
-  /**
-   * Navega a la página anterior
-   */
   previousPage() {
-    if (this.paginationResult.hasPrevious) {
-      this.goToPage(this.paginationConfig.currentPage - 1);
+    if (this.paginationInfo().hasPrevious) {
+      this.currentPage.set(this.currentPage() - 1);
     }
-  };
+  }
 
-  /**
-   * Navega a la página siguiente
-   */
   nextPage() {
-    if (this.paginationResult.hasNext) {
-      this.goToPage(this.paginationConfig.currentPage + 1);
+    if (this.paginationInfo().hasNext) {
+      this.currentPage.set(this.currentPage() + 1);
     }
-  };
-
-  /**
-   * Obtiene las páginas visibles para la navegación
-   */
-  getVisiblePages(): number[] {
-    return this.paginationService.getVisiblePages(
-      this.paginationConfig.currentPage,
-      this.paginationResult.totalPages,
-      5
-    );
-  }
-
-  /**
-   * Obtiene el texto informativo de paginación
-   */
-  getPaginationText(): string {
-    return this.paginationService.getPaginationText(
-      this.paginationConfig,
-      this.allEstateOwners.length
-    );
   }
 
   // ==========================================
-  // MÉTODOS DE NAVEGACIÓN Y CRUD
+  // ACCIONES
   // ==========================================
 
-  /**
-   * Navega a la página de edición de la relación
-   */
   editEstateOwners(id: number) {
-    this.router.navigate(['/dashboards/estates-owners/edit', id])
+    this.router.navigate(['/dashboards/estates-owners/edit', id]);
   }
 
-  /**
-   * Elimina una relación inmueble-propietario después de confirmar
-   * Muestra mensaje de confirmación antes de eliminar
-   */
   deleteEstateOwners(id: number) {
     Swal.fire({
       title: '¿Estás seguro?',
@@ -288,8 +213,9 @@ export class EstateOwnersListComponent extends ExportableListBase<EstatesOwners>
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        // Usuario confirmó, proceder a eliminar
-        this.estateOwnersService.deleteEstateOwners(id).subscribe({
+        this.estateOwnersService.deleteEstateOwners(id).pipe(
+          takeUntilDestroyed(this.destroyRef)
+        ).subscribe({
           next: () => {
             Swal.fire({
               title: 'Eliminado.',
@@ -297,18 +223,17 @@ export class EstateOwnersListComponent extends ExportableListBase<EstatesOwners>
               icon: 'success',
               confirmButtonText: 'Ok'
             });
-            // Recargar la lista para mostrar cambios
-            this.getAllEstateOwners();
-
-          }, error: (e: HttpErrorResponse) => {
+            this.loadEstateOwners();
+          },
+          error: (e: HttpErrorResponse) => {
             // Error manejado por interceptor
           }
-        })
+        });
       }
-    })
+    });
   }
 
   newEstateOwner() {
-    this.router.navigate(['/dashboards/estates/register'])
-  };
+    this.router.navigate(['/dashboards/estates/register']);
+  }
 }
