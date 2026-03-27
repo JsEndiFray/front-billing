@@ -58,9 +58,17 @@ export class UsersRegisterComponent {
 
     //Usar directamente los valores del FormGroup
     const userData = this.userForm.getRawValue();
+    const userDataClean = {
+      username:         userData.username         ?? '',
+      password:         userData.password         ?? '',
+      confirm_password: userData.confirm_password ?? '',
+      email:            userData.email            ?? '',
+      phone:            userData.phone            ?? '',
+      role:             userData.role             ?? ''
+    };
 
     // Validar que todos los campos estén correctos
-    const validation = this.validatorService.validateUser(userData);
+    const validation = this.validatorService.validateUser(userDataClean);
     if (!validation.isValid) {
       Swal.fire({
         title: 'Error!',
@@ -72,15 +80,15 @@ export class UsersRegisterComponent {
     }
 
     // Convertir rol de español a inglés para el backend
-    const backendRoles = this.validatorService.transformRoleToBackend(userData.role ?? '');
+    const backendRoles = this.validatorService.transformRoleToBackend(userDataClean.role);
 
     // Crear objeto con datos listos para enviar
     const newUser: User = {
-      username: userData.username ?? '',
-      password: userData.password ?? '',
-      email: userData.email ?? '',
-      phone: userData.phone ?? '',
-      role: backendRoles
+      username: userDataClean.username,
+      password: userDataClean.password,
+      email:    userDataClean.email,
+      phone:    userDataClean.phone,
+      role:     backendRoles
     };
 
     this.isSubmitting.set(true);
