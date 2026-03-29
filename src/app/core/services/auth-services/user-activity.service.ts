@@ -1,11 +1,11 @@
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
 import { fromEvent, merge, Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
-import {Router} from '@angular/router';
 
 /**
- * Servicio para detectar inactividad del usuario
- * Cierra sesión automáticamente después de 15 minutos sin actividad
+ * Servicio para detectar inactividad del usuario.
+ * Emite en timeout$ tras 15 minutos sin actividad.
+ * AuthService se suscribe a timeout$ y gestiona el logout.
  */
 @Injectable({
   providedIn: 'root'
@@ -16,113 +16,60 @@ export class UserActivityService implements OnDestroy {
   private destroy$ = new Subject<void>();
   private isActive = false;
 
-  // Eventos que consideramos como actividad del usuario
+  private readonly timeoutSubject = new Subject<void>();
+  readonly timeout$ = this.timeoutSubject.asObservable();
+
   private readonly USER_EVENTS = [
-    'click',
-    'mousemove',
-    'keypress',
-    'scroll',
-    'touchstart',
-    'mousedown',
-    'keydown'
+    'click', 'mousemove', 'keypress', 'scroll',
+    'touchstart', 'mousedown', 'keydown'
   ];
 
-  constructor(
-    private ngZone: NgZone,
-    private router: Router
-  ) {}
+  constructor(private ngZone: NgZone) {}
 
-  /**
-   * Inicia el monitoreo de actividad del usuario
-   */
   startMonitoring(): void {
     if (this.isActive) return;
-
     this.isActive = true;
     this.setupActivityListeners();
     this.resetInactivityTimer();
   }
 
-  /**
-   * Detiene el monitoreo de actividad
-   */
   stopMonitoring(): void {
     this.isActive = false;
     this.clearInactivityTimer();
     this.destroy$.next();
   }
 
-  /**
-   * Configura los listeners para detectar actividad del usuario
-   */
   private setupActivityListeners(): void {
-    // Crear observables para cada tipo de evento
-    const events$ = this.USER_EVENTS.map(eventType =>
-      fromEvent(document, eventType)
-    );
-
-    // Combinar todos los eventos en un solo observable
+    const events$ = this.USER_EVENTS.map(eventType => fromEvent(document, eventType));
     merge(...events$).pipe(
-      debounceTime(1000), // Evitar demasiadas ejecuciones
+      debounceTime(1000),
       takeUntil(this.destroy$)
     ).subscribe(() => {
-      this.onUserActivity();
+      if (this.isActive) this.resetInactivityTimer();
     });
   }
 
-  /**
-   * Se ejecuta cuando se detecta actividad del usuario
-   */
-  private onUserActivity(): void {
-    if (!this.isActive) return;
-
-    this.resetInactivityTimer();
-  }
-
-  /**
-   * Reinicia el timer de inactividad
-   */
   private resetInactivityTimer(): void {
     this.clearInactivityTimer();
-
     this.ngZone.runOutsideAngular(() => {
       this.inactivityTimer = window.setTimeout(() => {
         this.ngZone.run(() => {
-          this.handleInactivityTimeout();
+          this.stopMonitoring();
+          this.timeoutSubject.next();
         });
       }, this.INACTIVITY_TIMEOUT);
     });
   }
 
-  /**
-   * Limpia el timer de inactividad
-   */
   private clearInactivityTimer(): void {
-    if (this.inactivityTimer) {
+    if (this.inactivityTimer !== null) {
       window.clearTimeout(this.inactivityTimer);
       this.inactivityTimer = null;
     }
   }
 
-  /**
-   * Maneja el timeout por inactividad - limpia tokens y redirige
-   */
-  private handleInactivityTimeout(): void {
-    console.warn('Sesión cerrada por inactividad (15 minutos)');
-
-    // Limpiar tokens directamente sin usar AuthService
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('userData');
-
-    // Redirigir al login
-    this.router.navigate(['/login']);
-  }
-
-  /**
-   * Cleanup al destruir el servicio
-   */
   ngOnDestroy(): void {
     this.stopMonitoring();
+    this.timeoutSubject.complete();
   }
 }

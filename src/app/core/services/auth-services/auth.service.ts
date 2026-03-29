@@ -9,48 +9,74 @@ import { UserActivityService } from './user-activity.service';
   providedIn: 'root'
 })
 export class AuthService {
-  private refreshTimer: number | null = null;
+  // ── Token en memoria (nunca en localStorage) ──────────────────────────────
+  private accessToken: string | null = null;
+
+  // ── Control de refresh concurrente ────────────────────────────────────────
   private isRefreshing = false;
   private refreshTokenSubject = new BehaviorSubject<string | null>(null);
+
+  // ── Señal de inicialización (guards esperan hasta que sea true) ───────────
+  private readonly initializedSubject = new BehaviorSubject<boolean>(false);
+
+  // ── Timer de renovación automática ───────────────────────────────────────
+  private refreshTimer: number | null = null;
 
   constructor(
     private api: ApiService,
     private router: Router,
     private userActivityService: UserActivityService
   ) {
+    // Suscribirse a timeout de inactividad
+    this.userActivityService.timeout$.subscribe(() => this.logout());
+
+    // Intentar restaurar sesión via cookie httpOnly al iniciar
     this.initializeSession();
   }
 
-  private hasValidSession(): boolean {
-    const token = localStorage.getItem('token');
-    if (!token) return false;
+  /** Observable que resuelve true en cuanto la inicialización termina */
+  waitForInit(): Observable<true> {
+    return this.initializedSubject.pipe(
+      filter((initialized): initialized is true => initialized),
+      take(1)
+    );
+  }
 
+  // ── Inicialización asíncrona ──────────────────────────────────────────────
+
+  private initializeSession(): void {
+    this.refreshAccessToken().subscribe({
+      next: () => {
+        this.userActivityService.startMonitoring();
+        this.startTokenRefreshTimer();
+        this.initializedSubject.next(true);
+      },
+      error: () => {
+        // Sin sesión válida — guards redirigirán a /login
+        this.initializedSubject.next(true);
+      }
+    });
+  }
+
+  // ── Validación de token en memoria ───────────────────────────────────────
+
+  private isTokenValid(token: string): boolean {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      if (payload.exp < Date.now() / 1000) {
-        this.clearTokens();
-        return false;
-      }
-      return true;
+      return payload.exp > Date.now() / 1000;
     } catch {
-      this.clearTokens();
       return false;
     }
   }
 
-  private initializeSession(): void {
-    if (this.hasValidSession()) {
-      this.userActivityService.startMonitoring();
-      this.startTokenRefreshTimer();
-    }
-  }
+  // ── Timer de renovación automática ───────────────────────────────────────
 
   private startTokenRefreshTimer(): void {
     this.clearRefreshTimer();
     this.refreshTimer = window.setInterval(() => {
       this.refreshAccessToken().subscribe({
         next: () => console.log('Token renovado automáticamente'),
-        error: () => {} // logout ya gestionado dentro de refreshAccessToken
+        error: () => this.logout()
       });
     }, 5 * 60 * 1000);
   }
@@ -62,8 +88,13 @@ export class AuthService {
     }
   }
 
+  // ── Renovación de token ───────────────────────────────────────────────────
+
+  /**
+   * Renueva el accessToken usando la cookie httpOnly (withCredentials via interceptor).
+   * Garantiza un único refresh real cuando hay peticiones concurrentes.
+   */
   refreshAccessToken(): Observable<string> {
-    // Si ya hay un refresh en curso, encolar: esperar el token emitido por el primero
     if (this.isRefreshing) {
       return this.refreshTokenSubject.pipe(
         filter((token): token is string => token !== null),
@@ -71,41 +102,34 @@ export class AuthService {
       );
     }
 
-    const storedRefreshToken = localStorage.getItem('refreshToken');
-    if (!storedRefreshToken) {
-      this.logout();
-      return throwError(() => new Error('No hay refresh token disponible'));
-    }
-
     this.isRefreshing = true;
-    this.refreshTokenSubject.next(null); // bloquear colas hasta recibir el nuevo token
+    this.refreshTokenSubject.next(null);
 
-    return this.api.post<{ refreshToken: string }, LoginResponse>(
-      'auth/refresh-token',
-      { refreshToken: storedRefreshToken }
-    ).pipe(
+    return this.api.post<Record<string, never>, LoginResponse>('auth/refresh-token', {}).pipe(
       map((response: LoginResponse) => {
-        localStorage.setItem('token', response.accessToken);
-        if (response.refreshToken) {
-          localStorage.setItem('refreshToken', response.refreshToken);
-        }
-        this.refreshTokenSubject.next(response.accessToken); // desbloquear colas
+        this.accessToken = response.accessToken;
+        this.refreshTokenSubject.next(response.accessToken);
         this.isRefreshing = false;
         return response.accessToken;
       }),
       catchError((error) => {
         this.isRefreshing = false;
-        this.logout();
+        this.refreshTokenSubject.next(null);
         return throwError(() => error);
       })
     );
   }
 
-  private clearTokens(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
+  // ── Limpieza de sesión ────────────────────────────────────────────────────
+
+  private clearSession(): void {
+    this.accessToken = null;
     localStorage.removeItem('userData');
+    this.clearRefreshTimer();
+    this.userActivityService.stopMonitoring();
   }
+
+  // ── API pública ───────────────────────────────────────────────────────────
 
   registerUser(user: User): Observable<string> {
     return this.api.post('users', user);
@@ -114,8 +138,7 @@ export class AuthService {
   login(user: UsersLogin): Observable<LoginResponse> {
     return this.api.post<UsersLogin, LoginResponse>('auth/login', user).pipe(
       tap((response: LoginResponse) => {
-        localStorage.setItem('token', response.accessToken);
-        localStorage.setItem('refreshToken', response.refreshToken);
+        this.accessToken = response.accessToken;
         localStorage.setItem('userData', JSON.stringify(response.user));
         this.startTokenRefreshTimer();
         this.userActivityService.startMonitoring();
@@ -124,10 +147,14 @@ export class AuthService {
   }
 
   logout(): void {
-    this.clearTokens();
-    this.clearRefreshTimer();
-    this.userActivityService.stopMonitoring();
+    this.clearSession();
+    // Notificar al backend (revoca refresh token + borra cookie) — fire-and-forget
+    this.api.post<Record<string, never>, void>('auth/logout', {}).subscribe({ error: () => {} });
     this.router.navigate(['/login']);
+  }
+
+  getToken(): string | null {
+    return this.accessToken;
   }
 
   getUserData(): User | null {
@@ -135,12 +162,8 @@ export class AuthService {
     return userData ? JSON.parse(userData) : null;
   }
 
-  getToken(): string | null {
-    return localStorage.getItem('token');
-  }
-
   isAuthenticated(): boolean {
-    return this.hasValidSession();
+    return this.accessToken !== null && this.isTokenValid(this.accessToken);
   }
 
   getCurrentUserRole(): string {

@@ -5,21 +5,27 @@ import { AuthService } from '../../services/auth-services/auth.service';
 import Swal from 'sweetalert2';
 
 /**
- * Interceptor para manejo automático de tokens JWT
- * - Añade Authorization header a requests salientes
- * - Renueva tokens automáticamente en errores 401 (sin race conditions)
+ * Interceptor para manejo automático de tokens JWT.
+ * - Añade Authorization header y withCredentials (para cookie httpOnly) a todos los requests.
+ * - Renueva tokens automáticamente en errores 401 (sin race conditions).
  * - Múltiples requests simultáneos con token expirado generan un SOLO refresh real;
- *   el resto espera el token nuevo via BehaviorSubject en AuthService
- * - Hace logout (desde AuthService) si la renovación falla
+ *   el resto espera el token nuevo via BehaviorSubject en AuthService.
+ * - Hace logout (desde AuthService) si la renovación falla.
  */
 export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const token = authService.getToken();
 
   const addToken = (request: typeof req, authToken: string) =>
-    request.clone({ setHeaders: { Authorization: `Bearer ${authToken}` } });
+    request.clone({
+      withCredentials: true,
+      setHeaders: { Authorization: `Bearer ${authToken}` }
+    });
 
-  const authReq = token ? addToken(req, token) : req;
+  // Siempre incluir withCredentials para que la cookie httpOnly se envíe en auth endpoints
+  const authReq = token
+    ? addToken(req, token)
+    : req.clone({ withCredentials: true });
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
@@ -51,7 +57,7 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
           return authService.refreshAccessToken().pipe(
             switchMap((newToken: string) => next(addToken(req, newToken))),
             catchError((refreshError) => {
-              // refreshAccessToken() ya llamó a logout() — solo propagamos el error
+              authService.logout();
               return throwError(() => refreshError);
             })
           );

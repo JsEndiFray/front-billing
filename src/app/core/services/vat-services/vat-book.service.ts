@@ -1,16 +1,13 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { ApiService } from '../api-service/api.service'
+import { ApiService } from '../api-service/api.service';
 import {
   ConsolidatedVATBook,
-  VATBookConfig,
-  AnnualVATStats,
-  QuarterlyVATComparison,
-  QuarterlyVATLiquidation, ApiResponse
+  ApiResponse
 } from '../../../interfaces/vat-book-interface';
 
 
 /**
- * Servicio para el Libro de IVA
+ * Servicio para el Libro de IVA.
  * Usa signals de Angular 19 para estado reactivo.
  * Los WritableSignals son privados — los componentes acceden
  * solo a los signals de solo lectura expuestos públicamente.
@@ -25,11 +22,13 @@ export class VatBookService {
   private readonly _vatData = signal<ConsolidatedVATBook | null>(null);
   private readonly _loading = signal<boolean>(false);
   private readonly _error   = signal<string | null>(null);
+  private readonly _downloading = signal<boolean>(false);
 
   // ── Signals de solo lectura (API pública para componentes) ────────────────
-  readonly vatData = this._vatData.asReadonly();
-  readonly loading = this._loading.asReadonly();
-  readonly error   = this._error.asReadonly();
+  readonly vatData     = this._vatData.asReadonly();
+  readonly loading     = this._loading.asReadonly();
+  readonly error       = this._error.asReadonly();
+  readonly downloading = this._downloading.asReadonly();
 
   /**
    * Obtiene el libro consolidado (soportado + repercutido + resumen por propietario)
@@ -56,121 +55,35 @@ export class VatBookService {
   }
 
   /**
-   * Obtiene estadísticas anuales
-   * TODO (deuda técnica): resultado no se almacena en signal — ver deuda técnica #4
-   */
-  getAnnualStats(year: number): void {
-    this._loading.set(true);
-    this._error.set(null);
-
-    this.apiService.get<ApiResponse<AnnualVATStats>>(`vat-book/stats/${year}`)
-      .subscribe({
-        next: () => {
-          this._loading.set(false);
-        },
-        error: (err) => {
-          this._error.set(err.message || 'Error al cargar estadísticas');
-          this._loading.set(false);
-        }
-      });
-  }
-
-  /**
-   * Obtiene comparación trimestral
-   * TODO (deuda técnica): resultado no se almacena en signal — ver deuda técnica #4
-   */
-  getQuarterlyComparison(year: number): void {
-    this._loading.set(true);
-    this._error.set(null);
-
-    this.apiService.get<ApiResponse<QuarterlyVATComparison>>(`vat-book/comparison/${year}`)
-      .subscribe({
-        next: () => {
-          this._loading.set(false);
-        },
-        error: (err) => {
-          this._error.set(err.message || 'Error al cargar comparación');
-          this._loading.set(false);
-        }
-      });
-  }
-
-  /**
-   * Obtiene liquidación trimestral
-   * TODO (deuda técnica): resultado no se almacena en signal — ver deuda técnica #4
-   */
-  getQuarterlyLiquidation(year: number, quarter: number): void {
-    this._loading.set(true);
-    this._error.set(null);
-
-    this.apiService.get<ApiResponse<QuarterlyVATLiquidation>>(`vat-book/liquidation/${year}/${quarter}`)
-      .subscribe({
-        next: () => {
-          this._loading.set(false);
-        },
-        error: (err) => {
-          this._error.set(err.message || 'Error al cargar liquidación');
-          this._loading.set(false);
-        }
-      });
-  }
-
-  /**
-   * Obtiene configuración disponible
-   * TODO (deuda técnica): resultado no se almacena en signal — ver deuda técnica #4
-   */
-  getConfig(): void {
-    this._loading.set(true);
-    this._error.set(null);
-
-    this.apiService.get<ApiResponse<VATBookConfig>>('vat-book/config')
-      .subscribe({
-        next: () => {
-          this._loading.set(false);
-        },
-        error: (err) => {
-          this._error.set(err.message || 'Error al cargar configuración');
-          this._loading.set(false);
-        }
-      });
-  }
-
-  /**
-   * Descarga Excel del libro de IVA desde el backend
-   * TODO (deuda técnica): no gestiona blob ni estado loading — ver deuda técnica #3
+   * Descarga Excel del libro de IVA y lo guarda en el navegador
    */
   downloadExcel(year: number, quarter?: number, month?: number, bookType: 'supported' | 'charged' | 'both' = 'both'): void {
-    const body = {
-      year,
-      quarter: quarter || null,
-      month:   month   || null,
-      bookType
-    };
+    this._downloading.set(true);
+    const body = { year, quarter: quarter ?? null, month: month ?? null, bookType };
 
-    this.apiService.post('vat-book/download/excel', body)
-      .subscribe({
-        next:  () => { /* descarga pendiente de implementar — deuda técnica #3 */ },
-        error: () => { /* error manejado por interceptor */ }
-      });
+    this.apiService.postBlob('vat-book/download/excel', body).subscribe({
+      next: (blob) => {
+        this.triggerDownload(blob, `libro-iva-${year}.xlsx`);
+        this._downloading.set(false);
+      },
+      error: () => this._downloading.set(false)
+    });
   }
 
   /**
-   * Descarga PDF del libro de IVA desde el backend
-   * TODO (deuda técnica): no gestiona blob ni estado loading — ver deuda técnica #3
+   * Descarga PDF del libro de IVA y lo guarda en el navegador
    */
   downloadPDF(year: number, quarter?: number, month?: number, bookType: 'supported' | 'charged' | 'both' = 'both'): void {
-    const body = {
-      year,
-      quarter: quarter || null,
-      month:   month   || null,
-      bookType
-    };
+    this._downloading.set(true);
+    const body = { year, quarter: quarter ?? null, month: month ?? null, bookType };
 
-    this.apiService.post('vat-book/download/pdf', body)
-      .subscribe({
-        next:  () => { /* descarga pendiente de implementar — deuda técnica #3 */ },
-        error: () => { /* error manejado por interceptor */ }
-      });
+    this.apiService.postBlob('vat-book/download/pdf', body).subscribe({
+      next: (blob) => {
+        this.triggerDownload(blob, `libro-iva-${year}.pdf`);
+        this._downloading.set(false);
+      },
+      error: () => this._downloading.set(false)
+    });
   }
 
   /**
@@ -179,5 +92,16 @@ export class VatBookService {
   clearData(): void {
     this._vatData.set(null);
     this._error.set(null);
+  }
+
+  // ── Helpers privados ──────────────────────────────────────────────────────
+
+  private triggerDownload(blob: Blob, filename: string): void {
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = filename;
+    anchor.click();
+    URL.revokeObjectURL(url);
   }
 }

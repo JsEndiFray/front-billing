@@ -1,236 +1,250 @@
-import {Routes} from '@angular/router';
-
-// ========================================
-// IMPORTACIONES ORGANIZADAS POR MÓDULO
-// ========================================
-
-// Usuarios - Autenticación y gestión
-import {LoginComponent} from './pages/users/login/login.component';
-import {UsersRegisterComponent} from './pages/users/users-register/users-register.component';
-import {UserListComponent} from './pages/users/user-list/user-list.component';
-import {UserEditComponent} from './pages/users/user-edit/user-edit.component';
-
-// Dashboard principal
-import {DashboardComponent} from './pages/dashboards/dashboard/dashboard.component';
-import {DashboardHomeComponent} from './pages/dashboards/dashboard-home/dashboard-home.component';
-import {authGuard} from './core/guards/auth.guard';
-import {publicGuard} from './core/guards/public.guard';
-
-// Clientes - Gestión de clientes del negocio
-import {ClientsRegisterComponent} from './pages/clients/clients-register/clients-register.component';
-import {ClientsListComponent} from './pages/clients/clients-list/clients-list.component';
-import {ClientsEditComponent} from './pages/clients/clients-edit/clients-edit.component';
-
-// Propietarios (Owners) - Gestión de propietarios de inmuebles
-import {OwnersRegisterComponent} from './pages/owners/owners-register/owners-register.component';
-import {OwnersListComponent} from './pages/owners/owners-list/owners-list.component';
-import {OwnersEditComponent} from './pages/owners/owners-edit/owners-edit.component';
-
-// Propiedades (Estates) - Gestión de inmuebles
-import {EstatesRegisterComponent} from './pages/estates/estates-register/estates-register.component';
-import {EstatesListComponent} from './pages/estates/estates-list/estates-list.component';
-import {EstatesEditComponent} from './pages/estates/estates-edit/estates-edit.component';
-
-// Porcentajes de propiedades (Estates-Owners) - Relaciones propiedad-propietario
-import {EstateOwnersListComponent} from './pages/estate-owners/estate-owners-list/estate-owners-list.component';
-import {EstateOwnersEditComponent} from './pages/estate-owners/estate-owners-edit/estate-owners-edit.component';
-
-// Facturas emitidas(invoice-issued) - Sistema de facturación emitidas
-import {
-  InvoicesIssuedRegisterComponent
-} from './pages/invoices/invoices-issued/invoices-issued-register/invoices-issued-register.component';
-import {
-  InvoicesIssuedListComponent
-} from './pages/invoices/invoices-issued/invoices-issued-list/invoices-issued-list.component';
-import {
-  InvoicesIssuedEditComponent
-} from './pages/invoices/invoices-issued/invoices-issued-edit/Invoices-Issued-Edit.Component';
-
-
-// facturas recibidas(invoices-received) -  sistemas de facturas recibidas
-import {
-  InvoicesRegisterReceivedComponent
-} from './pages/invoices/invoices-received/invoices-received-register/invoices-register-received.component';
-import {
-  InvoicesReceivedListComponent
-} from './pages/invoices/invoices-received/invoices-received-list/invoices-received-list.component';
-import {
-  InvoicesReceivedEditComponent
-} from './pages/invoices/invoices-received/invoices-received-edit/invoices-received-edit.component';
-
-
-// facturas de gastos (internal-expenses) - Sistema de gastos internos
-import {
-  InvoicesExpensesRegisterComponent
-} from './pages/invoices/invoices-expenses/invoices-expenses-register/invoices-expenses-register.component';
-import {
-  InvoicesExpensesListComponent
-} from './pages/invoices/invoices-expenses/invoices-expenses-list/invoices-expenses-list.component';
-import {
-  InvoicesExpensesEditComponent
-} from './pages/invoices/invoices-expenses/invoice-expenses-edit/invoices-expenses-edit.component';
-
-
-// proveedores (suppliers) - sistema de proveedores
-import {SuppliersRegisterComponent} from './pages/invoices/suppliers/suppliers-register/suppliers-register.component';
-import {SuppliersListComponent} from './pages/invoices/suppliers/suppliers-list/suppliers-list.component';
-import {SuppliersEditComponent} from './pages/invoices/suppliers/suppliers-edit/suppliers-edit.component';
-
-// libro de iva(vat-book) sitema de iva
-import {VatBookComponent} from './pages/vat-book/vat-book.component';
-
-// Empleados (Employee) - Sistema de empleados
-import {EmployeeListComponent} from './pages/employee/employee-list/employee-list.component';
-import {EmployeeEditComponent} from './pages/employee/employee-edit/employee-edit.component';
-import {EmployeeRegisterComponent} from './pages/employee/employee-register/employee-register.component';
-
-// Configuración
-import {SettingsComponent} from './pages/settings/settings.component';
-
-
+import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth.guard';
+import { publicGuard } from './core/guards/public.guard';
 
 /**
- * Configuración de rutas para aplicación de gestión inmobiliaria
- *
- * ESTRUCTURA:
- * - Rutas públicas: login, register
- * - Rutas protegidas: dashboards/** (requiere autenticación)
- * - Módulos: usuarios, clientes, propietarios, propiedades, relaciones, facturas
- *
- * PATRONES:
- * - Cada módulo tiene: home, register/user, list, edit/:id
- * - Todas las rutas protegidas bajo /dashboards con authGuard
- * - Rutas anidadas con children para organización modular
+ * Configuración de rutas con lazy loading.
+ * - Rutas públicas: login (publicGuard)
+ * - Rutas protegidas: dashboards/** (authGuard)
+ * - Todos los componentes se cargan bajo demanda (loadComponent)
+ *   para reducir el bundle inicial.
  */
 export const routes: Routes = [
-  // ========================================
-  // RUTAS PÚBLICAS (sin autenticación)
-  // ========================================
+
+  // ── Rutas públicas ────────────────────────────────────────────────────────
 
   {
     path: 'login',
-    component: LoginComponent,
+    loadComponent: () => import('./pages/users/login/login.component').then(m => m.LoginComponent),
     canActivate: [publicGuard],
     title: 'Login'
   },
 
-
-  // ========================================
-  // RUTAS PROTEGIDAS (requieren authGuard)
-  // ========================================
+  // ── Rutas protegidas ──────────────────────────────────────────────────────
 
   {
     path: 'dashboards',
-    component: DashboardComponent,
-    canActivate: [authGuard], // 🔒 Protege todas las rutas hijas
+    loadComponent: () => import('./pages/dashboards/dashboard/dashboard.component').then(m => m.DashboardComponent),
+    canActivate: [authGuard],
     title: 'Panel de Control',
     children: [
 
-      //dashboard principal
+      // Dashboard principal
       {
         path: '',
-        component: DashboardHomeComponent,
+        loadComponent: () => import('./pages/dashboards/dashboard-home/dashboard-home.component').then(m => m.DashboardHomeComponent),
         title: 'Dashboard Home'
       },
 
-      // Módulo: Usuarios del sistema
+      // Módulo: Usuarios
       {
         path: 'users',
         children: [
-          {path: 'register', component: UsersRegisterComponent, title: 'Registrar Usuario'},
-          {path: 'list', component: UserListComponent, title: 'Listado de Usuarios'},
-          {path: 'edit/:id', component: UserEditComponent, title: 'Editar Usuario'},
-
+          {
+            path: 'register',
+            loadComponent: () => import('./pages/users/users-register/users-register.component').then(m => m.UsersRegisterComponent),
+            title: 'Registrar Usuario'
+          },
+          {
+            path: 'list',
+            loadComponent: () => import('./pages/users/user-list/user-list.component').then(m => m.UserListComponent),
+            title: 'Listado de Usuarios'
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () => import('./pages/users/user-edit/user-edit.component').then(m => m.UserEditComponent),
+            title: 'Editar Usuario'
+          }
         ]
       },
-      // Módulo: Clientes del negocio
+
+      // Módulo: Clientes
       {
         path: 'clients',
         children: [
-          {path: 'register', component: ClientsRegisterComponent, title: 'Registrar Cliente'},
-          {path: 'list', component: ClientsListComponent, title: 'Listado de Clientes'},
-          {path: 'edit/:id', component: ClientsEditComponent, title: 'Editar Cliente'},
+          {
+            path: 'register',
+            loadComponent: () => import('./pages/clients/clients-register/clients-register.component').then(m => m.ClientsRegisterComponent),
+            title: 'Registrar Cliente'
+          },
+          {
+            path: 'list',
+            loadComponent: () => import('./pages/clients/clients-list/clients-list.component').then(m => m.ClientsListComponent),
+            title: 'Listado de Clientes'
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () => import('./pages/clients/clients-edit/clients-edit.component').then(m => m.ClientsEditComponent),
+            title: 'Editar Cliente'
+          }
         ]
       },
 
-      // Módulo: Propietarios de inmuebles
+      // Módulo: Propietarios
       {
         path: 'owners',
         children: [
-          {path: 'register', component: OwnersRegisterComponent, title: 'Registrar Propietario'},
-          {path: 'list', component: OwnersListComponent, title: 'Listado de Propietarios'},
-          {path: 'edit/:id', component: OwnersEditComponent, title: 'Editar Propietario'}
+          {
+            path: 'register',
+            loadComponent: () => import('./pages/owners/owners-register/owners-register.component').then(m => m.OwnersRegisterComponent),
+            title: 'Registrar Propietario'
+          },
+          {
+            path: 'list',
+            loadComponent: () => import('./pages/owners/owners-list/owners-list.component').then(m => m.OwnersListComponent),
+            title: 'Listado de Propietarios'
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () => import('./pages/owners/owners-edit/owners-edit.component').then(m => m.OwnersEditComponent),
+            title: 'Editar Propietario'
+          }
         ]
       },
 
-      // Módulo: Propiedades inmobiliarias
+      // Módulo: Propiedades
       {
         path: 'estates',
         children: [
-          {path: 'register', component: EstatesRegisterComponent, title: 'Registrar Propiedad'},
-          {path: 'list', component: EstatesListComponent, title: 'Listado de Propiedades'},
-          {path: 'edit/:id', component: EstatesEditComponent, title: 'Editar Propiedad'}
+          {
+            path: 'register',
+            loadComponent: () => import('./pages/estates/estates-register/estates-register.component').then(m => m.EstatesRegisterComponent),
+            title: 'Registrar Propiedad'
+          },
+          {
+            path: 'list',
+            loadComponent: () => import('./pages/estates/estates-list/estates-list.component').then(m => m.EstatesListComponent),
+            title: 'Listado de Propiedades'
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () => import('./pages/estates/estates-edit/estates-edit.component').then(m => m.EstatesEditComponent),
+            title: 'Editar Propiedad'
+          }
         ]
       },
 
-      // Módulo: Relaciones propiedad-propietario (porcentajes)
+      // Módulo: Relaciones propiedad-propietario
       {
         path: 'estates-owners',
         children: [
-          {path: 'list', component: EstateOwnersListComponent, title: 'Listado Porcentajes'},
-          {path: 'edit/:id', component: EstateOwnersEditComponent, title: 'Editar Porcentaje'}
+          {
+            path: 'list',
+            loadComponent: () => import('./pages/estate-owners/estate-owners-list/estate-owners-list.component').then(m => m.EstateOwnersListComponent),
+            title: 'Listado Porcentajes'
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () => import('./pages/estate-owners/estate-owners-edit/estate-owners-edit.component').then(m => m.EstateOwnersEditComponent),
+            title: 'Editar Porcentaje'
+          }
         ]
       },
 
-      // Módulo: Sistema de Facturación Emitida
+      // Módulo: Facturas Emitidas
       {
         path: 'invoices-issued',
         children: [
-          //{path: '', component: InvoicesIssuedHomeComponent, title: 'Facturas Emitidas'},
-          {path: 'register', component: InvoicesIssuedRegisterComponent, title: 'Registrar Factura Emitida'},
-          {path: 'list', component: InvoicesIssuedListComponent, title: 'Listado de Facturas Emitidas'},
-          {path: 'edit/:id', component: InvoicesIssuedEditComponent, title: 'Editar Factura Emitida'}
+          {
+            path: 'register',
+            loadComponent: () => import('./pages/invoices/invoices-issued/invoices-issued-register/invoices-issued-register.component').then(m => m.InvoicesIssuedRegisterComponent),
+            title: 'Registrar Factura Emitida'
+          },
+          {
+            path: 'list',
+            loadComponent: () => import('./pages/invoices/invoices-issued/invoices-issued-list/invoices-issued-list.component').then(m => m.InvoicesIssuedListComponent),
+            title: 'Listado de Facturas Emitidas'
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () => import('./pages/invoices/invoices-issued/invoices-issued-edit/Invoices-Issued-Edit.Component').then(m => m.InvoicesIssuedEditComponent),
+            title: 'Editar Factura Emitida'
+          }
         ]
       },
-      // Módulo: Sistema de Facturación recibidas
+
+      // Módulo: Facturas Recibidas
       {
         path: 'invoices-received',
         children: [
-          {path: 'register', component: InvoicesRegisterReceivedComponent, title: 'Registar Factura Recibida'},
-          {path: 'list', component: InvoicesReceivedListComponent, title: 'Listado de Facturas Recibidas'},
-          {path: 'edit/:id', component: InvoicesReceivedEditComponent, title: 'Editar Factura Recibida'}
+          {
+            path: 'register',
+            loadComponent: () => import('./pages/invoices/invoices-received/invoices-received-register/invoices-register-received.component').then(m => m.InvoicesRegisterReceivedComponent),
+            title: 'Registrar Factura Recibida'
+          },
+          {
+            path: 'list',
+            loadComponent: () => import('./pages/invoices/invoices-received/invoices-received-list/invoices-received-list.component').then(m => m.InvoicesReceivedListComponent),
+            title: 'Listado de Facturas Recibidas'
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () => import('./pages/invoices/invoices-received/invoices-received-edit/invoices-received-edit.component').then(m => m.InvoicesReceivedEditComponent),
+            title: 'Editar Factura Recibida'
+          }
         ]
       },
-      //Módulo: sistemas de gastos internos
+
+      // Módulo: Gastos Internos
       {
         path: 'internal-expenses',
         children: [
-          {path: 'register', component: InvoicesExpensesRegisterComponent, title: 'Registrar Factura de Gasto'},
-          {path: `list`, component: InvoicesExpensesListComponent, title: 'Listado Facturas de Gastos'},
-          {path: 'edit/:id', component: InvoicesExpensesEditComponent, title: 'Editar Factura de Gasto'},
+          {
+            path: 'register',
+            loadComponent: () => import('./pages/invoices/invoices-expenses/invoices-expenses-register/invoices-expenses-register.component').then(m => m.InvoicesExpensesRegisterComponent),
+            title: 'Registrar Factura de Gasto'
+          },
+          {
+            path: 'list',
+            loadComponent: () => import('./pages/invoices/invoices-expenses/invoices-expenses-list/invoices-expenses-list.component').then(m => m.InvoicesExpensesListComponent),
+            title: 'Listado Facturas de Gastos'
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () => import('./pages/invoices/invoices-expenses/invoice-expenses-edit/invoices-expenses-edit.component').then(m => m.InvoicesExpensesEditComponent),
+            title: 'Editar Factura de Gasto'
+          }
         ]
       },
-      //Módulo de proveedores
+
+      // Módulo: Proveedores
       {
         path: 'suppliers',
         children: [
-          {path: 'register', component: SuppliersRegisterComponent, title: 'Registar Proeveedor'},
-          {path: 'list', component: SuppliersListComponent, title: 'Listado de Proveedores'},
-          {path: 'edit/:id', component: SuppliersEditComponent, title: 'Editar Proveedor'}
+          {
+            path: 'register',
+            loadComponent: () => import('./pages/invoices/suppliers/suppliers-register/suppliers-register.component').then(m => m.SuppliersRegisterComponent),
+            title: 'Registrar Proveedor'
+          },
+          {
+            path: 'list',
+            loadComponent: () => import('./pages/invoices/suppliers/suppliers-list/suppliers-list.component').then(m => m.SuppliersListComponent),
+            title: 'Listado de Proveedores'
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () => import('./pages/invoices/suppliers/suppliers-edit/suppliers-edit.component').then(m => m.SuppliersEditComponent),
+            title: 'Editar Proveedor'
+          }
         ]
       },
-      // Módulo de libro del iva
+
+      // Módulo: Libro del IVA
       {
         path: 'books-vat',
-        children:[
-          {path: 'vat-book', component: VatBookComponent, title: 'Libro del Iva'}
+        children: [
+          {
+            path: 'vat-book',
+            loadComponent: () => import('./pages/vat-book/vat-book.component').then(m => m.VatBookComponent),
+            title: 'Libro del IVA'
+          }
         ]
-
       },
+
       // Configuración
       {
         path: 'settings',
-        component: SettingsComponent,
+        loadComponent: () => import('./pages/settings/settings.component').then(m => m.SettingsComponent),
         title: 'Configuración'
       },
 
@@ -238,19 +252,27 @@ export const routes: Routes = [
       {
         path: 'employee',
         children: [
-          {path: 'register', component: EmployeeRegisterComponent, title: 'Registro de Empleados'},
-          {path: 'list', component: EmployeeListComponent, title: 'Listado'},
-          {path: 'edit/:id', component: EmployeeEditComponent, title: 'Editar'},
-
+          {
+            path: 'register',
+            loadComponent: () => import('./pages/employee/employee-register/employee-register.component').then(m => m.EmployeeRegisterComponent),
+            title: 'Registro de Empleados'
+          },
+          {
+            path: 'list',
+            loadComponent: () => import('./pages/employee/employee-list/employee-list.component').then(m => m.EmployeeListComponent),
+            title: 'Listado de Empleados'
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () => import('./pages/employee/employee-edit/employee-edit.component').then(m => m.EmployeeEditComponent),
+            title: 'Editar Empleado'
+          }
         ]
-      },
-
+      }
     ]
   },
 
-  // ========================================
-  // RUTA POR DEFECTO Y WILDCARD
-  // ========================================
+  // ── Ruta wildcard ─────────────────────────────────────────────────────────
 
   {
     path: '**',
@@ -258,22 +280,3 @@ export const routes: Routes = [
     pathMatch: 'full'
   }
 ];
-
-/**
- * OBSERVACIONES:
- *
- * ✅ BUENA ESTRUCTURA:
- * - Rutas organizadas por módulos
- * - Protección con authGuard en dashboards
- * - Títulos descriptivos para cada ruta
- * - Patrón consistente: home > register > list > edit
- *
- * ⚠️ INCONSISTENCIAS MENORES:
- * - users usa 'list' y 'edit/:id', otros usan 'user' para registro
- * - estates-owners y invoices usan 'register', otros usan 'user'
- *
- * 🔧 POSIBLES MEJORAS:
- * - Lazy loading para optimizar carga inicial
- * - Guards específicos por rol/módulo
- * - Breadcrumbs automáticos basados en títulos
- */

@@ -11,6 +11,7 @@ import {Invoice} from '../../../interfaces/invoices-issued-interface';
 import {EstatesOwners} from '../../../interfaces/estates-owners-interface';
 import {InvoiceUtilsHelper} from '../../helpers/invoice-utils.helper';
 import {InternalExpense} from '../../../interfaces/expenses-interface';
+import {AuthService} from '../auth-services/auth.service';
 
 /**
  * Servicio de validación unificado para toda la aplicación
@@ -24,7 +25,8 @@ export class ValidatorService {
 
   constructor(
     private fb: FormBuilder,
-    private invoicesUtilService: InvoiceUtilsHelper
+    private invoicesUtilService: InvoiceUtilsHelper,
+    private authService: AuthService
   ) {
   }
 
@@ -401,8 +403,9 @@ export class ValidatorService {
       const cleanRef = refCat.trim().toUpperCase();
       const response = await fetch(`/api/cadastral/validate/${cleanRef}`, {
         method: 'GET',
+        credentials: 'include',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`, // Ajusta según tu auth
+          'Authorization': `Bearer ${this.authService.getToken() ?? ''}`,
           'Content-Type': 'application/json'
         }
       });

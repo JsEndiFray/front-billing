@@ -60,6 +60,11 @@ export class ApiService {
       .pipe(map((response) => response.data));
   }
 
+  // Descarga binaria (blob) — para PDF/Excel
+  postBlob<T>(endpoint: string, data: T): Observable<Blob> {
+    return this.http.post(`${this.apiUrl}/${endpoint}`, data, { responseType: 'blob' });
+  }
+
   //Getter público para exponer la URL base
   get baseUrl(): string {
     return this.apiUrl;

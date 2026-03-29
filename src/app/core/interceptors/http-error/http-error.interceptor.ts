@@ -47,6 +47,11 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
           break;
       }
 
+      // Los 401 en endpoints de auth los gestiona tokenInterceptor/AuthService
+      if (e.status === 401 && req.url.includes('/auth/')) {
+        return throwError(() => new Error(message));
+      }
+
       // Mostrar error al usuario
       Swal.fire({
         icon: 'error',

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DataTransformHelper } from './data-transform.helper';
+import { AuthService } from '../services/auth-services/auth.service';
 
 /**
  * Servicio de validación de documentos españoles
@@ -13,7 +14,10 @@ import { DataTransformHelper } from './data-transform.helper';
 })
 export class DocumentValidationHelper {
 
-  constructor(private dataTransform: DataTransformHelper) { }
+  constructor(
+    private dataTransform: DataTransformHelper,
+    private authService: AuthService
+  ) { }
 
   // ==========================================================
   // VALIDACIONES DE NIF (Documento Nacional de Identidad)
@@ -194,8 +198,9 @@ export class DocumentValidationHelper {
       const clean = this.dataTransform.toUpperCaseAndTrim(refCat);
       const response = await fetch(`/api/cadastral/validate/${clean}`, {
         method: 'GET',
+        credentials: 'include',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${this.authService.getToken() ?? ''}`,
           'Content-Type': 'application/json'
         }
       });
