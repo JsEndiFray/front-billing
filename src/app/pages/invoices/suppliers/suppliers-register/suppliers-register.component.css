@@ -6,7 +6,7 @@
 .tax-id-input {
   font-family: 'Courier New', monospace;
   font-weight: 600;
-  color: #4f46e5;
+  color: var(--color-indigo);
   text-transform: uppercase;
 }
 

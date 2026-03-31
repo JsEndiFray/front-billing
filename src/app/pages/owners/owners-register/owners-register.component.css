@@ -4,7 +4,7 @@
    SPECIAL INPUT MODIFIERS
    =================================================== */
 .reference-input {
-  color: #6366f1;
+  color: var(--color-indigo);
   font-weight: 600;
   font-family: 'Courier New', monospace;
   text-transform: uppercase;
@@ -14,7 +14,7 @@
   color: var(--color-success);
   font-weight: 600;
   text-align: right;
-  background: linear-gradient(135deg, #ecfef5, #f0fdf4);
+  background: linear-gradient(135deg, #ecfef5, var(--color-success-light));
 }
 
 .surface-input {

@@ -18,7 +18,7 @@
 .tax-id-input {
   font-family: 'Courier New', monospace;
   font-weight: 600;
-  color: #4f46e5;
+  color: var(--color-indigo);
   text-transform: uppercase;
 }
 
@@ -41,7 +41,7 @@
 }
 
 .proportional-summary h4 {
-  color: #1e40af;
+  color: var(--color-primary-text);
   font-size: var(--text-base);
   font-weight: 600;
   margin: 0 0 0.75rem 0;

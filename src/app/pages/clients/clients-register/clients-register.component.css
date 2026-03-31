@@ -49,8 +49,8 @@
    SPECIAL INPUT MODIFIERS
    =================================================== */
 .company-input {
-  background: #f0f9ff;
-  color: #1e40af;
+  background: var(--color-primary-subtle);
+  color: var(--color-primary-text);
   font-weight: 500;
 }
 
@@ -73,7 +73,7 @@
    =================================================== */
 .info-message {
   background: var(--color-success-light);
-  color: #065f46;
+  color: var(--color-success-text);
   padding: 0.75rem var(--sp-4);
   border-radius: var(--radius);
   border-left: 0.25rem solid var(--color-success);
@@ -91,7 +91,7 @@
 
 .add-admin-btn {
   background: var(--color-surface);
-  color: #374151;
+  color: var(--color-text-body);
   border: 0.125rem solid var(--color-border);
   border-radius: var(--radius);
   padding: 0.625rem var(--sp-4);

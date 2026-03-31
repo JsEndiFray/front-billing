@@ -27,15 +27,15 @@
   letter-spacing: 0.05em;
 }
 
-.category-office-supplies      { background: #dbeafe; color: #1e40af; }
+.category-office-supplies      { background: var(--color-primary-light);  color: var(--color-primary-text); }
 .category-travel                { background: #f3e8ff; color: #6b21a8; }
 .category-utilities             { background: #fed7aa; color: #c2410c; }
-.category-maintenance           { background: #d1fae5; color: #065f46; }
+.category-maintenance           { background: var(--color-success-light);  color: var(--color-success-text); }
 .category-professional-services { background: #fce7f3; color: #9f1239; }
 .category-marketing             { background: #ccfbf1; color: #115e59; }
 .category-technology            { background: #e9d5ff; color: #6b21a8; }
 .category-others,
-.category-default               { background: var(--color-surface-dim); color: #374151; }
+.category-default               { background: var(--color-surface-dim); color: var(--color-text-body); }
 
 /* ===================================================
    EXPENSE STATUS BADGES
@@ -54,10 +54,10 @@
   letter-spacing: 0.05em;
 }
 
-.pending-badge  { background: var(--color-warning-light); color: #92400e; }
-.approved-badge { background: var(--color-primary-light);  color: #1e40af; }
-.paid-badge     { background: var(--color-success-light);  color: #065f46; }
-.rejected-badge { background: var(--color-danger-light);   color: #991b1b; }
+.pending-badge  { background: var(--color-warning-light); color: var(--color-warning-text); }
+.approved-badge { background: var(--color-primary-light);  color: var(--color-primary-text); }
+.paid-badge     { background: var(--color-success-light);  color: var(--color-success-text); }
+.rejected-badge { background: var(--color-danger-light);   color: var(--color-danger-text); }
 
 /* ===================================================
    DEDUCTIBLE BADGES
@@ -74,21 +74,21 @@
   letter-spacing: 0.05em;
 }
 
-.deductible-badge     { background: var(--color-success-light); color: #065f46; }
-.non-deductible-badge { background: var(--color-surface-dim);   color: #6b7280; }
+.deductible-badge     { background: var(--color-success-light); color: var(--color-success-text); }
+.non-deductible-badge { background: var(--color-surface-dim);   color: var(--color-text-secondary); }
 
 /* ===================================================
    EXPENSE-SPECIFIC ACTION BUTTONS
    (Override shared .edit-btn for expense workflow)
    =================================================== */
-.approve-btn { background: var(--color-success-light); color: #065f46; }
-.approve-btn:hover { background: #a7f3d0; }
+.approve-btn { background: var(--color-success-light); color: var(--color-success-text); }
+.approve-btn:hover { background: var(--color-success-muted); }
 
-.reject-btn  { background: var(--color-danger-light); color: #991b1b; }
-.reject-btn:hover { background: #fecaca; }
+.reject-btn  { background: var(--color-danger-light); color: var(--color-danger-text); }
+.reject-btn:hover { background: var(--color-danger-muted); }
 
-.paid-btn    { background: var(--color-primary-light); color: #1e40af; }
-.paid-btn:hover { background: #bfdbfe; }
+.paid-btn    { background: var(--color-primary-light); color: var(--color-primary-text); }
+.paid-btn:hover { background: var(--color-primary-muted); }
 
 /* edit-btn for expenses uses orange (different from standard blue) */
 .edit-btn {
@@ -100,16 +100,16 @@
 /* delete-btn for expenses uses neutral */
 .delete-btn {
   background: var(--color-surface-dim);
-  color: #6b7280;
+  color: var(--color-text-secondary);
 }
 .delete-btn:hover { background: var(--color-border); }
 
 /* view-btn for attachment preview */
 .view-btn {
-  background: #e0e7ff;
-  color: #4338ca;
+  background: var(--color-indigo-light);
+  color: var(--color-indigo-text);
 }
-.view-btn:hover { background: #c7d2fe; }
+.view-btn:hover { background: var(--color-indigo-muted); }
 
 /* No-attachment placeholder text */
 .no-attachment {

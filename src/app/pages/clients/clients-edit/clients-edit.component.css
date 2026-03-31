@@ -4,8 +4,8 @@
    SPECIAL INPUT MODIFIERS
    =================================================== */
 .company-input {
-  background: #f0f9ff;
-  color: #1e40af;
+  background: var(--color-primary-subtle);
+  color: var(--color-primary-text);
   font-weight: 500;
 }
 
@@ -42,7 +42,7 @@
   gap: var(--sp-2);
   cursor: pointer;
   font-size: var(--text-sm);
-  color: #374151;
+  color: var(--color-text-body);
 }
 
 .radio-option input[type="radio"] {

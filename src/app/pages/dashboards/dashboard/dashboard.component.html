@@ -19,6 +19,13 @@
         <input type="text" placeholder="Buscar..." class="search-input">
       </div>
 
+      <!-- Botón Tema -->
+      <button class="header-btn theme-toggle-btn"
+              (click)="themeService.toggle()"
+              [title]="themeService.isDark() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
+        {{ themeService.isDark() ? '☀️' : '🌙' }}
+      </button>
+
       <!-- Botón Configuración -->
       <a [routerLink]="['settings']" class="header-btn" title="Configuración">⚙️</a>
 

@@ -97,7 +97,7 @@
 
 .input-label {
   font-weight: 500;
-  color: #374151;
+  color: var(--color-text-body);
   margin-bottom: var(--sp-2);
   font-size: var(--text-sm);
 }
@@ -118,7 +118,7 @@
 .input-field::placeholder { color: var(--color-text-muted); }
 
 .error-message {
-  color: #ff4444;
+  color: var(--color-danger);
   font-size: var(--text-sm);
   margin-top: 0.25rem;
   display: block;

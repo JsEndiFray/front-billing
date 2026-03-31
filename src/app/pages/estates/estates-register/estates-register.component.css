@@ -25,7 +25,7 @@
   border-radius: 50%;
   border: 2px solid var(--color-border);
   background: var(--color-surface);
-  color: #374151;
+  color: var(--color-text-body);
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -117,7 +117,7 @@
 .summary-info {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--color-text-body);
   display: flex;
   align-items: center;
   gap: var(--sp-2);
@@ -172,7 +172,7 @@
   box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
 }
 .btn-success:hover {
-  background: linear-gradient(135deg, var(--color-success-hover), #047857);
+  background: linear-gradient(135deg, var(--color-success-hover), var(--color-success-hover));
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4);
 }
@@ -242,7 +242,7 @@
 .summary-section-item h3 {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--color-text-body);
   margin-bottom: 0.75rem;
   display: flex;
   align-items: center;
@@ -257,7 +257,7 @@
 }
 .property-summary .summary-row:last-child { border-bottom: none; }
 
-.summary-row .label { font-weight: 600; color: #374151; }
+.summary-row .label { font-weight: 600; color: var(--color-text-body); }
 .summary-row .value { color: var(--color-text); }
 
 .ref-value   { color: var(--color-success-hover); font-family: 'Courier New', monospace; }
@@ -276,7 +276,7 @@
   transition: transform var(--tr);
 }
 .owner-summary-row:hover { transform: translateY(-2px); background: var(--color-surface-alt); }
-.owner-info strong { font-size: 0.95rem; color: #111827; }
+.owner-info strong { font-size: 0.95rem; color: var(--color-text); }
 .owner-info small  { display: block; font-size: 0.8rem; color: var(--color-text-secondary); }
 
 .percentage-badge {
@@ -294,7 +294,7 @@
 .info-summary li {
   font-size: 0.9rem;
   padding: 0.35rem 0;
-  color: #374151;
+  color: var(--color-text-body);
   display: flex;
   align-items: center;
   gap: var(--sp-2);

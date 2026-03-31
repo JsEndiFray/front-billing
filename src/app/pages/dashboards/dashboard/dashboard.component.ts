@@ -6,6 +6,7 @@ import { AuthService } from '../../../core/services/auth-services/auth.service';
 import { NotificationsService } from '../../../core/services/entity-services/notifications.service';
 import { getNotificationRoute, getNotificationSeverity } from '../../../core/mappers/notification-route.mapper';
 import { AppNotification } from '../../../interfaces/stats-interface';
+import { ThemeService } from '../../../core/services/shared-services/theme.service';
 
 @Component({
   selector: 'app-dashboards',
@@ -19,6 +20,7 @@ export class DashboardComponent implements OnInit {
   private authService = inject(AuthService);
   private notificationsService = inject(NotificationsService);
   private destroyRef = inject(DestroyRef);
+  readonly themeService = inject(ThemeService);
 
   readonly getNotificationSeverity = getNotificationSeverity;
 
@@ -46,6 +48,8 @@ export class DashboardComponent implements OnInit {
   };
 
   ngOnInit(): void {
+    this.themeService.initialize();
+
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {

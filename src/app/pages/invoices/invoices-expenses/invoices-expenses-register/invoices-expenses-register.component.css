@@ -61,7 +61,7 @@
 }
 .file-upload-area.has-file {
   border-color: var(--color-success);
-  background: #f0fdf4;
+  background: var(--color-success-light);
 }
 
 .upload-content {
@@ -71,7 +71,7 @@
   gap: var(--sp-2);
 }
 .upload-icon  { font-size: 3rem; opacity: 0.5; }
-.upload-text  { color: #374151; font-weight: 500; margin: 0; }
+.upload-text  { color: var(--color-text-body); font-weight: 500; margin: 0; }
 .upload-hint  { color: var(--color-text-secondary); font-size: var(--text-sm); margin: 0; }
 
 .file-preview {

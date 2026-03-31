@@ -38,7 +38,7 @@
 .period-badge {
   padding: 0.375rem 0.75rem;
   background: var(--color-primary-light);
-  color: #1e40af;
+  color: var(--color-primary-text);
   border-radius: var(--radius);
   font-size: var(--text-sm);
   font-weight: 600;
@@ -68,7 +68,7 @@
 }
 
 .filter-item label {
-  color: #374151;
+  color: var(--color-text-body);
   font-size: var(--text-sm);
   font-weight: 600;
   margin-bottom: 0.375rem;
@@ -167,7 +167,7 @@
   text-align: right;
   font-family: 'Courier New', monospace;
   font-weight: 600;
-  color: #374151;
+  color: var(--color-text-body);
 }
 .data-table td.total    { font-weight: 700; color: var(--color-text); }
 .data-table td.positive { color: var(--color-success-hover); }
@@ -191,17 +191,17 @@
   text-align: center;
 }
 
-.vat-rate-general      { background: var(--color-primary-light); color: #1e40af; }
-.vat-rate-reduced      { background: var(--color-warning-light); color: #92400e; }
-.vat-rate-super-reduced { background: var(--color-success-light); color: #166534; }
-.vat-rate-exempt       { background: var(--color-surface-dim); color: #374151; }
-.vat-rate-other        { background: #e0e7ff; color: #4338ca; }
+.vat-rate-general      { background: var(--color-primary-light); color: var(--color-primary-text); }
+.vat-rate-reduced      { background: var(--color-warning-light); color: var(--color-warning-text); }
+.vat-rate-super-reduced { background: var(--color-success-light); color: var(--color-success-text); }
+.vat-rate-exempt       { background: var(--color-surface-dim); color: var(--color-text-body); }
+.vat-rate-other        { background: var(--color-indigo-light); color: var(--color-indigo-text); }
 
-.deductible-badge     { background: #d1fae5; color: #065f46; }
-.non-deductible-badge { background: var(--color-danger-light); color: #991b1b; }
+.deductible-badge     { background: var(--color-success-light); color: var(--color-success-text); }
+.non-deductible-badge { background: var(--color-danger-light); color: var(--color-danger-text); }
 
-.net-vat-positive { background: #fef2f2; color: #991b1b; }
-.net-vat-negative { background: #d1fae5; color: #065f46; }
+.net-vat-positive { background: var(--color-danger-surface); color: var(--color-danger-text); }
+.net-vat-negative { background: var(--color-success-light); color: var(--color-success-text); }
 .net-vat-zero     { background: var(--color-surface-dim); color: var(--color-text-secondary); }
 
 /* ===================================================

@@ -8,7 +8,7 @@
   border: 0.125rem solid var(--color-border);
   border-radius: var(--radius);
   font-size: var(--text-sm);
-  color: #374151;
+  color: var(--color-text-body);
   background: var(--color-surface);
   font-family: inherit;
   width: 100%;
@@ -34,7 +34,7 @@
 .form-select.invalid,
 .form-textarea.invalid {
   border-color: var(--color-danger);
-  background: #fef2f2;
+  background: var(--color-danger-surface);
   animation: shake 0.3s ease-in-out;
 }
 .form-input.invalid:focus,
@@ -51,7 +51,7 @@
   align-items: center;
   gap: var(--sp-2);
   cursor: pointer;
-  color: #374151;
+  color: var(--color-text-body);
   font-weight: 500;
   font-size: var(--text-sm);
   user-select: none;
@@ -68,8 +68,8 @@
    CALCULATION BOX
    =================================================== */
 .calculations-box {
-  background: #f0fdf4;
-  border: 0.125rem solid #dcfce7;
+  background: var(--color-success-light);
+  border: 0.125rem solid var(--color-success-border);
   border-radius: var(--radius);
   padding: var(--sp-4);
   margin-top: var(--sp-4);
@@ -80,12 +80,12 @@
   justify-content: space-between;
   align-items: center;
   padding: var(--sp-2) 0;
-  border-bottom: 0.0625rem solid #dcfce7;
+  border-bottom: 0.0625rem solid var(--color-success-border);
 }
 .calculation-row:last-child { border-bottom: none; }
 
 .calculation-row.total {
-  background: #ecfdf5;
+  background: var(--color-success-light);
   padding: 0.75rem;
   border-radius: var(--radius-sm);
   margin-top: var(--sp-2);
@@ -93,7 +93,7 @@
 }
 
 .calculation-label {
-  color: #374151;
+  color: var(--color-text-body);
   font-weight: 600;
   font-size: var(--text-sm);
 }
@@ -113,7 +113,7 @@
   border-radius: var(--radius-lg);
   padding: var(--sp-8);
   text-align: center;
-  background: #fafafa;
+  background: var(--color-surface-alt);
   transition: all var(--tr);
   cursor: pointer;
   min-height: 10rem;
@@ -126,8 +126,8 @@
   background: var(--color-primary-subtle);
 }
 .file-upload-area.has-file {
-  background: #f0fdf4;
-  border-color: #dcfce7;
+  background: var(--color-success-light);
+  border-color: var(--color-success-border);
   min-height: auto;
 }
 
@@ -148,8 +148,8 @@
   justify-content: space-between;
   width: 100%;
   padding: var(--sp-4);
-  background: #f0fdf4;
-  border: 1px solid #dcfce7;
+  background: var(--color-success-light);
+  border: 1px solid var(--color-success-border);
   border-radius: var(--radius);
 }
 
@@ -161,8 +161,8 @@
 }
 .file-icon    { font-size: 1.5rem; }
 .file-details { display: flex; flex-direction: column; text-align: left; }
-.file-name    { margin: 0; font-weight: 600; color: #166534; word-break: break-word; font-size: var(--text-sm); }
-.file-size    { margin: var(--sp-1) 0 0; font-size: var(--text-xs); color: #4b5563; }
+.file-name    { margin: 0; font-weight: 600; color: var(--color-success-text); word-break: break-word; font-size: var(--text-sm); }
+.file-size    { margin: var(--sp-1) 0 0; font-size: var(--text-xs); color: var(--color-text-secondary); }
 
 .remove-file-btn {
   margin-left: auto;
