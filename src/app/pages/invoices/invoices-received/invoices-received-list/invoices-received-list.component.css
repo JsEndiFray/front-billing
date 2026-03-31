@@ -1,1 +1,63 @@
-/* All shared list styles are defined in src/styles.css */
+/* Shared list infrastructure is defined in src/styles.css */
+/* Payment status badges (paid-badge, pending-badge, overdue-badge, disputed-badge) are in src/styles.css */
+
+/* ===================================================
+   INLINE PAYMENT STATUS EDIT CONTAINER
+   =================================================== */
+.payment-status-container {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: nowrap;
+}
+
+/* ===================================================
+   DYNAMIC CATEGORY BADGES (free-text from DB)
+   Base pill shape for any category-* class.
+   Specific palette overrides below.
+   =================================================== */
+[class^="category-"],
+[class*=" category-"] {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  background: var(--color-surface-dim);
+  color: #374151;
+  white-space: nowrap;
+}
+
+.category-default { background: var(--color-surface-dim); color: var(--color-text-secondary); }
+
+/* ===================================================
+   TABLE CELL HELPERS
+   =================================================== */
+.tax-id-cell {
+  font-family: 'Courier New', monospace;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: #4f46e5;
+  white-space: nowrap;
+}
+
+.name-cell {
+  max-width: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.payment-terms-cell {
+  text-align: right;
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ===================================================
+   RESPONSIVE
+   =================================================== */
+@media (max-width: 48rem) {
+  .payment-status-container { flex-wrap: wrap; }
+}

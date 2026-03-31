@@ -104,6 +104,20 @@
 }
 .delete-btn:hover { background: var(--color-border); }
 
+/* view-btn for attachment preview */
+.view-btn {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+.view-btn:hover { background: #c7d2fe; }
+
+/* No-attachment placeholder text */
+.no-attachment {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
 /* ===================================================
    EXPENSE STATS SUMMARY
    =================================================== */
