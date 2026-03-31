@@ -1,147 +1,53 @@
-/* Reset y estilos base */
-* {
-  box-sizing: border-box;
-}
+/* Shared form infrastructure is defined in src/styles.css */
 
-/* Contenedor principal (igual que listado) */
-.container {
-  background: #ffffff;
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  margin: 0 auto;
-  width: 100%;
-  max-width: 87.5rem;
-  box-shadow: 0 0.25rem 0.375rem -0.0625rem rgba(0, 0, 0, 0.1);
-}
-
-/* Título y descripción (igual que listado) */
-.header {
-  margin-bottom: 2rem;
-}
-
-.title {
-  color: #1f2937;
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin: 0 0 0.5rem 0;
-}
-
-.subtitle {
-  color: #6b7280;
-  font-size: 0.875rem;
-  margin: 0;
-}
-
-/* Secciones del formulario */
-.section {
-  background: #f9fafb;
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  border: 0.0625rem solid #e5e7eb;
-}
-
-.section-title {
-  color: #1f2937;
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin: 0 0 1.25rem 0;
-  padding-bottom: 0.75rem;
-  border-bottom: 0.125rem solid #e5e7eb;
-}
-
-/* Selección de tipo de cliente */
+/* ===================================================
+   CLIENT TYPE SELECTION CARDS
+   =================================================== */
 .type-selection {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-4);
 }
 
 .type-card {
-  background: #ffffff;
-  border: 0.125rem solid #e5e7eb;
-  border-radius: 0.5rem;
+  background: var(--color-surface);
+  border: 0.125rem solid var(--color-border);
+  border-radius: var(--radius-lg);
   padding: 1.25rem;
   text-align: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--tr);
 }
-
 .type-card:hover {
-  border-color: #3b82f6;
+  border-color: var(--color-primary);
   box-shadow: 0 0.125rem 0.5rem rgba(59, 130, 246, 0.1);
 }
-
 .type-card.selected {
-  background: #dbeafe;
-  border-color: #3b82f6;
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
   box-shadow: 0 0.25rem 0.75rem rgba(59, 130, 246, 0.2);
 }
 
 .type-icon {
   font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--sp-2);
 }
-
 .type-card h3 {
-  color: #1f2937;
-  font-size: 1rem;
+  color: var(--color-text);
+  font-size: var(--text-base);
   font-weight: 600;
-  margin: 0 0 0.25rem 0;
+  margin: 0 0 var(--sp-1) 0;
 }
-
 .type-card p {
-  color: #6b7280;
-  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
   margin: 0;
 }
 
-/* Grid de formulario */
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  gap: 1rem;
-}
-
-.form-field {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-field-full {
-  grid-column: 1 / -1;
-}
-
-/* Etiquetas */
-.form-label {
-  color: #374151;
-  font-size: 0.875rem;
-  font-weight: 600;
-  margin-bottom: 0.375rem;
-}
-
-/* Inputs (estilo similar a filtros del listado) */
-.form-input {
-  padding: 0.625rem 0.75rem;
-  border: 0.125rem solid #e5e7eb;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  color: #374151;
-  background: #ffffff;
-  transition: border-color 0.2s;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: #3b82f6;
-}
-
-.form-input::placeholder {
-  color: #9ca3af;
-}
-
-/* Inputs especiales */
+/* ===================================================
+   SPECIAL INPUT MODIFIERS
+   =================================================== */
 .company-input {
   background: #f0f9ff;
   color: #1e40af;
@@ -150,179 +56,104 @@
 
 .identification-input {
   font-family: 'Courier New', monospace;
-  color: #059669;
+  color: var(--color-success-hover);
   font-weight: 500;
   text-transform: uppercase;
 }
 
 .postal-input {
   font-family: 'Courier New', monospace;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   font-weight: 500;
   text-align: center;
 }
 
-/* Mensaje informativo */
+/* ===================================================
+   INFO MESSAGE
+   =================================================== */
 .info-message {
-  background: #d1fae5;
+  background: var(--color-success-light);
   color: #065f46;
-  padding: 0.75rem 1rem;
-  border-radius: 0.375rem;
-  border-left: 0.25rem solid #10b981;
-  font-size: 0.875rem;
-  margin-top: 1rem;
+  padding: 0.75rem var(--sp-4);
+  border-radius: var(--radius);
+  border-left: 0.25rem solid var(--color-success);
+  font-size: var(--text-sm);
+  margin-top: var(--sp-4);
 }
 
-/* Administradores */
+/* ===================================================
+   ADMIN SECTION
+   =================================================== */
 .admin-actions {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--sp-6);
   text-align: center;
 }
 
 .add-admin-btn {
-  background: #ffffff;
+  background: var(--color-surface);
   color: #374151;
-  border: 0.125rem solid #e5e7eb;
-  border-radius: 0.375rem;
-  padding: 0.625rem 1rem;
-  font-size: 0.875rem;
+  border: 0.125rem solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.625rem var(--sp-4);
+  font-size: var(--text-sm);
   font-weight: 500;
+  font-family: inherit;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--tr);
 }
-
 .add-admin-btn:hover {
-  background: #f9fafb;
-  border-color: #d1d5db;
+  background: var(--color-surface-alt);
+  border-color: var(--color-border-strong);
 }
 
 .admin-container {
-  background: #ffffff;
-  border: 0.0625rem solid #e5e7eb;
-  border-radius: 0.5rem;
+  background: var(--color-surface);
+  border: 0.0625rem solid var(--color-border);
+  border-radius: var(--radius-lg);
   padding: 1.25rem;
-  margin-bottom: 1rem;
+  margin-bottom: var(--sp-4);
 }
 
 .admin-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: var(--sp-4);
   padding-bottom: 0.75rem;
-  border-bottom: 0.0625rem solid #e5e7eb;
+  border-bottom: 0.0625rem solid var(--color-border);
 }
-
 .admin-header h3 {
-  color: #1f2937;
-  font-size: 1rem;
+  color: var(--color-text);
+  font-size: var(--text-base);
   font-weight: 600;
   margin: 0;
 }
 
 .remove-admin-btn {
-  background: #ef4444;
-  color: #ffffff;
+  background: var(--color-danger);
+  color: white;
   border: none;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-sm);
   padding: 0.375rem 0.75rem;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   font-weight: 500;
+  font-family: inherit;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--tr);
 }
+.remove-admin-btn:hover { background: var(--color-danger-hover); }
 
-.remove-admin-btn:hover {
-  background: #dc2626;
-}
-
-/* Sección de acciones */
-.actions-section {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 0.0625rem solid #e5e7eb;
-}
-
-/* Botones principales (estilo similar al listado) */
-.primary-btn {
-  background: #3b82f6;
-  color: #ffffff;
-  border: none;
-  border-radius: 0.375rem;
-  padding: 0.625rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.primary-btn:hover {
-  background: #2563eb;
-}
-
-.secondary-btn {
-  background: #ffffff;
-  color: #374151;
-  border: 0.125rem solid #e5e7eb;
-  border-radius: 0.375rem;
-  padding: 0.625rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.secondary-btn:hover {
-  background: #f9fafb;
-}
-
-/* Responsive */
+/* ===================================================
+   RESPONSIVE
+   =================================================== */
 @media (max-width: 48rem) {
-  .container {
-    padding: 1rem;
-  }
-
-  .section {
-    padding: 1rem;
-  }
-
   .type-selection {
     grid-template-columns: 1fr;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .actions-section {
-    flex-direction: column;
   }
 
   .admin-header {
     flex-direction: column;
     gap: 0.75rem;
     text-align: center;
-  }
-}
-
-@media (max-width: 30rem) {
-  .container {
-    padding: 0.75rem;
-    margin: 0.5rem auto;
-  }
-
-  .title {
-    font-size: 1.5rem;
-  }
-
-  .section {
-    padding: 0.75rem;
-  }
-
-  .type-card {
-    padding: 1rem;
   }
 }

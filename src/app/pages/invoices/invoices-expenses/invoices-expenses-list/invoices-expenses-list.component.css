@@ -1,266 +1,8 @@
-/* Reset y estilos base */
-* {
-  box-sizing: border-box;
-}
+/* Shared list infrastructure is defined in src/styles.css */
 
-/* Contenedor principal */
-.container {
-  background: #ffffff;
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  margin: 0 auto;
-  width: 100%;
-  max-width: none;
-  box-shadow: 0 0.25rem 0.375rem -0.0625rem rgba(0, 0, 0, 0.1);
-}
-
-/* ==========================================
-   HEADER
-   ========================================== */
-
-.header {
-  margin-bottom: 2rem;
-}
-
-.title {
-  color: #1f2937;
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin: 0 0 0.5rem 0;
-}
-
-.subtitle {
-  color: #6b7280;
-  font-size: 0.875rem;
-  margin: 0;
-}
-
-/* ==========================================
-   SECCIÓN DE BÚSQUEDA
-   ========================================== */
-
-.filters-section {
-  margin-bottom: 1rem;
-}
-
-.search-container {
-  width: 100%;
-}
-
-.search-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.search-input {
-  width: 100%;
-  padding: 0.75rem 3.5rem 0.75rem 1rem;
-  border: 0.125rem solid #e5e7eb;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  transition: all 0.2s;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.search-actions {
-  position: absolute;
-  right: 0.75rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.search-icon {
-  color: #9ca3af;
-  font-size: 1.125rem;
-}
-
-.clear-button {
-  background: #ef4444;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 1.5rem;
-  height: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 0.875rem;
-  transition: all 0.2s;
-}
-
-.clear-button:hover {
-  background: #dc2626;
-  transform: scale(1.1);
-}
-
-/* ==========================================
-   FILTROS
-   ========================================== */
-
-.filters-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.filters-container form {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.filter-select {
-  padding: 0.5rem 0.75rem;
-  border: 0.125rem solid #e5e7eb;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  cursor: pointer;
-  background: white;
-  transition: border-color 0.2s;
-}
-
-.filter-select:focus {
-  outline: none;
-  border-color: #3b82f6;
-}
-
-.clear-filters-btn {
-  padding: 0.5rem 1rem;
-  background: #f3f4f6;
-  color: #374151;
-  border: 0.125rem solid #e5e7eb;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.clear-filters-btn:hover {
-  background: #e5e7eb;
-}
-
-/* ==========================================
-   BOTONES DE ACCIÓN
-   ========================================== */
-
-.actions-container {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.export-btn {
-  padding: 0.625rem 1.25rem;
-  background: #10b981;
-  color: white;
-  border: none;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.export-btn:hover {
-  background: #059669;
-  transform: translateY(-1px);
-}
-
-.primary-btn {
-  padding: 0.625rem 1.25rem;
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.primary-btn:hover {
-  background: #2563eb;
-  transform: translateY(-1px);
-}
-
-/* ==========================================
-   CONFIGURACIÓN DE PAGINACIÓN
-   ========================================== */
-
-.pagination-config {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  font-size: 0.875rem;
-  color: #6b7280;
-}
-
-.items-per-page-select {
-  padding: 0.375rem 0.5rem;
-  border: 0.125rem solid #e5e7eb;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  cursor: pointer;
-}
-
-/* ==========================================
-   TABLA
-   ========================================== */
-
-.table-container {
-  overflow-x: auto;
-  margin-bottom: 1.5rem;
-  border-radius: 0.5rem;
-  border: 0.0625rem solid #e5e7eb;
-}
-
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.875rem;
-}
-
-.data-table thead {
-  background: #f9fafb;
-  border-bottom: 0.125rem solid #e5e7eb;
-}
-
-.data-table th {
-  padding: 0.75rem;
-  text-align: left;
-  font-weight: 600;
-  color: #374151;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.data-table tbody tr {
-  border-bottom: 0.0625rem solid #f3f4f6;
-  transition: background-color 0.2s;
-}
-
-.data-table tbody tr:hover {
-  background: #f9fafb;
-}
-
-.data-table td {
-  padding: 0.875rem 0.75rem;
-  color: #1f2937;
-}
-
-/* Celdas especiales para Expenses */
+/* ===================================================
+   EXPENSE-SPECIFIC AMOUNT & DESCRIPTION CELLS
+   =================================================== */
 .description-cell {
   max-width: 250px;
 }
@@ -269,336 +11,140 @@
   text-align: right;
   font-family: 'Courier New', monospace;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
-/* ==========================================
-   BADGES - CATEGORÍAS
-   ========================================== */
-
+/* ===================================================
+   CATEGORY BADGES
+   =================================================== */
 .data-table td span[class*="category-"] {
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
-.category-office-supplies { background: #dbeafe; color: #1e40af; }
-.category-travel { background: #f3e8ff; color: #6b21a8; }
-.category-utilities { background: #fed7aa; color: #c2410c; }
-.category-maintenance { background: #d1fae5; color: #065f46; }
+.category-office-supplies      { background: #dbeafe; color: #1e40af; }
+.category-travel                { background: #f3e8ff; color: #6b21a8; }
+.category-utilities             { background: #fed7aa; color: #c2410c; }
+.category-maintenance           { background: #d1fae5; color: #065f46; }
 .category-professional-services { background: #fce7f3; color: #9f1239; }
-.category-marketing { background: #ccfbf1; color: #115e59; }
-.category-technology { background: #e9d5ff; color: #6b21a8; }
-.category-others { background: #f3f4f6; color: #374151; }
-.category-default { background: #f3f4f6; color: #374151; }
+.category-marketing             { background: #ccfbf1; color: #115e59; }
+.category-technology            { background: #e9d5ff; color: #6b21a8; }
+.category-others,
+.category-default               { background: var(--color-surface-dim); color: #374151; }
 
-/* ==========================================
-   BADGES - ESTADOS
-   ========================================== */
-
-.pending-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.approved-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: #dbeafe;
-  color: #1e40af;
-}
-
-.paid-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: #d1fae5;
-  color: #065f46;
-}
-
+/* ===================================================
+   EXPENSE STATUS BADGES
+   =================================================== */
+.pending-badge,
+.approved-badge,
+.paid-badge,
 .rejected-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: #fee2e2;
-  color: #991b1b;
 }
 
-/* ==========================================
-   BADGES - DEDUCIBLE
-   ========================================== */
+.pending-badge  { background: var(--color-warning-light); color: #92400e; }
+.approved-badge { background: var(--color-primary-light);  color: #1e40af; }
+.paid-badge     { background: var(--color-success-light);  color: #065f46; }
+.rejected-badge { background: var(--color-danger-light);   color: #991b1b; }
 
-.deductible-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: #d1fae5;
-  color: #065f46;
-}
-
+/* ===================================================
+   DEDUCTIBLE BADGES
+   =================================================== */
+.deductible-badge,
 .non-deductible-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: #f3f4f6;
-  color: #6b7280;
 }
 
-/* ==========================================
-   BOTONES DE ACCIÓN EN TABLA
-   ========================================== */
+.deductible-badge     { background: var(--color-success-light); color: #065f46; }
+.non-deductible-badge { background: var(--color-surface-dim);   color: #6b7280; }
 
-.action-btn {
-  padding: 0.375rem 0.75rem;
-  border: none;
-  border-radius: 0.375rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  margin-right: 0.5rem;
-}
+/* ===================================================
+   EXPENSE-SPECIFIC ACTION BUTTONS
+   (Override shared .edit-btn for expense workflow)
+   =================================================== */
+.approve-btn { background: var(--color-success-light); color: #065f46; }
+.approve-btn:hover { background: #a7f3d0; }
 
-.approve-btn {
-  background: #d1fae5;
-  color: #065f46;
-}
+.reject-btn  { background: var(--color-danger-light); color: #991b1b; }
+.reject-btn:hover { background: #fecaca; }
 
-.approve-btn:hover {
-  background: #a7f3d0;
-}
+.paid-btn    { background: var(--color-primary-light); color: #1e40af; }
+.paid-btn:hover { background: #bfdbfe; }
 
-.reject-btn {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.reject-btn:hover {
-  background: #fecaca;
-}
-
-.paid-btn {
-  background: #dbeafe;
-  color: #1e40af;
-}
-
-.paid-btn:hover {
-  background: #bfdbfe;
-}
-
+/* edit-btn for expenses uses orange (different from standard blue) */
 .edit-btn {
   background: #fed7aa;
   color: #c2410c;
 }
+.edit-btn:hover { background: #fdba74; }
 
-.edit-btn:hover {
-  background: #fdba74;
-}
-
+/* delete-btn for expenses uses neutral */
 .delete-btn {
-  background: #f3f4f6;
+  background: var(--color-surface-dim);
   color: #6b7280;
 }
+.delete-btn:hover { background: var(--color-border); }
 
-.delete-btn:hover {
-  background: #e5e7eb;
-}
-
-/* ==========================================
-   ESTADO VACÍO
-   ========================================== */
-
-.no-data {
-  text-align: center;
-  padding: 3rem 1rem;
-}
-
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
-
-.empty-state p {
-  color: #6b7280;
-  font-size: 1rem;
-  margin: 0;
-}
-
-/* ==========================================
-   PAGINACIÓN
-   ========================================== */
-
-.pagination-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 1rem;
-  border-top: 0.0625rem solid #e5e7eb;
-}
-
-.pagination-info {
-  color: #6b7280;
-  font-size: 0.875rem;
-}
-
-.pagination-controls {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.pagination-btn {
-  padding: 0.5rem 0.75rem;
-  background: white;
-  border: 0.0625rem solid #e5e7eb;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.pagination-btn:hover:not(.disabled) {
-  background: #f9fafb;
-  border-color: #3b82f6;
-}
-
-.pagination-btn.active {
-  background: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
-}
-
-.pagination-btn.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.pagination-dots {
-  display: flex;
-  align-items: center;
-  padding: 0 0.5rem;
-  color: #9ca3af;
-}
-
-/* ==========================================
-   RESUMEN DE ESTADÍSTICAS
-   ========================================== */
-
+/* ===================================================
+   EXPENSE STATS SUMMARY
+   =================================================== */
 .stats-summary {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-top: 1.5rem;
+  gap: var(--sp-4);
+  margin-top: var(--sp-6);
 }
 
 .stat-card {
-  background: #f9fafb;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  border: 0.0625rem solid #e5e7eb;
-  transition: all 0.2s;
+  background: var(--color-surface-alt);
+  padding: var(--sp-4);
+  border-radius: var(--radius-lg);
+  border: 0.0625rem solid var(--color-border);
+  transition: all var(--tr);
 }
-
 .stat-card:hover {
-  background: white;
-  box-shadow: 0 0.25rem 0.375rem -0.0625rem rgba(0, 0, 0, 0.1);
+  background: var(--color-surface);
+  box-shadow: var(--shadow);
 }
 
 .stat-label {
   display: block;
-  color: #6b7280;
-  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--sp-2);
 }
 
 .stat-value {
   display: block;
-  color: #1f2937;
-  font-size: 1.5rem;
+  color: var(--color-text);
+  font-size: var(--text-2xl);
   font-weight: 700;
 }
 
-/* ==========================================
-   RESPONSIVE
-   ========================================== */
-
 @media (max-width: 48rem) {
-  .container {
-    padding: 1rem;
-  }
-
-  .filters-container {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .filters-container form {
-    width: 100%;
-  }
-
-  .actions-container {
-    width: 100%;
-    justify-content: stretch;
-  }
-
-  .action-btn {
-    font-size: 0.625rem;
-    padding: 0.25rem 0.5rem;
-  }
-
-  .pagination-container {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
   .stats-summary {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 30rem) {
-  .table-container {
-    font-size: 0.75rem;
-  }
-
-  .data-table th,
-  .data-table td {
-    padding: 0.5rem;
   }
 }

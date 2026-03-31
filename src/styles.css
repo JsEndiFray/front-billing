@@ -1,24 +1,919 @@
-/* ============================================
-   STYLES.CSS - RESET BÁSICO
-   ============================================ */
+/* ============================================================
+   DESIGN SYSTEM — FACTURAS
+   Design tokens, global reset, and shared utility classes.
+   All component CSS files reference this file for shared styles.
+   ============================================================ */
 
-/* Reset: Quitar márgenes y paddings */
+/* ===================================================
+   1. CSS CUSTOM PROPERTIES (Design Tokens)
+   =================================================== */
+:root {
+  /* Brand colors */
+  --color-primary:        #3b82f6;
+  --color-primary-hover:  #2563eb;
+  --color-primary-light:  #dbeafe;
+  --color-primary-subtle: #eff6ff;
+
+  --color-success:        #10b981;
+  --color-success-hover:  #059669;
+  --color-success-light:  #d1fae5;
+
+  --color-danger:         #ef4444;
+  --color-danger-hover:   #dc2626;
+  --color-danger-light:   #fee2e2;
+
+  --color-warning:        #f59e0b;
+  --color-warning-light:  #fef3c7;
+
+  /* Neutral */
+  --color-text:           #1f2937;
+  --color-text-secondary: #6b7280;
+  --color-text-muted:     #9ca3af;
+
+  --color-bg:             #f8fafc;
+  --color-surface:        #ffffff;
+  --color-surface-alt:    #f9fafb;
+  --color-surface-dim:    #f3f4f6;
+
+  --color-border:         #e5e7eb;
+  --color-border-strong:  #d1d5db;
+
+  /* Sidebar */
+  --sidebar-bg:           #1e293b;
+  --sidebar-width:        15.625rem;
+  --header-height:        3.75rem;
+
+  /* Spacing scale */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.25rem;
+  --sp-6: 1.5rem;
+  --sp-8: 2rem;
+  --sp-12: 3rem;
+
+  /* Typography scale */
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-lg:   1.125rem;
+  --text-xl:   1.25rem;
+  --text-2xl:  1.5rem;
+  --text-3xl:  1.75rem;
+
+  /* Border radius */
+  --radius-sm: 0.25rem;
+  --radius:    0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.08);
+  --shadow:    0 0.25rem 0.375rem -0.0625rem rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 0.625rem 1.5rem rgba(0, 0, 0, 0.12);
+
+  /* Transitions */
+  --tr: 0.2s ease;
+  --tr-slow: 0.3s ease;
+}
+
+/* ===================================================
+   2. GLOBAL RESET
+   =================================================== */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-}
-
-/* Mantener comportamiento básico */
 html {
   font-size: 16px;
 }
 
 body {
   font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--color-text);
+  background: var(--color-bg);
+  overflow-x: hidden;
+}
+
+/* ===================================================
+   3. PAGE CONTAINER
+   The white card used as the root container in all pages.
+   =================================================== */
+.container {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  padding: var(--sp-6);
+  margin: 0 auto;
+  width: 100%;
+  box-shadow: var(--shadow);
+}
+
+/* ===================================================
+   4. PAGE HEADER (title + optional subtitle)
+   =================================================== */
+.header {
+  margin-bottom: var(--sp-8);
+}
+
+.title {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 var(--sp-1) 0;
+}
+
+.subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* Back button — used in register/edit headers */
+.back-btn {
+  padding: 0.625rem var(--sp-5);
+  background: var(--color-surface-dim);
+  color: #374151;
+  border: 0.125rem solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--tr);
+}
+.back-btn:hover { background: var(--color-border); }
+
+/* ===================================================
+   5. BUTTONS
+   Supporting two naming conventions used across components:
+   - .primary-btn / .secondary-btn / .export-btn  (list components)
+   - .btn + .btn-primary / .btn-secondary / .btn-success  (form components)
+   =================================================== */
+
+/* Shared base for all primary/secondary/export variants */
+.primary-btn,
+.secondary-btn,
+.export-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-1);
+  padding: 0.625rem var(--sp-5);
+  border: none;
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--tr);
+  white-space: nowrap;
+}
+
+/* Shared base for .btn variants */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-1);
+  padding: 0.75rem var(--sp-6);
+  border: none;
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--tr);
+  white-space: nowrap;
+}
+
+/* Primary */
+.primary-btn,
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+}
+.primary-btn:hover:not(:disabled),
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 0.25rem 0.375rem rgba(59, 130, 246, 0.2);
+}
+
+/* Secondary */
+.secondary-btn,
+.btn-secondary {
+  background: var(--color-surface);
+  color: #374151;
+  border: 0.125rem solid var(--color-border);
+}
+.secondary-btn:hover:not(:disabled),
+.btn-secondary:hover:not(:disabled) {
+  background: var(--color-surface-alt);
+  border-color: var(--color-border-strong);
+}
+
+/* Export / Success */
+.export-btn,
+.btn-success {
+  background: var(--color-success);
+  color: white;
+  border: none;
+}
+.export-btn:hover:not(:disabled),
+.btn-success:hover:not(:disabled) {
+  background: var(--color-success-hover);
+  transform: translateY(-1px);
+}
+
+/* Danger */
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem var(--sp-5);
+  border: none;
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--tr);
+  background: var(--color-danger);
+  color: white;
+}
+.btn-danger:hover:not(:disabled) { background: var(--color-danger-hover); }
+
+/* Outline */
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem var(--sp-6);
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--tr);
+  background: var(--color-surface);
+  color: #4a5568;
+  border: 1px solid var(--color-border-strong);
+}
+.btn-outline:hover:not(:disabled) { background: var(--color-surface-alt); }
+
+/* Disabled state — covers all variants */
+.primary-btn:disabled,
+.secondary-btn:disabled,
+.export-btn:disabled,
+.btn:disabled,
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-success:disabled,
+.btn-danger:disabled,
+.btn-outline:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* === Table Row Action Buttons === */
+.action-btn {
+  padding: 0.375rem 0.75rem;
+  border: none;
+  border-radius: var(--radius);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--tr);
+  margin-right: var(--sp-2);
+}
+.edit-btn     { background: var(--color-primary-light); color: #1e40af; }
+.edit-btn:hover { background: #bfdbfe; }
+.delete-btn   { background: var(--color-danger-light); color: #991b1b; }
+.delete-btn:hover { background: #fecaca; }
+.activate-btn { background: var(--color-success-light); color: #065f46; }
+.activate-btn:hover { background: #a7f3d0; }
+
+/* ===================================================
+   6. SEARCH BAR
+   =================================================== */
+.filters-section {
+  margin-bottom: var(--sp-4);
+}
+
+.search-container {
+  width: 100%;
+}
+
+.search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 3.5rem 0.75rem var(--sp-4);
+  border: 0.125rem solid var(--color-border);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  color: var(--color-text);
+  background: var(--color-surface);
+  transition: all var(--tr);
+}
+.search-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.search-actions {
+  position: absolute;
+  right: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.search-icon {
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+}
+
+.clear-button {
+  background: var(--color-danger);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: var(--text-sm);
+  transition: all var(--tr);
+}
+.clear-button:hover {
+  background: var(--color-danger-hover);
+  transform: scale(1.1);
+}
+
+/* ===================================================
+   7. FILTERS BAR
+   =================================================== */
+.filters-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-6);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filters-container form {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.filter-select {
+  padding: var(--sp-2) 0.75rem;
+  border: 0.125rem solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  cursor: pointer;
+  background: var(--color-surface);
+  color: var(--color-text);
+  transition: border-color var(--tr);
+}
+.filter-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.clear-filters-btn {
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--color-surface-dim);
+  color: #374151;
+  border: 0.125rem solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--tr);
+}
+.clear-filters-btn:hover { background: var(--color-border); }
+
+/* ===================================================
+   8. ACTIONS TOOLBAR (export + new record buttons row)
+   =================================================== */
+.actions-container {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* ===================================================
+   9. PAGINATION CONFIG (items per page selector)
+   =================================================== */
+.pagination-config {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.items-per-page-select {
+  padding: 0.375rem var(--sp-2);
+  border: 0.125rem solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* ===================================================
+   10. DATA TABLE
+   =================================================== */
+.table-container {
+  overflow-x: auto;
+  margin-bottom: var(--sp-6);
+  border-radius: var(--radius-lg);
+  border: 0.0625rem solid var(--color-border);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.data-table thead {
+  background: var(--color-surface-alt);
+  border-bottom: 0.125rem solid var(--color-border);
+}
+
+.data-table th {
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.data-table tbody tr {
+  border-bottom: 0.0625rem solid #f3f4f6;
+  transition: background-color var(--tr);
+}
+.data-table tbody tr:last-child { border-bottom: none; }
+.data-table tbody tr:hover { background: var(--color-surface-alt); }
+.data-table tbody tr.inactive-row {
+  opacity: 0.65;
+  background: #fef9f9;
+}
+
+.data-table td {
+  padding: 0.875rem 0.75rem;
+  color: var(--color-text);
+  vertical-align: middle;
+}
+
+/* === Table cell helpers === */
+.name-cell { font-weight: 500; }
+
+.name-display {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.company-name { color: var(--color-text); font-weight: 600; }
+.person-name  { color: var(--color-text-secondary); font-size: var(--text-xs); }
+
+.tax-id-cell {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: #4f46e5;
+}
+
+.contact-cell { color: var(--color-text-secondary); }
+
+.email-cell a,
+.phone-cell a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--tr);
+}
+.email-cell a:hover,
+.phone-cell a:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+.payment-terms-cell {
+  font-weight: 600;
+  color: var(--color-success-hover);
+  text-align: center;
+}
+
+/* ===================================================
+   11. STATUS BADGES
+   =================================================== */
+.active-badge,
+.inactive-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.active-badge   { background: var(--color-success-light); color: #065f46; }
+.inactive-badge { background: var(--color-danger-light);  color: #991b1b; }
+
+/* ===================================================
+   12. EMPTY STATE
+   =================================================== */
+.no-data {
+  text-align: center;
+  padding: var(--sp-12) var(--sp-4);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.empty-state p {
+  color: var(--color-text-secondary);
+  font-size: var(--text-base);
+  margin: 0;
+}
+
+/* ===================================================
+   13. PAGINATION
+   =================================================== */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--sp-4);
+  border-top: 0.0625rem solid var(--color-border);
+}
+
+.pagination-info {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}
+
+.pagination-controls {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.pagination-btn {
+  padding: var(--sp-2) 0.75rem;
+  background: var(--color-surface);
+  border: 0.0625rem solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--tr);
+}
+.pagination-btn:hover:not(.disabled):not(.active) {
+  background: var(--color-surface-alt);
+  border-color: var(--color-primary);
+}
+.pagination-btn.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+.pagination-btn.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination-dots {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--sp-2);
+  color: var(--color-text-muted);
+}
+
+/* ===================================================
+   14. FORM SECTIONS
+   Both .section and .form-section class names are used
+   across different components for the same visual element.
+   =================================================== */
+.section,
+.form-section {
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-6);
+  margin-bottom: var(--sp-6);
+  border: 0.0625rem solid var(--color-border);
+}
+
+.section-title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 1.25rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 0.125rem solid var(--color-border);
+}
+
+/* ===================================================
+   15. FORM GRID & FIELDS
+   =================================================== */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--sp-4);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-4);
+}
+.form-row:last-child { margin-bottom: 0; }
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.form-field-full {
+  grid-column: 1 / -1;
+}
+
+/* ===================================================
+   16. FORM LABELS & INPUTS
+   =================================================== */
+.form-label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: #374151;
+}
+
+.form-input {
+  padding: 0.625rem 0.75rem;
+  border: 0.125rem solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+  color: #374151;
+  background: var(--color-surface);
+  transition: border-color var(--tr), box-shadow var(--tr);
+  font-family: inherit;
+  width: 100%;
+}
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+.form-input::placeholder { color: var(--color-text-muted); }
+.form-input:disabled {
+  background: var(--color-surface-dim);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+.form-input:read-only {
+  background: var(--color-surface-alt);
+  color: var(--color-text-secondary);
+}
+.form-input.error {
+  border-color: var(--color-danger);
+  background: #fef2f2;
+  animation: shake 0.3s ease-in-out;
+}
+.form-input.error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+.form-input.disabled {
+  background: var(--color-surface-alt);
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+/* Select variant */
+.form-select,
+select.form-input {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem;
+  padding-right: 2.5rem;
+}
+
+/* form-select inherits all form-input base styles */
+.form-select {
+  padding: 0.625rem 2.5rem 0.625rem 0.75rem;
+  border: 0.125rem solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+  color: #374151;
+  background-color: var(--color-surface);
+  font-family: inherit;
+  width: 100%;
+  transition: border-color var(--tr);
+}
+.form-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Textarea variant */
+textarea.form-input {
+  resize: vertical;
+  min-height: 4rem;
+  line-height: 1.5;
+}
+
+/* Helper text and validation messages */
+.help-text {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.error-message,
+.error-msg {
+  font-size: var(--text-xs);
+  color: var(--color-danger);
+  font-weight: 500;
+}
+
+.required-indicator {
+  color: var(--color-danger);
+  font-weight: 700;
+}
+
+/* ===================================================
+   17. FORM ACTIONS BAR
+   Both .actions-section and .form-actions are used
+   as the bottom action bar in form components.
+   =================================================== */
+.actions-section,
+.form-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--sp-4);
+  margin-top: var(--sp-8);
+  padding-top: var(--sp-6);
+  border-top: 0.0625rem solid var(--color-border);
+}
+
+/* ===================================================
+   18. LOADING & SPINNER
+   =================================================== */
+.spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 0.25rem solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: var(--sp-4);
+  color: var(--color-text-secondary);
+  font-style: italic;
+  font-size: var(--text-sm);
+}
+
+/* ===================================================
+   19. ANIMATIONS
+   =================================================== */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25%       { transform: translateX(-4px); }
+  75%       { transform: translateX(4px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(0.5rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes dots {
+  0%, 20%   { content: '.'; }
+  40%       { content: '..'; }
+  60%, 100% { content: '...'; }
+}
+
+/* ===================================================
+   20. UTILITIES
+   =================================================== */
+.hidden  { display: none !important; }
+.visible { display: block; }
+
+/* ===================================================
+   21. RESPONSIVE BREAKPOINTS
+   =================================================== */
+@media (max-width: 48rem) {
+  .container {
+    padding: var(--sp-4);
+  }
+
+  .form-grid,
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-field-full {
+    grid-column: 1;
+  }
+
+  .filters-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filters-container form {
+    width: 100%;
+  }
+
+  .actions-container {
+    width: 100%;
+  }
+
+  .actions-section,
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .pagination-container {
+    flex-direction: column;
+    gap: var(--sp-4);
+  }
+
+  .action-btn {
+    font-size: 0.625rem;
+    padding: 0.25rem var(--sp-2);
+  }
+}
+
+@media (max-width: 30rem) {
+  .container {
+    padding: 0.75rem;
+  }
+
+  .title {
+    font-size: var(--text-2xl);
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: var(--sp-2);
+  }
+
+  .section,
+  .form-section {
+    padding: 0.75rem;
+  }
+
+  .section-title {
+    font-size: var(--text-base);
+  }
+
+  .form-input {
+    font-size: 0.8125rem;
+  }
 }
