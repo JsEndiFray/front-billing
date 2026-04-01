@@ -1,4 +1,4 @@
-<!-- Dashboard Home - Página principal con estadísticas -->
+<!-- Dashboard Home -->
 <div class="dashboard-home">
 
   <!-- Título Principal -->
@@ -13,49 +13,48 @@
     </div>
   } @else {
 
-    <!-- Tarjetas de Estadísticas -->
-    <div class="stats-grid">
+    <!-- ── Métricas ──────────────────────────────────── -->
+    <div class="stats-section">
+      <h2>Métricas</h2>
+      <div class="stats-grid">
 
-      <!-- Ingresos del Día -->
-      <div class="stat-card revenue">
-        <div class="stat-icon">💰</div>
-        <div class="stat-content">
-          <h3>Ingresos de Hoy</h3>
-          <div class="stat-value">{{ stats()!.todayIncome | currency:'EUR':'symbol':'1.2-2':'es' }}</div>
+        <div class="stat-card revenue">
+          <div class="stat-icon">💰</div>
+          <div class="stat-content">
+            <h3>Ingresos de Hoy</h3>
+            <div class="stat-value">{{ stats()!.todayIncome | currency:'EUR':'symbol':'1.2-2':'es' }}</div>
+          </div>
         </div>
-      </div>
 
-      <!-- Clientes Activos -->
-      <div class="stat-card clients">
-        <div class="stat-icon">👥</div>
-        <div class="stat-content">
-          <h3>Clientes Activos</h3>
-          <div class="stat-value">{{ stats()!.activeClients }}</div>
+        <div class="stat-card clients">
+          <div class="stat-icon">👥</div>
+          <div class="stat-content">
+            <h3>Clientes Activos</h3>
+            <div class="stat-value">{{ stats()!.activeClients }}</div>
+          </div>
         </div>
-      </div>
 
-      <!-- Nuevos Clientes -->
-      <div class="stat-card new-clients">
-        <div class="stat-icon">🆕</div>
-        <div class="stat-content">
-          <h3>Nuevos Clientes</h3>
-          <div class="stat-value">{{ stats()!.newClients }}</div>
-          <div class="stat-change">Este mes</div>
+        <div class="stat-card new-clients">
+          <div class="stat-icon">🆕</div>
+          <div class="stat-content">
+            <h3>Nuevos Clientes</h3>
+            <div class="stat-value">{{ stats()!.newClients }}</div>
+            <div class="stat-change">Este mes</div>
+          </div>
         </div>
-      </div>
 
-      <!-- Ventas Totales -->
-      <div class="stat-card sales">
-        <div class="stat-icon">📊</div>
-        <div class="stat-content">
-          <h3>Ventas Totales</h3>
-          <div class="stat-value">{{ stats()!.totalSales | currency:'EUR':'symbol':'1.2-2':'es' }}</div>
+        <div class="stat-card sales">
+          <div class="stat-icon">📊</div>
+          <div class="stat-content">
+            <h3>Ventas Totales</h3>
+            <div class="stat-value">{{ stats()!.totalSales | currency:'EUR':'symbol':'1.2-2':'es' }}</div>
+          </div>
         </div>
-      </div>
 
+      </div>
     </div>
 
-    <!-- Accesos Rápidos -->
+    <!-- ── Accesos Rápidos ───────────────────────────── -->
     <div class="quick-actions">
       <h2>Accesos Rápidos</h2>
       <div class="actions-grid">
@@ -95,7 +94,7 @@
       </div>
     </div>
 
-    <!-- Resumen Rápido -->
+    <!-- ── Actividad Reciente ────────────────────────── -->
     <div class="summary-section">
       <h2>Actividad Reciente</h2>
       <div class="summary-grid">
